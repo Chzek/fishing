@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Fishinglog\Http\Controllers;
 
-use App\FishBreed;
-use App\FishFamily;
+use Fishinglog\FishBreed;
+use Fishinglog\FishFamily;
 use Illuminate\Http\Request;
 
 class FishController extends Controller
@@ -16,7 +16,7 @@ class FishController extends Controller
     public function index()
     {
         //
-        $fishes = \App\FishBreed::with(['family'])
+        $fishes = \Fishinglog\FishBreed::with(['family'])
             ->withCount('records')
             ->orderBy('name', 'asc')
             ->get();
@@ -35,7 +35,7 @@ class FishController extends Controller
     public function show($id)
     {
         //
-            $fish = \App\FishBreed::with(['family'])->find($id);
+            $fish = \Fishinglog\FishBreed::with(['family'])->find($id);
 
             return view('fish.show', [
             'fish' => $fish

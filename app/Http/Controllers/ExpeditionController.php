@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Fishinglog\Http\Controllers;
 
-use App\Expedition;
+use Fishinglog\Expedition;
 use Illuminate\Http\Request;
 
 class ExpeditionController extends Controller
@@ -22,13 +22,13 @@ class ExpeditionController extends Controller
     public function index()
     {
         //
-        $expeditions = \App\Expedition::withCount('posts', 'crews')
+        $expeditions = \Fishinglog\Expedition::withCount('posts', 'crews')
             ->orderBy('start', 'desc')
             ->get();
 
         foreach($expeditions as $expedition)
         {
-            $expedition['records_count'] = \App\Record::where('caught', '>=', $expedition->start)
+            $expedition['records_count'] = \Fishinglog\Record::where('caught', '>=', $expedition->start)
                 ->where('caught', '<=',  $expedition->finish)
                 ->get()
                 ->count(); 
@@ -78,21 +78,21 @@ class ExpeditionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Expedition  $expedition
+     * @param  \Fishinglog\Expedition  $expedition
      * @return \Illuminate\Http\Response
      */
     public function show(Expedition $expedition, $id)
     {
         //
-        $expedition = \App\Expedition::with('crews')
+        $expedition = \Fishinglog\Expedition::with('crews')
             ->find($id);
 
-        $records = \App\Record::where('caught', '>=', $expedition->start)
+        $records = \Fishinglog\Record::where('caught', '>=', $expedition->start)
             ->where('caught', '<=',  $expedition->finish)
             ->orderBy('caught', 'desc')
             ->get();
 
-        $caught = \App\Record::where('caught', '>=', $expedition->start)
+        $caught = \Fishinglog\Record::where('caught', '>=', $expedition->start)
             ->where('caught', '<=',  $expedition->finish)
             ->where('released', '=', 0)
             ->get()
@@ -109,13 +109,13 @@ class ExpeditionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Expedition  $expedition
+     * @param  \Fishinglog\Expedition  $expedition
      * @return \Illuminate\Http\Response
      */
     public function edit(Expedition $expedition, $id)
     {
         //
-        $expedition = \App\Expedition::find($id);
+        $expedition = \Fishinglog\Expedition::find($id);
         return view('expedition.edit', [
             'expedition' => $expedition,
         ]);
@@ -125,14 +125,14 @@ class ExpeditionController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Expedition  $expedition
+     * @param  \Fishinglog\Expedition  $expedition
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Expedition $expedition)
     {
         //
         $request->validate($this->rules);
-        $expedition = \App\Expedition::find($request->id);
+        $expedition = \Fishinglog\Expedition::find($request->id);
 
         $expedition->description = $request->description;
         $expedition->start = $request->start;
@@ -146,7 +146,7 @@ class ExpeditionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Expedition  $expedition
+     * @param  \Fishinglog\Expedition  $expedition
      * @return \Illuminate\Http\Response
      */
     public function destroy(Expedition $expedition)

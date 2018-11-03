@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Fishinglog\Http\Controllers;
 
-use App\Crew;
+use Fishinglog\Crew;
 use Illuminate\Http\Request;
 
 class CrewController extends Controller
@@ -33,7 +33,7 @@ class CrewController extends Controller
     {
         //
         $crew = new Crew;
-        $temp = \App\Angler::orderBy('lastName', 'asc')
+        $temp = \Fishinglog\Angler::orderBy('lastName', 'asc')
             ->orderBy('firstName', 'asc')
             ->orderBy('middleName', 'asc')
             ->get();
@@ -44,13 +44,13 @@ class CrewController extends Controller
             $anglers[$angler->id] = $angler->fullName;
         }
 
-        $temp = \App\Expedition::all();
+        $temp = \Fishinglog\Expedition::all();
         foreach($temp as $expedition)
         {
             $expeditions[$expedition->id] = $expedition->description;
         }
 
-        $expedition = \App\Expedition::find($request->expeditions_id);
+        $expedition = \Fishinglog\Expedition::find($request->expeditions_id);
 
         return view('expedition.crew.create', [
             'anglers' => $anglers,
@@ -84,7 +84,7 @@ class CrewController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Crew  $crew
+     * @param  \Fishinglog\Crew  $crew
      * @return \Illuminate\Http\Response
      */
     public function show(Crew $crew)
@@ -95,7 +95,7 @@ class CrewController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Crew  $crew
+     * @param  \Fishinglog\Crew  $crew
      * @return \Illuminate\Http\Response
      */
     public function edit(Crew $crew)
@@ -107,7 +107,7 @@ class CrewController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Crew  $crew
+     * @param  \Fishinglog\Crew  $crew
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Crew $crew)
@@ -118,7 +118,7 @@ class CrewController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Crew  $crew
+     * @param  \Fishinglog\Crew  $crew
      * @return \Illuminate\Http\Response
      */
     public function destroy(Crew $crew)

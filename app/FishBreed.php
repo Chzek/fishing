@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Fishinglog;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,11 +9,11 @@ class FishBreed extends Model
     //
   public function family()
   {
-    return $this->belongsTo('\App\FishFamily', 'fish_families_id', 'id');
+    return $this->belongsTo('\Fishinglog\FishFamily', 'fish_families_id', 'id');
   }
 
   public function records()
     {
-      return $this->hasMany('\App\Record', 'fish_breeds_id', 'id');
+      return $this->hasMany('\Fishinglog\Record', 'fish_breeds_id', 'id');
     }
 }

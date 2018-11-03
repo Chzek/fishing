@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Fishinglog;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,7 +9,7 @@ class Lure extends Model
     //
     public function record()
     {
-      return $this->hasOne('\App\Record');
+      return $this->hasOne('\Fishinglog\Record');
     }
     
     public function getDisplayNameAttribute()

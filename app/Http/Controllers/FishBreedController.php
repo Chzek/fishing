@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Fishinglog\Http\Controllers;
 
-use App\FishBreed;
-use App\FishFamily;
+use Fishinglog\FishBreed;
+use Fishinglog\FishFamily;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -28,8 +28,8 @@ class FishBreedController extends Controller
     public function create()
     {
         //
-        $tempFamilies = \App\FishFamily::all();
-        $breeds = \App\FishBreed::all();
+        $tempFamilies = \Fishinglog\FishFamily::all();
+        $breeds = \Fishinglog\FishBreed::all();
         $breed = new FishBreed;
 
         $families = [];
@@ -68,7 +68,7 @@ class FishBreedController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\FishBreed  $fishBreed
+     * @param  \Fishinglog\FishBreed  $fishBreed
      * @return \Illuminate\Http\Response
      */
     public function show(FishBreed $fishBreed)
@@ -79,20 +79,20 @@ class FishBreedController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\FishBreed  $fishBreed
+     * @param  \Fishinglog\FishBreed  $fishBreed
      * @return \Illuminate\Http\Response
      */
     public function edit(FishBreed $fishBreed, $id)
     {
         //
-        $tempFamilies = \App\FishFamily::all();
+        $tempFamilies = \Fishinglog\FishFamily::all();
         foreach($tempFamilies as $family)
         {
             $families[$family->id] = $family->name;
         }
-        $breeds = \App\FishBreed::all();
+        $breeds = \Fishinglog\FishBreed::all();
 
-        $fish = \App\FishBreed::find($id);
+        $fish = \Fishinglog\FishBreed::find($id);
         return view('fish.breed.edit', [
             'families' => $families,
             'breeds' => $breeds,
@@ -104,7 +104,7 @@ class FishBreedController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\FishBreed  $fishBreed
+     * @param  \Fishinglog\FishBreed  $fishBreed
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, FishBreed $fishBreed)
@@ -119,7 +119,7 @@ class FishBreedController extends Controller
         ];
 
         $request->validate($rules);
-        $breed = \App\FishBreed::find($request->id);
+        $breed = \Fishinglog\FishBreed::find($request->id);
 
         $breed->fish_families_id = $request->fish_families_id;
         $breed->name = $request->name;
@@ -132,7 +132,7 @@ class FishBreedController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\FishBreed  $fishBreed
+     * @param  \Fishinglog\FishBreed  $fishBreed
      * @return \Illuminate\Http\Response
      */
     public function destroy(FishBreed $fishBreed)

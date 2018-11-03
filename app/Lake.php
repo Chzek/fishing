@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Fishinglog;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,6 +9,6 @@ class Lake extends Model
     //
     public function records()
     {
-      return $this->hasMany('\App\Record', 'lakes_id', 'id');
+      return $this->hasMany('\Fishinglog\Record', 'lakes_id', 'id');
     }
 }

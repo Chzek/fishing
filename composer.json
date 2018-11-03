@@ -27,7 +27,7 @@
             "database/factories"
         ],
         "psr-4": {
-            "App\\": "app/"
+            "Fishinglog\\": "app/"
         }
     },
     "autoload-dev": {

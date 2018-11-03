@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Fishinglog;
 
 use Illuminate\Database\Eloquent\Model;
 

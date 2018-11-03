@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Fishinglog;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,16 +9,16 @@ class Expedition extends Model
     //
     public function crews()
     {
-      return $this->hasMany('\App\Crew', 'expeditions_id', 'id');
+      return $this->hasMany('\Fishinglog\Crew', 'expeditions_id', 'id');
     }
 
     public function posts()
     {
-      return $this->hasMany('\App\Post', 'expeditions_id', 'id');
+      return $this->hasMany('\Fishinglog\Post', 'expeditions_id', 'id');
     }
 
     public function records()
     {
-      return $this->hasManyThrough('App\Record', 'App\Crew', 'expeditions_id', 'anglers_id', 'id', 'anglers_id');
+      return $this->hasManyThrough('Fishinglog\Record', 'Fishinglog\Crew', 'expeditions_id', 'anglers_id', 'id', 'anglers_id');
     }
 }

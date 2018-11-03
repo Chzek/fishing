@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Fishinglog\Http\Controllers;
 
-use App\Lure;
+use Fishinglog\Lure;
 use Illuminate\Http\Request;
 
 class LureController extends Controller
@@ -22,7 +22,7 @@ class LureController extends Controller
     public function index()
     {
         //
-        $lures = \App\Lure::all();
+        $lures = \Fishinglog\Lure::all();
 
         return view('lure.index', [
             'lures' => $lures
@@ -67,13 +67,13 @@ class LureController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Lure  $lure
+     * @param  \Fishinglog\Lure  $lure
      * @return \Illuminate\Http\Response
      */
     public function show(Lure $lure, $id)
     {
         //
-        $lure = \App\Lure::find($id);
+        $lure = \Fishinglog\Lure::find($id);
         return view('lure.show', [
             'lure' => $lure
         ]);
@@ -82,17 +82,17 @@ class LureController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Lure  $lure
+     * @param  \Fishinglog\Lure  $lure
      * @return \Illuminate\Http\Response
      */
     public function edit(Lure $lure, $id)
     {
         //
-        $lureNames = \App\Lure::distinct()->select('name')->get();
-        $lureColors = \App\Lure::distinct()->select('color')->get();
-        $lureSizes = \App\Lure::distinct()->select('size')->get();
+        $lureNames = \Fishinglog\Lure::distinct()->select('name')->get();
+        $lureColors = \Fishinglog\Lure::distinct()->select('color')->get();
+        $lureSizes = \Fishinglog\Lure::distinct()->select('size')->get();
 
-        $lure = \App\Lure::find($id);
+        $lure = \Fishinglog\Lure::find($id);
         return view('lure.edit', [
             'lure' => $lure,
             'lureNames' => $lureNames,
@@ -105,7 +105,7 @@ class LureController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Lure  $lure
+     * @param  \Fishinglog\Lure  $lure
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Lure $lure)
@@ -117,7 +117,7 @@ class LureController extends Controller
         $rules['name'] = 'string|required|unique_with:lures,name,color,size,'.$request->id;
 
         $request->validate($rules);
-        $lure = \App\Lure::find($request->id);
+        $lure = \Fishinglog\Lure::find($request->id);
 
         $lure->name = $request->name;
         $lure->color = $request->color;
@@ -131,7 +131,7 @@ class LureController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Lure  $lure
+     * @param  \Fishinglog\Lure  $lure
      * @return \Illuminate\Http\Response
      */
     public function destroy(Lure $lure)

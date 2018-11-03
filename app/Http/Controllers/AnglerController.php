@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Fishinglog\Http\Controllers;
 
-use App\Angler;
+use Fishinglog\Angler;
 use Illuminate\Http\Request;
 
 class AnglerController extends Controller
@@ -15,7 +15,7 @@ class AnglerController extends Controller
     public function index()
     {
         //
-        $anglers = \App\Angler::withCount('records')
+        $anglers = \Fishinglog\Angler::withCount('records')
             ->orderBy('lastName', 'asc')
             ->orderBy('firstName', 'asc')
             ->orderBy('middleName', 'asc')
@@ -64,13 +64,13 @@ class AnglerController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Angler  $angler
+     * @param  \Fishinglog\Angler  $angler
      * @return \Illuminate\Http\Response
      */
     public function show(Angler $angler, $id)
     {
         //
-        $angler = \App\Angler::find($id);
+        $angler = \Fishinglog\Angler::find($id);
         return view('angler.show', [
             'angler' => $angler
         ]);
@@ -79,13 +79,13 @@ class AnglerController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Angler  $angler
+     * @param  \Fishinglog\Angler  $angler
      * @return \Illuminate\Http\Response
      */
     public function edit(Angler $angler, $id)
     {
         //
-        $angler = \App\Angler::find($id);
+        $angler = \Fishinglog\Angler::find($id);
         return view('angler.edit', [
             'angler' => $angler
         ]);
@@ -95,14 +95,14 @@ class AnglerController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Angler  $angler
+     * @param  \Fishinglog\Angler  $angler
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Angler $angler)
     {
         //
         $request->validate($this->rules());
-        $angler = \App\Angler::find($request->id);
+        $angler = \Fishinglog\Angler::find($request->id);
 
         $angler->firstName = $request->firstName;
         $angler->middleName = $request->middleName;
@@ -116,7 +116,7 @@ class AnglerController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Angler  $angler
+     * @param  \Fishinglog\Angler  $angler
      * @return \Illuminate\Http\Response
      */
     public function destroy(Angler $angler)

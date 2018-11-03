@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Fishinglog\Http\Controllers;
 
-use App\Record;
+use Fishinglog\Record;
 use Illuminate\Http\Request;
 
 class RecordController extends Controller
@@ -28,7 +28,7 @@ class RecordController extends Controller
     public function index()
     {
         //
-        $records = \App\Record::with('angler')
+        $records = \Fishinglog\Record::with('angler')
             ->orderBy('caught', 'desc')
             ->orderBy('anglers_id', 'asc')
             ->limit(20)
@@ -47,7 +47,7 @@ class RecordController extends Controller
     public function create()
     {
         //
-        $temp = \App\Angler::orderBy('lastName', 'asc')
+        $temp = \Fishinglog\Angler::orderBy('lastName', 'asc')
             ->orderBy('firstName', 'asc')
             ->orderBy('middleName', 'asc')
             ->get();
@@ -58,7 +58,7 @@ class RecordController extends Controller
             $anglers[$angler->id] = $angler->fullName;
         }
 
-        $temp = \App\Lake::orderBy('name', 'asc')
+        $temp = \Fishinglog\Lake::orderBy('name', 'asc')
             ->get();
 
         $lakes[null] = "Select a Lake";
@@ -67,7 +67,7 @@ class RecordController extends Controller
             $lakes[$lake->id] = $lake->name;
         }
 
-        $temp = \App\FishBreed::orderBy('name', 'asc')
+        $temp = \Fishinglog\FishBreed::orderBy('name', 'asc')
             ->get();
 
         $fishes[null] = "Select a Fish";
@@ -76,7 +76,7 @@ class RecordController extends Controller
             $fishes[$fish->id] = $fish->name;
         }
 
-        $temp = \App\Lure::orderBy('name', 'asc')
+        $temp = \Fishinglog\Lure::orderBy('name', 'asc')
             ->orderBy('color', 'asc')
             ->orderBy('size', 'desc')
             ->get();
@@ -127,13 +127,13 @@ class RecordController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Record  $record
+     * @param  \Fishinglog\Record  $record
      * @return \Illuminate\Http\Response
      */
     public function show(Record $record, $id)
     {
         //
-        $record = \App\Record::with(['angler','lure','lake','fishBreed','expedition','fishBreed.family'])
+        $record = \Fishinglog\Record::with(['angler','lure','lake','fishBreed','expedition','fishBreed.family'])
             ->find($id);
 
         return view('record.show', [
@@ -144,15 +144,15 @@ class RecordController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Record  $record
+     * @param  \Fishinglog\Record  $record
      * @return \Illuminate\Http\Response
      */
     public function edit(Record $record, $id)
     {
         //
-        $record = \App\Record::find($id);
+        $record = \Fishinglog\Record::find($id);
 
-        $temp = \App\Angler::orderBy('lastName', 'asc')
+        $temp = \Fishinglog\Angler::orderBy('lastName', 'asc')
             ->orderBy('firstName', 'asc')
             ->orderBy('middleName', 'asc')
             ->get();
@@ -163,7 +163,7 @@ class RecordController extends Controller
             $anglers[$angler->id] = $angler->fullName;
         }
 
-        $temp = \App\Lake::orderBy('name', 'asc')
+        $temp = \Fishinglog\Lake::orderBy('name', 'asc')
             ->get();
 
         $lakes[null] = "Select a Lake";
@@ -172,7 +172,7 @@ class RecordController extends Controller
             $lakes[$lake->id] = $lake->name;
         }
 
-        $temp = \App\FishBreed::orderBy('name', 'asc')
+        $temp = \Fishinglog\FishBreed::orderBy('name', 'asc')
             ->get();
 
         $fishes[null] = "Select a Fish";
@@ -181,7 +181,7 @@ class RecordController extends Controller
             $fishes[$fish->id] = $fish->name;
         }
 
-        $temp = \App\Lure::orderBy('name', 'asc')
+        $temp = \Fishinglog\Lure::orderBy('name', 'asc')
             ->orderBy('color', 'asc')
             ->orderBy('size', 'desc')
             ->get();
@@ -205,14 +205,14 @@ class RecordController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Record  $record
+     * @param  \Fishinglog\Record  $record
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Record $record)
     {
         //
         $request->validate($this->rules);
-        $record = \App\Record::find($request->id);
+        $record = \Fishinglog\Record::find($request->id);
 
         $record->anglers_id = $request->anglers_id;
         $record->lakes_id = $request->lakes_id;
@@ -232,7 +232,7 @@ class RecordController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Record  $record
+     * @param  \Fishinglog\Record  $record
      * @return \Illuminate\Http\Response
      */
     public function destroy(Record $record)

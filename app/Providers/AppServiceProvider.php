@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace Fishinglog\Providers;
 
 use Illuminate\Support\ServiceProvider;
 

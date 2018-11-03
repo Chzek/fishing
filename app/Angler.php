@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Fishinglog;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,7 +17,7 @@ class Angler extends Model
 
     public function records()
     {
-        return $this->hasMany('\App\Record', 'anglers_id', 'id');
+        return $this->hasMany('\Fishinglog\Record', 'anglers_id', 'id');
     }
 
     public function getFullNameAttribute()

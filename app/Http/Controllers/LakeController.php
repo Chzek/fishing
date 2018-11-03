@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Fishinglog\Http\Controllers;
 
-use App\Lake;
+use Fishinglog\Lake;
 use Illuminate\Http\Request;
 
 class LakeController extends Controller
@@ -15,7 +15,7 @@ class LakeController extends Controller
     public function index()
     {
         //
-        $lakes = \App\Lake::withCount('records')
+        $lakes = \Fishinglog\Lake::withCount('records')
             ->orderBy('name', 'asc')
             ->get();
 
@@ -62,13 +62,13 @@ class LakeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Lake  $lake
+     * @param  \Fishinglog\Lake  $lake
      * @return \Illuminate\Http\Response
      */
     public function show(Lake $lake, $id)
     {
         //
-        $lake = \App\Lake::find($id);
+        $lake = \Fishinglog\Lake::find($id);
 
         return view('lake.show', [
             'lake' => $lake
@@ -78,13 +78,13 @@ class LakeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Lake  $lake
+     * @param  \Fishinglog\Lake  $lake
      * @return \Illuminate\Http\Response
      */
     public function edit(Lake $lake, $id)
     {
         //
-        $lake = \App\Lake::find($id);
+        $lake = \Fishinglog\Lake::find($id);
         return view('lake.edit', [
             'lake' => $lake
         ]);
@@ -94,14 +94,14 @@ class LakeController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Lake  $lake
+     * @param  \Fishinglog\Lake  $lake
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Lake $lake)
     {
         //
         $request->validate($this->rules());
-        $lake = \App\Lake::find($request->id);
+        $lake = \Fishinglog\Lake::find($request->id);
 
         $lake->name = $request->name;
         $lake->latitude = $request->latitude;
@@ -115,7 +115,7 @@ class LakeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Lake  $lake
+     * @param  \Fishinglog\Lake  $lake
      * @return \Illuminate\Http\Response
      */
     public function destroy(Lake $lake)

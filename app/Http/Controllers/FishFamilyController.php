@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Fishinglog\Http\Controllers;
 
-use App\FishFamily;
+use Fishinglog\FishFamily;
 use Illuminate\Http\Request;
 
 class FishFamilyController extends Controller
@@ -25,7 +25,7 @@ class FishFamilyController extends Controller
     public function create()
     {
         //
-        $families = \App\FishFamily::all();
+        $families = \Fishinglog\FishFamily::all();
         $family = new FishFamily;
 
         return view('fish.family.create', [
@@ -56,7 +56,7 @@ class FishFamilyController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\FishFamily  $fishFamily
+     * @param  \Fishinglog\FishFamily  $fishFamily
      * @return \Illuminate\Http\Response
      */
     public function show(FishFamily $fishFamily)
@@ -67,7 +67,7 @@ class FishFamilyController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\FishFamily  $fishFamily
+     * @param  \Fishinglog\FishFamily  $fishFamily
      * @return \Illuminate\Http\Response
      */
     public function edit(FishFamily $fishFamily)
@@ -79,7 +79,7 @@ class FishFamilyController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\FishFamily  $fishFamily
+     * @param  \Fishinglog\FishFamily  $fishFamily
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, FishFamily $fishFamily)
@@ -90,7 +90,7 @@ class FishFamilyController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\FishFamily  $fishFamily
+     * @param  \Fishinglog\FishFamily  $fishFamily
      * @return \Illuminate\Http\Response
      */
     public function destroy(FishFamily $fishFamily)
