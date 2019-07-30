@@ -28,28 +28,28 @@
                         <tbody>
                             @foreach($records as $record)
                                 <tr>
-                                    <td>{{ $record->caught }}</td>
-                                    <td>{{ $record->angler->lastName }}, {{ $record->angler->firstName }} {{ $record->angler->middleName }}</td>
-                                    <td>{{ $record->lake->name }}</td>
-                                    <td>{{ $record->fishBreed->name }}</td>
-                                    <td>
+                                    <td class="align-middle">{{ $record->caught }}</td>
+                                    <td class="align-middle">{{ $record->angler->lastName }}, {{ $record->angler->firstName }} {{ $record->angler->middleName }}</td>
+                                    <td class="align-middle">{{ $record->lake->name }}</td>
+                                    <td class="align-middle">{{ $record->fishBreed->name }}</td>
+                                    <td class="align-middle">
                                         @if($record->lure)
                                             @if(strlen($record->lure->displayName) >= 20)
                                                 <span title="{{ $record->lure->displayName }}">{{ substr($record->lure->displayName, 0, 17) }}...</span>
                                             @endif
                                         @endif
                                     </td>
-                                    <td align="right">{{ $record->weight }}</td>
-                                    <td align="right">{{ $record->length }}</td>
-                                    <td align="right">{{ $record->temperature }}</td>
-                                    <td>
+                                    <td class="align-middle text-right">{{ $record->weight }}</td>
+                                    <td class="align-middle text-right">{{ $record->length }}</td>
+                                    <td class="align-middle text-right">{{ $record->temperature }}</td>
+                                    <td class="align-middle">
                                         @if($record->released == 1)
                                             <span class="badge badge-secondary">Released</span>
                                         @else
                                             <span class="badge badge-primary">Caught</span>
                                         @endif
                                     </td>
-                                    <td align="center">
+                                    <td class="align-middle text-center">
                                         @if(view()->exists('record.edit'))
                                             <a href='/record/{{ $record->id }}/edit' class='btn btn-sm btn-light' role='button'>
                                                 <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
@@ -64,6 +64,9 @@
                                 </tr>
                             @endforeach
                         </tbody>
+                        <caption>
+                            {{ $records->count() }} Total Records
+                        </caption>
                     </table>
                 </div>
             </div>

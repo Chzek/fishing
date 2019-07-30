@@ -24,6 +24,12 @@
                             {!! Form::text('lastName', null, ['class' => 'form-control']) !!}
                         </div>
 
+                        <div class="form-group">
+                            {!! Form::label('user_id', 'User') !!}
+                            {!! Form::select('user_id', $users, null,
+                                ['class' => 'form-control', 'placeholder' => 'Please select a user.' ]) !!}
+                        </div>
+
                         {!! Form::submit('Create', ['class' => 'btn btn-md btn-outline-dark']) !!}
 
                     {!! Form::close() !!}

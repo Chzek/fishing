@@ -3,6 +3,7 @@
 namespace Fishinglog\Http\Controllers;
 
 use Fishinglog\Angler;
+use Fishinglog\User;
 use Illuminate\Http\Request;
 
 class AnglerController extends Controller
@@ -35,8 +36,13 @@ class AnglerController extends Controller
     {
         //
         $angler = new Angler;
+        $unassigned = Angler::select('id')->whereNull('user_id')->get();
+
+        $users = \Fishinglog\User::whereIn('id', $unassigned->toArray())->pluck('name', 'id');
+
         return view('angler.create', [
-            'angler' => $angler
+            'angler' => $angler,
+            'users' => $users
         ]);
     }
 
@@ -55,6 +61,7 @@ class AnglerController extends Controller
         $angler->firstName = $request->firstName;
         $angler->middleName = $request->middleName;
         $angler->lastName = $request->lastName;
+        $angler->user_id = $request->user_id;
 
         $angler->save();
 
@@ -86,8 +93,12 @@ class AnglerController extends Controller
     {
         //
         $angler = \Fishinglog\Angler::find($id);
+        $unassigned = Angler::select('id')->whereNull('user_id')->get();
+
+        $users = \Fishinglog\User::whereIn('id', $unassigned->toArray())->pluck('name', 'id');
         return view('angler.edit', [
-            'angler' => $angler
+            'angler' => $angler,
+            'users' => $users
         ]);
     }
 
@@ -107,6 +118,7 @@ class AnglerController extends Controller
         $angler->firstName = $request->firstName;
         $angler->middleName = $request->middleName;
         $angler->lastName = $request->lastName;
+        $angler->user_id = $request->user_id;
 
         $angler->save();
 
@@ -129,6 +141,7 @@ class AnglerController extends Controller
             'firstName' => 'required|max:255',
             'middleName' => 'required|max:255',
             'lastName' => 'required|max:255',
+            'user_id' => 'integer|nullable'
         ];
     }
 }

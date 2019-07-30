@@ -23,11 +23,11 @@
                         <tbody>
                             @foreach($lakes as $lake)
                                 <tr>
-                                    <td>{{ $lake->name }}</td>
-                                    <td align="right">{{ $lake->latitude }}</td>
-                                    <td align="right">{{ $lake->longitude }}</td>
-                                    <td align="right">{{ $lake->records_count }}</td>
-                                    <td align="center">
+                                    <td class="align-middle">{{ $lake->name }}</td>
+                                    <td class="align-middle text-right">{{ $lake->latitude }}</td>
+                                    <td class="align-middle text-right">{{ $lake->longitude }}</td>
+                                    <td class="align-middle text-right">{{ $lake->records_count }}</td>
+                                    <td class="align-middle text-center">
                                         @if(view()->exists('lake.edit'))
                                             <a href='/lake/{{ $lake->id }}/edit' class='btn btn-sm btn-light' role='button'>
                                                 <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
@@ -42,6 +42,9 @@
                                 </tr>
                             @endforeach
                         </tbody>
+                        <caption>
+                            {{ $lakes->count() }} Total Lakes
+                        </caption>
                     </table>
                 </div>
             </div>

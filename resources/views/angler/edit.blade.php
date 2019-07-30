@@ -25,6 +25,12 @@
                             {!! Form::text('lastName', $angler->lastName, ['class' => 'form-control']) !!}
                         </div>
 
+                        <div class="form-group">
+                            {!! Form::label('user_id', 'User') !!}
+                            {!! Form::select('user_id', $users, $angler->user_id,
+                                ['class' => 'form-control', 'placeholder' => 'Please select a user.']) !!}
+                        </div>
+
                         {!! Form::submit('Save', ['class' => 'btn btn-md btn-outline-dark']) !!}
                         <a href='/angler' class='btn btn-md btn-outline-dark' role='button'>Cancel</a>
 

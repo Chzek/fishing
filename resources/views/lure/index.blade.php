@@ -23,11 +23,11 @@
                         <tbody>
                             @foreach($lures as $lure)
                                 <tr>
-                                    <td>{{ $lure->id }}</td>
-                                    <td>{{ $lure->name }}</td>
-                                    <td>{{ $lure->color }}</td>
-                                    <td>{{ $lure->size }}</td>
-                                    <td align="center">
+                                    <td class="align-middle">{{ $lure->id }}</td>
+                                    <td class="align-middle">{{ $lure->name }}</td>
+                                    <td class="align-middle">{{ $lure->color }}</td>
+                                    <td class="align-middle">{{ $lure->size }}</td>
+                                    <td class="align-middle text-center">
                                         @if(view()->exists('lure.edit'))
                                             <a href='/lure/{{ $lure->id }}/edit' class='btn btn-sm btn-light' role='button'>
                                                 <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
@@ -42,6 +42,9 @@
                                 </tr>
                             @endforeach
                         </tbody>
+                        <caption>
+                            {{ $lures->count() }} Total Lures
+                        </caption>
                     </table>
                 </div>
             </div>

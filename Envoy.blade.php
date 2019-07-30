@@ -27,8 +27,8 @@
 @endtask
 
 @task('update_symlinks')
-  echo 'Changing group'
-  chgrp -R www {{ $new_release_dir }}
+  #echo 'Changing group'
+  #chgrp -R www {{ $new_release_dir }}
   
   echo 'Linking storage directory'
   rm -rf {{ $new_release_dir }}/storage
@@ -40,5 +40,6 @@
   echo 'Linking current release'
   ln -s {{ $new_release_dir }} {{ $app_dir }}/current
 
-  ln -sF {{ $app_dir }}/current/public /usr/local/www/vhosts/fishinglog.mroczek.org
+ # echo 'Linking to www/vhost'
+ # ln -sF {{ $app_dir }}/current/public /usr/local/www/vhosts/fishinglog.mroczek.org
 @endtask

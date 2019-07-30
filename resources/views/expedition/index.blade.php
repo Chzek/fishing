@@ -25,13 +25,13 @@
                         <tbody>
                             @foreach($expeditions as $expedition)
                                 <tr>
-                                    <td>{{ $expedition->description }}</td>
-                                    <td>{{ $expedition->start }}</td>
-                                    <td>{{ $expedition->finish }}</td>
-                                    <td align="right">{{ $expedition->crews_count }}</td>
-                                    <td align="right">{{ $expedition->records_count }}</td>
-                                    <td align="right">{{ $expedition->posts_count }}</td>
-                                    <td align="center">
+                                    <td class="align-middle">{{ $expedition->description }}</td>
+                                    <td class="align-middle">{{ $expedition->start }}</td>
+                                    <td class="align-middle">{{ $expedition->finish }}</td>
+                                    <td class="align-middle text-right">{{ $expedition->crews_count }}</td>
+                                    <td class="align-middle text-right">{{ $expedition->records_count }}</td>
+                                    <td class="align-middle text-right">{{ $expedition->posts_count }}</td>
+                                    <td class="align-middle text-center">
                                         @if(view()->exists('expedition.edit'))
                                             <a href='/expedition/{{ $expedition->id }}/edit' class='btn btn-sm btn-light' role='button'>
                                                 <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>

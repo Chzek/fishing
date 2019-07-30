@@ -25,10 +25,10 @@
                         <tbody>
                             @foreach($fishes as $fish)
                                 <tr>
-                                    <td>{{ $fish->family->name }}</td>
-                                    <td>{{ $fish->name }}</td>
-                                    <td align="right">{{ $fish->records_count }}</td>
-                                    <td align="center">
+                                    <td class="align-middle">{{ $fish->family->name }}</td>
+                                    <td class="align-middle">{{ $fish->name }}</td>
+                                    <td class="align-middle text-right">{{ $fish->records_count }}</td>
+                                    <td class="align-middle text-center">
                                         @if(view()->exists('fish.breed.edit'))
                                             <a href='/fish/breed/{{ $fish->id }}/edit' class='btn btn-sm btn-light' role='button'>
                                                 <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
@@ -43,6 +43,9 @@
                                 </tr>
                             @endforeach
                         </tbody>
+                        <caption>
+                            {{ $fishes->count() }} Total Fish
+                        </caption>
                     </table>
                 </div>
             </div>

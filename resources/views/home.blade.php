@@ -15,6 +15,8 @@
                     @endif
 
                     You are logged in!
+                    {{ $angler }}
+                    {{ $records }}
                 </div>
             </div>
         </div>
