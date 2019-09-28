@@ -13,6 +13,7 @@
                                 <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit Expedition"></i>
                             </a>
                         @endif
+                        <a href='/expedition' class='card-link btn btn-md btn-outline-dark m-0  float-right' role='button'>Return</a>
                     </h3>
                     <h5 class="card-subtitle mb-2 text-muted">{{ $expedition->start }} - {{ $expedition->finish }}</h5>
                 </div>
@@ -125,7 +126,6 @@
                             </caption>
                         </table>
                     @endif
-                    <a href='/expedition' class='card-link btn btn-md btn-outline-dark m-0' role='button'>Return</a>
                 </div>
             </div>
         </div>

@@ -18,7 +18,7 @@
                             <tr>
                                 <th>Family</th>
                                 <th>Name (Breed)</th>
-                                <th>Caught</th>
+                                <th class="text-center">Caught</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -27,7 +27,7 @@
                                 <tr>
                                     <td class="align-middle">{{ $fish->family->name }}</td>
                                     <td class="align-middle">{{ $fish->name }}</td>
-                                    <td class="align-middle text-right">{{ $fish->records_count }}</td>
+                                    <td class="align-middle text-center">{{ $fish->records_count }}</td>
                                     <td class="align-middle text-center">
                                         @if(view()->exists('fish.breed.edit'))
                                             <a href='/fish/breed/{{ $fish->id }}/edit' class='btn btn-sm btn-light' role='button'>
@@ -44,7 +44,8 @@
                             @endforeach
                         </tbody>
                         <caption>
-                            {{ $fishes->count() }} Total Fish
+                            ({{ $fishes->firstItem() }} to {{ $fishes->lastItem() }}) of {{ $fishes->total() }} Fish
+                            {{ $fishes->links() }}
                         </caption>
                     </table>
                 </div>

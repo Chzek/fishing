@@ -20,7 +20,7 @@ class AnglerController extends Controller
             ->orderBy('lastName', 'asc')
             ->orderBy('firstName', 'asc')
             ->orderBy('middleName', 'asc')
-            ->get();
+            ->paginate(10);
 
         return view('angler.index', [
             'anglers' => $anglers
@@ -76,10 +76,27 @@ class AnglerController extends Controller
      */
     public function show(Angler $angler, $id)
     {
-        //
         $angler = \Fishinglog\Angler::find($id);
+        $records = \Fishinglog\Record::where('anglers_id', $angler->id)
+            ->orderBy('caught', 'desc')
+            ->take(10)
+            ->get();
+
+        $longest = \Fishinglog\Record::where('anglers_id', $angler->id)
+            ->orderBy('length', 'desc')
+            ->first();
+
+        $count = \Fishinglog\Record::where('anglers_id', $angler->id)
+            ->count();
+
+        $crews = \Fishinglog\Crew::where('anglers_id', $angler->id)->count();
+
         return view('angler.show', [
-            'angler' => $angler
+            'angler' => $angler,
+            'records' => $records,
+            'longest' => $longest,
+            'count' => $count,
+            'crews' => $crews,
         ]);
     }
 

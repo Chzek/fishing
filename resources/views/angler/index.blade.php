@@ -17,7 +17,7 @@
                                     <th>Last Name</th>
                                     <th>First Name</th>
                                     <th>Middle Name</th>
-                                    <th>Fish</th>
+                                    <th class="text-center">Fish</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -27,7 +27,7 @@
                                         <td class="align-middle">{{ $angler->lastName }}</td>
                                         <td class="align-middle">{{ $angler->firstName }}</td>
                                         <td class="align-middle">{{ $angler->middleName }}</td>
-                                        <td class="align-middle text-right">{{ $angler->records_count }}</td>
+                                        <td class="align-middle text-center">{{ $angler->records_count }}</td>
                                         <td class="align-middle text-center">
                                             @if(view()->exists('angler.edit'))
                                                 <a href='/angler/{{ $angler->id }}/edit' class='btn btn-sm btn-light' role='button'>
@@ -44,7 +44,8 @@
                                 @endforeach
                             </tbody>
                             <caption>
-                                {{ $anglers->count() }} Total Anglers
+                                ({{ $anglers->firstItem() }} to {{ $anglers->lastItem() }}) of {{ $anglers->total() }} Anglers
+                                {{ $anglers->links() }}
                             </caption>
                         </table>
                     @endif

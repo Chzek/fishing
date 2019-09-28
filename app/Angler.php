@@ -12,7 +12,7 @@ class Angler extends Model
      * @var array
      */
     protected $fillable = [
-        'firstname', 'middlename', 'lastname','user_id'
+        'firstname', 'middlename', 'lastname', 'user_id'
     ];
 
     public function records()

@@ -22,7 +22,7 @@ class LureController extends Controller
     public function index()
     {
         //
-        $lures = \Fishinglog\Lure::all();
+        $lures = \Fishinglog\Lure::paginate();
 
         return view('lure.index', [
             'lures' => $lures

@@ -43,7 +43,8 @@
                             @endforeach
                         </tbody>
                         <caption>
-                            {{ $lures->count() }} Total Lures
+                            ({{ $lures->firstItem() }} to {{ $lures->lastItem() }}) of {{ $lures->total() }} Lures
+                            {{ $lures->links() }}
                         </caption>
                     </table>
                 </div>

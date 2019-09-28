@@ -18,11 +18,14 @@ class FishController extends Controller
         //
         $fishes = \Fishinglog\FishBreed::with(['family'])
             ->withCount('records')
+            ->orderBy('fish_families_id', 'asc')
             ->orderBy('name', 'asc')
-            ->get();
+            ->paginate(10);
+
+       // $fishes = $fishes->sortBy('family.name');
 
         return view('fish.index', [
-            'fishes' => $fishes
+            'fishes' => $fishes,
         ]);
     }
 
@@ -35,10 +38,17 @@ class FishController extends Controller
     public function show($id)
     {
         //
-            $fish = \Fishinglog\FishBreed::with(['family'])->find($id);
+        $fish = \Fishinglog\FishBreed::with(['family'])->find($id);
 
-            return view('fish.show', [
-            'fish' => $fish
+        $longest = \Fishinglog\Record::where('fish_breeds_id', $fish->id)->max('length');
+        $fattest = \Fishinglog\Record::where('fish_breeds_id', $fish->id)->max('weight');
+        $count = \Fishinglog\Record::where('fish_breeds_id', $fish->id)->count();
+
+        return view('fish.show', [
+            'fish' => $fish,
+            'longest' => $longest,
+            'fattest' => $fattest,
+            'count' => $count,
         ]);
     }
 }

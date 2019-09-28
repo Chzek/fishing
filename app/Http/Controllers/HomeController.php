@@ -23,14 +23,16 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $angler = \Fishinglog\Angler::where('user_id', auth()->user()->id )->get();
+        $angler = \Fishinglog\Angler::where('user_id', auth()->user()->id)->first();
 
-        $records = \Fishinglog\Record::take(10)
-        ->get();
+        $records = \Fishinglog\Record::where('anglers_id', $angler->id)->get();
+
+        $crews = \Fishinglog\Crew::where('anglers_id', $angler->id)->count();
 
         return view('home', [
             'angler' => $angler,
-            'records' => $records
+            'records' => $records,
+            'crews' => $crews,
         ]);
     }
 }

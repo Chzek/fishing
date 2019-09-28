@@ -18,9 +18,9 @@
                                 <th>Lake</th>
                                 <th>Fish</th>
                                 <th>Lure</th>
-                                <th>Weight</th>
-                                <th>Length</th>
-                                <th>Temperature</th>
+                                <th class="text-center">Weight (lb)</th>
+                                <th class="text-center">Length (in)</th>
+                                <th class="text-center">Temp.</th>
                                 <th>Released</th>
                                 <th></th>
                             </tr>
@@ -39,9 +39,9 @@
                                             @endif
                                         @endif
                                     </td>
-                                    <td class="align-middle text-right">{{ $record->weight }}</td>
-                                    <td class="align-middle text-right">{{ $record->length }}</td>
-                                    <td class="align-middle text-right">{{ $record->temperature }}</td>
+                                    <td class="align-middle text-center">{{ $record->weight }}</td>
+                                    <td class="align-middle text-center">{{ $record->length }}</td>
+                                    <td class="align-middle text-center">{{ $record->temperature }}</td>
                                     <td class="align-middle">
                                         @if($record->released == 1)
                                             <span class="badge badge-secondary">Released</span>
@@ -65,7 +65,8 @@
                             @endforeach
                         </tbody>
                         <caption>
-                            {{ $records->count() }} Total Records
+                            ({{ $records->firstItem() }} to {{ $records->lastItem() }}) of {{ $records->total() }} Records
+                            {{ $records->links() }}
                         </caption>
                     </table>
                 </div>

@@ -14,9 +14,9 @@
                         <thead class='thead-light'>
                             <tr>
                                 <th>Name</th>
-                                <th>Latitude</th>
-                                <th>Longitude</th>
-                                <th>Fish</th>
+                                <th class="text-center">Latitude</th>
+                                <th class="text-center">Longitude</th>
+                                <th class="text-center">Fish</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -24,9 +24,9 @@
                             @foreach($lakes as $lake)
                                 <tr>
                                     <td class="align-middle">{{ $lake->name }}</td>
-                                    <td class="align-middle text-right">{{ $lake->latitude }}</td>
-                                    <td class="align-middle text-right">{{ $lake->longitude }}</td>
-                                    <td class="align-middle text-right">{{ $lake->records_count }}</td>
+                                    <td class="align-middle text-center">{{ $lake->latitude }}</td>
+                                    <td class="align-middle text-center">{{ $lake->longitude }}</td>
+                                    <td class="align-middle text-center">{{ $lake->records_count }}</td>
                                     <td class="align-middle text-center">
                                         @if(view()->exists('lake.edit'))
                                             <a href='/lake/{{ $lake->id }}/edit' class='btn btn-sm btn-light' role='button'>
@@ -43,7 +43,8 @@
                             @endforeach
                         </tbody>
                         <caption>
-                            {{ $lakes->count() }} Total Lakes
+                            ({{ $lakes->firstItem() }} to {{ $lakes->lastItem() }}) of {{ $lakes->total() }} Lakes
+                            {{ $lakes->links() }}
                         </caption>
                     </table>
                 </div>

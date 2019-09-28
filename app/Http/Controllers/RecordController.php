@@ -31,8 +31,7 @@ class RecordController extends Controller
         $records = \Fishinglog\Record::with('angler')
             ->orderBy('caught', 'desc')
             ->orderBy('anglers_id', 'asc')
-            ->limit(20)
-            ->get();
+            ->paginate(10);
 
         return view('record.index', [
             'records' => $records
@@ -44,7 +43,7 @@ class RecordController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         //
         $temp = \Fishinglog\Angler::orderBy('lastName', 'asc')
@@ -87,7 +86,13 @@ class RecordController extends Controller
             $lures[$lure->id] = $lure->displayName;
         }
 
-        $record = new Record;
+        $record = \Fishinglog\Record::find($request->record);
+
+        if($record == null)
+        {
+            $record = new Record;
+        }
+
         return view('record.create', [
             'anglers' => $anglers,
             'lakes' => $lakes,
@@ -121,7 +126,12 @@ class RecordController extends Controller
 
         $record->save();
 
-        return redirect('/record');
+        //return redirect('/record/create');
+
+        return redirect()->action(
+            'RecordController@create',
+            [ 'record' => $record ]
+        );
     }
 
     /**

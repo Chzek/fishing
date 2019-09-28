@@ -17,7 +17,7 @@ class LakeController extends Controller
         //
         $lakes = \Fishinglog\Lake::withCount('records')
             ->orderBy('name', 'asc')
-            ->get();
+            ->paginate(10);
 
         return view('lake.index', [
             'lakes' => $lakes
@@ -70,8 +70,25 @@ class LakeController extends Controller
         //
         $lake = \Fishinglog\Lake::find($id);
 
+        $count = \Fishinglog\Record::where('lakes_id', $lake->id)->count();
+        $longest = \Fishinglog\Record::where('lakes_id', $lake->id)
+            ->orderBy('length', 'desc')
+            ->first();
+        $fattest = \Fishinglog\Record::where('lakes_id', $lake->id)
+            ->orderBy('weight', 'desc')
+            ->first();
+
+        $trips = \Fishinglog\Record::where('lakes_id', $lake->id)->get();
+        $visits = $trips->unique('caught')->count();
+        $anglers = $trips->unique('anglers_id')->count();
+
         return view('lake.show', [
-            'lake' => $lake
+            'lake' => $lake,
+            'count' => $count,
+            'longest' => $longest,
+            'fattest' => $fattest,
+            'visits' => $visits,
+            'anglers' => $anglers,
         ]);
     }
 

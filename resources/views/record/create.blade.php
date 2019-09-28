@@ -32,24 +32,24 @@
                         <div class="form-row">
                             <div class="form-group col-6">
                                 {!! Form::label('caught', 'Catch Date') !!}
-                                {!! Form::date('caught', \Carbon\Carbon::now(), ['class' => 'form-control']) !!}
+                                {!! Form::date('caught', null, ['class' => 'form-control']) !!}
                             </div>
 
                             <div class="form-group col-6">
-                                {!! Form::label('weight', 'Weight(pounds)') !!}
-                                {!! Form::text('weight', null, ['class' => 'form-control']) !!}
+                                {!! Form::label('weight', 'Weight(lbs.)') !!}
+                                {!! Form::text('weight', "", ['class' => 'form-control']) !!}
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group col-6">
-                                {!! Form::label('length', 'Length(inches)') !!}
-                                {!! Form::text('length', null, ['class' => 'form-control']) !!}
+                                {!! Form::label('length', 'Length(in.)') !!}
+                                {!! Form::text('length', "", ['class' => 'form-control']) !!}
                             </div>
 
                             <div class="form-group col-6">
-                                {!! Form::label('temperature', 'Temperature') !!}
-                                {!! Form::text('temperature', null, ['class' => 'form-control']) !!}
+                                {!! Form::label('temperature', 'Temperature(F)') !!}
+                                {!! Form::text('temperature', "", ['class' => 'form-control']) !!}
                             </div>
                         </div>
 
