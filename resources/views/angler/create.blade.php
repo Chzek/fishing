@@ -5,7 +5,12 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Create Angler</div>
+                <div class="card-header">
+                    <h5 class='card-title d-inline align-middle'>Create Angler</h5>
+                    <div class="btn-group float-right" role="group" aria-label="Actions">
+                        <a href='/angler' class='card-link btn btn-sm btn-dark' role='button'>Return</a>
+                    </div>
+                </div>
                 <div class="card-body">
                     {!! Form::model($angler, ['url' => 'angler']) !!}
 

@@ -6,8 +6,13 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h5 class='display-5 d-inline'>Angler Index</h5>
-                    <a href='/angler/create' class='btn btn-sm btn-dark float-right' role='button'>Add</a>
+                    <h5 class='display-5 d-inline align-middle'>Angler Index</h5>
+                    <div class="btn-group float-right" role="group" aria-label="Angler collectoin actions">
+                        @if(view()->exists('angler.create'))
+                            <a href='/angler/create' class='btn btn-sm btn-dark float-right' role='button'>Add</a>
+                        @endif
+                        <a href='/' class='card-link btn btn-sm btn-dark' role='button'>Home</a>
+                    </div>
                 </div>
                 <div class="card-body">
                     @if(count($anglers) > 0)
@@ -29,16 +34,18 @@
                                         <td class="align-middle">{{ $angler->middleName }}</td>
                                         <td class="align-middle text-center">{{ $angler->records_count }}</td>
                                         <td class="align-middle text-center">
-                                            @if(view()->exists('angler.edit'))
-                                                <a href='/angler/{{ $angler->id }}/edit' class='btn btn-sm btn-light' role='button'>
-                                                    <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
-                                                </a>
-                                            @endif
-                                            @if(view()->exists('angler.show'))
-                                                <a href='/angler/{{ $angler->id }}' class='btn btn-sm btn-light' role='button'>
-                                                    <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show"></i>
-                                                </a>
-                                            @endif
+                                            <div class="btn-group float-right" role="group" aria-label="Angler actions">
+                                                @if(view()->exists('angler.edit'))
+                                                    <a href='/angler/{{ $angler->id }}/edit' class='btn btn-sm btn-light' role='button'>
+                                                        <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
+                                                    </a>
+                                                @endif
+                                                @if(view()->exists('angler.show'))
+                                                    <a href='/angler/{{ $angler->id }}' class='btn btn-sm btn-light' role='button'>
+                                                        <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show"></i>
+                                                    </a>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach

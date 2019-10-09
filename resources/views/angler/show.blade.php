@@ -6,7 +6,13 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h5 class='card-title'>Angler</h5>
+                    <h5 class='card-title d-inline align-middle'>Angler</h5>
+                    <div class="btn-group float-right" role="group" aria-label="Basic example">
+                        @if(view()->exists('angler.edit'))
+                            <a href='/angler/{{ $angler->id }}/edit' class='card-link btn btn-sm btn-dark' role='button'>Edit</a>
+                        @endif
+                        <a href='/angler' class='card-link btn btn-sm btn-dark' role='button'>Return</a>
+                    </div>
                 </div>
                 <div class="card-body">
                     <h2 class="card-subtitle mb-2 text-muted">
@@ -66,8 +72,6 @@
                             <caption>Last 10 catches.</caption>
                         </table>
                     @endif
-                    <a href='/angler/{{ $angler->id }}/edit' class='card-link btn btn-md btn-outline-dark' role='button'>Edit</a>
-                    <a href='/angler' class='card-link btn btn-md btn-outline-dark m-0' role='button'>Cancel</a>
                 </div>
             </div>
         </div>

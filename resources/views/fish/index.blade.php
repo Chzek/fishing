@@ -7,9 +7,10 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class='display-5 d-inline'>Fish Index</h5>
-                    <div class='d-inline float-right'>
+                    <div class="btn-group float-right" role="group" aria-label="Fish collction actions">
                         <a href='/fish/family/create' class='btn btn-sm btn-dark' role='button'>Add Family</a>
                         <a href='/fish/breed/create' class='btn btn-sm btn-dark' role='button'>Add Breed</a>
+                        <a href='/fish' class='card-link btn btn-sm btn-dark' role='button'>Return</a>
                     </div>
                 </div>
                 <div class="card-body">
@@ -29,16 +30,18 @@
                                     <td class="align-middle">{{ $fish->name }}</td>
                                     <td class="align-middle text-center">{{ $fish->records_count }}</td>
                                     <td class="align-middle text-center">
-                                        @if(view()->exists('fish.breed.edit'))
-                                            <a href='/fish/breed/{{ $fish->id }}/edit' class='btn btn-sm btn-light' role='button'>
-                                                <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
-                                            </a>
-                                        @endif
-                                        @if(view()->exists('fish.show'))
-                                            <a href='/fish/{{ $fish->id }}' class='btn btn-sm btn-light' role='button'>
-                                                <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show"></i>
-                                            </a>
-                                        @endif
+                                        <div class="btn-group float-right" role="group" aria-label="Fish actions">
+                                            @if(view()->exists('fish.breed.edit'))
+                                                <a href='/fish/breed/{{ $fish->id }}/edit' class='btn btn-sm btn-light' role='button'>
+                                                    <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
+                                                </a>
+                                            @endif
+                                            @if(view()->exists('fish.show'))
+                                                <a href='/fish/{{ $fish->id }}' class='btn btn-sm btn-light' role='button'>
+                                                    <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show"></i>
+                                                </a>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach

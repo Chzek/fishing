@@ -5,7 +5,12 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Edit Angler</div>
+                <div class="card-header">
+                    <h5 class='card-title d-inline align-middle'>Edit Angler</h5>
+                    <div class="btn-group float-right" role="group" aria-label="Actions">
+                        <a href='/angler' class='card-link btn btn-sm btn-dark' role='button'>Return</a>
+                    </div>
+                </div>
                 <div class="card-body">
                     {!! Form::model($angler, ['url' => 'angler', 'method' => 'put']) !!}
                         {!! Form::hidden('id') !!}
@@ -31,8 +36,10 @@
                                 ['class' => 'form-control', 'placeholder' => 'Please select a user.']) !!}
                         </div>
 
-                        {!! Form::submit('Save', ['class' => 'btn btn-md btn-outline-dark']) !!}
-                        <a href='/angler' class='btn btn-md btn-outline-dark' role='button'>Cancel</a>
+                        <div class="btn-group" role="group" aria-label="Actions">
+                            {!! Form::submit('Save', ['class' => 'btn btn-md btn-outline-dark']) !!}
+                            <a href='/angler' class='btn btn-md btn-outline-dark' role='button'>Cancel</a>
+                        </div>
 
                     {!! Form::close() !!}
                 </div>
