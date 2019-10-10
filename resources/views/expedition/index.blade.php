@@ -2,9 +2,6 @@
 
 @section('content')
 <div class="container">
-An expedition is .... DEFINITION HERE
-</div>
-<div class="container">
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card">
@@ -13,6 +10,9 @@ An expedition is .... DEFINITION HERE
                     <a href='/expedition/create' class='btn btn-sm btn-dark float-right' role='button'>Add</a>
                 </div>
                 <div class="card-body">
+                    <p class="card-text">
+                        An <b>expedition</b> is a group of like minded anglers gathering to adventure into the wilderness in pursuit of the big one.
+                    </p>
                     <table class='table table-hover'>
                         <thead class='thead-light'>
                             <tr>

@@ -78,6 +78,7 @@
             @endif
 
             <div class="content">
+                <img src="/images/loonskin_lake.jpg" class="img-fluid" alt="Loonskin Lake" height="200px" width="750px">
                 <div class="title m-b-md">
                     {{ config('app.name', 'Laravel') }}
                 </div>

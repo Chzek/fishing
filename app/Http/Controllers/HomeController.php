@@ -25,9 +25,14 @@ class HomeController extends Controller
     {
         $angler = \Fishinglog\Angler::where('user_id', auth()->user()->id)->first();
 
-        $records = \Fishinglog\Record::where('anglers_id', $angler->id)->get();
-
-        $crews = \Fishinglog\Crew::where('anglers_id', $angler->id)->count();
+        if(isset($angler->id))
+        {
+            $records = \Fishinglog\Record::where('anglers_id', $angler->id)->get();
+            $crews = \Fishinglog\Crew::where('anglers_id', $angler->id)->count();
+        }else{
+            $records = [];
+            $crews = [];
+        }
 
         return view('home', [
             'angler' => $angler,

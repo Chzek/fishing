@@ -30,10 +30,17 @@
                             {!! Form::text('lastName', $angler->lastName, ['class' => 'form-control']) !!}
                         </div>
 
-                        <div class="form-group">
-                            {!! Form::label('user_id', 'User') !!}
-                            {!! Form::select('user_id', $users, $angler->user_id,
-                                ['class' => 'form-control', 'placeholder' => 'Please select a user.']) !!}
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                {!! Form::label('user_id', 'User') !!}
+                                {!! Form::select('user_id', $users, $angler->user_id,
+                                    ['class' => 'form-control', 'placeholder' => 'Please select a user.']) !!}
+                            </div>
+
+                            <div class="form-group col-6">
+                                {!! Form::label('birthdate', 'Birthday') !!}
+                                {!! Form::date('birthdate', $angler->birthdate, ['class' => 'form-control']) !!}
+                            </div>
                         </div>
 
                         <div class="btn-group" role="group" aria-label="Actions">

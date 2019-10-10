@@ -62,6 +62,7 @@ class AnglerController extends Controller
         $angler->middleName = $request->middleName;
         $angler->lastName = $request->lastName;
         $angler->user_id = $request->user_id;
+        $angler->birthdate = $request->birthdate;
 
         $angler->save();
 
@@ -136,6 +137,7 @@ class AnglerController extends Controller
         $angler->middleName = $request->middleName;
         $angler->lastName = $request->lastName;
         $angler->user_id = $request->user_id;
+        $angler->birthdate = $request->birthdate;
 
         $angler->save();
 
@@ -158,7 +160,8 @@ class AnglerController extends Controller
             'firstName' => 'required|max:255',
             'middleName' => 'required|max:255',
             'lastName' => 'required|max:255',
-            'user_id' => 'integer|nullable'
+            'user_id' => 'integer|nullable',
+            'birthdate' => 'date|nullable',
         ];
     }
 }
