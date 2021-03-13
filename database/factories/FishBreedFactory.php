@@ -2,14 +2,14 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use Fishinglog\Model;
+use Fishinglog\FishBreed;
 use Faker\Generator as Faker;
 
-$factory->define(Model::class, function (Faker $faker) {
-    $fish_families = Fishinglog\FishFamily::pluck('id')->toArray();
-
+$factory->define(FishBreed::class, function (Faker $faker) {
     return [
         'name' => 'fake-'.$faker->name,
-        'fish_families_id' => $faker->randomElement($fish_families),
+        'fish_families_id' => function(){
+            return factory(\Fishinglog\FishFamily::class)->create()->id;
+        },
     ];
 });

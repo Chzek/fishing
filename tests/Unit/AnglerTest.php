@@ -13,48 +13,20 @@ class AnglerTest extends TestCase
 {
     use DatabaseMigrations;
 
-    /**
-     * A basic unit test create angler.
-     *
-     * @return void
-     */
-    public function testCreateAngler()
+    protected $angler;
+
+    public function setUp() :void
     {
-        $angler = new Angler;
-        $angler->firstName = 'Geren';
-        $angler->middleName = 'Pierce';
-        $angler->lastName = 'Mroczek';
-        $angler->birthdate = '1982-03-05';
+        parent::setUp();
 
-        $angler->save();
-
-        $this->assertDatabaseHas('anglers', [ 'firstName' => 'Geren' ]);
+        $this->angler = factory('Fishinglog\Angler')->create();             
     }
 
-    /**
-     * A basic unit test duplicate angler.
-     */
-    public function testDuplicateAngler()
+    /** @test */
+    public function it_cannot_create_a_duplicate_angler()
     {
-        $angler = new Angler;
-        $angler->firstName = 'Geren';
-        $angler->middleName = 'Pierce';
-        $angler->lastName = 'Mroczek';
-
-        $angler->save();
-
-        $anglers = Angler::where('firstName', 'Geren')->get();
-
-        $this->assertSame($anglers->count(), 1);
-
-        $angler = new Angler;
-        $angler->firstName = 'Geren';
-        $angler->middleName = 'Pierce';
-        $angler->lastName = 'Mroczek';
-
         $this->expectException(\Illuminate\Database\QueryException::class);
-        $angler->save(); 
+        $angler_copy = $this->angler->replicate();
+        $angler_copy->save();
     }
-
-    
 }

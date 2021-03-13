@@ -55,6 +55,16 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row mt-2">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header">Personal Bests</div>
+                                        <div class="card-body">
+                                            Caught a {{ $angler->personal_best()->length }}in. {{ $angler->personal_best()->fishBreed->name }} in the waters of {{ $angler->personal_best()->lake->name }} on {{ $angler->personal_best()->caught }}.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         @else
                             <div>
                                 User not associated with angler.

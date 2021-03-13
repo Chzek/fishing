@@ -4,9 +4,14 @@ namespace Fishinglog\Http\Controllers;
 
 use Fishinglog\Record;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 
 class RecordController extends Controller
 {
+    use Notifiable;
+
     // Validation rules
     protected $rules = [
         'anglers_id' => 'integer|required',
@@ -125,9 +130,7 @@ class RecordController extends Controller
         $record->caught = $request->caught;
 
         $record->save();
-
-        //return redirect('/record/create');
-
+        
         return redirect()->action(
             'RecordController@create',
             [ 'record' => $record ]

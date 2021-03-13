@@ -12,3 +12,6 @@ npm-debug.log
 yarn-error.log
 .env
 .phpunit.result.cache
+/resources/lang
+/fishing/storage
+/resources/views/vendor

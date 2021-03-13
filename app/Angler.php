@@ -24,4 +24,13 @@ class Angler extends Model
     {
         return "{$this->lastName}, {$this->firstName} {$this->middleName}";
     }
+
+    public function personal_best(){
+        return $this->records()->orderBy('length', 'desc')->first();
+    }
+
+    public function personal_best_breed(fishinglog\FishBreed $breed)
+    {
+        return $this->records()->where('fish_breeds_id', $breed->id)->orderBy('length', 'desc')->first();
+    }
 }

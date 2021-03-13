@@ -6,16 +6,19 @@ use Fishinglog\Record;
 use Faker\Generator as Faker;
 
 $factory->define(Record::class, function (Faker $faker) {
-    $anglers = Fishinglog\Angler::pluck('id')->toArray();
-    $lakes = Fishinglog\Lake::pluck('id')->toArray();
-    $breeds = Fishinglog\FishBreed::pluck('id')->toArray();
-    $lures = Fishinglog\Lure::pluck('id')->toArray();
-
     return [
-        'anglers_id' => $faker->randomElement($anglers),
-        'lakes_id' => $faker->randomElement($lakes),
-        'fish_breeds_id' => $faker->randomElement($breeds),
-        'lures_id' => $faker->randomElement($lures),
+        'anglers_id' => function(){
+            return factory(\Fishinglog\Angler::class)->create()->id;
+        },
+        'lakes_id' => function(){
+            return factory(\Fishinglog\Lake::class)->create()->id;
+        },
+        'fish_breeds_id' => function(){
+            return factory(\Fishinglog\FishBreed::class)->create()->id;
+        },
+        'lures_id' => function(){
+            return factory(\Fishinglog\Lure::class)->create()->id;
+        },
         'weight' => $faker->randomFloat(2, 1, 100),
         'length' => $faker->randomFloat(2, 1, 100),
         'temperature' => $faker->randomFloat(0, 1, 150),

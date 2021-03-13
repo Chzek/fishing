@@ -122,7 +122,8 @@
                                 @endforeach
                             </tbody>
                             <caption>
-                                {{ $caught }}/{{ $recordTotal - $caught }}/{{ $recordTotal }} (Caught/Released/Total)
+                                ({{ $records->firstItem() }} to {{ $records->lastItem() }}) of {{ $records->total() }} Records
+                                {{ $records->links() }}
                             </caption>
                         </table>
                     @endif

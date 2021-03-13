@@ -90,7 +90,7 @@ class ExpeditionController extends Controller
         $records = \Fishinglog\Record::where('caught', '>=', $expedition->start)
             ->where('caught', '<=',  $expedition->finish)
             ->orderBy('caught', 'desc')
-            ->get();
+            ->paginate(10);
 
         $caught = \Fishinglog\Record::where('caught', '>=', $expedition->start)
             ->where('caught', '<=',  $expedition->finish)
