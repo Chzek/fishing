@@ -5,24 +5,26 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.2",
-        "arcanedev/log-viewer": "^5",
+        "php": "^7.3",
+        "arcanedev/log-viewer": "^8",
         "doctrine/dbal": "^2.8",
         "fideloper/proxy": "^4.0",
-        "laravel/framework": "^6.0",
+        "laravel/framework": "^8.0",
         "laravel/helpers": "^1.1",
-        "laravel/telescope": "^2.0",
-        "laravel/tinker": "^1.0",
+        "laravel/telescope": "^4.0",
+        "laravel/tinker": "^2.0",
         "laravelcollective/html": "^6.0",
-        "rebing/graphql-laravel": "^2.0"
+        "laravel/ui": "^3.0",
+        "guzzlehttp/guzzle": "^7.0.1"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.5",
         "beyondcode/laravel-dump-server": "^1.0",
-        "facade/ignition": "^1.4",
+        "facade/ignition": "^2.3.6",
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^8.0"
+        "nunomaduro/collision": "^5.0",
+        "phpunit/phpunit": "^9.0"
     },
     "autoload": {
         "classmap": [
