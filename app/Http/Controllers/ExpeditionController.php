@@ -81,12 +81,8 @@ class ExpeditionController extends Controller
      * @param  \Fishinglog\Expedition  $expedition
      * @return \Illuminate\Http\Response
      */
-    public function show(Expedition $expedition, $id)
+    public function show(Expedition $expedition)
     {
-        //
-        $expedition = \Fishinglog\Expedition::with('crews')
-            ->find($id);
-
         $records = \Fishinglog\Record::where('caught', '>=', $expedition->start)
             ->where('caught', '<=',  $expedition->finish)
             ->orderBy('caught', 'desc')
@@ -112,10 +108,8 @@ class ExpeditionController extends Controller
      * @param  \Fishinglog\Expedition  $expedition
      * @return \Illuminate\Http\Response
      */
-    public function edit(Expedition $expedition, $id)
+    public function edit(Expedition $expedition)
     {
-        //
-        $expedition = \Fishinglog\Expedition::find($id);
         return view('expedition.edit', [
             'expedition' => $expedition,
         ]);

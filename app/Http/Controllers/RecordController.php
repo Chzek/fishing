@@ -143,12 +143,8 @@ class RecordController extends Controller
      * @param  \Fishinglog\Record  $record
      * @return \Illuminate\Http\Response
      */
-    public function show(Record $record, $id)
+    public function show(Record $record)
     {
-        //
-        $record = \Fishinglog\Record::with(['angler','lure','lake','fishBreed','expedition','fishBreed.family'])
-            ->find($id);
-
         return view('record.show', [
             'record' => $record,
         ]);
@@ -160,11 +156,8 @@ class RecordController extends Controller
      * @param  \Fishinglog\Record  $record
      * @return \Illuminate\Http\Response
      */
-    public function edit(Record $record, $id)
+    public function edit(Record $record)
     {
-        //
-        $record = \Fishinglog\Record::find($id);
-
         $temp = \Fishinglog\Angler::orderBy('lastName', 'asc')
             ->orderBy('firstName', 'asc')
             ->orderBy('middleName', 'asc')

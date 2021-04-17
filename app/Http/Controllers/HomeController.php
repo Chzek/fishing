@@ -21,9 +21,9 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(\Fishinglog\User $user)
     {
-        $angler = \Fishinglog\Angler::where('user_id', auth()->user()->id)->first();
+        $angler = \Fishinglog\Angler::where('user_id', $user->id)->first();
 
         if(isset($angler->id))
         {

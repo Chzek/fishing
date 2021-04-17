@@ -65,11 +65,8 @@ class LakeController extends Controller
      * @param  \Fishinglog\Lake  $lake
      * @return \Illuminate\Http\Response
      */
-    public function show(Lake $lake, $id)
+    public function show(Lake $lake)
     {
-        //
-        $lake = \Fishinglog\Lake::find($id);
-
         $count = \Fishinglog\Record::where('lakes_id', $lake->id)->count();
         $longest = \Fishinglog\Record::where('lakes_id', $lake->id)
             ->orderBy('length', 'desc')
@@ -98,10 +95,8 @@ class LakeController extends Controller
      * @param  \Fishinglog\Lake  $lake
      * @return \Illuminate\Http\Response
      */
-    public function edit(Lake $lake, $id)
+    public function edit(Lake $lake)
     {
-        //
-        $lake = \Fishinglog\Lake::find($id);
         return view('lake.edit', [
             'lake' => $lake
         ]);

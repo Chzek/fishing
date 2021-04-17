@@ -75,9 +75,8 @@ class AnglerController extends Controller
      * @param  \Fishinglog\Angler  $angler
      * @return \Illuminate\Http\Response
      */
-    public function show(Angler $angler, $id)
+    public function show(Angler $angler)
     {
-        $angler = \Fishinglog\Angler::find($id);
         $records = \Fishinglog\Record::where('anglers_id', $angler->id)
             ->orderBy('caught', 'desc')
             ->take(10)
@@ -107,10 +106,8 @@ class AnglerController extends Controller
      * @param  \Fishinglog\Angler  $angler
      * @return \Illuminate\Http\Response
      */
-    public function edit(Angler $angler, $id)
+    public function edit(Angler $angler)
     {
-        //
-        $angler = \Fishinglog\Angler::find($id);
         $unassigned = Angler::select('id')->whereNull('user_id')->get();
 
         $users = \Fishinglog\User::whereIn('id', $unassigned->toArray())->pluck('name', 'id');

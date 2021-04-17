@@ -82,7 +82,7 @@ class FishBreedController extends Controller
      * @param  \Fishinglog\FishBreed  $fishBreed
      * @return \Illuminate\Http\Response
      */
-    public function edit(FishBreed $fishBreed, $id)
+    public function edit(FishBreed $fishBreed)
     {
         //
         $tempFamilies = \Fishinglog\FishFamily::all();
@@ -92,11 +92,10 @@ class FishBreedController extends Controller
         }
         $breeds = \Fishinglog\FishBreed::all();
 
-        $fish = \Fishinglog\FishBreed::find($id);
         return view('fish.breed.edit', [
             'families' => $families,
             'breeds' => $breeds,
-            'breed' => $fish,
+            'breed' => $fishBreed,
         ]);
     }
 

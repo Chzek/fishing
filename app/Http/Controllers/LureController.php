@@ -70,10 +70,8 @@ class LureController extends Controller
      * @param  \Fishinglog\Lure  $lure
      * @return \Illuminate\Http\Response
      */
-    public function show(Lure $lure, $id)
+    public function show(Lure $lure)
     {
-        //
-        $lure = \Fishinglog\Lure::find($id);
         return view('lure.show', [
             'lure' => $lure
         ]);
@@ -85,14 +83,13 @@ class LureController extends Controller
      * @param  \Fishinglog\Lure  $lure
      * @return \Illuminate\Http\Response
      */
-    public function edit(Lure $lure, $id)
+    public function edit(Lure $lure)
     {
         //
         $lureNames = \Fishinglog\Lure::distinct()->select('name')->get();
         $lureColors = \Fishinglog\Lure::distinct()->select('color')->get();
         $lureSizes = \Fishinglog\Lure::distinct()->select('size')->get();
 
-        $lure = \Fishinglog\Lure::find($id);
         return view('lure.edit', [
             'lure' => $lure,
             'lureNames' => $lureNames,
