@@ -1,17 +1,35 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
 use Fishinglog\Angler;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Angler::class, function (Faker $faker) {
-    return [
-        'firstName' => $faker->firstName,
-        'middleName' => 'fake-'.$faker->firstName,
-        'lastName' => $faker->lastName,
-        'user_id' => function(){
-            return factory(\Fishinglog\User::class)->create()->id;
-        },
-    ];
-});
+class AnglerFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Angler::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        $user = \Fishinglog\User::factory()->create();
+        $avatarName = 'avatar_'.$user->id.'_'.time().'.jpg';
+
+        return [
+            'firstName' => $this->faker->firstName,
+            'middleName' => 'fake-'.$this->faker->firstName,
+            'lastName' => $this->faker->lastName,
+            'user_id' => $user->id,
+            'avatar' => $avatarName,
+        ];
+    }
+}

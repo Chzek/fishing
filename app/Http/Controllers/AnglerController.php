@@ -57,12 +57,16 @@ class AnglerController extends Controller
         //
         $request->validate($this->rules());
 
+        $avatarName = 'avatar_'.time().'.'.$request->avatar->getClientOriginalExtension();
+        $request->avatar->storeAs('avatars', $avatarName);
+
         $angler = new Angler;
         $angler->firstName = $request->firstName;
         $angler->middleName = $request->middleName;
         $angler->lastName = $request->lastName;
         $angler->user_id = $request->user_id;
         $angler->birthdate = $request->birthdate;
+        $angler->avatar = $avatarName;
 
         $angler->save();
 
@@ -79,6 +83,7 @@ class AnglerController extends Controller
     {
         $records = \Fishinglog\Record::where('anglers_id', $angler->id)
             ->orderBy('caught', 'desc')
+            ->with('fishBreed')
             ->take(10)
             ->get();
 
@@ -108,7 +113,7 @@ class AnglerController extends Controller
      */
     public function edit(Angler $angler)
     {
-        $unassigned = Angler::select('id')->whereNull('user_id')->get();
+        $unassigned = Angler::select('id')->get();
 
         $users = \Fishinglog\User::whereIn('id', $unassigned->toArray())->pluck('name', 'id');
         return view('angler.edit', [
@@ -130,11 +135,15 @@ class AnglerController extends Controller
         $request->validate($this->rules());
         $angler = \Fishinglog\Angler::find($request->id);
 
+        $avatarName = 'avatar_'.time().'.'.$request->avatar->getClientOriginalExtension();
+        $request->avatar->storeAs('avatars', $avatarName);
+
         $angler->firstName = $request->firstName;
         $angler->middleName = $request->middleName;
         $angler->lastName = $request->lastName;
         $angler->user_id = $request->user_id;
         $angler->birthdate = $request->birthdate;
+        $angler->avatar = $avatarName;
 
         $angler->save();
 
@@ -152,6 +161,24 @@ class AnglerController extends Controller
         //
     }
 
+    public function updateAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]); 
+        
+        $angler = Angler::find(Auth::user()->anglers_id);
+
+        $avatarName = 'avatar_'.$angler->id.time().request()->avatar->getClientOriginalExtension();
+
+        $request->avatar->storeAs('avatars', $avatarName);
+
+        $user->avatar = $avatarName;
+        $user->save();
+
+        return back()->with('success', 'You have successfully uploaded your avatar.');
+    }
+
     private function rules(){
         return [
             'firstName' => 'required|max:255',
@@ -159,6 +186,7 @@ class AnglerController extends Controller
             'lastName' => 'required|max:255',
             'user_id' => 'integer|nullable',
             'birthdate' => 'date|nullable',
+            'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 }

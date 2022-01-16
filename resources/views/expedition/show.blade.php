@@ -63,6 +63,7 @@
                             </blockquote>
                         @endforeach
                     </div>
+
                     @if(count($records) > 0)
                         <h4>
                             Records
@@ -127,6 +128,47 @@
                             </caption>
                         </table>
                     @endif
+
+                    @foreach($stats as $stat)
+                        <div class="card-body">
+                            <h4 class="card-subtitle mb-2 text-muted">
+                                {{ $stat->fishBreed->name}}
+                            </h4>
+                            <div class="card-group" style="margin-bottom: 0.5em">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h1 class="text-center">{{ $stat->cnt }}</h1>
+                                    </div>
+                                    <div class="card-footer text-center">
+                                    Total
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h1 class="text-center">{{ $stat->avg_length }} in.</h1>
+                                        <h6 class="text-muted text-center">{{ $stat->min_length }}/{{ $stat->max_length }} in. (Min/Max)</h6>
+                                    </div>
+                                    <div class="card-footer text-center">
+                                    Avg. Length
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-body">
+                                        @if(!is_null($stat->avg_weight))
+                                            <h1 class="text-center">{{ $stat->avg_weight }} lbs.</h1>
+                                            <h6 class="text-muted text-center">{{ $stat->weighed_count }}/{{ $stat->min_weight }}/{{ $stat->max_weight }} (Cnt/Min/Max)</h6>
+                                        @else
+                                            <h1 class="text-center">--</h1>
+                                            <h6 class="text-muted text-center">Please record more fish!</h6>
+                                        @endif
+                                    </div>
+                                    <div class="card-footer text-center">
+                                    *Avg. Weight
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>

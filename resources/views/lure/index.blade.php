@@ -3,11 +3,10 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md">
             <div class="card">
                 <div class="card-header">
-                    <h5 class='display-5 d-inline'>Lure Index</h5>
-                    <a href='/lure/create' class='btn btn-sm btn-dark float-right' role='button'>Add</a>
+                    <x-pageNavigation name="lure" />
                 </div>
                 <div class="card-body">
                     <table class='table table-hover'>

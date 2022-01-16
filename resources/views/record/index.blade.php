@@ -3,11 +3,10 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-12">
+        <div class="col-md">
             <div class="card">
                 <div class="card-header">
-                    <h5 class='display-5 d-inline'>Record Index</h5>
-                    <a href='/record/create' class='btn btn-sm btn-dark float-right' role='button'>Add</a>
+                    <x-pageNavigation name="record" />
                 </div>
                 <div class="card-body">
                     <table class='table table-hover'>

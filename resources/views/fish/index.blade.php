@@ -10,7 +10,7 @@
                     <div class="btn-group float-right" role="group" aria-label="Fish collction actions">
                         <a href='/fish/family/create' class='btn btn-sm btn-dark' role='button'>Add Family</a>
                         <a href='/fish/breed/create' class='btn btn-sm btn-dark' role='button'>Add Breed</a>
-                        <a href='/fish' class='card-link btn btn-sm btn-dark' role='button'>Return</a>
+                        <a href='/fish' class='btn btn-sm btn-dark' role='button'>Return</a>
                     </div>
                 </div>
                 <div class="card-body">

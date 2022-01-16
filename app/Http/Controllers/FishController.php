@@ -5,6 +5,7 @@ namespace Fishinglog\Http\Controllers;
 use Fishinglog\FishBreed;
 use Fishinglog\FishFamily;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FishController extends Controller
 {
@@ -44,11 +45,26 @@ class FishController extends Controller
         $fattest = \Fishinglog\Record::where('fish_breeds_id', $fish->id)->max('weight');
         $count = \Fishinglog\Record::where('fish_breeds_id', $fish->id)->count();
 
+        $lakes = $fish->records()
+            ->select(
+                'lakes_id',
+                DB::raw('count(*) as count'),
+                DB::raw('count(distinct caught) as visits'),
+                DB::raw('min(length) as min_length'),
+                DB::raw('max(length) as max_length'),
+                DB::raw('round(avg(length), 2) as avg_length')
+            )
+            ->groupBy('lakes_id')
+            ->with('lake')
+            ->orderBy('count', 'desc')
+            ->get();
+
         return view('fish.show', [
             'fish' => $fish,
             'longest' => $longest,
             'fattest' => $fattest,
             'count' => $count,
+            'lakes' => $lakes,
         ]);
     }
 }

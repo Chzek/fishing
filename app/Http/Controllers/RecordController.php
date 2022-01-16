@@ -33,7 +33,7 @@ class RecordController extends Controller
     public function index()
     {
         //
-        $records = \Fishinglog\Record::with('angler')
+        $records = \Fishinglog\Record::with(['angler', 'lake', 'fishBreed', 'lure'])
             ->orderBy('caught', 'desc')
             ->orderBy('anglers_id', 'asc')
             ->paginate(10);

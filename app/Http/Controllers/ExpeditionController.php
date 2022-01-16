@@ -4,6 +4,7 @@ namespace Fishinglog\Http\Controllers;
 
 use Fishinglog\Expedition;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ExpeditionController extends Controller
 {
@@ -99,6 +100,7 @@ class ExpeditionController extends Controller
             'recordTotal' => $records->count(),
             'records' => $records,
             'expedition' => $expedition,
+            'stats' => $this->stats($expedition),
         ]);
     }
 
@@ -146,5 +148,29 @@ class ExpeditionController extends Controller
     public function destroy(Expedition $expedition)
     {
         //
+    }
+
+    public function stats(Expedition $expedition, $quantity = null)
+    {
+        $query = \Fishinglog\Record::select('fish_breeds_id',
+                DB::raw('count(*) as cnt'),
+                DB::raw('round(avg(length), 2) as avg_length'),
+                DB::raw('min(length) as min_length'),
+                DB::raw('max(length) as max_length'),
+                DB::raw('round(avg(weight), 2) as avg_weight'),
+                DB::raw('min(weight) as min_weight'),
+                DB::raw('max(weight) as max_weight'),
+                DB::raw('sum(if(weight IS NOT NULL, 1, 0)) as weighed_count')
+            )
+            ->where('caught', '>=', $expedition->start)
+            ->where('caught', '<=',  $expedition->finish)
+            ->with('fishBreed')
+            ->groupBy('fish_breeds_id')
+            ->orderBy('cnt', 'desc');
+
+        if(!is_null($quantity))
+            $query->limit($quantity);
+        
+        return $query->get();
     }
 }

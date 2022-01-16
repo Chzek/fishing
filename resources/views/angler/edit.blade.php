@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    {!! Form::model($angler, ['url' => 'angler', 'method' => 'put']) !!}
+                    {!! Form::model($angler, ['url' => 'angler', 'method' => 'put', 'files' => 'true']) !!}
                         {!! Form::hidden('id') !!}
 
                         <div class="form-group">
@@ -31,15 +31,21 @@
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-6">
+                            <div class="form-group col-3">
                                 {!! Form::label('user_id', 'User') !!}
                                 {!! Form::select('user_id', $users, $angler->user_id,
                                     ['class' => 'form-control', 'placeholder' => 'Please select a user.']) !!}
                             </div>
 
-                            <div class="form-group col-6">
+                            <div class="form-group col-3">
                                 {!! Form::label('birthdate', 'Birthday') !!}
                                 {!! Form::date('birthdate', $angler->birthdate, ['class' => 'form-control']) !!}
+                            </div>
+
+                            <div class="form-group col-3">
+                                {!! Form::label('avatar', 'Avatar') !!}
+                                {!! Form::input('file', 'avatar', '/storage/avatars/'.$angler->avatar, ['class' => 'form-control-file', 'onChange' => 'readURL(this);']) !!}
+                                 <img src="{{ '/storage/avatars/'.$angler->avatar }}" id="avatar-img-tag" width="200px" />
                             </div>
                         </div>
 
@@ -54,4 +60,18 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function (e) {
+                $('#avatar-img-tag').attr('src', e.target.result);
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 @endsection

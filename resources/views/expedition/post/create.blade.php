@@ -6,7 +6,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">{{ $expedition->description }}</h3>
+                    <h3 class="card-title">New Post</h3>
                     <h5 class="card-subtitle mb-2 text-muted">Post about your trip.</h5>
                 </div>
                 <div class="card-body">

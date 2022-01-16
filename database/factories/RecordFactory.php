@@ -1,28 +1,36 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
 use Fishinglog\Record;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(Record::class, function (Faker $faker) {
-    return [
-        'anglers_id' => function(){
-            return factory(\Fishinglog\Angler::class)->create()->id;
-        },
-        'lakes_id' => function(){
-            return factory(\Fishinglog\Lake::class)->create()->id;
-        },
-        'fish_breeds_id' => function(){
-            return factory(\Fishinglog\FishBreed::class)->create()->id;
-        },
-        'lures_id' => function(){
-            return factory(\Fishinglog\Lure::class)->create()->id;
-        },
-        'weight' => $faker->randomFloat(2, 1, 100),
-        'length' => $faker->randomFloat(2, 1, 100),
-        'temperature' => $faker->randomFloat(0, 1, 150),
-        'released' => $faker->boolean,
-        'caught' => $faker->date('Y-m-d', 'now'),
-    ];
-});
+class RecordFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Record::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'anglers_id' => \Fishinglog\Angler::factory()->create()->id,
+            'lakes_id' => \Fishinglog\Lake::factory()->create()->id,
+            'fish_breeds_id' => \Fishinglog\FishBreed::factory()->create()->id,
+            'lures_id' => \Fishinglog\Lure::factory()->create()->id,
+            'weight' => $this->faker->randomFloat(2, 1, 100),
+            'length' => $this->faker->randomFloat(2, 1, 100),
+            'temperature' => $this->faker->randomFloat(0, 1, 150),
+            'released' => $this->faker->boolean,
+            'caught' => $this->faker->date('Y-m-d', 'now'),
+        ];
+    }
+}

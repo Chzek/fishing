@@ -3,11 +3,10 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md">
             <div class="card">
                 <div class="card-header">
-                    <h5 class='display-5 d-inline'>Expedition Index</h5>
-                    <a href='/expedition/create' class='btn btn-sm btn-dark float-right' role='button'>Add</a>
+                    <x-pageNavigation name="expedition" />
                 </div>
                 <div class="card-body">
                     <p class="card-text">

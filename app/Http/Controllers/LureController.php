@@ -9,7 +9,7 @@ class LureController extends Controller
 {
     // Validation rules
     protected $rules = [
-        'name' => 'string|required|unique_with:lures,name,color,size',
+        'name' => 'string|required|unique:lures,name,color,size',
         'color' => 'string',
         'size' => 'string',
     ];

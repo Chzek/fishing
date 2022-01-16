@@ -1,15 +1,31 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
 use Fishinglog\FishBreed;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(FishBreed::class, function (Faker $faker) {
-    return [
-        'name' => 'fake-'.$faker->name,
-        'fish_families_id' => function(){
-            return factory(\Fishinglog\FishFamily::class)->create()->id;
-        },
-    ];
-});
+class FishBreedFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = FishBreed::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'name' => 'fake-'.$this->faker->name,
+            'fish_families_id' => function(){
+                return \Fishinglog\FishFamily::factory()->create()->id;
+            },
+        ];
+    }
+}

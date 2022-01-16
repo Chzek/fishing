@@ -66,6 +66,12 @@
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
                                     </form>
+
+                                    @auth
+                                        @if(Auth()->user()->type === "admin")
+                                            <a class="dropdown-item" href="/admin">Admin</a>
+                                        @endif
+                                    @endauth
                                 </div>
                             </li>
                         @endguest
@@ -101,5 +107,8 @@
             @yield('content')
         </main>
     </div>
+    <script>
+        @yield('scripts')
+    </script>
 </body>
 </html>

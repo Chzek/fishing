@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    {!! Form::model($angler, ['url' => 'angler']) !!}
+                    {!! Form::model($angler, ['url' => 'angler', 'files' => 'true']) !!}
 
                         <div class="form-group">
                             {!! Form::label('firstName', 'First Name') !!}
@@ -36,9 +36,14 @@
                                     ['class' => 'form-control', 'placeholder' => 'Please select a user.' ]) !!}
                             </div>
 
-                            <div class="form-group col-6">
+                            <div class="form-group col-3">
                                 {!! Form::label('birthdate', 'Birthday') !!}
                                 {!! Form::date('birthdate', null, ['class' => 'form-control']) !!}
+                            </div>
+
+                            <div class="form-group col-3">
+                                {!! Form::label('avatar', 'Avatar') !!}
+                                {!! Form::file('avatar') !!}
                             </div>
                         </div>
 

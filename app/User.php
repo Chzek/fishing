@@ -5,10 +5,12 @@ namespace Fishinglog;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable
 {
     use Notifiable;
+    use HasFactory;
 
     const ADMIN_TYPE = 'admin';
     const DEFAULT_TYPE = 'default';
@@ -34,5 +36,10 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->type === self::ADMIN_TYPE;
+    }
+
+    public function angler()
+    {
+        return $this->hasOne('\Fishinglog\Angler', 'user_id');
     }
 }

@@ -56,9 +56,13 @@ class FishBreedController extends Controller
         //
         $request->validate($this->rules());
 
+        $imageName = 'avatar_'.time().'.'.$request->image->getClientOriginalExtension();
+        $request->image->storeAs('fish', $imageName);
+
         $breed = new FishBreed;
         $breed->name = $request->name;
         $breed->fish_families_id = $request->fish_families_id;
+        $breed->image = $imageName;
 
         $breed->save();
 
@@ -120,8 +124,12 @@ class FishBreedController extends Controller
         $request->validate($rules);
         $breed = \Fishinglog\FishBreed::find($request->id);
 
+        $imageName = 'avatar_'.time().'.'.$request->image->getClientOriginalExtension();
+        $request->image->storeAs('fish', $imageName);
+
         $breed->fish_families_id = $request->fish_families_id;
         $breed->name = $request->name;
+        $breed->image = $imageName;
 
         $breed->save();
 
@@ -143,6 +151,7 @@ class FishBreedController extends Controller
         return [
             'fish_families_id' => 'required|exists:fish_families,id',
             'name' => 'required|unique:fish_breeds,name|max:255',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 }

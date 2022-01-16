@@ -8,7 +8,7 @@
                 <div class="card-header">
                     <h5 class='card-title d-inline align-middle'>Angler</h5>
                     <div class="btn-group float-right" role="group" aria-label="Basic example">
-                        @if(view()->exists('angler.edit'))
+                        @if(view()->exists('angler.edit') && Auth::id() == $angler->id)
                             <a href='/angler/{{ $angler->id }}/edit' class='card-link btn btn-sm btn-dark' role='button'>Edit</a>
                         @endif
                         <a href='/angler' class='card-link btn btn-sm btn-dark' role='button'>Return</a>

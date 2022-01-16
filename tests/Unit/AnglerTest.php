@@ -19,7 +19,7 @@ class AnglerTest extends TestCase
     {
         parent::setUp();
 
-        $this->angler = factory('Fishinglog\Angler')->create();             
+        $this->angler = Angler::factory()->create();             
     }
 
     /** @test */

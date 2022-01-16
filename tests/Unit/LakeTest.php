@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-use Fishinglog\Angler;
+use Fishinglog\Lake;
 
 class LakeTest extends TestCase
 {
@@ -19,12 +19,12 @@ class LakeTest extends TestCase
     {
         parent::setUp();
 
-        $this->lake = factory(\Fishinglog\Lake::class)->create();
+        $this->lake = Lake::factory()->create();
     }
 
     /** @test */
     public function it_can_create_a_lake()
     {
-        $this->assertDatabaseHas('lakes', $this->lake->toArray());
+        $this->assertDatabaseHas('lakes', ['id' => $this->lake->id]);
     }
 }

@@ -4,6 +4,7 @@ namespace Fishinglog\Http\Controllers;
 
 use Fishinglog\Lake;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LakeController extends Controller
 {
@@ -86,6 +87,7 @@ class LakeController extends Controller
             'fattest' => $fattest,
             'visits' => $visits,
             'anglers' => $anglers,
+            'stats' => $this->stats($lake),
         ]);
     }
 
@@ -149,5 +151,28 @@ class LakeController extends Controller
             //     'regex:/^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/'
             // ]
         ];
+    }
+
+    public function stats(Lake $lake, $quantity = null)
+    {
+        $query = \Fishinglog\Record::select('fish_breeds_id',
+                DB::raw('count(*) as cnt'),
+                DB::raw('round(avg(length), 2) as avg_length'),
+                DB::raw('min(length) as min_length'),
+                DB::raw('max(length) as max_length'),
+                DB::raw('round(avg(weight), 2) as avg_weight'),
+                DB::raw('min(weight) as min_weight'),
+                DB::raw('max(weight) as max_weight'),
+                DB::raw('sum(if(weight IS NOT NULL, 1, 0)) as weighed_count')
+            )
+            ->where('lakes_id', $lake->id)
+            ->with('fishBreed')
+            ->groupBy('fish_breeds_id')
+            ->orderBy('cnt', 'desc');
+
+        if(!is_null($quantity))
+            $query->limit($quantity);
+        
+        return $query->get();
     }
 }

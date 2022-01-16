@@ -34,7 +34,7 @@ class PostController extends Controller
         //
         $post = new Post;
 
-        $expedition = \Fishinglog\Expedition::find($request->expedition);
+        $expedition = \Fishinglog\Expedition::find($request->expeditions_id);
 
         return view('expedition.post.create', [
             'post' => $post,

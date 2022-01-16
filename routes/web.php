@@ -42,6 +42,8 @@ Route::group(['middleware' => 'auth'], function(){
   Route::post('/lake', 'LakeController@store');
   Route::put('/lake', 'LakeController@update');
 
+  Route::get('/lake/{lake}/visits', 'LakeVisitController@index');
+
   // Fish routes
   Route::get('/fish', 'FishController@index');
   Route::get('/fish/{id}', 'FishController@show');
