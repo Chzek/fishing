@@ -11,4 +11,9 @@ class Post extends Model
     {
         return $this->belongsTo(\Fishinglog\Expedition::class, 'expeditions_id');
     }
+
+    public function creator()
+    {
+        return $this->belongsTo(\Fishinglog\Angler::class, 'anglers_id');
+    }
 }

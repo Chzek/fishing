@@ -23,7 +23,7 @@
                             <div class="col-lg-6 pb-2">
                                 <h4>
                                     Crew
-                                    @if(view()->exists('expedition.post.create'))
+                                    @if(view()->exists('expedition.crew.create'))
                                         <a href='/crew/create?expeditions_id={{ $expedition->id }}' class='btn btn-sm btn-light' role='button'>
                                             <i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Add crew member"></i>
                                         </a>
@@ -58,6 +58,7 @@
                             @endif
                         </h4>
                         @foreach($expedition->posts as $post)
+                            <h5>{{ $post->creator->full_name }} [{{ $post->date }}]</h5>
                             <blockquote>
                                 {{ $post->description }}
                             </blockquote>
@@ -86,7 +87,7 @@
                                 @foreach($records as $record)
                                     <tr>
                                         <td>{{ $record->caught }}</td>
-                                        <td>{{ $record->angler->lastName }}, {{ $record->angler->firstName }} {{ $record->angler->middleName }}</td>
+                                        <td>{{ $record->angler->full_name }}</td>
                                         <td>{{ $record->lake->name }}</td>
                                         <td>
                                             @if($record->released == 1)

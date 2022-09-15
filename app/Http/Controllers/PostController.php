@@ -2,8 +2,10 @@
 
 namespace Fishinglog\Http\Controllers;
 
+use Fishinglog\Angler;
 use Fishinglog\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -57,6 +59,7 @@ class PostController extends Controller
         $post->date = $request->date;
         $post->description = $request->description;
         $post->expeditions_id = $request->expeditions_id;
+        $post->anglers_id = Angler::where('user_id', Auth::user()->id)->first()->id;
 
         $post->save();
 
