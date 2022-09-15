@@ -42,7 +42,7 @@ class Angler extends Model
 
     public function getFullNameAttribute()
     {
-        return "{$this->lastName}, {$this->firstName} {$this->middleName}";
+        return str_replace("?", "", "{$this->lastName}, {$this->firstName} {$this->middleName}");
     }
 
     public function personal_best()
