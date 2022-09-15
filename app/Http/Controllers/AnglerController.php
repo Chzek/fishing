@@ -5,6 +5,7 @@ namespace Fishinglog\Http\Controllers;
 use Fishinglog\Angler;
 use Fishinglog\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AnglerController extends Controller
 {
@@ -17,9 +18,13 @@ class AnglerController extends Controller
     {
         //
         $anglers = \Fishinglog\Angler::withCount('records')
-            ->orderBy('lastName', 'asc')
-            ->orderBy('firstName', 'asc')
-            ->orderBy('middleName', 'asc')
+            ->withCount(['records as lakes_count' => function($query) {
+                $query->select(DB::raw('count(distinct records.lakes_id)'));
+            }])
+            // ->orderBy('lastName', 'asc')
+            // ->orderBy('firstName', 'asc')
+            // ->orderBy('middleName', 'asc')
+            ->orderBy('records_count', 'desc')
             ->paginate(10);
 
         return view('angler.index', [
@@ -57,8 +62,8 @@ class AnglerController extends Controller
         //
         $request->validate($this->rules());
 
-        $avatarName = 'avatar_'.time().'.'.$request->avatar->getClientOriginalExtension();
-        $request->avatar->storeAs('avatars', $avatarName);
+        // $avatarName = 'avatar_'.time().'.'.$request->avatar->getClientOriginalExtension();
+        // $request->avatar->storeAs('avatars', $avatarName);
 
         $angler = new Angler;
         $angler->firstName = $request->firstName;
@@ -66,7 +71,7 @@ class AnglerController extends Controller
         $angler->lastName = $request->lastName;
         $angler->user_id = $request->user_id;
         $angler->birthdate = $request->birthdate;
-        $angler->avatar = $avatarName;
+        // $angler->avatar = $avatarName;
 
         $angler->save();
 

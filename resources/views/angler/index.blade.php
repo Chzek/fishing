@@ -17,6 +17,7 @@
                                     <th>First Name</th>
                                     <th>Middle Name</th>
                                     <th class="text-center">Fish</th>
+                                    <th class="text-center">Lakes</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -27,6 +28,7 @@
                                         <td class="align-middle">{{ $angler->firstName }}</td>
                                         <td class="align-middle">{{ $angler->middleName }}</td>
                                         <td class="align-middle text-center">{{ $angler->records_count }}</td>
+                                        <td class="align-middle text-center">{{ $angler->lakes_count }}</td>
                                         <td class="align-middle text-center">
                                             <div class="btn-group float-right" role="group" aria-label="Angler actions">
                                                 @if(view()->exists('angler.edit') && Auth::id() == $angler->id)

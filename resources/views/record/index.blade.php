@@ -28,7 +28,7 @@
                             @foreach($records as $record)
                                 <tr>
                                     <td class="align-middle">{{ $record->caught }}</td>
-                                    <td class="align-middle">{{ $record->angler->lastName }}, {{ $record->angler->firstName }} {{ $record->angler->middleName }}</td>
+                                    <td class="align-middle">{{ $record->angler->full_name }}</td>
                                     <td class="align-middle">{{ $record->lake->name }}</td>
                                     <td class="align-middle">{{ $record->fishBreed->name }}</td>
                                     <td class="align-middle">
