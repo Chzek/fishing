@@ -21,7 +21,7 @@
                                 <h1>{{ $angler->firstName }} {{ $angler->lastName }}</h1>
                                 </div>
                                 <div class="col-4">
-                                    <img src="/storage/avatars/{{ $angler->avatar }}" alt="Profile picture." style="max-width=200;" class="img-thumbnail">
+                                    <img src="/storage/avatars/{{ ($angler->avatar ?: "user.jpg" ) }}" alt="Profile picture." style="max-width=200;" class="img-thumbnail">
                                 </div>
                             </div>
                             <div class="row">
@@ -60,16 +60,21 @@
                                     <div class="card">
                                         <div class="card-header">Personal Bests</div>
                                         <div class="card-body">
+                                            <ul>
                                             @if($personalBest['byLength'])
-                                                Caught a {{ $personalBest['byLength']->length }}in. {{ $personalBest['byLength']->fishBreed->name }} in the waters of {{ $personalBest['byLength']->lake->name }} on {{ $personalBest['byLength']->caught }}.<br>
+                                                <li>Caught a {{ $personalBest['byLength']->length }}in. {{ $personalBest['byLength']->fishBreed->name }} in the waters of {{ $personalBest['byLength']->lake->name }} on {{ $personalBest['byLength']->caught }}.</li>
                                             @else
-                                                Have you caught a fish yet?
+                                                <li>Have you caught a fish yet?</li>
                                             @endif
                                             @if($personalBest['byWeight'])
-                                                Caught a {{ $personalBest['byWeight']->weight }}lbs. {{ $personalBest['byWeight']->fishBreed->name }} in the waters of {{ $personalBest['byWeight']->lake->name }} on {{ $personalBest['byWeight']->caught }}.
+                                                <li>Caught a {{ $personalBest['byWeight']->weight }}lbs. {{ $personalBest['byWeight']->fishBreed->name }} in the waters of {{ $personalBest['byWeight']->lake->name }} on {{ $personalBest['byWeight']->caught }}.</li>
                                             @else
-                                                Someone is forgetting to write down the weight of your fish!
+                                                <li>Someone is forgetting to write down the weight of your fish!</li>
                                             @endif
+                                            @if($personalBest['lakeWithMostCatches'])
+                                                <li>You have caught the more fish on {{ $personalBest['lakeWithMostCatches']->name }}.</li>
+                                            @endif
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>

@@ -34,6 +34,7 @@ class HomeController extends Controller
             $personalBest = [
                 'byLength' => PersonalBestController::bestByLength($angler),
                 'byWeight' => PersonalBestController::bestByWeight($angler),
+                'lakeWithMostCatches' => PersonalBestController::lakeWithMostCatches($angler),
             ];
         }else{
             $records = [];
