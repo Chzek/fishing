@@ -16,6 +16,9 @@
                                 <th class="text-center">Latitude</th>
                                 <th class="text-center">Longitude</th>
                                 <th class="text-center">Fish</th>
+                                <th class="text-center">Visits</th>
+                                <th class="text-center">Fish/Visit</th>
+                                <th class="text-center">Anglers</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -26,6 +29,9 @@
                                     <td class="align-middle text-center">{{ $lake->latitude }}</td>
                                     <td class="align-middle text-center">{{ $lake->longitude }}</td>
                                     <td class="align-middle text-center">{{ $lake->records_count }}</td>
+                                    <td class="align-middle text-center">{{ $lake->visits }}</td>
+                                    <td class="align-middle text-center">@if($lake->visits > 0) {{ round($lake->records_count/$lake->visits, 2) }} @endif</td>
+                                    <td class="align-middle text-center">{{ $lake->anglers_count }}</td>
                                     <td class="align-middle text-center">
                                         @if(view()->exists('lake.edit'))
                                             <a href='/lake/{{ $lake->id }}/edit' class='btn btn-sm btn-light' role='button'>

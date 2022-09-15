@@ -17,6 +17,12 @@ class LakeController extends Controller
     {
         //
         $lakes = \Fishinglog\Lake::withCount('records')
+            ->withCount(['records as visits' => function($query) {
+                $query->select(DB::raw('count(distinct records.caught)'));
+            }])
+            ->withCount(['anglers as anglers_count' => function($query){
+                $query->select(DB::raw('count(distinct anglers.id)'));
+            }])
             ->orderBy('name', 'asc')
             ->paginate(10);
 
