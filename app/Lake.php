@@ -14,4 +14,9 @@ class Lake extends Model
   {
     return $this->hasMany('\Fishinglog\Record', 'lakes_id', 'id');
   }
+
+  public function anglers()
+  {
+    return $this->hasManyThrough('\Fishinglog\Angler', '\Fishinglog\Record', 'lakes_id', 'id', 'id', 'anglers_id');
+  }
 }

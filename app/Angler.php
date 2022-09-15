@@ -20,7 +20,19 @@ class Angler extends Model
 
     public function records()
     {
-        return $this->hasMany('\Fishinglog\Record', 'anglers_id', 'id');
+        return $this->hasMany( '\Fishinglog\Record', 'anglers_id', 'id');
+    }
+
+    public function lakes()
+    {
+        return $this->hasManyThrough(
+            '\Fishinglog\Lake',
+            '\Fishinglog\Record',
+            'anglers_id',
+            'id',
+            'id',
+            'id'
+        );
     }
 
     public function user()
@@ -35,16 +47,23 @@ class Angler extends Model
 
     public function personal_best()
     {
-        return $this->records()->orderBy('length', 'desc')->first();
+        return $this->records()
+            ->orderBy('length', 'desc')
+            ->first();
     }
 
     public function personal_best_breed(FishBreed $breed)
     {
-        return $this->records()->where('fish_breeds_id', $breed->id)->orderBy('length', 'desc')->first();
+        return $this->records()
+            ->where('fish_breeds_id', $breed->id)
+            ->orderBy('length', 'desc')
+            ->first();
     }
 
     public function latest_catch()
     {
-        return $this->records()->orderBy('caught', 'desc')->first();
+        return $this->records()
+            ->orderBy('caught', 'desc')
+            ->first();
     }
 }

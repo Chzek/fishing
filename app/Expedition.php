@@ -19,6 +19,13 @@ class Expedition extends Model
 
     public function records()
     {
-      return $this->hasManyThrough('Fishinglog\Record', 'Fishinglog\Crew', 'expeditions_id', 'anglers_id', 'id', 'anglers_id');
+      return $this->hasManyThrough(
+        'Fishinglog\Record',
+        'Fishinglog\Crew',
+        'expeditions_id',
+        'anglers_id',
+        'id',
+        'anglers_id'
+      );
     }
 }
