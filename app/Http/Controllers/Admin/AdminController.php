@@ -1,7 +1,8 @@
 <?php
 
-namespace Fishinglog\Http\Controllers;
+namespace Fishinglog\Http\Controllers\Admin;
 
+use Fishinglog\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
