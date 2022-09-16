@@ -27,16 +27,9 @@
                                     <td class="align-middle">{{ $lure->color }}</td>
                                     <td class="align-middle">{{ $lure->size }}</td>
                                     <td class="align-middle text-center">
-                                        @if(view()->exists('lure.edit'))
-                                            <a href='/lure/{{ $lure->id }}/edit' class='btn btn-sm btn-light' role='button'>
-                                                <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
-                                            </a>
-                                        @endif
-                                        @if(view()->exists('lure.show'))
-                                            <a href='/lure/{{ $lure->id }}' class='btn btn-sm btn-light' role='button'>
-                                                <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show"></i>
-                                            </a>
-                                        @endif
+                                        <x-tableOptions name='lure'
+                                            identifier='{{ $lure->id }}'
+                                        />
                                     </td>
                                 </tr>
                             @endforeach

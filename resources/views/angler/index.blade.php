@@ -30,18 +30,10 @@
                                         <td class="align-middle text-center">{{ $angler->records_count }}</td>
                                         <td class="align-middle text-center">{{ $angler->lakes_count }}</td>
                                         <td class="align-middle text-center">
-                                            <div class="btn-group float-right" role="group" aria-label="Angler actions">
-                                                @if(view()->exists('angler.edit') && Auth::id() == $angler->id)
-                                                    <a href='/angler/{{ $angler->id }}/edit' class='btn btn-sm btn-light' role='button'>
-                                                        <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
-                                                    </a>
-                                                @endif
-                                                @if(view()->exists('angler.show'))
-                                                    <a href='/angler/{{ $angler->id }}' class='btn btn-sm btn-light' role='button'>
-                                                        <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show"></i>
-                                                    </a>
-                                                @endif
-                                            </div>
+                                            <x-tableOptions name='angler'
+                                                identifier='{{ $angler->id }}'
+                                                user='{{ $angler->user_id }}'
+                                            />
                                         </td>
                                     </tr>
                                 @endforeach

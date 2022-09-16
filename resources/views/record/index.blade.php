@@ -49,16 +49,9 @@
                                         @endif
                                     </td>
                                     <td class="align-middle text-center">
-                                        @if(view()->exists('record.edit'))
-                                            <a href='/record/{{ $record->id }}/edit' class='btn btn-sm btn-light' role='button'>
-                                                <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
-                                            </a>
-                                        @endif
-                                        @if(view()->exists('record.show'))
-                                            <a href='/record/{{ $record->id }}' class='btn btn-sm btn-light' role='button'>
-                                                <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show"></i>
-                                            </a>
-                                        @endif
+                                        <x-tableOptions name='record'
+                                            identifier='{{ $record->id }}'
+                                        />
                                     </td>
                                 </tr>
                             @endforeach

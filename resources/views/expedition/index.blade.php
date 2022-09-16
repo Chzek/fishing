@@ -34,16 +34,9 @@
                                     <td class="align-middle text-right">{{ $expedition->records_count }}</td>
                                     <td class="align-middle text-right">{{ $expedition->posts_count }}</td>
                                     <td class="align-middle text-center">
-                                        @if(view()->exists('expedition.edit'))
-                                            <a href='/expedition/{{ $expedition->id }}/edit' class='btn btn-sm btn-light' role='button'>
-                                                <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
-                                            </a>
-                                        @endif
-                                        @if(view()->exists('expedition.show'))
-                                            <a href='/expedition/{{ $expedition->id }}' class='btn btn-sm btn-light' role='button'>
-                                                <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show"></i>
-                                            </a>
-                                        @endif
+                                        <x-tableOptions name='expedition'
+                                            identifier='{{ $expedition->id }}'
+                                        />
                                     </td>
                                 </tr>
                             @endforeach

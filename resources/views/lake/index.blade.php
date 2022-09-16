@@ -33,16 +33,9 @@
                                     <td class="align-middle text-center">@if($lake->visits > 0) {{ round($lake->records_count/$lake->visits, 2) }} @endif</td>
                                     <td class="align-middle text-center">{{ $lake->anglers_count }}</td>
                                     <td class="align-middle text-center">
-                                        @if(view()->exists('lake.edit'))
-                                            <a href='/lake/{{ $lake->id }}/edit' class='btn btn-sm btn-light' role='button'>
-                                                <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
-                                            </a>
-                                        @endif
-                                        @if(view()->exists('lake.show'))
-                                            <a href='/lake/{{ $lake->id }}' class='btn btn-sm btn-light' role='button'>
-                                                <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show"></i>
-                                            </a>
-                                        @endif
+                                        <x-tableOptions name='lake'
+                                            identifier='{{ $lake->id }}'
+                                        />
                                     </td>
                                 </tr>
                             @endforeach
