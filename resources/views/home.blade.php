@@ -32,7 +32,7 @@
                             <div class="card-group">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h2 class="text-center">{{ $records->groupBy('lakes_id')->count() }}</h2>
+                                        <h2 class="text-center">{{ $lake_count }}</h2>
                                     </div>
                                     <div class="card-footer text-center">
                                     Lakes Visited
@@ -40,7 +40,7 @@
                                 </div>
                                 <div class="card">
                                     <div class="card-body">
-                                        <h2 class="text-center">{{ $records->count() }}</h2>
+                                        <h2 class="text-center">{{ $record_count }}</h2>
                                     </div>
                                     <div class="card-footer text-center">
                                     Fish Caught
@@ -77,6 +77,55 @@
                                             </ul>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-12">
+                                    @if(count($records) > 0)
+                                        <table class='table'>
+                                            <thead>
+                                                @foreach($records as $key => $record)
+                                                    <tr>
+                                                        <th>{{ $key }}</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <table class="table table-hover">
+                                                                <thead class='thead-light'>
+                                                                    <tr>
+                                                                        <th>Lake</th>
+                                                                        <th>Fish</th>
+                                                                        <th class="text-center">Weight (lb)</th>
+                                                                        <th class="text-center">Length (in)</th>
+                                                                        <th class="text-center">Temp.</th>
+                                                                        <th>Released</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach($record as $catch)
+                                                                        <tr>
+                                                                            <td class="align-middle">{{ $catch->lake->name }}</td>
+                                                                            <td class="align-middle">{{ $catch->fishBreed->name }}</td>
+                                                                            <td class="align-middle text-center">{{ $catch->weight }}</td>
+                                                                            <td class="align-middle text-center">{{ $catch->length }}</td>
+                                                                            <td class="align-middle text-center">{{ $catch->temperature }}</td>
+                                                                            <td class="align-middle">
+                                                                                @if($catch->released == 1)
+                                                                                    <span class="badge badge-secondary">Released</span>
+                                                                                @else
+                                                                                    <span class="badge badge-primary">Caught</span>
+                                                                                @endif
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </thead>
+                                        </table>
+                                    @endif
                                 </div>
                             </div>
                         @else

@@ -5,6 +5,7 @@ namespace Fishinglog\Http\Controllers;
 use Faker\Provider\ar_JO\Person;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -29,7 +30,7 @@ class HomeController extends Controller
 
         if(isset($angler->id))
         {
-            $records = \Fishinglog\Record::where('anglers_id', $angler->id)->get();
+            $records = \Fishinglog\Record::where('anglers_id', $angler->id)->orderBy('caught', 'desc')->get()->groupBy('caught');
             $crews = \Fishinglog\Crew::where('anglers_id', $angler->id)->count();
             $personalBest = [
                 'byLength' => PersonalBestController::bestByLength($angler),
@@ -46,7 +47,9 @@ class HomeController extends Controller
             'angler' => $angler,
             'records' => $records,
             'crews' => $crews,
-            'personalBest' => $personalBest
+            'personalBest' => $personalBest,
+            'record_count' => \Fishinglog\Record::where('anglers_id', $angler->id)->count(),
+            'lake_count' => \Fishinglog\Record::select(DB::raw('count(distinct lakes_id) as lake_count'))->where('anglers_id', $angler->id)->get()[0]->lake_count
         ]);
     }
 }
