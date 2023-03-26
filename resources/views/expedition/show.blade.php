@@ -59,9 +59,18 @@
                         </h4>
                         @foreach($expedition->posts as $post)
                             <h5>{{ $post->creator->full_name }} [{{ $post->date }}]</h5>
-                            <blockquote>
-                                {{ $post->description }}
-                            </blockquote>
+                            <div>
+                                @if($post->creator->user)
+                                    <img src="/storage/avatars/{{ ($post->creator->user->avatar ?: "user.jpg" ) }}"
+                                        alt="Profile picture."
+                                        style="max-width=50px"
+                                        class="img-thumbnail"
+                                    >
+                                @endif
+                                <blockquote>
+                                    {{ $post->description }}
+                                </blockquote>
+                            </div>
                         @endforeach
                     </div>
 
