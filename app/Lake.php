@@ -19,4 +19,16 @@ class Lake extends Model
   {
     return $this->hasManyThrough('\Fishinglog\Angler', '\Fishinglog\Record', 'lakes_id', 'id', 'id', 'anglers_id');
   }
+
+  /**
+   * Biggest fish by length of the lake.
+   * 
+   * @return \Fishinglog\Record
+   */
+  public function biggestCatch()
+  {
+    return $this->records()
+      ->orderBy('records.length', 'desc')
+      ->first();
+  }
 }
