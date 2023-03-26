@@ -97,7 +97,6 @@
                                                                         <th>Fish</th>
                                                                         <th class="text-center">Weight (lb)</th>
                                                                         <th class="text-center">Length (in)</th>
-                                                                        <th class="text-center">Temp.</th>
                                                                         <th>Released</th>
                                                                     </tr>
                                                                 </thead>
@@ -108,7 +107,6 @@
                                                                             <td class="align-middle">{{ $catch->fishBreed->name }}</td>
                                                                             <td class="align-middle text-center">{{ $catch->weight }}</td>
                                                                             <td class="align-middle text-center">{{ $catch->length }}</td>
-                                                                            <td class="align-middle text-center">{{ $catch->temperature }}</td>
                                                                             <td class="align-middle">
                                                                                 @if($catch->released == 1)
                                                                                     <span class="badge badge-secondary">Released</span>
