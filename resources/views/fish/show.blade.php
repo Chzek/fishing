@@ -18,7 +18,7 @@
                 </div>
                 <div class="card-body">
                     <img class="img-thumbnail mx-auto d-block m-1" style="object-fit: contain;"
-                        src="/storage/fish/{{ $fish->image }}.jpg" width="100%">
+                        src="{{ asset("/images/fish/".$fish->image.".jpg") }}" width="100%">
                     <div class="card-group" style="margin-bottom: 0.5em">
                         <div class="card">
                             <div class="card-body">

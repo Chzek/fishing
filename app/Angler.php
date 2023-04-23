@@ -2,25 +2,25 @@
 
 namespace Fishinglog;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Angler extends Model
 {
     use HasFactory;
-    
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'firstname', 'middlename', 'lastname', 'user_id'
+        'firstname', 'middlename', 'lastname', 'user_id',
     ];
 
     public function records()
     {
-        return $this->hasMany( '\Fishinglog\Record', 'anglers_id', 'id');
+        return $this->hasMany('\Fishinglog\Record', 'anglers_id', 'id');
     }
 
     public function lakes()
@@ -42,7 +42,7 @@ class Angler extends Model
 
     public function getFullNameAttribute()
     {
-        return str_replace("?", "", "{$this->lastName}, {$this->firstName} {$this->middleName}");
+        return str_replace('?', '', "{$this->lastName}, {$this->firstName} {$this->middleName}");
     }
 
     public function personal_best()
