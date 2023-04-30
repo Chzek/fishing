@@ -12,7 +12,7 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^9.0",
         "laravel/helpers": "^1.1",
-        "laravel/sail": "1.8",
+        "laravel/sail": "^1.21",
         "laravel/telescope": "^4.0",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^3.0",
