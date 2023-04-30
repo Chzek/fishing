@@ -72,7 +72,7 @@
                                                 <li>Someone is forgetting to write down the weight of your fish!</li>
                                             @endif
                                             @if($personalBest['lakeWithMostCatches'])
-                                                <li>You have caught the more fish on {{ $personalBest['lakeWithMostCatches']->name }}.</li>
+                                                <li>You have caught the most fish on {{ $personalBest['lakeWithMostCatches']->name }}.</li>
                                             @endif
                                             </ul>
                                         </div>
