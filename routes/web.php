@@ -29,72 +29,92 @@ Route::get('/admin', [AdminController::class, 'index'])
 Route::group(['middleware' => 'auth'], function(){
 
   // Angler routes
-  Route::get('/angler', 'AnglerController@index');
-  Route::get('/angler/create', 'AnglerController@create');
-  Route::get('/angler/{angler}', 'AnglerController@show');
-  Route::get('/angler/{angler}/edit', 'AnglerController@edit');
-  Route::post('/angler', 'AnglerController@store');
-  Route::put('/angler', 'AnglerController@update');
+  Route::prefix('angler')->group(function(){
+    Route::get('/', 'AnglerController@index');
+    Route::get('/create', 'AnglerController@create');
+    Route::get('/{angler}', 'AnglerController@show');
+    Route::get('/{angler}/edit', 'AnglerController@edit');
+    Route::post('/', 'AnglerController@store');
+    Route::put('/', 'AnglerController@update');
+  });
 
   // Lake routes
-  Route::get('/lake', 'LakeController@index');
-  Route::get('/lake/create', 'LakeController@create');
-  Route::get('/lake/{lake}', 'LakeController@show');
-  Route::get('/lake/{lake}/edit', 'LakeController@edit');
-  Route::post('/lake', 'LakeController@store');
-  Route::put('/lake', 'LakeController@update');
+  Route::prefix('lake')->group(function(){
+    Route::get('/', 'LakeController@index');
+    Route::get('/create', 'LakeController@create');
+    Route::get('/{lake}', 'LakeController@show');
+    Route::get('/{lake}/edit', 'LakeController@edit');
+    Route::post('/', 'LakeController@store');
+    Route::put('/', 'LakeController@update');
+  });
 
   Route::get('/lake/{lake}/visits', 'LakeVisitController@index');
 
   // Fish routes
-  Route::get('/fish', 'FishController@index');
-  Route::get('/fish/{id}', 'FishController@show');
+  Route::prefix('fish')->group(function(){
+    Route::get('/', 'FishController@index');
+    Route::get('/{id}', 'FishController@show');
 
-  Route::get('/fish/breed/create', 'FishBreedController@create');
-  Route::get('/fish/breed/{fishBreed}/edit', 'FishBreedController@edit');
-  Route::post('/fish/breed', 'FishBreedController@store');
-  Route::put('/fish/breed', 'FishBreedController@update');
+    Route::prefix('breed')->group(function(){
+      Route::get('/create', 'FishBreedController@create');
+      Route::get('/{fishBreed}/edit', 'FishBreedController@edit');
+      Route::post('/', 'FishBreedController@store');
+      Route::put('/', 'FishBreedController@update');
+    });
 
-  Route::get('/fish/family/create', 'FishFamilyController@create');
-  Route::get('/fish/family/{fishFamily}/edit', 'FishFamilyController@edit');
-  Route::post('/fish/family', 'FishFamilyController@store');
-  Route::put('/fish/family', 'FishFamilyController@update');
+    Route::prefix('family')->group(function(){
+      Route::get('/create', 'FishFamilyController@create');
+      Route::get('/{fishFamily}/edit', 'FishFamilyController@edit');
+      Route::post('/', 'FishFamilyController@store');
+      Route::put('/', 'FishFamilyController@update');
+    });
+  });
 
   // Lure routes
-  Route::get('/lure', 'LureController@index');
-  Route::get('/lure/create', 'LureController@create');
-  Route::get('/lure/{lure}', 'LureController@show');
-  Route::get('/lure/{lure}/edit', 'LureController@edit');
-  Route::post('/lure', 'LureController@store');
-  Route::put('/lure', 'LureController@update');
+  Route::prefix('lure')->group(function(){
+    Route::get('/', 'LureController@index');
+    Route::get('/create', 'LureController@create');
+    Route::get('/{lure}', 'LureController@show');
+    Route::get('/{lure}/edit', 'LureController@edit');
+    Route::post('/', 'LureController@store');
+    Route::put('/', 'LureController@update');
+  });
 
   // Record routes
-  Route::get('/record', 'RecordController@index');
-  Route::get('/record/create', 'RecordController@create');
-  Route::get('/record/{record}', 'RecordController@show');
-  Route::get('/record/{record}/edit', 'RecordController@edit');
-  Route::post('/record', 'RecordController@store');
-  Route::put('/record', 'RecordController@update');
+  Route::prefix('record')->group(function(){
+    Route::get('/', 'RecordController@index');
+    Route::get('/create', 'RecordController@create');
+    Route::get('/{record}', 'RecordController@show');
+    Route::get('/{record}/edit', 'RecordController@edit');
+    Route::post('/', 'RecordController@store');
+    Route::put('/', 'RecordController@update');
+  });
 
   // Expedition routes
-  Route::get('/expedition', 'ExpeditionController@index');
-  Route::get('/expedition/create', 'ExpeditionController@create');
-  Route::get('/expedition/{expedition}', 'ExpeditionController@show');
-  Route::get('/expedition/{expedition}/edit', 'ExpeditionController@edit');
-  Route::post('/expedition', 'ExpeditionController@store');
-  Route::put('/expedition', 'ExpeditionController@update');
+  Route::prefix('expedition')->group(function(){
+    Route::get('/', 'ExpeditionController@index');
+    Route::get('/create', 'ExpeditionController@create');
+    Route::get('/{expedition}', 'ExpeditionController@show');
+    Route::get('/{expedition}/edit', 'ExpeditionController@edit');
+    Route::post('/', 'ExpeditionController@store');
+    Route::put('/', 'ExpeditionController@update');
+  });
 
   // Crew routes
-  Route::get('/crew/create', 'CrewController@create');
-  Route::get('/crew/{crew}/edit', 'CrewController@edit');
-  Route::post('/crew', 'CrewController@store');
-  Route::put('/crew', 'CrewController@update');
+  Route::prefix('crew')->group(function(){
+    Route::get('/create', 'CrewController@create');
+    Route::get('/{crew}/edit', 'CrewController@edit');
+    Route::post('/', 'CrewController@store');
+    Route::put('/', 'CrewController@update');
+  });
 
   // Post routes
-  Route::get('/post/create', 'PostController@create');
-  Route::get('/post/{post}', 'PostController@show');
-  Route::get('/post/{post}/edit', 'PostController@edit');
-  Route::post('/post', 'PostController@store');
-  Route::put('/post', 'PostController@update');
+  Route::prefix('post')->group(function(){
+    Route::get('/create', 'PostController@create');
+    Route::get('/{post}', 'PostController@show');
+    Route::get('/{post}/edit', 'PostController@edit');
+    Route::post('/', 'PostController@store');
+    Route::put('/', 'PostController@update');
+  });
 
 });
