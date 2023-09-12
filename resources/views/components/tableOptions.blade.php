@@ -16,4 +16,9 @@
             <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show"></i>
         </a>
     @endif
+    @if(view()->exists(implode(".", [$name, 'profile'])))
+        <a href='/{{ $name }}/{{ $identifier }}/profile' class='btn btn-sm btn-light' role='button'>
+            <i class="fa fa-expand" data-toggle="tooltip" data-placement="top" title="Show"></i>
+        </a>
+    @endif
 </div>

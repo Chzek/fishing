@@ -39,6 +39,7 @@ Route::group(['middleware' => 'auth'], function(){
     Route::get('/{angler}/edit', 'AnglerController@edit');
     Route::post('/', 'AnglerController@store');
     Route::put('/', 'AnglerController@update');
+    Route::get('/{angler}/profile', [Fishinglog\Http\Controllers\Angler\AnglerProfileController::class, 'show']);
   });
 
   // Lake routes
