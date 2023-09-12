@@ -33,12 +33,12 @@ Route::group(['middleware' => 'auth'], function(){
 
   // Angler routes
   Route::prefix('angler')->group(function(){
-    Route::get('/', 'AnglerController@index');
-    Route::get('/create', 'AnglerController@create');
-    Route::get('/{angler}', 'AnglerController@show');
-    Route::get('/{angler}/edit', 'AnglerController@edit');
-    Route::post('/', 'AnglerController@store');
-    Route::put('/', 'AnglerController@update');
+    Route::get('/', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'index']);
+    Route::get('/create', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'create']);
+    Route::get('/{angler}', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'show']);
+    Route::get('/{angler}/edit', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'edit']);
+    Route::post('/', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'store']);
+    Route::put('/', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'update']);
     Route::get('/{angler}/profile', [Fishinglog\Http\Controllers\Angler\AnglerProfileController::class, 'show']);
   });
 

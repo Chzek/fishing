@@ -1,9 +1,9 @@
 <?php
 
-namespace Fishinglog\Http\Controllers;
+namespace Fishinglog\Http\Controllers\Angler;
 
 use Fishinglog\Angler;
-use Fishinglog\User;
+use Fishinglog\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
