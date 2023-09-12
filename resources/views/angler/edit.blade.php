@@ -31,18 +31,18 @@
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-3">
+                            <div class="form-group col-4">
                                 {!! Form::label('user_id', 'User') !!}
                                 {!! Form::select('user_id', $users, $angler->user_id,
                                     ['class' => 'form-control', 'placeholder' => 'Please select a user.']) !!}
                             </div>
 
-                            <div class="form-group col-3">
+                            <div class="form-group col-4">
                                 {!! Form::label('birthdate', 'Birthday') !!}
                                 {!! Form::date('birthdate', $angler->birthdate, ['class' => 'form-control']) !!}
                             </div>
 
-                            <div class="form-group col-3">
+                            <div class="form-group col-4">
                                 {!! Form::label('avatar', 'Avatar') !!}
                                 {!! Form::input('file', 'avatar', '/storage/avatars/'.$angler->avatar, ['class' => 'form-control-file', 'onChange' => 'readURL(this);']) !!}
                                  <img src="{{ '/storage/avatars/'.$angler->avatar }}" id="avatar-img-tag" width="200px" />
