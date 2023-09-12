@@ -2,12 +2,12 @@
 
 namespace Fishinglog\Http\Controllers;
 
-use Faker\Provider\ar_JO\Person;
+use Fishinglog\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class HomeController extends Controller
+class ProfileController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -24,7 +24,7 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function show()
     {
         $angler = \Fishinglog\Angler::where('user_id', Auth::id())
             ->first();
@@ -50,7 +50,7 @@ class HomeController extends Controller
             $personalBest = [];
         }
 
-        return view('home', [
+        return view('profile.show', [
             'angler' => $angler,
             'records' => $records,
             'crews' => $crews,
@@ -60,6 +60,18 @@ class HomeController extends Controller
                 ->where('anglers_id', $angler->id)
                 ->get()[0]
                 ->lake_count
+        ]);
+    }
+
+    /**
+     * Edit the authenticated users profile
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(User $user)
+    {
+        return view('profile.edit',[
+            'user' => Auth::user(),
         ]);
     }
 }

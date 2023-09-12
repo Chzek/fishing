@@ -35,7 +35,7 @@
                     <ul class="navbar-nav mr-auto">
                         @auth
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url('/home') }}">Home</a>
+                                <a class="nav-link" href="{{ url('/profile') }}">Profile</a>
                             </li>
                         @endauth
                     </ul>
@@ -97,7 +97,7 @@
                             </button>
                         </div>
                         <div class="toast-body">
-                            {{-- $notification->data[''] --}}
+                            
                         </div>
                     </div>
                 @endforeach
