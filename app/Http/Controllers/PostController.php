@@ -6,15 +6,12 @@ use Fishinglog\Angler;
 use Fishinglog\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Fishinglog\Http\Requests\StorePostRequest;
+use Fishinglog\Http\Requests\UpdatePostRequest;
 
 class PostController extends Controller
 {
-    // Validation rules
-    protected $rules = [
-        'date' => 'date|required',
-        'description' => 'string|required',
-        'expeditions_id' => 'integer|required',
-    ];
+
 
     /**
      * Display a listing of the resource.
@@ -50,16 +47,15 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
         //
-        $request->validate($this->rules);
 
         $post = new Post;
         $post->date = $request->date;
         $post->description = $request->description;
         $post->expeditions_id = $request->expeditions_id;
-        $post->anglers_id = Angler::where('user_id', Auth::user()->id)->first()->id;
+        $post->anglers_id = Angler::where('user_id', Auth::user()->id)->firstOrFail()->id;
 
         $post->save();
 
@@ -95,7 +91,7 @@ class PostController extends Controller
      * @param  \Fishinglog\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post)
     {
         //
     }

@@ -40,6 +40,7 @@ Route::group(['middleware' => 'auth'], function(){
     Route::post('/', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'store']);
     Route::put('/', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'update']);
     Route::get('/{angler}/profile', [Fishinglog\Http\Controllers\Angler\AnglerProfileController::class, 'show']);
+    Route::post('/avatar', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'updateAvatar'])->name('angler.avatar.update');
   });
 
   // Lake routes

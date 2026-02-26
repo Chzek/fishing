@@ -11,6 +11,7 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^10",
         "laravel/helpers": "^1.1",
+        "laravel/pulse": "^1.0@beta",
         "laravel/sail": "^1.21",
         "laravel/telescope": "^5.0",
         "laravel/tinker": "^2.0",
@@ -23,7 +24,7 @@
         "spatie/laravel-ignition": "^2.0",
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^6.1",
+        "nunomaduro/collision": "^7.0",
         "phpunit/phpunit": "^9.0"
     },
     "autoload": {

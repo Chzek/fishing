@@ -29,7 +29,7 @@ class AnglerControllerTest extends TestCase
     {
         $this->be($this->user);
 
-        $this->post('/angler', compact($this->angler));
+        $this->post('/angler', $this->angler->toArray());
         $this->assertDatabaseHas('anglers', $this->angler->toArray());
     }
 

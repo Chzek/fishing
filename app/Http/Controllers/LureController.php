@@ -4,15 +4,12 @@ namespace Fishinglog\Http\Controllers;
 
 use Fishinglog\Lure;
 use Illuminate\Http\Request;
+use Fishinglog\Http\Requests\StoreLureRequest;
+use Fishinglog\Http\Requests\UpdateLureRequest;
 
 class LureController extends Controller
 {
-    // Validation rules
-    protected $rules = [
-        'name' => 'string|required|unique:lures,name,color,size',
-        'color' => 'string',
-        'size' => 'string',
-    ];
+
 
     /**
      * Display a listing of the resource.
@@ -49,10 +46,9 @@ class LureController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreLureRequest $request)
     {
         //
-        $request->validate($this->rules);
 
         $lure = new Lure;
         $lure->name = $request->name;
@@ -105,15 +101,9 @@ class LureController extends Controller
      * @param  \Fishinglog\Lure  $lure
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Lure $lure)
+    public function update(UpdateLureRequest $request, Lure $lure)
     {
         //
-        $rules = $this->rules;
-
-        // Modify rule to allow for updating the FishBreed
-        $rules['name'] = 'string|required|unique_with:lures,name,color,size,'.$request->id;
-
-        $request->validate($rules);
         $lure = \Fishinglog\Lure::find($request->id);
 
         $lure->name = $request->name;

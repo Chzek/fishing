@@ -162,6 +162,7 @@ return [
         Fishinglog\Providers\EventServiceProvider::class,
         Fishinglog\Providers\TelescopeServiceProvider::class,
         Fishinglog\Providers\RouteServiceProvider::class,
+        Fishinglog\Providers\ViewServiceProvider::class,
 
     ],
 
