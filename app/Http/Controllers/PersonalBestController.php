@@ -45,6 +45,10 @@ class PersonalBestController extends Controller
             ->orderBy('total', 'desc')
             ->first();
 
+        if (!$lake) {
+            return null;
+        }
+
         return \Fishinglog\Lake::find($lake->lakes_id);
     }
 }

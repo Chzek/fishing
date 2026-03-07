@@ -10,9 +10,9 @@ class Lure extends Model
   use HasFactory;
 
   //
-  public function record()
+  public function records()
   {
-    return $this->hasOne('\Fishinglog\Record');
+    return $this->hasMany('\Fishinglog\Record', 'lures_id');
   }
   
   public function getDisplayNameAttribute()

@@ -31,7 +31,7 @@ class Angler extends Model
             'anglers_id',
             'id',
             'id',
-            'id'
+            'lakes_id'
         );
     }
 

@@ -133,15 +133,17 @@ class AnglerController extends Controller
         //
         $angler = \Fishinglog\Angler::find($request->id);
 
-        $avatarName = 'avatar_'.time().'.'.$request->avatar->getClientOriginalExtension();
-        $request->avatar->storeAs('avatars', $avatarName);
-
         $angler->firstName = $request->firstName;
         $angler->middleName = $request->middleName;
         $angler->lastName = $request->lastName;
         $angler->user_id = $request->user_id;
         $angler->birthdate = $request->birthdate;
-        $angler->avatar = $avatarName;
+
+        if ($request->hasFile('avatar')) {
+            $avatarName = 'avatar_'.time().'.'.$request->avatar->getClientOriginalExtension();
+            $request->avatar->storeAs('avatars', $avatarName);
+            $angler->avatar = $avatarName;
+        }
 
         $angler->save();
 
