@@ -5,15 +5,12 @@ namespace Fishinglog\Http\Controllers;
 use Fishinglog\Expedition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Fishinglog\Http\Requests\StoreExpeditionRequest;
+use Fishinglog\Http\Requests\UpdateExpeditionRequest;
 
 class ExpeditionController extends Controller
 {
-    // Validation rules
-    protected $rules = [
-        'description' => 'required|string',
-        'start' => 'required|date',
-        'finish' => 'required|date',
-    ];
+
 
     /**
      * Display a listing of the resource.
@@ -22,18 +19,13 @@ class ExpeditionController extends Controller
      */
     public function index()
     {
-        //
         $expeditions = \Fishinglog\Expedition::withCount('posts', 'crews')
+            ->addSelect(['records_count' => \Fishinglog\Record::selectRaw('count(*)')
+                ->whereColumn('caught', '>=', 'expeditions.start')
+                ->whereColumn('caught', '<=', 'expeditions.finish')
+            ])
             ->orderBy('start', 'desc')
             ->get();
-
-        foreach($expeditions as $expedition)
-        {
-            $expedition['records_count'] = \Fishinglog\Record::where('caught', '>=', $expedition->start)
-                ->where('caught', '<=',  $expedition->finish)
-                ->get()
-                ->count(); 
-        }
 
         return view('expedition.index', [
             'expeditions' => $expeditions,
@@ -61,10 +53,9 @@ class ExpeditionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreExpeditionRequest $request)
     {
         //
-        $request->validate($this->rules);
 
         $expedition = new Expedition;
         $expedition->description = $request->description;
@@ -84,7 +75,8 @@ class ExpeditionController extends Controller
      */
     public function show(Expedition $expedition)
     {
-        $records = \Fishinglog\Record::where('caught', '>=', $expedition->start)
+        $records = \Fishinglog\Record::with(['angler', 'lake', 'fishBreed', 'lure'])
+            ->where('caught', '>=', $expedition->start)
             ->where('caught', '<=',  $expedition->finish)
             ->orderBy('caught', 'desc')
             ->paginate(10);
@@ -92,7 +84,6 @@ class ExpeditionController extends Controller
         $caught = \Fishinglog\Record::where('caught', '>=', $expedition->start)
             ->where('caught', '<=',  $expedition->finish)
             ->where('released', '=', 0)
-            ->get()
             ->count();        
 
         return view('expedition.show', [
@@ -124,10 +115,9 @@ class ExpeditionController extends Controller
      * @param  \Fishinglog\Expedition  $expedition
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Expedition $expedition)
+    public function update(UpdateExpeditionRequest $request, Expedition $expedition)
     {
         //
-        $request->validate($this->rules);
         $expedition = \Fishinglog\Expedition::find($request->id);
 
         $expedition->description = $request->description;

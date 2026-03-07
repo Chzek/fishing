@@ -2,41 +2,51 @@
 
 namespace Fishinglog\Http\Controllers;
 
+use Fishinglog\Pipes\Filters\FilterByAngler;
+use Fishinglog\Pipes\Filters\FilterByLength;
 use Fishinglog\Record;
+use Fishinglog\Pipes\Filters\FilterByName;
+use Fishinglog\Pipes\Filters\FilterByRecordsCount;
+use Fishinglog\Pipes\Filters\SortBy;
+use Illuminate\Pipeline\Pipeline;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
+use Fishinglog\Http\Requests\StoreRecordRequest;
+use Fishinglog\Http\Requests\UpdateRecordRequest;
 
 class RecordController extends Controller
 {
     use Notifiable;
 
     // Validation rules
-    protected $rules = [
-        'anglers_id' => 'integer|required',
-        'lakes_id' => 'integer|required',
-        'fish_breeds_id' => 'integer|required',
-        #'lures_id' => 'integer',
-        #'weight' => 'numeric',
-        'length' => 'numeric|required',
-        #'temperature' => 'numeric',
-        'released' => 'boolean|required',
-        'caught' => 'date|required',
-    ];
+
 
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Pipeline $pipeline, Request $request)
     {
         //
         $records = \Fishinglog\Record::with(['angler', 'lake', 'fishBreed', 'lure'])
             ->orderBy('caught', 'desc')
-            ->orderBy('anglers_id', 'asc')
-            ->paginate(10);
+            ->orderBy('lakes_id', 'asc')
+            ->orderBy('anglers_id', 'asc');
+            // ->paginate(10);
+
+        $records = $pipeline->send($records)
+            ->through([
+                SortBy::class,
+                // FilterByAngler::class,
+                FilterByLength::class,
+                FilterByName::class,
+            ])
+            ->thenReturn();
+
+        $records = $records->paginate(10);
 
         return view('record.index', [
             'records' => $records
@@ -50,47 +60,6 @@ class RecordController extends Controller
      */
     public function create(Request $request)
     {
-        //
-        $temp = \Fishinglog\Angler::orderBy('lastName', 'asc')
-            ->orderBy('firstName', 'asc')
-            ->orderBy('middleName', 'asc')
-            ->get();
-
-        $anglers[null] = "Select an Angler";
-        foreach($temp as $angler)
-        {
-            $anglers[$angler->id] = $angler->fullName;
-        }
-
-        $temp = \Fishinglog\Lake::orderBy('name', 'asc')
-            ->get();
-
-        $lakes[null] = "Select a Lake";
-        foreach($temp as $lake)
-        {
-            $lakes[$lake->id] = $lake->name;
-        }
-
-        $temp = \Fishinglog\FishBreed::orderBy('name', 'asc')
-            ->get();
-
-        $fishes[null] = "Select a Fish";
-        foreach($temp as $fish)
-        {
-            $fishes[$fish->id] = $fish->name;
-        }
-
-        $temp = \Fishinglog\Lure::orderBy('name', 'asc')
-            ->orderBy('color', 'asc')
-            ->orderBy('size', 'desc')
-            ->get();
-
-        $lures[null] = "Select a Lure";
-        foreach($temp as $lure)
-        {
-            $lures[$lure->id] = $lure->displayName;
-        }
-
         $record = \Fishinglog\Record::find($request->record);
 
         if($record == null)
@@ -99,10 +68,6 @@ class RecordController extends Controller
         }
 
         return view('record.create', [
-            'anglers' => $anglers,
-            'lakes' => $lakes,
-            'fishes' => $fishes,
-            'lures' => $lures,
             'record' => $record,
         ]);
     }
@@ -113,10 +78,9 @@ class RecordController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreRecordRequest $request)
     {
         //
-        $request->validate($this->rules);
 
         $record = new Record;
         $record->anglers_id = $request->anglers_id;
@@ -158,51 +122,7 @@ class RecordController extends Controller
      */
     public function edit(Record $record)
     {
-        $temp = \Fishinglog\Angler::orderBy('lastName', 'asc')
-            ->orderBy('firstName', 'asc')
-            ->orderBy('middleName', 'asc')
-            ->get();
-
-        $anglers[null] = "Select an Angler";
-        foreach($temp as $angler)
-        {
-            $anglers[$angler->id] = $angler->fullName;
-        }
-
-        $temp = \Fishinglog\Lake::orderBy('name', 'asc')
-            ->get();
-
-        $lakes[null] = "Select a Lake";
-        foreach($temp as $lake)
-        {
-            $lakes[$lake->id] = $lake->name;
-        }
-
-        $temp = \Fishinglog\FishBreed::orderBy('name', 'asc')
-            ->get();
-
-        $fishes[null] = "Select a Fish";
-        foreach($temp as $fish)
-        {
-            $fishes[$fish->id] = $fish->name;
-        }
-
-        $temp = \Fishinglog\Lure::orderBy('name', 'asc')
-            ->orderBy('color', 'asc')
-            ->orderBy('size', 'desc')
-            ->get();
-
-        $lures[null] = "Select a Lure";
-        foreach($temp as $lure)
-        {
-            $lures[$lure->id] = $lure->displayName;
-        }
-
         return view('record.edit', [
-            'anglers' => $anglers,
-            'lakes' => $lakes,
-            'fishes' => $fishes,
-            'lures' => $lures,
             'record' => $record,
         ]);
     }
@@ -214,10 +134,9 @@ class RecordController extends Controller
      * @param  \Fishinglog\Record  $record
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Record $record)
+    public function update(UpdateRecordRequest $request, Record $record)
     {
         //
-        $request->validate($this->rules);
         $record = \Fishinglog\Record::find($request->id);
 
         $record->anglers_id = $request->anglers_id;

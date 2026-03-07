@@ -5,7 +5,8 @@ namespace Fishinglog\Http\Controllers;
 use Fishinglog\FishBreed;
 use Fishinglog\FishFamily;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Fishinglog\Http\Requests\StoreFishBreedRequest;
+use Fishinglog\Http\Requests\UpdateFishBreedRequest;
 
 class FishBreedController extends Controller
 {
@@ -27,21 +28,10 @@ class FishBreedController extends Controller
      */
     public function create()
     {
-        //
-        $tempFamilies = \Fishinglog\FishFamily::all();
-        $breeds = \Fishinglog\FishBreed::all();
         $breed = new FishBreed;
 
-        $families = [];
-        foreach($tempFamilies as $family)
-        {
-            $families[$family->id] = $family->name;
-        }
-
         return view('fish.breed.create', [
-            'families' => $families,
             'breed' => $breed,
-            'breeds' => $breeds,
         ]);
     }
 
@@ -51,10 +41,9 @@ class FishBreedController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreFishBreedRequest $request)
     {
         //
-        $request->validate($this->rules());
 
         $imageName = 'avatar_'.time().'.'.$request->image->getClientOriginalExtension();
         $request->image->storeAs('fish', $imageName);
@@ -88,17 +77,7 @@ class FishBreedController extends Controller
      */
     public function edit(FishBreed $fishBreed)
     {
-        //
-        $tempFamilies = \Fishinglog\FishFamily::all();
-        foreach($tempFamilies as $family)
-        {
-            $families[$family->id] = $family->name;
-        }
-        $breeds = \Fishinglog\FishBreed::all();
-
         return view('fish.breed.edit', [
-            'families' => $families,
-            'breeds' => $breeds,
             'breed' => $fishBreed,
         ]);
     }
@@ -110,26 +89,19 @@ class FishBreedController extends Controller
      * @param  \Fishinglog\FishBreed  $fishBreed
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, FishBreed $fishBreed)
+    public function update(UpdateFishBreedRequest $request, FishBreed $fishBreed)
     {
         //
-        $rules = $this->rules();
-
-        // Modify rule to allow for updating the FishBreed
-        $rules['name'] = [
-            'required',
-            Rule::unique('fish_breeds')->ignore($request->id),
-        ];
-
-        $request->validate($rules);
         $breed = \Fishinglog\FishBreed::find($request->id);
-
-        $imageName = 'avatar_'.time().'.'.$request->image->getClientOriginalExtension();
-        $request->image->storeAs('fish', $imageName);
 
         $breed->fish_families_id = $request->fish_families_id;
         $breed->name = $request->name;
-        $breed->image = $imageName;
+
+        if ($request->hasFile('image')) {
+            $imageName = 'avatar_'.time().'.'.$request->image->getClientOriginalExtension();
+            $request->image->storeAs('fish', $imageName);
+            $breed->image = $imageName;
+        }
 
         $breed->save();
 
@@ -147,11 +119,5 @@ class FishBreedController extends Controller
         //
     }
 
-    private function rules(){
-        return [
-            'fish_families_id' => 'required|exists:fish_families,id',
-            'name' => 'required|unique:fish_breeds,name|max:255',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ];
-    }
+
 }

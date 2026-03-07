@@ -5,7 +5,11 @@ namespace Fishinglog\Http\Controllers\Angler;
 use Fishinglog\Angler;
 use Fishinglog\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Fishinglog\Http\Requests\StoreAnglerRequest;
+use Fishinglog\Http\Requests\UpdateAnglerRequest;
+use Fishinglog\Http\Requests\UpdateAnglerAvatarRequest;
 
 class AnglerController extends Controller
 {
@@ -39,15 +43,10 @@ class AnglerController extends Controller
      */
     public function create()
     {
-        //
         $angler = new Angler;
-        $unassigned = Angler::select('id')->whereNull('user_id')->get();
-
-        $users = \Fishinglog\User::whereIn('id', $unassigned->toArray())->pluck('name', 'id');
 
         return view('angler.create', [
             'angler' => $angler,
-            'users' => $users
         ]);
     }
 
@@ -57,10 +56,9 @@ class AnglerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreAnglerRequest $request)
     {
         //
-        $request->validate($this->rules());
 
         // $avatarName = 'avatar_'.time().'.'.$request->avatar->getClientOriginalExtension();
         // $request->avatar->storeAs('avatars', $avatarName);
@@ -118,12 +116,8 @@ class AnglerController extends Controller
      */
     public function edit(Angler $angler)
     {
-        $unassigned = Angler::select('id')->get();
-
-        $users = \Fishinglog\User::whereIn('id', $unassigned->toArray())->pluck('name', 'id');
         return view('angler.edit', [
             'angler' => $angler,
-            'users' => $users
         ]);
     }
 
@@ -134,10 +128,9 @@ class AnglerController extends Controller
      * @param  \Fishinglog\Angler  $angler
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Angler $angler)
+    public function update(UpdateAnglerRequest $request, Angler $angler)
     {
         //
-        $request->validate($this->rules());
         $angler = \Fishinglog\Angler::find($request->id);
 
         $avatarName = 'avatar_'.time().'.'.$request->avatar->getClientOriginalExtension();
@@ -166,32 +159,19 @@ class AnglerController extends Controller
         //
     }
 
-    public function updateAvatar(Request $request)
+    public function updateAvatar(UpdateAnglerAvatarRequest $request)
     {
-        $request->validate([
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]); 
-        
-        $angler = Angler::find(Auth::user()->anglers_id);
+        $angler = Auth::user()->angler;
 
-        $avatarName = 'avatar_'.$angler->id.time().request()->avatar->getClientOriginalExtension();
+        $avatarName = 'avatar_'.$angler->id.'_'.time().'.'.$request->avatar->getClientOriginalExtension();
 
         $request->avatar->storeAs('avatars', $avatarName);
 
-        $user->avatar = $avatarName;
-        $user->save();
+        $angler->avatar = $avatarName;
+        $angler->save();
 
         return back()->with('success', 'You have successfully uploaded your avatar.');
     }
 
-    private function rules(){
-        return [
-            'firstName' => 'required|max:255',
-            'middleName' => 'required|max:255',
-            'lastName' => 'required|max:255',
-            'user_id' => 'integer|nullable',
-            'birthdate' => 'date|nullable',
-            'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ];
-    }
+
 }

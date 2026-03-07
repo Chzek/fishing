@@ -2,6 +2,7 @@
 
 namespace Fishinglog\Providers;
 
+use Fishinglog\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -13,7 +14,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        'Fishinglog\Model' => 'Fishinglog\Policies\ModelPolicy',
+        // 'Fishinglog\Model' => 'Fishinglog\Policies\ModelPolicy',
     ];
 
     /**
@@ -23,6 +24,9 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // Authorization for Pulse
+        Gate::define('viewPulse', function (User $user) {
+            return $user->isAdmin();
+        });
     }
 }

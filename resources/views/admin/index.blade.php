@@ -45,6 +45,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <h1 class="text-center">{{ $records }}</h1>
+                                <h6 class="text-muted text-center">{{ number_format($records/$years, 2) }}/year</h6>
                             </div>
                             <div class="card-footer text-center">
                             Records

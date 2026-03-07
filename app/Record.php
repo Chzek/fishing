@@ -33,8 +33,4 @@ class Record extends Model
 		return $this->belongsTo('\Fishinglog\Lure', 'lures_id', 'id');
 	}
 
-	public function expedition()
-	{
-		return $this->belongsTo('\Fishinglog\Expedition', 'id');
-	}
 }

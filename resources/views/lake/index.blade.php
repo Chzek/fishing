@@ -9,13 +9,60 @@
                     <x-pageNavigation name="lake" />
                 </div>
                 <div class="card-body">
+
+                    {{-- Filters form --}}
+                    <form class="form">
+                        <div class="form-group form-row justify-content-between">
+                            
+                            <div class="col-4 input-group">
+                                <input id="name" name="name" class='form-control' type="text"
+                                    @if(Request::input('name', false))
+                                        value='{{ Request::input('name') }}'
+                                    @endif
+                                    placeholder="Name"
+                                />
+                            </div>
+
+                            <div class="col-2 input-group">
+                                <input id="records_count" name="records_count" class='form-control' type="number"
+                                    @if(Request::input('records_count', false))
+                                        value='{{ Request::input('records_count') }}'
+                                    @endif
+                                    placeholder="Fish"
+                                />
+
+                                <select name="records_count_operator" class='form-control'>
+                                    <option value=">" {{ Request::input('records_count_operator') === ">" ? "selected" : ""}} >&gt;</option>
+                                    <option value="=" {{ Request::input('records_count_operator') === "=" ? "selected" : ""}} >=</option>
+                                    <option value="<" {{ Request::input('records_count_operator') === "<" ? "selected" : ""}} >&lt;</option>
+                                </select>
+                            </div>
+
+                            <div class="col-1 input-group">
+                                <input type="submit" class='card-link btn btn-sm btn-dark' value="Filter" />
+                            </div>
+
+                        </div>
+                    </form>
                     <table class='table table-hover'>
                         <thead class='thead-light'>
                             <tr>
-                                <th>Name</th>
+                                <th>
+                                    @if (Request::input('sort_by') === 'name' && Request::input('sort_order') === 'desc')
+                                        <a href="{{ route('lakes.index', ['sort_by' => 'name', 'sort_order' => 'asc']) }}">Name</a>    
+                                    @else
+                                        <a href="{{ route('lakes.index', ['sort_by' => 'name', 'sort_order' => 'desc']) }}">Name</a>
+                                    @endif
+                                </th>
                                 <th class="text-center">Latitude</th>
                                 <th class="text-center">Longitude</th>
-                                <th class="text-center">Fish</th>
+                                <th class="text-center">
+                                    @if(Request::input('sort_by') === 'records_count' && Request::input('sort_order') === 'desc')
+                                        <a href="{{ route('lakes.index', ['sort_by' => 'records_count', 'sort_order' => 'asc']) }}">Fish</a>
+                                    @else
+                                        <a href="{{ route('lakes.index', ['sort_by' => 'records_count', 'sort_order' => 'desc']) }}">Fish</a>
+                                    @endif
+                                </th>
                                 <th class="text-center">Visits</th>
                                 <th class="text-center">Fish/Visit</th>
                                 <th class="text-center">Anglers</th>

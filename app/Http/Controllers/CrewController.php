@@ -4,15 +4,12 @@ namespace Fishinglog\Http\Controllers;
 
 use Fishinglog\Crew;
 use Illuminate\Http\Request;
+use Fishinglog\Http\Requests\StoreCrewRequest;
+use Fishinglog\Http\Requests\UpdateCrewRequest;
 
 class CrewController extends Controller
 {
-    // Validation rules
-    protected $rules = [
-        'expeditions_id' => 'integer',
-        'anglers_id' => 'integer',
-        'joined' => 'date',
-    ];
+
 
     /**
      * Display a listing of the resource.
@@ -31,30 +28,10 @@ class CrewController extends Controller
      */
     public function create(Request $request)
     {
-        //
         $crew = new Crew;
-        $temp = \Fishinglog\Angler::orderBy('lastName', 'asc')
-            ->orderBy('firstName', 'asc')
-            ->orderBy('middleName', 'asc')
-            ->get();
-
-        $anglers[null] = "Select an Angler";
-        foreach($temp as $angler)
-        {
-            $anglers[$angler->id] = $angler->fullName;
-        }
-
-        $temp = \Fishinglog\Expedition::all();
-        foreach($temp as $expedition)
-        {
-            $expeditions[$expedition->id] = $expedition->description;
-        }
-
         $expedition = \Fishinglog\Expedition::find($request->expeditions_id);
 
         return view('expedition.crew.create', [
-            'anglers' => $anglers,
-            'expeditions' => $expeditions,
             'expedition' => $expedition,
             'crew' => $crew,
         ]);
@@ -66,10 +43,9 @@ class CrewController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreCrewRequest $request)
     {
         //
-        $request->validate($this->rules);
 
         $crew = new Crew;
         $crew->expeditions_id = $request->expeditions_id;
@@ -110,7 +86,7 @@ class CrewController extends Controller
      * @param  \Fishinglog\Crew  $crew
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Crew $crew)
+    public function update(UpdateCrewRequest $request, Crew $crew)
     {
         //
     }

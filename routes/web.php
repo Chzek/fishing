@@ -40,11 +40,12 @@ Route::group(['middleware' => 'auth'], function(){
     Route::post('/', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'store']);
     Route::put('/', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'update']);
     Route::get('/{angler}/profile', [Fishinglog\Http\Controllers\Angler\AnglerProfileController::class, 'show']);
+    Route::post('/avatar', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'updateAvatar'])->name('angler.avatar.update');
   });
 
   // Lake routes
   Route::prefix('lake')->group(function(){
-    Route::get('/', 'LakeController@index');
+    Route::get('/', 'LakeController@index')->name('lakes.index');
     Route::get('/create', 'LakeController@create');
     Route::get('/{lake}', 'LakeController@show');
     Route::get('/{lake}/edit', 'LakeController@edit');

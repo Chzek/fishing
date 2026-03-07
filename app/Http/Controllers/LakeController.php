@@ -3,8 +3,14 @@
 namespace Fishinglog\Http\Controllers;
 
 use Fishinglog\Lake;
+use Fishinglog\Pipes\Filters\FilterByName;
+use Fishinglog\Pipes\Filters\FilterByRecordsCount;
+use Fishinglog\Pipes\Filters\SortBy;
 use Illuminate\Http\Request;
+use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\DB;
+use Fishinglog\Http\Requests\StoreLakeRequest;
+use Fishinglog\Http\Requests\UpdateLakeRequest;
 
 class LakeController extends Controller
 {
@@ -13,7 +19,7 @@ class LakeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Pipeline $pipeline, Request $request)
     {
         //
         $lakes = \Fishinglog\Lake::withCount('records')
@@ -22,12 +28,26 @@ class LakeController extends Controller
             }])
             ->withCount(['anglers as anglers_count' => function($query){
                 $query->select(DB::raw('count(distinct anglers.id)'));
-            }])
-            ->orderBy('name', 'asc')
-            ->paginate(10);
+            }]);
+            // ->orderBy('name', 'asc');
+            // ->paginate(10);
+
+        $lakes = $pipeline->send($lakes)
+            ->through([
+                SortBy::class,
+                FilterByName::class,
+                FilterByRecordsCount::class,
+            ])
+            ->thenReturn();
+
+        $lakes = $lakes->paginate(10);
+
+        // dd($request->query());
+
+        $lakes->appends($request->query());
 
         return view('lake.index', [
-            'lakes' => $lakes
+            'lakes' => $lakes,
         ]);
     }
 
@@ -51,10 +71,9 @@ class LakeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreLakeRequest $request)
     {
         //
-        $request->validate($this->rules());
 
         $lake = new Lake;
         $lake->name = $request->name;
@@ -82,9 +101,13 @@ class LakeController extends Controller
             ->orderBy('weight', 'desc')
             ->first();
 
-        $trips = \Fishinglog\Record::where('lakes_id', $lake->id)->get();
-        $visits = $trips->unique('caught')->count();
-        $anglers = $trips->unique('anglers_id')->count();
+        $visits = \Fishinglog\Record::where('lakes_id', $lake->id)
+            ->distinct('caught')
+            ->count('caught');
+            
+        $anglers = \Fishinglog\Record::where('lakes_id', $lake->id)
+            ->distinct('anglers_id')
+            ->count('anglers_id');
 
         return view('lake.show', [
             'lake' => $lake,
@@ -117,10 +140,9 @@ class LakeController extends Controller
      * @param  \Fishinglog\Lake  $lake
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Lake $lake)
+    public function update(UpdateLakeRequest $request, Lake $lake)
     {
         //
-        $request->validate($this->rules());
         $lake = \Fishinglog\Lake::find($request->id);
 
         $lake->name = $request->name;
@@ -143,21 +165,7 @@ class LakeController extends Controller
         //
     }
 
-    private function rules()
-    {
-        return [
-            'name' => 'required|max:255',
 
-            // TODO: Figure out the appropriate validation method for this.
-
-            // 'latitude' => [
-            //     'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/'
-            // ],
-            // 'longitude' => [
-            //     'regex:/^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/'
-            // ]
-        ];
-    }
 
     public function stats(Lake $lake, $quantity = null)
     {

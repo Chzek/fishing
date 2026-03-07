@@ -9,7 +9,7 @@ class Crew extends Model
     //
     public function expedition()
     {
-      return $this->hasOne('\Fishinglog\Expedition');
+      return $this->belongsTo('\Fishinglog\Expedition', 'expeditions_id');
     }
 
     public function angler()
@@ -19,6 +19,6 @@ class Crew extends Model
 
     public function records()
     {
-      return $this->hasMany('\Fishinglog\Record', 'id', 'anglers_id');
+      return $this->hasMany('\Fishinglog\Record', 'anglers_id', 'anglers_id');
     }
 }

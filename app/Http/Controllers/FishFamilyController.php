@@ -4,6 +4,7 @@ namespace Fishinglog\Http\Controllers;
 
 use Fishinglog\FishFamily;
 use Illuminate\Http\Request;
+use Fishinglog\Http\Requests\StoreFishFamilyRequest;
 
 class FishFamilyController extends Controller
 {
@@ -40,10 +41,9 @@ class FishFamilyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreFishFamilyRequest $request)
     {
         //
-        $request->validate($this->rules);
 
         $family = new FishFamily;
         $family->name = $request->name;
@@ -98,11 +98,5 @@ class FishFamilyController extends Controller
         //
     }
 
-    protected $rules = [
-        'name' => [
-            'required',
-            'unique:fish_families,name',
-            'max:255',
-        ]
-    ];
+
 }

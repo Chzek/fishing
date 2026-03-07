@@ -9,6 +9,44 @@
                     <x-pageNavigation name="record" />
                 </div>
                 <div class="card-body">
+
+                    {{-- Filters form --}}
+                    <form class="form">
+                        <div class="form-group form-row justify-content-between">
+                            
+                            {{-- FilterByAngler --}}
+                            {{-- <div class="col-4 input-group">
+                                <input id="angler" name="angler" class='form-control' type="text"
+                                    @if(Request::input('angler', false))
+                                        value='{{ Request::input('angler') }}'
+                                    @endif
+                                    placeholder="Angler"
+                                />
+                            </div> --}}
+
+                            {{-- FilterByLength --}}
+                            <div class="col-2 input-group">
+                                <input id="length" name="length" class='form-control' type="number"
+                                    @if(Request::input('length', false))
+                                        value='{{ Request::input('length') }}'
+                                    @endif
+                                    placeholder="Length"
+                                />
+
+                                <select name="length_operator" class='form-control'>
+                                    <option value=">" {{ Request::input('length_operator') === ">" ? "selected" : ""}} >&gt;</option>
+                                    <option value="=" {{ Request::input('length_operator') === "=" ? "selected" : ""}} >=</option>
+                                    <option value="<" {{ Request::input('length_operator') === "<" ? "selected" : ""}} >&lt;</option>
+                                </select>
+                            </div>
+
+                            <div class="col-1 input-group">
+                                <input type="submit" class='card-link btn btn-sm btn-dark' value="Filter" />
+                            </div>
+
+                        </div>
+                    </form>
+
                     <table class='table table-hover'>
                         <thead class='thead-light'>
                             <tr>
