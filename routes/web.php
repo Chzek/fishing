@@ -45,7 +45,7 @@ Route::group(['middleware' => 'auth'], function(){
 
   // Lake routes
   Route::prefix('lake')->group(function(){
-    Route::get('/', 'LakeController@index');
+    Route::get('/', 'LakeController@index')->name('lakes.index');
     Route::get('/create', 'LakeController@create');
     Route::get('/{lake}', 'LakeController@show');
     Route::get('/{lake}/edit', 'LakeController@edit');

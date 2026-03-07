@@ -2,7 +2,13 @@
 
 namespace Fishinglog\Http\Controllers;
 
+use Fishinglog\Pipes\Filters\FilterByAngler;
+use Fishinglog\Pipes\Filters\FilterByLength;
 use Fishinglog\Record;
+use Fishinglog\Pipes\Filters\FilterByName;
+use Fishinglog\Pipes\Filters\FilterByRecordsCount;
+use Fishinglog\Pipes\Filters\SortBy;
+use Illuminate\Pipeline\Pipeline;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
@@ -22,13 +28,25 @@ class RecordController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Pipeline $pipeline, Request $request)
     {
         //
         $records = \Fishinglog\Record::with(['angler', 'lake', 'fishBreed', 'lure'])
             ->orderBy('caught', 'desc')
-            ->orderBy('anglers_id', 'asc')
-            ->paginate(10);
+            ->orderBy('lakes_id', 'asc')
+            ->orderBy('anglers_id', 'asc');
+            // ->paginate(10);
+
+        $records = $pipeline->send($records)
+            ->through([
+                SortBy::class,
+                // FilterByAngler::class,
+                FilterByLength::class,
+                FilterByName::class,
+            ])
+            ->thenReturn();
+
+        $records = $records->paginate(10);
 
         return view('record.index', [
             'records' => $records

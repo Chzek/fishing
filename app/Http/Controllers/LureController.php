@@ -104,6 +104,7 @@ class LureController extends Controller
     public function update(UpdateLureRequest $request, Lure $lure)
     {
         //
+
         $lure = \Fishinglog\Lure::find($request->id);
 
         $lure->name = $request->name;
@@ -112,7 +113,7 @@ class LureController extends Controller
 
         $lure->save();
 
-        return redirect('/lure/'.$lure->id);
+        return redirect('/lure/' . $lure->id);
     }
 
     /**
@@ -123,6 +124,6 @@ class LureController extends Controller
      */
     public function destroy(Lure $lure)
     {
-        //
+    //
     }
 }

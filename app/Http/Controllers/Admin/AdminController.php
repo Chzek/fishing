@@ -4,6 +4,7 @@ namespace Fishinglog\Http\Controllers\Admin;
 
 use Fishinglog\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -24,6 +25,7 @@ class AdminController extends Controller
 		$users = \Fishinglog\User::count();
 		$lures = \Fishinglog\Lure::count();
 		$posts =\Fishinglog\Post::count();
+		$years = \Fishinglog\Record::count(DB::raw('distinct year(caught)'));
 
 		return view('admin.index',[
 			'anglers' => $anglers,
@@ -35,6 +37,7 @@ class AdminController extends Controller
 			'users' => $users,
 			'lures' => $lures,
 			'posts' => $posts,
+			'years' => $years,
 		]);
 	}
 }
