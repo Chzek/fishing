@@ -102,6 +102,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Record routes
     Route::prefix('record')->group(function () {
         Route::get('/', [RecordController::class, 'index']);
+        Route::get('/quick', [RecordController::class, 'quick']);
         Route::get('/create', [RecordController::class, 'create']);
         Route::get('/{record}', [RecordController::class, 'show']);
         Route::get('/{record}/edit', [RecordController::class, 'edit']);

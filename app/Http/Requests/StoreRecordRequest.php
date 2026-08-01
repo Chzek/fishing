@@ -22,6 +22,7 @@ class StoreRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'client_id' => 'nullable|string|max:64',
             'anglers_id' => 'required|integer|exists:anglers,id',
             'lakes_id' => 'required|integer|exists:lakes,id',
             'fish_breeds_id' => 'required|integer|exists:fish_breeds,id',

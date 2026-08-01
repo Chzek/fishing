@@ -4,6 +4,10 @@ namespace Fishinglog\Http\Controllers;
 
 use Fishinglog\Http\Requests\StoreRecordRequest;
 use Fishinglog\Http\Requests\UpdateRecordRequest;
+use Fishinglog\Models\Angler;
+use Fishinglog\Models\FishBreed;
+use Fishinglog\Models\Lake;
+use Fishinglog\Models\Lure;
 use Fishinglog\Models\Record;
 use Fishinglog\Pipes\Filters\FilterByAngler;
 use Fishinglog\Pipes\Filters\FilterByLength;
@@ -47,6 +51,21 @@ class RecordController extends Controller
     }
 
     /**
+     * Show touch-optimized quick catch form for boat logging.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function quick()
+    {
+        return view('record.quick', [
+            'anglers' => Angler::orderBy('lastName', 'asc')->get(),
+            'lakes' => Lake::orderBy('name', 'asc')->get(),
+            'fishBreeds' => FishBreed::orderBy('name', 'asc')->get(),
+            'lures' => Lure::orderBy('name', 'asc')->get(),
+        ]);
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -74,6 +93,7 @@ class RecordController extends Controller
     public function store(StoreRecordRequest $request)
     {
         $record = new Record;
+        $record->client_id = $request->client_id;
         $record->anglers_id = $request->anglers_id;
         $record->lakes_id = $request->lakes_id;
         $record->fish_breeds_id = $request->fish_breeds_id;

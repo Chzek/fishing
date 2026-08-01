@@ -11,6 +11,20 @@ class Record extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $fillable = [
+        'client_id',
+        'anglers_id',
+        'lakes_id',
+        'fish_breeds_id',
+        'lures_id',
+        'weight',
+        'length',
+        'temperature',
+        'released',
+        'caught',
+        'trip_id',
+    ];
+
     public function angler()
     {
         return $this->belongsTo(Angler::class, 'anglers_id', 'id');
