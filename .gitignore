@@ -16,3 +16,4 @@ yarn-error.log
 /resources/lang
 /fishing/storage
 /resources/views/vendor
+*.sql
