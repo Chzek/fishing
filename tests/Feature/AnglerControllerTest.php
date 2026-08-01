@@ -49,4 +49,26 @@ class AnglerControllerTest extends TestCase
         $response = $this->get('/angler/' . $this->angler->id);
         $response->assertSee($this->angler->lastName);
     }
+
+    /** @test */
+    public function it_can_update_an_angler_without_avatar()
+    {
+        $this->be($this->user);
+
+        $response = $this->put('/angler', [
+            'id' => $this->angler->id,
+            'firstName' => 'Updated',
+            'middleName' => $this->angler->middleName,
+            'lastName' => $this->angler->lastName,
+            'user_id' => $this->angler->user_id,
+            'birthdate' => $this->angler->birthdate,
+        ]);
+
+        $response->assertRedirect('/angler/'.$this->angler->id);
+
+        $this->assertDatabaseHas('anglers', [
+            'id' => $this->angler->id,
+            'firstName' => 'Updated',
+        ]);
+    }
 }

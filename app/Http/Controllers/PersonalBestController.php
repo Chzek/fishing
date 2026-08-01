@@ -48,6 +48,10 @@ class PersonalBestController extends Controller
             ->orderBy('total', 'desc')
             ->first();
 
-        return $lake ? Lake::find($lake->lakes_id) : null;
+        if (!$lake) {
+            return null;
+        }
+
+        return Lake::find($lake->lakes_id);
     }
 }

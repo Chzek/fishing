@@ -123,17 +123,17 @@ class AnglerController extends Controller
     {
         $targetAngler = Angler::find($request->id) ?? $angler;
 
-        if ($request->hasFile('avatar')) {
-            $avatarName = 'avatar_' . time() . '.' . $request->avatar->getClientOriginalExtension();
-            $request->avatar->storeAs('avatars', $avatarName);
-            $targetAngler->avatar = $avatarName;
-        }
-
         $targetAngler->firstName = $request->firstName;
         $targetAngler->middleName = $request->middleName;
         $targetAngler->lastName = $request->lastName;
         $targetAngler->user_id = $request->user_id;
         $targetAngler->birthdate = $request->birthdate;
+
+        if ($request->hasFile('avatar')) {
+            $avatarName = 'avatar_' . time() . '.' . $request->avatar->getClientOriginalExtension();
+            $request->avatar->storeAs('avatars', $avatarName);
+            $targetAngler->avatar = $avatarName;
+        }
 
         $targetAngler->save();
 

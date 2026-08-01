@@ -44,27 +44,26 @@ class ProfileController extends Controller
                 'byWeight' => PersonalBestController::bestByWeight($angler),
                 'lakeWithMostCatches' => PersonalBestController::lakeWithMostCatches($angler),
             ];
+
+            $record_count = Record::where('anglers_id', $angler->id)->count();
+            $lake_count = Record::where('anglers_id', $angler->id)
+                ->distinct('lakes_id')
+                ->count('lakes_id');
         } else {
             $records = [];
             $crews = [];
             $personalBest = [];
+            $record_count = 0;
+            $lake_count = 0;
         }
-
-        $recordCount = isset($angler->id) ? Record::where('anglers_id', $angler->id)->count() : 0;
-        $lakeCountResult = isset($angler->id)
-            ? Record::select(DB::raw('count(distinct lakes_id) as lake_count'))
-                ->where('anglers_id', $angler->id)
-                ->first()
-            : null;
-        $lakeCount = $lakeCountResult ? $lakeCountResult->lake_count : 0;
 
         return view('profile.show', [
             'angler' => $angler,
             'records' => $records,
             'crews' => $crews,
             'personalBest' => $personalBest,
-            'record_count' => $recordCount,
-            'lake_count' => $lakeCount,
+            'record_count' => $record_count,
+            'lake_count' => $lake_count,
         ]);
     }
 
