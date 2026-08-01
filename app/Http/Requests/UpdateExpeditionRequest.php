@@ -22,9 +22,10 @@ class UpdateExpeditionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'description' => 'required|string',
+            'id' => 'required|integer|exists:expeditions,id',
+            'description' => 'required|string|max:1000',
             'start' => 'required|date',
-            'finish' => 'required|date',
+            'finish' => 'required|date|after_or_equal:start',
         ];
     }
 }

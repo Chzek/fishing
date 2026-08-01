@@ -3,9 +3,12 @@
 namespace Fishinglog\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Expedition extends Model
 {
+    use SoftDeletes;
+
     public function crews()
     {
         return $this->hasMany(Crew::class, 'expeditions_id', 'id');
