@@ -2,9 +2,9 @@
 
 namespace Fishinglog\Http\Controllers;
 
-use Fishinglog\FishFamily;
-use Illuminate\Http\Request;
 use Fishinglog\Http\Requests\StoreFishFamilyRequest;
+use Fishinglog\Models\FishFamily;
+use Illuminate\Http\Request;
 
 class FishFamilyController extends Controller
 {
@@ -25,8 +25,7 @@ class FishFamilyController extends Controller
      */
     public function create()
     {
-        //
-        $families = \Fishinglog\FishFamily::all();
+        $families = FishFamily::all();
         $family = new FishFamily;
 
         return view('fish.family.create', [
@@ -38,13 +37,11 @@ class FishFamilyController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Fishinglog\Http\Requests\StoreFishFamilyRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreFishFamilyRequest $request)
     {
-        //
-
         $family = new FishFamily;
         $family->name = $request->name;
 
@@ -56,7 +53,7 @@ class FishFamilyController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \Fishinglog\FishFamily  $fishFamily
+     * @param  \Fishinglog\Models\FishFamily  $fishFamily
      * @return \Illuminate\Http\Response
      */
     public function show(FishFamily $fishFamily)
@@ -67,7 +64,7 @@ class FishFamilyController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \Fishinglog\FishFamily  $fishFamily
+     * @param  \Fishinglog\Models\FishFamily  $fishFamily
      * @return \Illuminate\Http\Response
      */
     public function edit(FishFamily $fishFamily)
@@ -79,7 +76,7 @@ class FishFamilyController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Fishinglog\FishFamily  $fishFamily
+     * @param  \Fishinglog\Models\FishFamily  $fishFamily
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, FishFamily $fishFamily)
@@ -90,13 +87,11 @@ class FishFamilyController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Fishinglog\FishFamily  $fishFamily
+     * @param  \Fishinglog\Models\FishFamily  $fishFamily
      * @return \Illuminate\Http\Response
      */
     public function destroy(FishFamily $fishFamily)
     {
         //
     }
-
-
 }

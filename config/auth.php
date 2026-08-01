@@ -67,7 +67,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => Fishinglog\User::class,
+            'model' => Fishinglog\Models\User::class,
         ],
 
         // 'users' => [

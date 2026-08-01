@@ -2,22 +2,21 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Fishinglog\Models\Angler;
+use Fishinglog\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-use Fishinglog\Angler;
-use Fishinglog\User;
-
 class AnglerControllerTest extends TestCase
 {
-    use DatabaseMigrations; 
+    use DatabaseMigrations;
 
     protected $angler;
     protected $user;
 
-    public function setUp() :void
+    public function setUp(): void
     {
         parent::setUp();
         $this->angler = Angler::factory()->create();
@@ -47,7 +46,7 @@ class AnglerControllerTest extends TestCase
     {
         $this->be($this->user);
 
-        $response = $this->get('/angler/'.$this->angler->id);
+        $response = $this->get('/angler/' . $this->angler->id);
         $response->assertSee($this->angler->lastName);
     }
 }

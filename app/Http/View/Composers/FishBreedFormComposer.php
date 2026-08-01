@@ -2,6 +2,8 @@
 
 namespace Fishinglog\Http\View\Composers;
 
+use Fishinglog\Models\FishBreed;
+use Fishinglog\Models\FishFamily;
 use Illuminate\View\View;
 
 class FishBreedFormComposer
@@ -14,11 +16,11 @@ class FishBreedFormComposer
      */
     public function compose(View $view)
     {
-        $tempFamilies = \Fishinglog\FishFamily::all();
-        $breeds = \Fishinglog\FishBreed::all();
+        $tempFamilies = FishFamily::all();
+        $breeds = FishBreed::all();
 
         $families = [];
-        foreach($tempFamilies as $family) {
+        foreach ($tempFamilies as $family) {
             $families[$family->id] = $family->name;
         }
 

@@ -2,16 +2,15 @@
 
 namespace Fishinglog\Http\Controllers;
 
-use Fishinglog\Expedition;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Fishinglog\Http\Requests\StoreExpeditionRequest;
 use Fishinglog\Http\Requests\UpdateExpeditionRequest;
+use Fishinglog\Models\Expedition;
+use Fishinglog\Models\Record;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ExpeditionController extends Controller
 {
-
-
     /**
      * Display a listing of the resource.
      *
@@ -19,8 +18,8 @@ class ExpeditionController extends Controller
      */
     public function index()
     {
-        $expeditions = \Fishinglog\Expedition::withCount('posts', 'crews')
-            ->addSelect(['records_count' => \Fishinglog\Record::selectRaw('count(*)')
+        $expeditions = Expedition::withCount('posts', 'crews')
+            ->addSelect(['records_count' => Record::selectRaw('count(*)')
                 ->whereColumn('caught', '>=', 'expeditions.start')
                 ->whereColumn('caught', '<=', 'expeditions.finish')
             ])
@@ -39,8 +38,6 @@ class ExpeditionController extends Controller
      */
     public function create()
     {
-        //
-
         $expedition = new Expedition;
         return view('expedition.create', [
             'expedition' => $expedition,
@@ -50,13 +47,11 @@ class ExpeditionController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Fishinglog\Http\Requests\StoreExpeditionRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreExpeditionRequest $request)
     {
-        //
-
         $expedition = new Expedition;
         $expedition->description = $request->description;
         $expedition->start = $request->start;
@@ -70,21 +65,21 @@ class ExpeditionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \Fishinglog\Expedition  $expedition
+     * @param  \Fishinglog\Models\Expedition  $expedition
      * @return \Illuminate\Http\Response
      */
     public function show(Expedition $expedition)
     {
-        $records = \Fishinglog\Record::with(['angler', 'lake', 'fishBreed', 'lure'])
+        $records = Record::with(['angler', 'lake', 'fishBreed', 'lure'])
             ->where('caught', '>=', $expedition->start)
             ->where('caught', '<=',  $expedition->finish)
             ->orderBy('caught', 'desc')
             ->paginate(10);
 
-        $caught = \Fishinglog\Record::where('caught', '>=', $expedition->start)
+        $caught = Record::where('caught', '>=', $expedition->start)
             ->where('caught', '<=',  $expedition->finish)
             ->where('released', '=', 0)
-            ->count();        
+            ->count();
 
         return view('expedition.show', [
             'caught' => $caught,
@@ -98,7 +93,7 @@ class ExpeditionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \Fishinglog\Expedition  $expedition
+     * @param  \Fishinglog\Models\Expedition  $expedition
      * @return \Illuminate\Http\Response
      */
     public function edit(Expedition $expedition)
@@ -111,28 +106,27 @@ class ExpeditionController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Fishinglog\Expedition  $expedition
+     * @param  \Fishinglog\Http\Requests\UpdateExpeditionRequest  $request
+     * @param  \Fishinglog\Models\Expedition  $expedition
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateExpeditionRequest $request, Expedition $expedition)
     {
-        //
-        $expedition = \Fishinglog\Expedition::find($request->id);
+        $targetExpedition = Expedition::find($request->id) ?? $expedition;
 
-        $expedition->description = $request->description;
-        $expedition->start = $request->start;
-        $expedition->finish = $request->finish;
+        $targetExpedition->description = $request->description;
+        $targetExpedition->start = $request->start;
+        $targetExpedition->finish = $request->finish;
 
-        $expedition->save();
+        $targetExpedition->save();
 
-        return redirect('/expedition/'.$request->id);
+        return redirect('/expedition/' . $targetExpedition->id);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Fishinglog\Expedition  $expedition
+     * @param  \Fishinglog\Models\Expedition  $expedition
      * @return \Illuminate\Http\Response
      */
     public function destroy(Expedition $expedition)
@@ -142,25 +136,27 @@ class ExpeditionController extends Controller
 
     public function stats(Expedition $expedition, $quantity = null)
     {
-        $query = \Fishinglog\Record::select('fish_breeds_id',
-                DB::raw('count(*) as cnt'),
-                DB::raw('round(avg(length), 2) as avg_length'),
-                DB::raw('min(length) as min_length'),
-                DB::raw('max(length) as max_length'),
-                DB::raw('round(avg(weight), 2) as avg_weight'),
-                DB::raw('min(weight) as min_weight'),
-                DB::raw('max(weight) as max_weight'),
-                DB::raw('sum(if(weight IS NOT NULL, 1, 0)) as weighed_count')
-            )
+        $query = Record::select(
+            'fish_breeds_id',
+            DB::raw('count(*) as cnt'),
+            DB::raw('round(avg(length), 2) as avg_length'),
+            DB::raw('min(length) as min_length'),
+            DB::raw('max(length) as max_length'),
+            DB::raw('round(avg(weight), 2) as avg_weight'),
+            DB::raw('min(weight) as min_weight'),
+            DB::raw('max(weight) as max_weight'),
+            DB::raw('sum(if(weight IS NOT NULL, 1, 0)) as weighed_count')
+        )
             ->where('caught', '>=', $expedition->start)
             ->where('caught', '<=',  $expedition->finish)
             ->with('fishBreed')
             ->groupBy('fish_breeds_id')
             ->orderBy('cnt', 'desc');
 
-        if(!is_null($quantity))
+        if (!is_null($quantity)) {
             $query->limit($quantity);
-        
+        }
+
         return $query->get();
     }
 }

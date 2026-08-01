@@ -2,6 +2,7 @@
 
 namespace Fishinglog\Notifications;
 
+use Fishinglog\Models\Record;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -16,9 +17,10 @@ class RecordCreated extends Notification
     /**
      * Create a new notification instance.
      *
+     * @param \Fishinglog\Models\Record $record
      * @return void
      */
-    public function __construct(\Fishinglog\Record $record)
+    public function __construct(Record $record)
     {
         $this->record = $record;
     }

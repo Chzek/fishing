@@ -2,6 +2,8 @@
 
 namespace Fishinglog\Http\View\Composers;
 
+use Fishinglog\Models\Angler;
+use Fishinglog\Models\Expedition;
 use Illuminate\View\View;
 
 class CrewFormComposer
@@ -14,18 +16,19 @@ class CrewFormComposer
      */
     public function compose(View $view)
     {
-        $temp = \Fishinglog\Angler::orderBy('lastName', 'asc')
+        $temp = Angler::orderBy('lastName', 'asc')
             ->orderBy('firstName', 'asc')
             ->orderBy('middleName', 'asc')
             ->get();
 
         $anglers[null] = "Select an Angler";
-        foreach($temp as $angler) {
+        foreach ($temp as $angler) {
             $anglers[$angler->id] = $angler->fullName;
         }
 
-        $temp = \Fishinglog\Expedition::all();
-        foreach($temp as $expedition) {
+        $temp = Expedition::all();
+        $expeditions = [];
+        foreach ($temp as $expedition) {
             $expeditions[$expedition->id] = $expedition->description;
         }
 

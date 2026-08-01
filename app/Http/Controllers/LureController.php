@@ -2,15 +2,13 @@
 
 namespace Fishinglog\Http\Controllers;
 
-use Fishinglog\Lure;
-use Illuminate\Http\Request;
 use Fishinglog\Http\Requests\StoreLureRequest;
 use Fishinglog\Http\Requests\UpdateLureRequest;
+use Fishinglog\Models\Lure;
+use Illuminate\Http\Request;
 
 class LureController extends Controller
 {
-
-
     /**
      * Display a listing of the resource.
      *
@@ -18,11 +16,10 @@ class LureController extends Controller
      */
     public function index()
     {
-        //
-        $lures = \Fishinglog\Lure::paginate();
+        $lures = Lure::paginate();
 
         return view('lure.index', [
-            'lures' => $lures
+            'lures' => $lures,
         ]);
     }
 
@@ -33,23 +30,20 @@ class LureController extends Controller
      */
     public function create()
     {
-        //
         $lure = new Lure;
         return view('lure.create', [
-            'lure' => $lure
+            'lure' => $lure,
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Fishinglog\Http\Requests\StoreLureRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreLureRequest $request)
     {
-        //
-
         $lure = new Lure;
         $lure->name = $request->name;
         $lure->color = $request->color;
@@ -63,28 +57,27 @@ class LureController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \Fishinglog\Lure  $lure
+     * @param  \Fishinglog\Models\Lure  $lure
      * @return \Illuminate\Http\Response
      */
     public function show(Lure $lure)
     {
         return view('lure.show', [
-            'lure' => $lure
+            'lure' => $lure,
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \Fishinglog\Lure  $lure
+     * @param  \Fishinglog\Models\Lure  $lure
      * @return \Illuminate\Http\Response
      */
     public function edit(Lure $lure)
     {
-        //
-        $lureNames = \Fishinglog\Lure::distinct()->select('name')->get();
-        $lureColors = \Fishinglog\Lure::distinct()->select('color')->get();
-        $lureSizes = \Fishinglog\Lure::distinct()->select('size')->get();
+        $lureNames = Lure::distinct()->select('name')->get();
+        $lureColors = Lure::distinct()->select('color')->get();
+        $lureSizes = Lure::distinct()->select('size')->get();
 
         return view('lure.edit', [
             'lure' => $lure,
@@ -97,33 +90,31 @@ class LureController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Fishinglog\Lure  $lure
+     * @param  \Fishinglog\Http\Requests\UpdateLureRequest  $request
+     * @param  \Fishinglog\Models\Lure  $lure
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateLureRequest $request, Lure $lure)
     {
-        //
+        $targetLure = Lure::find($request->id) ?? $lure;
 
-        $lure = \Fishinglog\Lure::find($request->id);
+        $targetLure->name = $request->name;
+        $targetLure->color = $request->color;
+        $targetLure->size = $request->size;
 
-        $lure->name = $request->name;
-        $lure->color = $request->color;
-        $lure->size = $request->size;
+        $targetLure->save();
 
-        $lure->save();
-
-        return redirect('/lure/' . $lure->id);
+        return redirect('/lure/' . $targetLure->id);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Fishinglog\Lure  $lure
+     * @param  \Fishinglog\Models\Lure  $lure
      * @return \Illuminate\Http\Response
      */
     public function destroy(Lure $lure)
     {
-    //
+        //
     }
 }

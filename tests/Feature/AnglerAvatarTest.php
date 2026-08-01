@@ -2,13 +2,12 @@
 
 namespace Tests\Feature;
 
+use Fishinglog\Models\Angler;
+use Fishinglog\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
-
-use Fishinglog\Angler;
-use Fishinglog\User;
 
 class AnglerAvatarTest extends TestCase
 {
@@ -25,9 +24,8 @@ class AnglerAvatarTest extends TestCase
     /** @test */
     public function it_can_update_avatar_for_logged_in_angler()
     {
-        \Illuminate\Support\Facades\Storage::fake('public');
+        Storage::fake('public');
 
-        // The factory creates a User linked to the Angler
         $user = $this->angler->user;
 
         $response = $this->actingAs($user)
@@ -38,15 +36,12 @@ class AnglerAvatarTest extends TestCase
         $response->assertRedirect();
         $response->assertSessionHas('success');
 
-        // Reload the angler from the database
         $this->angler->refresh();
 
-        // Assert the avatar field was updated
         $this->assertNotNull($this->angler->avatar);
         $this->assertStringStartsWith('avatar_', $this->angler->avatar);
         $this->assertStringEndsWith('.jpg', $this->angler->avatar);
 
-        // Assert the file was stored
         Storage::assertExists('avatars/' . $this->angler->avatar);
     }
 

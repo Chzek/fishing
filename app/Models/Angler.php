@@ -1,6 +1,6 @@
 <?php
 
-namespace Fishinglog;
+namespace Fishinglog\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,14 +20,14 @@ class Angler extends Model
 
     public function records()
     {
-        return $this->hasMany('\Fishinglog\Record', 'anglers_id', 'id');
+        return $this->hasMany(Record::class, 'anglers_id', 'id');
     }
 
     public function lakes()
     {
         return $this->hasManyThrough(
-            '\Fishinglog\Lake',
-            '\Fishinglog\Record',
+            Lake::class,
+            Record::class,
             'anglers_id',
             'id',
             'id',
@@ -37,7 +37,7 @@ class Angler extends Model
 
     public function user()
     {
-        return $this->hasOne('\Fishinglog\User', 'id', 'user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 
     public function getFullNameAttribute()

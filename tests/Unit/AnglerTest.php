@@ -2,12 +2,9 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Fishinglog\Models\Angler;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-use Fishinglog\Angler;
+use Tests\TestCase;
 
 class AnglerTest extends TestCase
 {
@@ -15,18 +12,18 @@ class AnglerTest extends TestCase
 
     protected $angler;
 
-    public function setUp() :void
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->angler = Angler::factory()->create();             
+        $this->angler = Angler::factory()->create();
     }
 
     /** @test */
     public function it_cannot_create_a_duplicate_angler()
     {
         $this->expectException(\Illuminate\Database\QueryException::class);
-        $angler_copy = $this->angler->replicate();
-        $angler_copy->save();
+        $anglerCopy = $this->angler->replicate();
+        $anglerCopy->save();
     }
 }

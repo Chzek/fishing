@@ -2,15 +2,16 @@
 
 namespace Fishinglog\Http\Controllers;
 
-use Fishinglog\Lake;
+use Fishinglog\Http\Requests\StoreLakeRequest;
+use Fishinglog\Http\Requests\UpdateLakeRequest;
+use Fishinglog\Models\Lake;
+use Fishinglog\Models\Record;
 use Fishinglog\Pipes\Filters\FilterByName;
 use Fishinglog\Pipes\Filters\FilterByRecordsCount;
 use Fishinglog\Pipes\Filters\SortBy;
 use Illuminate\Http\Request;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\DB;
-use Fishinglog\Http\Requests\StoreLakeRequest;
-use Fishinglog\Http\Requests\UpdateLakeRequest;
 
 class LakeController extends Controller
 {
@@ -21,16 +22,13 @@ class LakeController extends Controller
      */
     public function index(Pipeline $pipeline, Request $request)
     {
-        //
-        $lakes = \Fishinglog\Lake::withCount('records')
-            ->withCount(['records as visits' => function($query) {
+        $lakes = Lake::withCount('records')
+            ->withCount(['records as visits' => function ($query) {
                 $query->select(DB::raw('count(distinct records.caught)'));
             }])
-            ->withCount(['anglers as anglers_count' => function($query){
+            ->withCount(['anglers as anglers_count' => function ($query) {
                 $query->select(DB::raw('count(distinct anglers.id)'));
             }]);
-            // ->orderBy('name', 'asc');
-            // ->paginate(10);
 
         $lakes = $pipeline->send($lakes)
             ->through([
@@ -41,9 +39,6 @@ class LakeController extends Controller
             ->thenReturn();
 
         $lakes = $lakes->paginate(10);
-
-        // dd($request->query());
-
         $lakes->appends($request->query());
 
         return view('lake.index', [
@@ -58,23 +53,20 @@ class LakeController extends Controller
      */
     public function create()
     {
-        //
         $lake = new Lake;
         return view('lake.create', [
-            'lake' => $lake
+            'lake' => $lake,
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Fishinglog\Http\Requests\StoreLakeRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreLakeRequest $request)
     {
-        //
-
         $lake = new Lake;
         $lake->name = $request->name;
         $lake->latitude = $request->latitude;
@@ -88,24 +80,24 @@ class LakeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \Fishinglog\Lake  $lake
+     * @param  \Fishinglog\Models\Lake  $lake
      * @return \Illuminate\Http\Response
      */
     public function show(Lake $lake)
     {
-        $count = \Fishinglog\Record::where('lakes_id', $lake->id)->count();
-        $longest = \Fishinglog\Record::where('lakes_id', $lake->id)
+        $count = Record::where('lakes_id', $lake->id)->count();
+        $longest = Record::where('lakes_id', $lake->id)
             ->orderBy('length', 'desc')
             ->first();
-        $fattest = \Fishinglog\Record::where('lakes_id', $lake->id)
+        $fattest = Record::where('lakes_id', $lake->id)
             ->orderBy('weight', 'desc')
             ->first();
 
-        $visits = \Fishinglog\Record::where('lakes_id', $lake->id)
+        $visits = Record::where('lakes_id', $lake->id)
             ->distinct('caught')
             ->count('caught');
-            
-        $anglers = \Fishinglog\Record::where('lakes_id', $lake->id)
+
+        $anglers = Record::where('lakes_id', $lake->id)
             ->distinct('anglers_id')
             ->count('anglers_id');
 
@@ -123,41 +115,40 @@ class LakeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \Fishinglog\Lake  $lake
+     * @param  \Fishinglog\Models\Lake  $lake
      * @return \Illuminate\Http\Response
      */
     public function edit(Lake $lake)
     {
         return view('lake.edit', [
-            'lake' => $lake
+            'lake' => $lake,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Fishinglog\Lake  $lake
+     * @param  \Fishinglog\Http\Requests\UpdateLakeRequest  $request
+     * @param  \Fishinglog\Models\Lake  $lake
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateLakeRequest $request, Lake $lake)
     {
-        //
-        $lake = \Fishinglog\Lake::find($request->id);
+        $targetLake = Lake::find($request->id) ?? $lake;
 
-        $lake->name = $request->name;
-        $lake->latitude = $request->latitude;
-        $lake->longitude = $request->longitude;
+        $targetLake->name = $request->name;
+        $targetLake->latitude = $request->latitude;
+        $targetLake->longitude = $request->longitude;
 
-        $lake->save();
+        $targetLake->save();
 
-        return redirect('/lake/'.$lake->id);
+        return redirect('/lake/' . $targetLake->id);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Fishinglog\Lake  $lake
+     * @param  \Fishinglog\Models\Lake  $lake
      * @return \Illuminate\Http\Response
      */
     public function destroy(Lake $lake)
@@ -165,28 +156,28 @@ class LakeController extends Controller
         //
     }
 
-
-
     public function stats(Lake $lake, $quantity = null)
     {
-        $query = \Fishinglog\Record::select('fish_breeds_id',
-                DB::raw('count(*) as cnt'),
-                DB::raw('round(avg(length), 2) as avg_length'),
-                DB::raw('min(length) as min_length'),
-                DB::raw('max(length) as max_length'),
-                DB::raw('round(avg(weight), 2) as avg_weight'),
-                DB::raw('min(weight) as min_weight'),
-                DB::raw('max(weight) as max_weight'),
-                DB::raw('sum(if(weight IS NOT NULL, 1, 0)) as weighed_count')
-            )
+        $query = Record::select(
+            'fish_breeds_id',
+            DB::raw('count(*) as cnt'),
+            DB::raw('round(avg(length), 2) as avg_length'),
+            DB::raw('min(length) as min_length'),
+            DB::raw('max(length) as max_length'),
+            DB::raw('round(avg(weight), 2) as avg_weight'),
+            DB::raw('min(weight) as min_weight'),
+            DB::raw('max(weight) as max_weight'),
+            DB::raw('sum(if(weight IS NOT NULL, 1, 0)) as weighed_count')
+        )
             ->where('lakes_id', $lake->id)
             ->with('fishBreed')
             ->groupBy('fish_breeds_id')
             ->orderBy('cnt', 'desc');
 
-        if(!is_null($quantity))
+        if (!is_null($quantity)) {
             $query->limit($quantity);
-        
+        }
+
         return $query->get();
     }
 }

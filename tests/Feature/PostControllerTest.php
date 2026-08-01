@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
+use Fishinglog\Models\Expedition;
+use Fishinglog\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Fishinglog\User;
-use Fishinglog\Expedition;
+
+use Tests\TestCase;
 
 class PostControllerTest extends TestCase
 {
@@ -18,12 +18,10 @@ class PostControllerTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        // Required explicitly to catch ModelNotFoundException in feature tests sometimes,
-        // or we can assert the response status is 404 (which Laravel converts it to).
         $response = $this->post('/post', [
             'date' => '2023-01-01',
             'description' => 'Test post description',
-            'expeditions_id' => 1
+            'expeditions_id' => 1,
         ]);
 
         $response->assertStatus(404);

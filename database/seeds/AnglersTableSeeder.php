@@ -1,5 +1,6 @@
 <?php
 
+use Fishinglog\Models\Angler;
 use Illuminate\Database\Seeder;
 
 class AnglersTableSeeder extends Seeder
@@ -11,6 +12,6 @@ class AnglersTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Fishinglog\Angler::class, 50)->create();
+        Angler::factory()->count(50)->create();
     }
 }

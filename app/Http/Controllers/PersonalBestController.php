@@ -2,49 +2,52 @@
 
 namespace Fishinglog\Http\Controllers;
 
+use Fishinglog\Models\Angler;
+use Fishinglog\Models\Lake;
+use Fishinglog\Models\Record;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PersonalBestController extends Controller
 {
     /**
-     * @param \Fishinglog\Angler
+     * @param \Fishinglog\Models\Angler $angler
      * 
-     * @return \Fishinglog\Record
+     * @return \Fishinglog\Models\Record|null
      */
-    public static function bestByLength(\Fishinglog\Angler $angler)
+    public static function bestByLength(Angler $angler)
     {
-        return \Fishinglog\Record::where("anglers_id", $angler->id)
+        return Record::where("anglers_id", $angler->id)
             ->orderBy("length", "desc")
             ->first();
     }
 
     /**
-     * @param \Fishinglog\Angler
+     * @param \Fishinglog\Models\Angler $angler
      * 
-     * @return \Fishinglog\Record
+     * @return \Fishinglog\Models\Record|null
      */
-    public static function bestByWeight(\Fishinglog\Angler $angler)
+    public static function bestByWeight(Angler $angler)
     {
-        return \Fishinglog\Record::where("anglers_id", $angler->id)
+        return Record::where("anglers_id", $angler->id)
             ->whereNotNull("weight")
             ->orderBy("weight", "desc")
             ->first();
     }
 
     /**
-     * @param \Fishinglog\Angler
+     * @param \Fishinglog\Models\Angler $angler
      * 
-     * @return \Fishinglog\Lake
+     * @return \Fishinglog\Models\Lake|null
      */
-    public static function lakeWithMostCatches(\Fishinglog\Angler $angler)
+    public static function lakeWithMostCatches(Angler $angler)
     {
-        $lake = \Fishinglog\Record::select('lakes_id', DB::raw('count(id) total'))
+        $lake = Record::select('lakes_id', DB::raw('count(id) total'))
             ->where("anglers_id", $angler->id)
             ->groupBy('lakes_id')
             ->orderBy('total', 'desc')
             ->first();
 
-        return \Fishinglog\Lake::find($lake->lakes_id);
+        return $lake ? Lake::find($lake->lakes_id) : null;
     }
 }

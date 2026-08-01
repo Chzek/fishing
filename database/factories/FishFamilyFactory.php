@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Fishinglog\FishFamily;
+use Fishinglog\Models\FishFamily;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FishFamilyFactory extends Factory
@@ -22,7 +22,7 @@ class FishFamilyFactory extends Factory
     public function definition()
     {
         return [
-            'name' => 'fake-'.$this->faker->name,
+            'name' => 'fake-' . $this->faker->name,
         ];
     }
 }

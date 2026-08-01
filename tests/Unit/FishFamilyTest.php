@@ -2,11 +2,10 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
+use Fishinglog\Models\FishBreed;
+use Fishinglog\Models\FishFamily;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-
-use Fishinglog\FishFamily;
-use Fishinglog\FishBreed;
+use Tests\TestCase;
 
 class FishFamilyTest extends TestCase
 {
@@ -16,7 +15,7 @@ class FishFamilyTest extends TestCase
     public function a_fish_family_has_many_breeds()
     {
         $family = FishFamily::factory()->create();
-        
+
         $breed1 = FishBreed::factory()->create(['fish_families_id' => $family->id]);
         $breed2 = FishBreed::factory()->create(['fish_families_id' => $family->id]);
 

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Fishinglog\Lure;
+use Fishinglog\Models\Lure;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class LureFactory extends Factory
@@ -22,7 +22,7 @@ class LureFactory extends Factory
     public function definition()
     {
         return [
-            'name' => 'fake-'. $this->faker->company,
+            'name' => 'fake-' . $this->faker->company,
             'color' => $this->faker->colorName,
             'size' => $this->faker->numerify('##.## oz.'),
         ];

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Fishinglog\User;
+use Fishinglog\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

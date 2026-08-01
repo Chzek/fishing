@@ -1,5 +1,6 @@
 <?php
 
+use Fishinglog\Models\Lure;
 use Illuminate\Database\Seeder;
 
 class LuresTableSeeder extends Seeder
@@ -11,6 +12,6 @@ class LuresTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Fishinglog\Lure::class, 20)->create();
+        Lure::factory()->count(50)->create();
     }
 }

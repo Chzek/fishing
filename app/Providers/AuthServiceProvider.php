@@ -2,9 +2,9 @@
 
 namespace Fishinglog\Providers;
 
-use Fishinglog\User;
-use Illuminate\Support\Facades\Gate;
+use Fishinglog\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -14,7 +14,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        // 'Fishinglog\Model' => 'Fishinglog\Policies\ModelPolicy',
+        // 'Fishinglog\Models\Model' => 'Fishinglog\Policies\ModelPolicy',
     ];
 
     /**

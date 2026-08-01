@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Fishinglog\Lake;
+use Fishinglog\Models\Lake;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class LakeFactory extends Factory
@@ -22,7 +22,7 @@ class LakeFactory extends Factory
     public function definition()
     {
         return [
-            'name' => 'fake-Lake '. $this->faker->lastName,
+            'name' => 'fake-Lake ' . $this->faker->lastName,
             'latitude' => $this->faker->latitude,
             'longitude' => $this->faker->longitude,
         ];

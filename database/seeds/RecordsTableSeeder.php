@@ -1,5 +1,6 @@
 <?php
 
+use Fishinglog\Models\Record;
 use Illuminate\Database\Seeder;
 
 class RecordsTableSeeder extends Seeder
@@ -11,6 +12,6 @@ class RecordsTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Fishinglog\Record::class, 200)->create();
+        Record::factory()->count(50)->create();
     }
 }

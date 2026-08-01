@@ -3,6 +3,7 @@
 namespace Fishinglog\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateLureRequest extends FormRequest
 {
@@ -22,9 +23,13 @@ class UpdateLureRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'string|required|unique_with:lures,name,color,size,'.$this->id,
-            'color' => 'string',
-            'size' => 'string',
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('lures')->ignore($this->id),
+            ],
+            'color' => 'nullable|string',
+            'size' => 'nullable|string',
         ];
     }
 }

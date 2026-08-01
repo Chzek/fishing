@@ -2,14 +2,16 @@
 
 namespace Fishinglog\Http\Controllers\Angler;
 
-use Fishinglog\Angler;
 use Fishinglog\Http\Controllers\Controller;
+use Fishinglog\Http\Requests\StoreAnglerRequest;
+use Fishinglog\Http\Requests\UpdateAnglerAvatarRequest;
+use Fishinglog\Http\Requests\UpdateAnglerRequest;
+use Fishinglog\Models\Angler;
+use Fishinglog\Models\Crew;
+use Fishinglog\Models\Record;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Fishinglog\Http\Requests\StoreAnglerRequest;
-use Fishinglog\Http\Requests\UpdateAnglerRequest;
-use Fishinglog\Http\Requests\UpdateAnglerAvatarRequest;
 
 class AnglerController extends Controller
 {
@@ -20,19 +22,15 @@ class AnglerController extends Controller
      */
     public function index()
     {
-        //
-        $anglers = \Fishinglog\Angler::withCount('records')
-            ->withCount(['records as lakes_count' => function($query) {
+        $anglers = Angler::withCount('records')
+            ->withCount(['records as lakes_count' => function ($query) {
                 $query->select(DB::raw('count(distinct records.lakes_id)'));
             }])
-            // ->orderBy('lastName', 'asc')
-            // ->orderBy('firstName', 'asc')
-            // ->orderBy('middleName', 'asc')
             ->orderBy('records_count', 'desc')
             ->paginate(10);
 
         return view('angler.index', [
-            'anglers' => $anglers
+            'anglers' => $anglers,
         ]);
     }
 
@@ -53,23 +51,17 @@ class AnglerController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Fishinglog\Http\Requests\StoreAnglerRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreAnglerRequest $request)
     {
-        //
-
-        // $avatarName = 'avatar_'.time().'.'.$request->avatar->getClientOriginalExtension();
-        // $request->avatar->storeAs('avatars', $avatarName);
-
         $angler = new Angler;
         $angler->firstName = $request->firstName;
         $angler->middleName = $request->middleName;
         $angler->lastName = $request->lastName;
         $angler->user_id = $request->user_id;
         $angler->birthdate = $request->birthdate;
-        // $angler->avatar = $avatarName;
 
         $angler->save();
 
@@ -79,25 +71,24 @@ class AnglerController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \Fishinglog\Angler  $angler
+     * @param  \Fishinglog\Models\Angler  $angler
      * @return \Illuminate\Http\Response
      */
     public function show(Angler $angler)
     {
-        $records = \Fishinglog\Record::where('anglers_id', $angler->id)
+        $records = Record::where('anglers_id', $angler->id)
             ->orderBy('caught', 'desc')
             ->with('fishBreed')
             ->take(10)
             ->get();
 
-        $longest = \Fishinglog\Record::where('anglers_id', $angler->id)
+        $longest = Record::where('anglers_id', $angler->id)
             ->orderBy('length', 'desc')
             ->first();
 
-        $count = \Fishinglog\Record::where('anglers_id', $angler->id)
-            ->count();
+        $count = Record::where('anglers_id', $angler->id)->count();
 
-        $crews = \Fishinglog\Crew::where('anglers_id', $angler->id)->count();
+        $crews = Crew::where('anglers_id', $angler->id)->count();
 
         return view('angler.show', [
             'angler' => $angler,
@@ -111,7 +102,7 @@ class AnglerController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \Fishinglog\Angler  $angler
+     * @param  \Fishinglog\Models\Angler  $angler
      * @return \Illuminate\Http\Response
      */
     public function edit(Angler $angler)
@@ -124,34 +115,35 @@ class AnglerController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Fishinglog\Angler  $angler
+     * @param  \Fishinglog\Http\Requests\UpdateAnglerRequest  $request
+     * @param  \Fishinglog\Models\Angler  $angler
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateAnglerRequest $request, Angler $angler)
     {
-        //
-        $angler = \Fishinglog\Angler::find($request->id);
+        $targetAngler = Angler::find($request->id) ?? $angler;
 
-        $avatarName = 'avatar_'.time().'.'.$request->avatar->getClientOriginalExtension();
-        $request->avatar->storeAs('avatars', $avatarName);
+        if ($request->hasFile('avatar')) {
+            $avatarName = 'avatar_' . time() . '.' . $request->avatar->getClientOriginalExtension();
+            $request->avatar->storeAs('avatars', $avatarName);
+            $targetAngler->avatar = $avatarName;
+        }
 
-        $angler->firstName = $request->firstName;
-        $angler->middleName = $request->middleName;
-        $angler->lastName = $request->lastName;
-        $angler->user_id = $request->user_id;
-        $angler->birthdate = $request->birthdate;
-        $angler->avatar = $avatarName;
+        $targetAngler->firstName = $request->firstName;
+        $targetAngler->middleName = $request->middleName;
+        $targetAngler->lastName = $request->lastName;
+        $targetAngler->user_id = $request->user_id;
+        $targetAngler->birthdate = $request->birthdate;
 
-        $angler->save();
+        $targetAngler->save();
 
-        return redirect('/angler/'.$angler->id);
+        return redirect('/angler/' . $targetAngler->id);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Fishinglog\Angler  $angler
+     * @param  \Fishinglog\Models\Angler  $angler
      * @return \Illuminate\Http\Response
      */
     public function destroy(Angler $angler)
@@ -163,8 +155,7 @@ class AnglerController extends Controller
     {
         $angler = Auth::user()->angler;
 
-        $avatarName = 'avatar_'.$angler->id.'_'.time().'.'.$request->avatar->getClientOriginalExtension();
-
+        $avatarName = 'avatar_' . $angler->id . '_' . time() . '.' . $request->avatar->getClientOriginalExtension();
         $request->avatar->storeAs('avatars', $avatarName);
 
         $angler->avatar = $avatarName;
@@ -172,6 +163,4 @@ class AnglerController extends Controller
 
         return back()->with('success', 'You have successfully uploaded your avatar.');
     }
-
-
 }

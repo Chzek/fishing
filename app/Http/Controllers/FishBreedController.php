@@ -2,11 +2,11 @@
 
 namespace Fishinglog\Http\Controllers;
 
-use Fishinglog\FishBreed;
-use Fishinglog\FishFamily;
-use Illuminate\Http\Request;
 use Fishinglog\Http\Requests\StoreFishBreedRequest;
 use Fishinglog\Http\Requests\UpdateFishBreedRequest;
+use Fishinglog\Models\FishBreed;
+use Fishinglog\Models\FishFamily;
+use Illuminate\Http\Request;
 
 class FishBreedController extends Controller
 {
@@ -18,7 +18,6 @@ class FishBreedController extends Controller
     public function index()
     {
         //
-
     }
 
     /**
@@ -38,14 +37,12 @@ class FishBreedController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Fishinglog\Http\Requests\StoreFishBreedRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreFishBreedRequest $request)
     {
-        //
-
-        $imageName = 'avatar_'.time().'.'.$request->image->getClientOriginalExtension();
+        $imageName = 'avatar_' . time() . '.' . $request->image->getClientOriginalExtension();
         $request->image->storeAs('fish', $imageName);
 
         $breed = new FishBreed;
@@ -61,7 +58,7 @@ class FishBreedController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \Fishinglog\FishBreed  $fishBreed
+     * @param  \Fishinglog\Models\FishBreed  $fishBreed
      * @return \Illuminate\Http\Response
      */
     public function show(FishBreed $fishBreed)
@@ -72,7 +69,7 @@ class FishBreedController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \Fishinglog\FishBreed  $fishBreed
+     * @param  \Fishinglog\Models\FishBreed  $fishBreed
      * @return \Illuminate\Http\Response
      */
     public function edit(FishBreed $fishBreed)
@@ -85,39 +82,36 @@ class FishBreedController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Fishinglog\FishBreed  $fishBreed
+     * @param  \Fishinglog\Http\Requests\UpdateFishBreedRequest  $request
+     * @param  \Fishinglog\Models\FishBreed  $fishBreed
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateFishBreedRequest $request, FishBreed $fishBreed)
     {
-        //
-        $breed = \Fishinglog\FishBreed::find($request->id);
+        $breed = FishBreed::find($request->id) ?? $fishBreed;
 
         $breed->fish_families_id = $request->fish_families_id;
         $breed->name = $request->name;
 
         if ($request->hasFile('image')) {
-            $imageName = 'avatar_'.time().'.'.$request->image->getClientOriginalExtension();
+            $imageName = 'avatar_' . time() . '.' . $request->image->getClientOriginalExtension();
             $request->image->storeAs('fish', $imageName);
             $breed->image = $imageName;
         }
 
         $breed->save();
 
-        return redirect('/fish/'.$breed->id);
+        return redirect('/fish/' . $breed->id);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Fishinglog\FishBreed  $fishBreed
+     * @param  \Fishinglog\Models\FishBreed  $fishBreed
      * @return \Illuminate\Http\Response
      */
     public function destroy(FishBreed $fishBreed)
     {
         //
     }
-
-
 }

@@ -1,5 +1,22 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use Fishinglog\Http\Controllers\Admin\AdminController;
+use Fishinglog\Http\Controllers\Angler\AnglerController;
+use Fishinglog\Http\Controllers\Angler\AnglerProfileController;
+use Fishinglog\Http\Controllers\CrewController;
+use Fishinglog\Http\Controllers\ExpeditionController;
+use Fishinglog\Http\Controllers\FishBreedController;
+use Fishinglog\Http\Controllers\FishController;
+use Fishinglog\Http\Controllers\FishFamilyController;
+use Fishinglog\Http\Controllers\LakeController;
+use Fishinglog\Http\Controllers\LakeVisitController;
+use Fishinglog\Http\Controllers\LureController;
+use Fishinglog\Http\Controllers\PostController;
+use Fishinglog\Http\Controllers\ProfileController;
+use Fishinglog\Http\Controllers\RecordController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -7,11 +24,9 @@
 |
 | Here is where you can register web routes for your application. These
 | routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| contains the "web" middleware group.
 |
 */
-
-use Fishinglog\Http\Controllers\Admin\AdminController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,107 +34,106 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::prefix('profile')->group(function(){
-  Route::get('/', 'ProfileController@show')
-    ->name('home');
-  Route::get('/edit', 'ProfileController@edit');
+Route::prefix('profile')->group(function () {
+    Route::get('/', [ProfileController::class, 'show'])->name('home');
+    Route::get('/edit', [ProfileController::class, 'edit']);
 });
 
 Route::get('/admin', [AdminController::class, 'index'])
-  ->middleware('is_admin')
-  ->name('admin');
+    ->middleware('is_admin')
+    ->name('admin');
 
-Route::group(['middleware' => 'auth'], function(){
+Route::group(['middleware' => 'auth'], function () {
 
-  // Angler routes
-  Route::prefix('angler')->group(function(){
-    Route::get('/', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'index']);
-    Route::get('/create', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'create']);
-    Route::get('/{angler}', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'show']);
-    Route::get('/{angler}/edit', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'edit']);
-    Route::post('/', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'store']);
-    Route::put('/', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'update']);
-    Route::get('/{angler}/profile', [Fishinglog\Http\Controllers\Angler\AnglerProfileController::class, 'show']);
-    Route::post('/avatar', [\Fishinglog\Http\Controllers\Angler\AnglerController::class, 'updateAvatar'])->name('angler.avatar.update');
-  });
-
-  // Lake routes
-  Route::prefix('lake')->group(function(){
-    Route::get('/', 'LakeController@index')->name('lakes.index');
-    Route::get('/create', 'LakeController@create');
-    Route::get('/{lake}', 'LakeController@show');
-    Route::get('/{lake}/edit', 'LakeController@edit');
-    Route::post('/', 'LakeController@store');
-    Route::put('/', 'LakeController@update');
-  });
-
-  Route::get('/lake/{lake}/visits', 'LakeVisitController@index');
-
-  // Fish routes
-  Route::prefix('fish')->group(function(){
-    Route::get('/', 'FishController@index');
-    Route::get('/{id}', 'FishController@show');
-
-    Route::prefix('breed')->group(function(){
-      Route::get('/create', 'FishBreedController@create');
-      Route::get('/{fishBreed}/edit', 'FishBreedController@edit');
-      Route::post('/', 'FishBreedController@store');
-      Route::put('/', 'FishBreedController@update');
+    // Angler routes
+    Route::prefix('angler')->group(function () {
+        Route::get('/', [AnglerController::class, 'index']);
+        Route::get('/create', [AnglerController::class, 'create']);
+        Route::get('/{angler}', [AnglerController::class, 'show']);
+        Route::get('/{angler}/edit', [AnglerController::class, 'edit']);
+        Route::post('/', [AnglerController::class, 'store']);
+        Route::put('/', [AnglerController::class, 'update']);
+        Route::get('/{angler}/profile', [AnglerProfileController::class, 'show']);
+        Route::post('/avatar', [AnglerController::class, 'updateAvatar'])->name('angler.avatar.update');
     });
 
-    Route::prefix('family')->group(function(){
-      Route::get('/create', 'FishFamilyController@create');
-      Route::get('/{fishFamily}/edit', 'FishFamilyController@edit');
-      Route::post('/', 'FishFamilyController@store');
-      Route::put('/', 'FishFamilyController@update');
+    // Lake routes
+    Route::prefix('lake')->group(function () {
+        Route::get('/', [LakeController::class, 'index'])->name('lakes.index');
+        Route::get('/create', [LakeController::class, 'create']);
+        Route::get('/{lake}', [LakeController::class, 'show']);
+        Route::get('/{lake}/edit', [LakeController::class, 'edit']);
+        Route::post('/', [LakeController::class, 'store']);
+        Route::put('/', [LakeController::class, 'update']);
     });
-  });
 
-  // Lure routes
-  Route::prefix('lure')->group(function(){
-    Route::get('/', 'LureController@index');
-    Route::get('/create', 'LureController@create');
-    Route::get('/{lure}', 'LureController@show');
-    Route::get('/{lure}/edit', 'LureController@edit');
-    Route::post('/', 'LureController@store');
-    Route::put('/', 'LureController@update');
-  });
+    Route::get('/lake/{lake}/visits', [LakeVisitController::class, 'index']);
 
-  // Record routes
-  Route::prefix('record')->group(function(){
-    Route::get('/', 'RecordController@index');
-    Route::get('/create', 'RecordController@create');
-    Route::get('/{record}', 'RecordController@show');
-    Route::get('/{record}/edit', 'RecordController@edit');
-    Route::post('/', 'RecordController@store');
-    Route::put('/', 'RecordController@update');
-  });
+    // Fish routes
+    Route::prefix('fish')->group(function () {
+        Route::get('/', [FishController::class, 'index']);
+        Route::get('/{id}', [FishController::class, 'show']);
 
-  // Expedition routes
-  Route::prefix('expedition')->group(function(){
-    Route::get('/', 'ExpeditionController@index');
-    Route::get('/create', 'ExpeditionController@create');
-    Route::get('/{expedition}', 'ExpeditionController@show');
-    Route::get('/{expedition}/edit', 'ExpeditionController@edit');
-    Route::post('/', 'ExpeditionController@store');
-    Route::put('/', 'ExpeditionController@update');
-  });
+        Route::prefix('breed')->group(function () {
+            Route::get('/create', [FishBreedController::class, 'create']);
+            Route::get('/{fishBreed}/edit', [FishBreedController::class, 'edit']);
+            Route::post('/', [FishBreedController::class, 'store']);
+            Route::put('/', [FishBreedController::class, 'update']);
+        });
 
-  // Crew routes
-  Route::prefix('crew')->group(function(){
-    Route::get('/create', 'CrewController@create');
-    Route::get('/{crew}/edit', 'CrewController@edit');
-    Route::post('/', 'CrewController@store');
-    Route::put('/', 'CrewController@update');
-  });
+        Route::prefix('family')->group(function () {
+            Route::get('/create', [FishFamilyController::class, 'create']);
+            Route::get('/{fishFamily}/edit', [FishFamilyController::class, 'edit']);
+            Route::post('/', [FishFamilyController::class, 'store']);
+            Route::put('/', [FishFamilyController::class, 'update']);
+        });
+    });
 
-  // Post routes
-  Route::prefix('post')->group(function(){
-    Route::get('/create', 'PostController@create');
-    Route::get('/{post}', 'PostController@show');
-    Route::get('/{post}/edit', 'PostController@edit');
-    Route::post('/', 'PostController@store');
-    Route::put('/', 'PostController@update');
-  });
+    // Lure routes
+    Route::prefix('lure')->group(function () {
+        Route::get('/', [LureController::class, 'index']);
+        Route::get('/create', [LureController::class, 'create']);
+        Route::get('/{lure}', [LureController::class, 'show']);
+        Route::get('/{lure}/edit', [LureController::class, 'edit']);
+        Route::post('/', [LureController::class, 'store']);
+        Route::put('/', [LureController::class, 'update']);
+    });
+
+    // Record routes
+    Route::prefix('record')->group(function () {
+        Route::get('/', [RecordController::class, 'index']);
+        Route::get('/create', [RecordController::class, 'create']);
+        Route::get('/{record}', [RecordController::class, 'show']);
+        Route::get('/{record}/edit', [RecordController::class, 'edit']);
+        Route::post('/', [RecordController::class, 'store']);
+        Route::put('/', [RecordController::class, 'update']);
+    });
+
+    // Expedition routes
+    Route::prefix('expedition')->group(function () {
+        Route::get('/', [ExpeditionController::class, 'index']);
+        Route::get('/create', [ExpeditionController::class, 'create']);
+        Route::get('/{expedition}', [ExpeditionController::class, 'show']);
+        Route::get('/{expedition}/edit', [ExpeditionController::class, 'edit']);
+        Route::post('/', [ExpeditionController::class, 'store']);
+        Route::put('/', [ExpeditionController::class, 'update']);
+    });
+
+    // Crew routes
+    Route::prefix('crew')->group(function () {
+        Route::get('/create', [CrewController::class, 'create']);
+        Route::get('/{crew}/edit', [CrewController::class, 'edit']);
+        Route::post('/', [CrewController::class, 'store']);
+        Route::put('/', [CrewController::class, 'update']);
+    });
+
+    // Post routes
+    Route::prefix('post')->group(function () {
+        Route::get('/create', [PostController::class, 'create']);
+        Route::get('/{post}', [PostController::class, 'show']);
+        Route::get('/{post}/edit', [PostController::class, 'edit']);
+        Route::post('/', [PostController::class, 'store']);
+        Route::put('/', [PostController::class, 'update']);
+    });
 
 });

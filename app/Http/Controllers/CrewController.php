@@ -2,15 +2,14 @@
 
 namespace Fishinglog\Http\Controllers;
 
-use Fishinglog\Crew;
-use Illuminate\Http\Request;
 use Fishinglog\Http\Requests\StoreCrewRequest;
 use Fishinglog\Http\Requests\UpdateCrewRequest;
+use Fishinglog\Models\Crew;
+use Fishinglog\Models\Expedition;
+use Illuminate\Http\Request;
 
 class CrewController extends Controller
 {
-
-
     /**
      * Display a listing of the resource.
      *
@@ -24,12 +23,13 @@ class CrewController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function create(Request $request)
     {
         $crew = new Crew;
-        $expedition = \Fishinglog\Expedition::find($request->expeditions_id);
+        $expedition = Expedition::find($request->expeditions_id);
 
         return view('expedition.crew.create', [
             'expedition' => $expedition,
@@ -40,13 +40,11 @@ class CrewController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Fishinglog\Http\Requests\StoreCrewRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreCrewRequest $request)
     {
-        //
-
         $crew = new Crew;
         $crew->expeditions_id = $request->expeditions_id;
         $crew->anglers_id = $request->anglers_id;
@@ -54,13 +52,13 @@ class CrewController extends Controller
 
         $crew->save();
 
-        return redirect('/expedition/'.$request->expeditions_id);
+        return redirect('/expedition/' . $request->expeditions_id);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \Fishinglog\Crew  $crew
+     * @param  \Fishinglog\Models\Crew  $crew
      * @return \Illuminate\Http\Response
      */
     public function show(Crew $crew)
@@ -71,7 +69,7 @@ class CrewController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \Fishinglog\Crew  $crew
+     * @param  \Fishinglog\Models\Crew  $crew
      * @return \Illuminate\Http\Response
      */
     public function edit(Crew $crew)
@@ -82,8 +80,8 @@ class CrewController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Fishinglog\Crew  $crew
+     * @param  \Fishinglog\Http\Requests\UpdateCrewRequest  $request
+     * @param  \Fishinglog\Models\Crew  $crew
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateCrewRequest $request, Crew $crew)
@@ -94,7 +92,7 @@ class CrewController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Fishinglog\Crew  $crew
+     * @param  \Fishinglog\Models\Crew  $crew
      * @return \Illuminate\Http\Response
      */
     public function destroy(Crew $crew)

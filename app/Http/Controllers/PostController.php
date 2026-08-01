@@ -2,17 +2,16 @@
 
 namespace Fishinglog\Http\Controllers;
 
-use Fishinglog\Angler;
-use Fishinglog\Post;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Fishinglog\Http\Requests\StorePostRequest;
 use Fishinglog\Http\Requests\UpdatePostRequest;
+use Fishinglog\Models\Angler;
+use Fishinglog\Models\Expedition;
+use Fishinglog\Models\Post;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-
-
     /**
      * Display a listing of the resource.
      *
@@ -26,14 +25,13 @@ class PostController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function create(Request $request)
     {
-        //
         $post = new Post;
-
-        $expedition = \Fishinglog\Expedition::find($request->expeditions_id);
+        $expedition = Expedition::find($request->expeditions_id);
 
         return view('expedition.post.create', [
             'post' => $post,
@@ -44,13 +42,11 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Fishinglog\Http\Requests\StorePostRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StorePostRequest $request)
     {
-        //
-
         $post = new Post;
         $post->date = $request->date;
         $post->description = $request->description;
@@ -59,13 +55,13 @@ class PostController extends Controller
 
         $post->save();
 
-        return redirect()->back(); 
+        return redirect()->back();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \Fishinglog\Post  $post
+     * @param  \Fishinglog\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
     public function show(Post $post)
@@ -76,7 +72,7 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \Fishinglog\Post  $post
+     * @param  \Fishinglog\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
     public function edit(Post $post)
@@ -88,7 +84,7 @@ class PostController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Fishinglog\Post  $post
+     * @param  \Fishinglog\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
     public function update(UpdatePostRequest $request, Post $post)
@@ -99,7 +95,7 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Fishinglog\Post  $post
+     * @param  \Fishinglog\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
     public function destroy(Post $post)

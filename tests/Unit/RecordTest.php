@@ -2,9 +2,9 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
+use Fishinglog\Models\Record;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Fishinglog\Record;
+use Tests\TestCase;
 
 class RecordTest extends TestCase
 {

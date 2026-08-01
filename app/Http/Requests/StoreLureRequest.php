@@ -3,6 +3,7 @@
 namespace Fishinglog\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreLureRequest extends FormRequest
 {
@@ -22,9 +23,13 @@ class StoreLureRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'string|required|unique:lures,name,color,size',
-            'color' => 'string',
-            'size' => 'string',
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('lures'),
+            ],
+            'color' => 'nullable|string',
+            'size' => 'nullable|string',
         ];
     }
 }

@@ -2,10 +2,9 @@
 
 namespace Fishinglog\Providers;
 
-use Fishinglog\User;
-use Illuminate\Support\ServiceProvider;
+use Fishinglog\Models\User;
 use Illuminate\Pagination\Paginator;
-// use Laravel\Pulse\Facades\Pulse;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,18 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
         Paginator::useBootstrap();
-
-    // TODO: Uncomment when laravel/pulse is installed
-    // Pulse::users(function ($ids) {
-    //     return User::findMany($ids)->map(fn ($user) => [
-    //         'id' => $user->id,
-    //         'name' => $user->name,
-    //         'extra' => $user->email,
-    //         'avatar' => $user->avatar,
-    //     ]);
-    // });
     }
 
     /**
@@ -37,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-    //
+        //
     }
 }

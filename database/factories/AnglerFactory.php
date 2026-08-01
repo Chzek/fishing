@@ -2,7 +2,8 @@
 
 namespace Database\Factories;
 
-use Fishinglog\Angler;
+use Fishinglog\Models\Angler;
+use Fishinglog\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AnglerFactory extends Factory
@@ -21,12 +22,12 @@ class AnglerFactory extends Factory
      */
     public function definition()
     {
-        $user = \Fishinglog\User::factory()->create();
-        $avatarName = 'avatar_'.$user->id.'_'.time().'.jpg';
+        $user = User::factory()->create();
+        $avatarName = 'avatar_' . $user->id . '_' . time() . '.jpg';
 
         return [
             'firstName' => $this->faker->firstName,
-            'middleName' => 'fake-'.$this->faker->firstName,
+            'middleName' => 'fake-' . $this->faker->firstName,
             'lastName' => $this->faker->lastName,
             'user_id' => $user->id,
             'avatar' => $avatarName,

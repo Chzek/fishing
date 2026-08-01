@@ -2,8 +2,9 @@
 
 namespace Fishinglog\Http\Controllers;
 
-use Fishinglog\FishBreed;
-use Fishinglog\FishFamily;
+use Fishinglog\Models\FishBreed;
+use Fishinglog\Models\FishFamily;
+use Fishinglog\Models\Record;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,14 +17,11 @@ class FishController extends Controller
      */
     public function index()
     {
-        //
-        $fishes = \Fishinglog\FishBreed::with(['family'])
+        $fishes = FishBreed::with(['family'])
             ->withCount('records')
             ->orderBy('fish_families_id', 'asc')
             ->orderBy('name', 'asc')
             ->paginate(10);
-
-       // $fishes = $fishes->sortBy('family.name');
 
         return view('fish.index', [
             'fishes' => $fishes,
@@ -33,17 +31,16 @@ class FishController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  fish_breed.id  $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        //
-        $fish = \Fishinglog\FishBreed::with(['family'])->find($id);
+        $fish = FishBreed::with(['family'])->findOrFail($id);
 
-        $longest = \Fishinglog\Record::where('fish_breeds_id', $fish->id)->max('length');
-        $fattest = \Fishinglog\Record::where('fish_breeds_id', $fish->id)->max('weight');
-        $count = \Fishinglog\Record::where('fish_breeds_id', $fish->id)->count();
+        $longest = Record::where('fish_breeds_id', $fish->id)->max('length');
+        $fattest = Record::where('fish_breeds_id', $fish->id)->max('weight');
+        $count = Record::where('fish_breeds_id', $fish->id)->count();
 
         $lakes = $fish->records()
             ->select(
@@ -68,5 +65,3 @@ class FishController extends Controller
         ]);
     }
 }
-
-// dnr.cornell.edu for Fish Family reference and images

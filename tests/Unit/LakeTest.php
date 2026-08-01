@@ -2,12 +2,9 @@
 
 namespace Tests\Unit;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Fishinglog\Models\Lake;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-
-use Fishinglog\Lake;
 
 class LakeTest extends TestCase
 {
@@ -15,7 +12,7 @@ class LakeTest extends TestCase
 
     protected $lake;
 
-    public function setUp() :void
+    public function setUp(): void
     {
         parent::setUp();
 

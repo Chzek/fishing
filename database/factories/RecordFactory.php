@@ -2,7 +2,11 @@
 
 namespace Database\Factories;
 
-use Fishinglog\Record;
+use Fishinglog\Models\Angler;
+use Fishinglog\Models\FishBreed;
+use Fishinglog\Models\Lake;
+use Fishinglog\Models\Lure;
+use Fishinglog\Models\Record;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RecordFactory extends Factory
@@ -22,10 +26,10 @@ class RecordFactory extends Factory
     public function definition()
     {
         return [
-            'anglers_id' => \Fishinglog\Angler::factory()->create()->id,
-            'lakes_id' => \Fishinglog\Lake::factory()->create()->id,
-            'fish_breeds_id' => \Fishinglog\FishBreed::factory()->create()->id,
-            'lures_id' => \Fishinglog\Lure::factory()->create()->id,
+            'anglers_id' => Angler::factory()->create()->id,
+            'lakes_id' => Lake::factory()->create()->id,
+            'fish_breeds_id' => FishBreed::factory()->create()->id,
+            'lures_id' => Lure::factory()->create()->id,
             'weight' => $this->faker->randomFloat(2, 1, 100),
             'length' => $this->faker->randomFloat(2, 1, 100),
             'temperature' => $this->faker->randomFloat(0, 1, 150),

@@ -1,0 +1,106 @@
+<?php
+
+namespace Tests\Feature;
+
+use Fishinglog\Models\Angler;
+use Fishinglog\Models\FishBreed;
+use Fishinglog\Models\Lake;
+use Fishinglog\Models\Lure;
+use Fishinglog\Models\Record;
+use Fishinglog\Models\User;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Tests\TestCase;
+
+class RecordControllerTest extends TestCase
+{
+    use DatabaseMigrations;
+
+    protected $user;
+    protected $record;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create();
+        $this->record = Record::factory()->create();
+    }
+
+    /** @test */
+    public function unauthenticated_user_cannot_access_records()
+    {
+        $response = $this->get('/record');
+        $response->assertRedirect('/login');
+    }
+
+    /** @test */
+    public function authenticated_user_can_view_records_index()
+    {
+        $this->actingAs($this->user);
+
+        $response = $this->get('/record');
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function authenticated_user_can_create_a_record()
+    {
+        $this->actingAs($this->user);
+
+        $angler = Angler::factory()->create();
+        $lake = Lake::factory()->create();
+        $breed = FishBreed::factory()->create();
+        $lure = Lure::factory()->create();
+
+        $response = $this->post('/record', [
+            'anglers_id' => $angler->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $breed->id,
+            'lures_id' => $lure->id,
+            'weight' => 5.25,
+            'length' => 20.5,
+            'temperature' => 72,
+            'released' => 1,
+            'caught' => '2026-08-01',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('records', [
+            'anglers_id' => $angler->id,
+            'length' => 20.5,
+        ]);
+    }
+
+    /** @test */
+    public function authenticated_user_can_view_a_record()
+    {
+        $this->actingAs($this->user);
+
+        $response = $this->get('/record/' . $this->record->id);
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function authenticated_user_can_update_a_record()
+    {
+        $this->actingAs($this->user);
+
+        $response = $this->put('/record', [
+            'id' => $this->record->id,
+            'anglers_id' => $this->record->anglers_id,
+            'lakes_id' => $this->record->lakes_id,
+            'fish_breeds_id' => $this->record->fish_breeds_id,
+            'lures_id' => $this->record->lures_id,
+            'weight' => 8.50,
+            'length' => 24.0,
+            'temperature' => 68,
+            'released' => 0,
+            'caught' => '2026-08-01',
+        ]);
+
+        $response->assertRedirect('/record/' . $this->record->id);
+        $this->assertDatabaseHas('records', [
+            'id' => $this->record->id,
+            'length' => 24.0,
+        ]);
+    }
+}

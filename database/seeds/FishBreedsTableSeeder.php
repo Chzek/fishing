@@ -1,5 +1,6 @@
 <?php
 
+use Fishinglog\Models\FishBreed;
 use Illuminate\Database\Seeder;
 
 class FishBreedsTableSeeder extends Seeder
@@ -11,6 +12,6 @@ class FishBreedsTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Fishinglog\FishBreed::class, 12)->create();
+        FishBreed::factory()->count(50)->create();
     }
 }

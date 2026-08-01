@@ -1,11 +1,11 @@
 <?php
 
-namespace Fishinglog;
+namespace Fishinglog\Models;
 
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -60,6 +60,6 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function angler()
     {
-        return $this->hasOne('\Fishinglog\Angler', 'user_id');
+        return $this->hasOne(Angler::class, 'user_id');
     }
 }
