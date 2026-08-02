@@ -71,6 +71,8 @@ class LakeController extends Controller
         $lake->name = $request->name;
         $lake->latitude = $request->latitude;
         $lake->longitude = $request->longitude;
+        $lake->structure = $request->structure;
+        $lake->max_depth = $request->max_depth;
 
         $lake->save();
 
@@ -139,6 +141,8 @@ class LakeController extends Controller
         $targetLake->name = $request->name;
         $targetLake->latitude = $request->latitude;
         $targetLake->longitude = $request->longitude;
+        $targetLake->structure = $request->structure;
+        $targetLake->max_depth = $request->max_depth;
 
         $targetLake->save();
 

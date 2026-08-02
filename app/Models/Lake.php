@@ -11,6 +11,14 @@ class Lake extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $fillable = [
+        'name',
+        'latitude',
+        'longitude',
+        'structure',
+        'max_depth',
+    ];
+
     public function records()
     {
         return $this->hasMany(Record::class, 'lakes_id', 'id');

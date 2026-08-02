@@ -16,8 +16,34 @@
                 </div>
                 <div class="card-body">
                     <h1 class="card-subtitle mb-2 text-muted">
-                        {{ $lake->name}}
+                        {{ $lake->name }}
                     </h1>
+
+                    @if($lake->structure || $lake->max_depth || ($lake->latitude && $lake->longitude))
+                        <div class="mb-3">
+                            @if($lake->structure)
+                                <span class="badge badge-info p-2 mr-2">🌊 Bottom Terrain: <strong>{{ $lake->structure }}</strong></span>
+                            @endif
+                            @if($lake->max_depth)
+                                <span class="badge badge-secondary p-2 mr-2">📏 Max Depth: <strong>{{ $lake->max_depth }} ft</strong></span>
+                            @endif
+                            @if($lake->latitude && $lake->longitude)
+                                <span class="badge badge-success p-2">📍 Coordinates: <strong>{{ $lake->latitude }}°N, {{ $lake->longitude }}°W</strong></span>
+                            @endif
+                        </div>
+                    @endif
+
+                    @if($lake->latitude && $lake->longitude)
+                        <div class="card mb-4">
+                            <div class="card-header bg-light font-weight-bold">
+                                🗺️ Location & Topo Map
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="lake-show-map" style="height: 320px; width: 100%; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="card-group" style="margin-bottom: 0.5em">
                         <div class="card">
                             <div class="card-body">
@@ -108,3 +134,36 @@
     </div>
 </div>
 @endsection
+
+@section('scripts')
+@if($lake->latitude && $lake->longitude)
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const lat = {{ $lake->latitude }};
+        const lng = {{ $lake->longitude }};
+
+        const map = L.map('lake-show-map').setView([lat, lng], 12);
+
+        const topoLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 15,
+            attribution: 'Tiles &copy; Esri, NRCan CanVec'
+        }).addTo(map);
+
+        const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 15,
+            attribution: 'Source: Esri, Maxar'
+        });
+
+        L.control.layers({
+            "🗺️ Topo / Waterbody": topoLayer,
+            "🛰️ Satellite Imagery": satLayer
+        }).addTo(map);
+
+        L.marker([lat, lng]).addTo(map)
+            .bindPopup("<b>{{ $lake->name }}</b><br>Coordinates: " + lat + ", " + lng)
+            .openPopup();
+    });
+</script>
+@endif
+@endsection
+

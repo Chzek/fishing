@@ -111,6 +111,25 @@ The application automatically enriches catches with daily environmental weather 
 
 ---
 
+## 🗺️ Offline Canadian Mapping & Lake Location Picker
+
+The application includes an **Offline Mapping Engine** powered by Leaflet.js and PWA `CacheStorage`. Anglers can pre-download map tiles for their fishing region prior to leaving cellular/Wi-Fi coverage, and interactively view maps, drop location pins, and query satellite hardware GPS while offline on the boat.
+
+### 📥 1. Pre-trip Download Manager (`/map/offline`)
+1. While online before your trip, open **`🗺️ Offline Maps`** in the navigation bar (`/map/offline`).
+2. Tap **`📥 Download Wawa Region Pack (~55 MB)`** (or custom bounding box).
+3. The PWA Service Worker downloads ~3,700 hydrographic map tiles (Zoom 7 to 14) into browser `CacheStorage` (`fishinglog-map-tiles-v1`), covering Wawa Lake, Hawk Lake, Magpie River, Dubreuilville, and White River.
+
+### 📍 2. Logging Lake Coordinates Offline (`/lake/create`, `/lake/edit`)
+- **`📍 Use Current GPS Location` Button**: On the boat, tap this button. Your phone's internal **hardware satellite GPS chip** queries satellites offline, centers the map, drops a pin, and populates `latitude` & `longitude` instantly without cell signal.
+- **Interactive Map Pinning**: Tap or click anywhere on the lake map to drop or adjust a location pin.
+- **Lake Structure & Depth**: Record bottom terrain (`🌊 Bottom Terrain` e.g., *Granite/Rock, Weedline, Drop-off*) and max depth (`📏 Max Depth (ft)`).
+
+### 🛰️ 3. Layer Controls (Topo / Satellite)
+- Map views include a floating layer switcher: **`[ 🗺️ Topo / Waterbody ]`** (NRCan CanVec hydrography & contours) | **`[ 🛰️ Satellite Imagery ]`** (aerial imagery).
+
+---
+
 ## 🚀 Local Development & Setup
 
 This guide documents environment management, server lifecycle commands, test execution, and common utility tasks using **Laravel Sail + WSL 2**.

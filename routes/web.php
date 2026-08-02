@@ -17,6 +17,8 @@ use Fishinglog\Http\Controllers\PostController;
 use Fishinglog\Http\Controllers\ProfileController;
 use Fishinglog\Http\Controllers\RecordController;
 
+use Fishinglog\Http\Controllers\MapController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -56,6 +58,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{angler}/profile', [AnglerProfileController::class, 'show']);
         Route::post('/avatar', [AnglerController::class, 'updateAvatar'])->name('angler.avatar.update');
     });
+
+    // Offline Map routes
+    Route::get('/map/offline', [MapController::class, 'offline'])->name('map.offline');
 
     // Lake routes
     Route::prefix('lake')->group(function () {

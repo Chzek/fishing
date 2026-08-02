@@ -26,6 +26,8 @@ class UpdateLakeRequest extends FormRequest
             'name' => 'required|string|max:255',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
+            'structure' => 'nullable|string|max:255',
+            'max_depth' => 'nullable|integer|min:0|max:5000',
         ];
     }
 }

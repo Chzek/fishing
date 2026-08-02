@@ -22,6 +22,10 @@
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
 
+    <!-- Leaflet CSS & JS for Offline Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
@@ -46,6 +50,11 @@
                             <li class="nav-item">
                                 <a class="nav-link text-success font-weight-bold" href="{{ url('/record/quick') }}">
                                     ⚡ Quick Catch
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link font-weight-bold text-info" href="{{ url('/map/offline') }}">
+                                    🗺️ Offline Maps
                                 </a>
                             </li>
                         @endauth
