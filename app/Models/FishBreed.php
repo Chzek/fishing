@@ -9,6 +9,8 @@ class FishBreed extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'fish_families_id'];
+
     public function family()
     {
         return $this->belongsTo(FishFamily::class, 'fish_families_id', 'id');

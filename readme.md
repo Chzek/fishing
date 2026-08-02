@@ -11,7 +11,8 @@
 - **⚡ Boat Quick Catch Mode**: Touch-optimized mobile interface for rapid logging on the water (`/record/quick`).
 - **⛵ Offline Boat Logging & Sync**: Progressive Web App (PWA) with `IndexedDB` local storage and duplicate prevention (`client_id` UUIDs) for logging catches without internet access.
 - **🌤️ Lake Daily Weather Telemetry**: Automatic weather integration (Open-Meteo API) capturing air temperature, barometric pressure, wind speed/direction, and sky conditions for lake catch dates.
-- **Lake & Waterbody Tracking**: Catalog visited lakes and waterbodies with latitude/longitude coordinates, log visits, and maintain historical location records.
+- **🧭 Interactive Lake Explorer Map & Catch Analytics**: Dynamic viewport bounding-box map (`/map/explorer`) with multi-filter controls (Fish Species, Angler, Lure, Trophy Only, and Season Year) and a **Right Slide-Over Detail Drawer** displaying species breakdowns, longest/fattest records, top lures, and quick catch actions.
+- **🗺️ Offline Region Map Downloader & Proximity Layer**: Interactive offline Leaflet tile caching (`/map/offline`) for remote fishing regions (e.g. Wawa, Hawk Junction, White River) with 2-mile lake proximity layers and collision warnings to prevent duplicate lake creation.
 - **Lure & Tackle Catalog**: Manage lures, baits, and tackle setups to analyze what gear works best in different conditions.
 - **Expeditions & Crew Management**: Group fishing trips into expeditions and keep track of crew members on shared trips.
 - **Community & Posts Feed**: Share updates, trip notes, and fishing posts.

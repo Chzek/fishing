@@ -9,6 +9,8 @@ class FishFamily extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name'];
+
     public function breeds()
     {
         return $this->hasMany(FishBreed::class, 'fish_families_id', 'id');

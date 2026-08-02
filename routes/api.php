@@ -1,6 +1,7 @@
 <?php
 
 use Fishinglog\Http\Controllers\Api\v1\AnglerApiController;
+use Fishinglog\Http\Controllers\Api\v1\ExplorerApiController;
 use Fishinglog\Http\Controllers\Api\v1\LakeApiController;
 use Fishinglog\Http\Controllers\Api\v1\RecordApiController;
 use Fishinglog\Http\Controllers\Api\v1\ReferenceApiController;
@@ -33,4 +34,7 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/anglers', [AnglerApiController::class, 'index']);
     Route::get('/anglers/{angler}', [AnglerApiController::class, 'show']);
+
+    Route::get('/explorer/lakes', [ExplorerApiController::class, 'lakes']);
+    Route::get('/explorer/lake/{lake}', [ExplorerApiController::class, 'lakeDetail']);
 });

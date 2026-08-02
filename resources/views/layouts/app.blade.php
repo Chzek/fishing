@@ -58,6 +58,11 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link font-weight-bold text-primary" href="{{ url('/map/explorer') }}">
+                                    🧭 Map Explorer
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link font-weight-bold text-info" href="{{ url('/map/offline') }}">
                                     🗺️ Offline Maps
                                 </a>

@@ -9,6 +9,8 @@ class Lure extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'color', 'size'];
+
     public function record()
     {
         return $this->hasOne(Record::class);
