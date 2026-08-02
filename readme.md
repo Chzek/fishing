@@ -7,10 +7,11 @@
 ## 🎣 Features & Usage
 
 - **Angler Profiles & Avatars**: Create and customize angler profiles, manage account settings, and update profile avatars.
-- **Catch & Record Logging**: Record detailed fishing catches, including fish family, breed, size/weight, lure used, date/time, and exact location.
+- **Catch & Record Logging**: Record detailed fishing catches, including fish family, breed, size/weight (supports trophy fish up to 9,999 lbs), lure used, date/time, and location.
 - **⚡ Boat Quick Catch Mode**: Touch-optimized mobile interface for rapid logging on the water (`/record/quick`).
 - **⛵ Offline Boat Logging & Sync**: Progressive Web App (PWA) with `IndexedDB` local storage and duplicate prevention (`client_id` UUIDs) for logging catches without internet access.
-- **Lake & Waterbody Tracking**: Catalog visited lakes and waterbodies, log visits, and maintain historical location records.
+- **🌤️ Lake Daily Weather Telemetry**: Automatic weather integration (Open-Meteo API) capturing air temperature, barometric pressure, wind speed/direction, and sky conditions for lake catch dates.
+- **Lake & Waterbody Tracking**: Catalog visited lakes and waterbodies with latitude/longitude coordinates, log visits, and maintain historical location records.
 - **Lure & Tackle Catalog**: Manage lures, baits, and tackle setups to analyze what gear works best in different conditions.
 - **Expeditions & Crew Management**: Group fishing trips into expeditions and keep track of crew members on shared trips.
 - **Community & Posts Feed**: Share updates, trip notes, and fishing posts.
@@ -24,6 +25,7 @@
 - **Runtime Environment**: Containerized via **Laravel Sail** running in **WSL 2 (Ubuntu)**
 - **Database**: MySQL 8.0 (Containerized via Sail)
 - **Offline Engine**: Progressive Web App (Service Worker + IndexedDB + Client UUID Idempotency)
+- **Weather Engine**: Open-Meteo Historical Archive API + normalized `lake_daily_weather` table
 - **Local Application URL**: [http://localhost](http://localhost) or `http://fishinglog.local`
 
 ---
@@ -85,6 +87,30 @@ To make the web application accessible to phones, tablets, and laptops on your l
 
 ---
 
+## 🌤️ Weather Telemetry & Synchronizing Lake Weather
+
+The application automatically enriches catches with daily environmental weather telemetry (Air Temp High/Low/Mean, Barometric Pressure, Wind Speed/Direction, and Sky Condition) using the **Open-Meteo API** based on lake coordinates (`latitude` and `longitude`).
+
+### 🌊 Water Temp vs. 🌤️ Weather Telemetry
+- **🌊 Water Temperature (°F)**: Entered manually by the angler on the boat during catch logging.
+- **🌤️ Daily Lake Weather**: Fetched automatically for the lake's coordinates and catch date.
+
+### 🔄 How to Synchronize Weather Telemetry
+
+1. **Automatic Online Lookup**:
+   - When a catch is logged or synced while online, the server automatically queries Open-Meteo for that lake's location and date, caching the telemetry in `lake_daily_weather`.
+
+2. **Offline Cabin Resilience**:
+   - If catches are logged or synced at a remote cabin without internet access, catch storage completes 100% offline without failing or hanging.
+
+3. **Batch Syncing Weather via Command Line (`weather:sync`)**:
+   - Whenever your server host connects to the internet (or after restoring a database backup), run this command to scan all catches and backfill missing daily weather telemetry:
+     ```bash
+     wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail artisan weather:sync"
+     ```
+
+---
+
 ## 🚀 Local Development & Setup
 
 This guide documents environment management, server lifecycle commands, test execution, and common utility tasks using **Laravel Sail + WSL 2**.
@@ -130,6 +156,7 @@ wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail down"
 
 | Action | Command |
 | :--- | :--- |
+| **Sync Weather Telemetry** | `wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail artisan weather:sync"` |
 | **Check Container Status** | `wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail ps"` |
 | **Run Database Migrations** | `wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail artisan migrate"` |
 | **Laravel Tinker Shell** | `wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail artisan tinker"` |
