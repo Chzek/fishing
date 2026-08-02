@@ -25,6 +25,11 @@
     <!-- Leaflet CSS & JS for Offline Maps -->
     <link rel="stylesheet" href="{{ asset('css/leaflet.css') }}">
     <script src="{{ asset('js/leaflet.js') }}"></script>
+    <script>
+        if (typeof L !== 'undefined') {
+            L.Icon.Default.imagePath = '/css/images/';
+        }
+    </script>
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">

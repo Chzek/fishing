@@ -5,7 +5,14 @@ const STATIC_ASSETS = [
   '/record/quick',
   '/map/offline',
   '/css/app.css',
+  '/css/leaflet.css',
+  '/css/images/marker-icon.png',
+  '/css/images/marker-icon-2x.png',
+  '/css/images/marker-shadow.png',
+  '/css/images/layers.png',
+  '/css/images/layers-2x.png',
   '/js/app.js',
+  '/js/leaflet.js',
   '/js/offline-sync.js',
   '/manifest.json'
 ];
