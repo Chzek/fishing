@@ -30,7 +30,7 @@ class RecordController extends Controller
      */
     public function index(Pipeline $pipeline, Request $request)
     {
-        $records = Record::with(['angler', 'lake', 'fishBreed', 'lure', 'dailyWeather'])
+        $records = Record::with(['angler', 'lake.dailyWeather', 'fishBreed', 'lure'])
             ->orderBy('caught', 'desc')
             ->orderBy('lakes_id', 'asc')
             ->orderBy('anglers_id', 'asc');

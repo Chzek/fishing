@@ -12,7 +12,7 @@ class RecordApiController extends Controller
 {
     public function index()
     {
-        $records = Record::with(['angler', 'lake', 'fishBreed', 'lure', 'dailyWeather'])
+        $records = Record::with(['angler', 'lake.dailyWeather', 'fishBreed', 'lure'])
             ->orderBy('caught', 'desc')
             ->paginate(15);
 
@@ -21,7 +21,7 @@ class RecordApiController extends Controller
 
     public function show(Record $record)
     {
-        $record->load(['angler', 'lake', 'fishBreed', 'lure', 'dailyWeather']);
+        $record->load(['angler', 'lake.dailyWeather', 'fishBreed', 'lure']);
 
         return new RecordResource($record);
     }
@@ -32,7 +32,7 @@ class RecordApiController extends Controller
         if ($request->filled('client_id')) {
             $existing = Record::where('client_id', $request->client_id)->first();
             if ($existing) {
-                return (new RecordResource($existing->load(['angler', 'lake', 'fishBreed', 'lure', 'dailyWeather'])))
+                return (new RecordResource($existing->load(['angler', 'lake.dailyWeather', 'fishBreed', 'lure'])))
                     ->additional(['status' => 'duplicate_ignored']);
             }
         }
@@ -46,7 +46,7 @@ class RecordApiController extends Controller
             ->first();
 
         if ($attributeMatch) {
-            return (new RecordResource($attributeMatch->load(['angler', 'lake', 'fishBreed', 'lure', 'dailyWeather'])))
+            return (new RecordResource($attributeMatch->load(['angler', 'lake.dailyWeather', 'fishBreed', 'lure'])))
                 ->additional(['status' => 'duplicate_ignored']);
         }
 
@@ -58,7 +58,7 @@ class RecordApiController extends Controller
             $weatherService->fetchForLakeAndDate($record->lake, $record->caught);
         }
 
-        return (new RecordResource($record->load(['angler', 'lake', 'fishBreed', 'lure', 'dailyWeather'])))
+        return (new RecordResource($record->load(['angler', 'lake.dailyWeather', 'fishBreed', 'lure'])))
             ->additional(['status' => 'created']);
     }
 }

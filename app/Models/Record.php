@@ -45,9 +45,28 @@ class Record extends Model
         return $this->belongsTo(Lure::class, 'lures_id', 'id');
     }
 
-    public function dailyWeather()
+    /**
+     * Get daily weather matching record's lake and caught date.
+     */
+    public function getDailyWeatherAttribute()
     {
-        return $this->hasOne(LakeDailyWeather::class, 'lakes_id', 'lakes_id')
-            ->whereColumn('lake_daily_weather.date', 'records.caught');
+        if (!$this->lakes_id || !$this->caught) {
+            return null;
+        }
+
+        $caughtDate = is_a($this->caught, \DateTimeInterface::class) 
+            ? $this->caught->format('Y-m-d') 
+            : substr((string) $this->caught, 0, 10);
+
+        if ($this->relationLoaded('lake') && $this->lake && $this->lake->relationLoaded('dailyWeather')) {
+            return $this->lake->dailyWeather->first(function ($w) use ($caughtDate) {
+                $wDate = is_a($w->date, \DateTimeInterface::class) ? $w->date->format('Y-m-d') : substr((string) $w->date, 0, 10);
+                return $wDate === $caughtDate;
+            });
+        }
+
+        return LakeDailyWeather::where('lakes_id', $this->lakes_id)
+            ->where('date', $caughtDate)
+            ->first();
     }
 }
