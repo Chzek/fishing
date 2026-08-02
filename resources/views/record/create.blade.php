@@ -48,8 +48,8 @@
                             </div>
 
                             <div class="form-group col-6">
-                                {!! Form::label('temperature', 'Temperature(F)') !!}
-                                {!! Form::text('temperature', "", ['class' => 'form-control']) !!}
+                                {!! Form::label('temperature', '🌊 Water Temp (°F) (Boat Reading)') !!}
+                                {!! Form::text('temperature', "", ['class' => 'form-control', 'placeholder' => 'e.g. 68']) !!}
                             </div>
                         </div>
 

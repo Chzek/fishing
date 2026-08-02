@@ -21,6 +21,16 @@ class Lake extends Model
         return $this->hasManyThrough(Angler::class, Record::class, 'lakes_id', 'id', 'id', 'anglers_id');
     }
 
+    public function dailyWeather()
+    {
+        return $this->hasMany(LakeDailyWeather::class, 'lakes_id', 'id');
+    }
+
+    public function getDailyWeatherForDate($date)
+    {
+        return $this->dailyWeather()->where('date', $date)->first();
+    }
+
     /**
      * Biggest fish by length of the lake.
      * 

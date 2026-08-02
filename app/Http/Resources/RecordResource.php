@@ -23,6 +23,7 @@ class RecordResource extends JsonResource
             'released' => (bool) $this->released,
             'angler' => new AnglerResource($this->whenLoaded('angler')),
             'lake' => new LakeResource($this->whenLoaded('lake')),
+            'daily_weather' => $this->whenLoaded('dailyWeather'),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

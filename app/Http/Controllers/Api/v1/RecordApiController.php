@@ -12,7 +12,7 @@ class RecordApiController extends Controller
 {
     public function index()
     {
-        $records = Record::with(['angler', 'lake', 'fishBreed', 'lure'])
+        $records = Record::with(['angler', 'lake', 'fishBreed', 'lure', 'dailyWeather'])
             ->orderBy('caught', 'desc')
             ->paginate(15);
 
@@ -21,18 +21,18 @@ class RecordApiController extends Controller
 
     public function show(Record $record)
     {
-        $record->load(['angler', 'lake', 'fishBreed', 'lure']);
+        $record->load(['angler', 'lake', 'fishBreed', 'lure', 'dailyWeather']);
 
         return new RecordResource($record);
     }
 
-    public function store(StoreRecordRequest $request)
+    public function store(StoreRecordRequest $request, \Fishinglog\Services\WeatherTelemetryService $weatherService)
     {
         // 1. Check idempotency by Client UUID
         if ($request->filled('client_id')) {
             $existing = Record::where('client_id', $request->client_id)->first();
             if ($existing) {
-                return (new RecordResource($existing->load(['angler', 'lake', 'fishBreed', 'lure'])))
+                return (new RecordResource($existing->load(['angler', 'lake', 'fishBreed', 'lure', 'dailyWeather'])))
                     ->additional(['status' => 'duplicate_ignored']);
             }
         }
@@ -46,14 +46,19 @@ class RecordApiController extends Controller
             ->first();
 
         if ($attributeMatch) {
-            return (new RecordResource($attributeMatch->load(['angler', 'lake', 'fishBreed', 'lure'])))
+            return (new RecordResource($attributeMatch->load(['angler', 'lake', 'fishBreed', 'lure', 'dailyWeather'])))
                 ->additional(['status' => 'duplicate_ignored']);
         }
 
         // 3. Create new record
         $record = Record::create($request->validated());
 
-        return (new RecordResource($record->load(['angler', 'lake', 'fishBreed', 'lure'])))
+        // 4. Attempt weather telemetry lookup (gracefully succeeds offline)
+        if ($record->lake) {
+            $weatherService->fetchForLakeAndDate($record->lake, $record->caught);
+        }
+
+        return (new RecordResource($record->load(['angler', 'lake', 'fishBreed', 'lure', 'dailyWeather'])))
             ->additional(['status' => 'created']);
     }
 }

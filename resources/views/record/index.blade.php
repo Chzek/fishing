@@ -57,7 +57,8 @@
                                 <th>Lure</th>
                                 <th class="text-center">Weight (lb)</th>
                                 <th class="text-center">Length (in)</th>
-                                <th class="text-center">Temp.</th>
+                                <th class="text-center" title="Water Temperature logged on boat">🌊 Water Temp</th>
+                                <th class="text-center">🌤️ Weather</th>
                                 <th>Released</th>
                                 <th></th>
                             </tr>
@@ -73,12 +74,24 @@
                                         @if($record->lure)
                                             @if(strlen($record->lure->displayName) >= 20)
                                                 <span title="{{ $record->lure->displayName }}">{{ substr($record->lure->displayName, 0, 17) }}...</span>
+                                            @else
+                                                {{ $record->lure->displayName }}
                                             @endif
                                         @endif
                                     </td>
                                     <td class="align-middle text-center">{{ $record->weight }}</td>
                                     <td class="align-middle text-center">{{ $record->length }}</td>
-                                    <td class="align-middle text-center">{{ $record->temperature }}</td>
+                                    <td class="align-middle text-center">{{ $record->temperature ? $record->temperature . '°F' : '-' }}</td>
+                                    <td class="align-middle text-center">
+                                        @if($record->dailyWeather)
+                                            <span class="badge badge-light border px-2 py-1 text-wrap" style="font-size: 0.8rem; cursor: pointer;" title="🌤️ {{ $record->lake->name }} ({{ $record->caught }})" data-toggle="popover" data-trigger="hover focus" data-html="true" data-content="<strong>Condition:</strong> {{ $record->dailyWeather->weather_condition }}<br><strong>Air Temp:</strong> {{ $record->dailyWeather->air_temp_min }}°F – {{ $record->dailyWeather->air_temp_max }}°F<br><strong>Pressure:</strong> {{ $record->dailyWeather->barometric_pressure }} hPa<br><strong>Wind:</strong> {{ $record->dailyWeather->wind_speed_max }} mph ({{ $record->dailyWeather->wind_direction_text }})">
+                                                {{ $record->dailyWeather->weather_condition }}
+                                                <small class="d-block text-muted">{{ $record->dailyWeather->air_temp_mean }}°F | {{ $record->dailyWeather->barometric_pressure }}hPa</small>
+                                            </span>
+                                        @else
+                                            <span class="text-muted small">-</span>
+                                        @endif
+                                    </td>
                                     <td class="align-middle">
                                         @if($record->released == 1)
                                             <span class="badge badge-secondary">Released</span>

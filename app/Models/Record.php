@@ -44,4 +44,10 @@ class Record extends Model
     {
         return $this->belongsTo(Lure::class, 'lures_id', 'id');
     }
+
+    public function dailyWeather()
+    {
+        return $this->hasOne(LakeDailyWeather::class, 'lakes_id', 'lakes_id')
+            ->whereColumn('lake_daily_weather.date', 'records.caught');
+    }
 }
