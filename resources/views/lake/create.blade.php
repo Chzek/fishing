@@ -92,6 +92,7 @@
         // Initial Marker if lat/lng present
         if (document.getElementById('input-lat').value && document.getElementById('input-lng').value) {
             marker = L.marker([defaultLat, defaultLng]).addTo(lakeMap);
+            fetchNearbyLakes(defaultLat, defaultLng);
         }
 
         // Tap/click on map to drop pin
@@ -107,8 +108,58 @@
             } else {
                 marker = L.marker(e.latlng).addTo(lakeMap);
             }
+
+            fetchNearbyLakes(lat, lng);
         });
     });
+
+    let nearbyCircle;
+    let nearbyMarkersGroup = [];
+
+    function fetchNearbyLakes(lat, lng) {
+        if (!lat || !lng) return;
+
+        // Remove previous circle and markers
+        if (nearbyCircle) lakeMap.removeLayer(nearbyCircle);
+        nearbyMarkersGroup.forEach(m => lakeMap.removeLayer(m));
+        nearbyMarkersGroup = [];
+
+        // Draw 2-mile radius circle
+        nearbyCircle = L.circle([lat, lng], {
+            color: '#17a2b8',
+            fillColor: '#17a2b8',
+            fillOpacity: 0.08,
+            radius: 3218.68
+        }).addTo(lakeMap);
+
+        // Fetch nearby lakes via API
+        fetch(`/api/v1/lakes/nearby?lat=${lat}&lng=${lng}&radius=2`)
+            .then(res => res.json())
+            .then(resData => {
+                if (resData && resData.data && resData.data.length > 0) {
+                    resData.data.forEach(function (nLake) {
+                        if (nLake.latitude && nLake.longitude) {
+                            const nMarker = L.circleMarker([nLake.latitude, nLake.longitude], {
+                                radius: 8,
+                                fillColor: "#28a745",
+                                color: "#ffffff",
+                                weight: 2,
+                                opacity: 1,
+                                fillOpacity: 0.9
+                            }).addTo(lakeMap);
+
+                            nMarker.bindPopup(
+                                "<b>🏞️ " + nLake.name + "</b><br>" +
+                                "📍 " + nLake.distance + " miles away<br>" +
+                                "<a href='/lake/" + nLake.id + "' target='_blank' class='btn btn-sm btn-outline-success mt-1'>View Lake ↗</a>"
+                            );
+                            nearbyMarkersGroup.push(nMarker);
+                        }
+                    });
+                }
+            })
+            .catch(err => console.error('Error fetching nearby lakes:', err));
+    }
 
     function useCurrentGPS() {
         if (!navigator.geolocation) {
@@ -136,6 +187,8 @@
                 } else {
                     marker = L.marker(latLng).addTo(lakeMap);
                 }
+
+                fetchNearbyLakes(lat, lng);
 
                 btn.innerText = '✅ GPS Acquired!';
                 setTimeout(() => {

@@ -103,6 +103,8 @@ class LakeController extends Controller
             ->distinct('anglers_id')
             ->count('anglers_id');
 
+        $nearbyLakes = Lake::nearby($lake->latitude, $lake->longitude, 2.0, $lake->id);
+
         return view('lake.show', [
             'lake' => $lake,
             'count' => $count,
@@ -111,6 +113,7 @@ class LakeController extends Controller
             'visits' => $visits,
             'anglers' => $anglers,
             'stats' => $this->stats($lake),
+            'nearbyLakes' => $nearbyLakes,
         ]);
     }
 
@@ -122,8 +125,11 @@ class LakeController extends Controller
      */
     public function edit(Lake $lake)
     {
+        $nearbyLakes = Lake::nearby($lake->latitude, $lake->longitude, 2.0, $lake->id);
+
         return view('lake.edit', [
             'lake' => $lake,
+            'nearbyLakes' => $nearbyLakes,
         ]);
     }
 

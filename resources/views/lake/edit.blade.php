@@ -43,11 +43,25 @@
                         </div>
 
                         <!-- Interactive Offline Leaflet Map Location Picker -->
-                        <div class="form-group">
+                        <div class="form-group mb-3">
                             <label class="font-weight-bold">🗺️ Interactive Map Location Picker (Tap to Pin)</label>
                             <small class="text-muted d-block mb-2">Tap/click anywhere on the waterbody to update pin coordinates offline.</small>
                             <div id="lake-picker-map" style="height: 380px; width: 100%; border-radius: 6px;" class="border"></div>
                         </div>
+
+                        @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
+                            <div class="alert alert-warning border-warning mb-3">
+                                <strong>⚠️ Identified Lakes Within 2 Miles ({{ $nearbyLakes->count() }}):</strong>
+                                <small class="d-block mb-2 text-dark">Check existing lakes in this area before renaming to prevent duplicate entries:</small>
+                                <div>
+                                    @foreach($nearbyLakes as $nearLake)
+                                        <a href="{{ url('/lake/' . $nearLake->id) }}" target="_blank" class="badge badge-pill badge-light border border-dark p-2 mr-1 mb-1 text-dark">
+                                            🏞️ <strong>{{ $nearLake->name }}</strong> ({{ $nearLake->distance }} mi away) ↗
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
 
                         <div class="d-flex justify-content-between align-items-center mt-4">
                             <a href="{{ url('/lake/' . $lake->id) }}" class="btn btn-outline-secondary">Cancel</a>
@@ -89,7 +103,39 @@
 
         if (document.getElementById('input-lat').value && document.getElementById('input-lng').value) {
             marker = L.marker([defaultLat, defaultLng]).addTo(lakeMap);
+
+            // Draw 2-mile radius circle around lake being edited (3,218.68 meters = 2 miles)
+            L.circle([defaultLat, defaultLng], {
+                color: '#17a2b8',
+                fillColor: '#17a2b8',
+                fillOpacity: 0.08,
+                radius: 3218.68
+            }).addTo(lakeMap);
         }
+
+        // Render Nearby Lakes within 2 miles (Green Markers)
+        @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
+            const nearbyLakesData = @json($nearbyLakes);
+
+            nearbyLakesData.forEach(function (nLake) {
+                if (nLake.latitude && nLake.longitude) {
+                    const nMarker = L.circleMarker([nLake.latitude, nLake.longitude], {
+                        radius: 8,
+                        fillColor: "#28a745",
+                        color: "#ffffff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.9
+                    }).addTo(lakeMap);
+
+                    nMarker.bindPopup(
+                        "<b>🏞️ " + nLake.name + "</b><br>" +
+                        "📍 " + nLake.distance + " miles away<br>" +
+                        "<a href='/lake/" + nLake.id + "' target='_blank' class='btn btn-sm btn-outline-success mt-1'>View Lake ↗</a>"
+                    );
+                }
+            });
+        @endif
 
         lakeMap.on('click', function (e) {
             const lat = e.latlng.lat.toFixed(6);

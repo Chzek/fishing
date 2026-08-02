@@ -35,12 +35,25 @@
 
                     @if($lake->latitude && $lake->longitude)
                         <div class="card mb-4">
-                            <div class="card-header bg-light font-weight-bold">
-                                🗺️ Location & Topo Map
+                            <div class="card-header bg-light font-weight-bold d-flex justify-content-between align-items-center">
+                                <span>🗺️ Location & Topo Map</span>
+                                @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
+                                    <span class="badge badge-info">{{ $nearbyLakes->count() }} Nearby Lake(s) within 2 Miles</span>
+                                @endif
                             </div>
                             <div class="card-body p-0">
-                                <div id="lake-show-map" style="height: 320px; width: 100%; border-radius: 4px;"></div>
+                                <div id="lake-show-map" style="height: 350px; width: 100%; border-radius: 4px;"></div>
                             </div>
+                            @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
+                                <div class="card-footer bg-light">
+                                    <small class="font-weight-bold text-dark d-block mb-1">🌲 Identified Lakes Within 2 Miles:</small>
+                                    @foreach($nearbyLakes as $nearLake)
+                                        <a href="{{ url('/lake/' . $nearLake->id) }}" class="badge badge-pill badge-outline-primary border p-2 mr-1 mb-1 text-dark">
+                                            🏞️ <strong>{{ $nearLake->name }}</strong> ({{ $nearLake->distance }} mi)
+                                        </a>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                     @endif
 
@@ -159,9 +172,43 @@
             "🛰️ Satellite Imagery": satLayer
         }).addTo(map);
 
+        // Draw 2-mile radius circle around lake (3,218.68 meters = 2 miles)
+        L.circle([lat, lng], {
+            color: '#17a2b8',
+            fillColor: '#17a2b8',
+            fillOpacity: 0.08,
+            radius: 3218.68
+        }).addTo(map);
+
+        // Target Lake Marker (Blue)
         L.marker([lat, lng]).addTo(map)
             .bindPopup("<b>{{ $lake->name }}</b><br>Coordinates: " + lat + ", " + lng)
             .openPopup();
+
+        // Render Nearby Lakes within 2 miles (Green Markers)
+        @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
+            const nearbyLakesData = @json($nearbyLakes);
+
+            nearbyLakesData.forEach(function (nLake) {
+                if (nLake.latitude && nLake.longitude) {
+                    // Custom green circle marker for nearby identified lakes
+                    const nMarker = L.circleMarker([nLake.latitude, nLake.longitude], {
+                        radius: 8,
+                        fillColor: "#28a745",
+                        color: "#ffffff",
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.9
+                    }).addTo(map);
+
+                    nMarker.bindPopup(
+                        "<b>🏞️ " + nLake.name + "</b><br>" +
+                        "📍 " + nLake.distance + " miles away<br>" +
+                        "<a href='/lake/" + nLake.id + "' class='btn btn-sm btn-outline-success mt-1'>View Lake</a>"
+                    );
+                }
+            });
+        @endif
     });
 </script>
 @endif

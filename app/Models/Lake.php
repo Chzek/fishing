@@ -50,4 +50,61 @@ class Lake extends Model
             ->orderBy('records.length', 'desc')
             ->first();
     }
+
+    /**
+     * Find nearby lakes within a radius in miles.
+     *
+     * @param float $lat
+     * @param float $lng
+     * @param float $radiusMiles
+     * @param int|null $excludeId
+     * @return \Illuminate\Support\Collection
+     */
+    public static function nearby($lat, $lng, $radiusMiles = 2.0, $excludeId = null)
+    {
+        if (is_null($lat) || is_null($lng) || $lat == 0 || $lng == 0) {
+            return collect([]);
+        }
+
+        $latDelta = $radiusMiles / 69.0;
+        $cosLat = cos(deg2rad($lat));
+        $lngDelta = $radiusMiles / (69.0 * ($cosLat == 0 ? 1 : abs($cosLat)));
+
+        $query = static::whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->whereBetween('latitude', [$lat - $latDelta, $lat + $latDelta])
+            ->whereBetween('longitude', [$lng - $lngDelta, $lng + $lngDelta]);
+
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        $lakes = $query->get();
+
+        return $lakes->map(function ($lake) use ($lat, $lng) {
+            $lake->distance = static::haversineDistance($lat, $lng, $lake->latitude, $lake->longitude);
+            return $lake;
+        })->filter(function ($lake) use ($radiusMiles) {
+            return $lake->distance <= $radiusMiles;
+        })->sortBy('distance')->values();
+    }
+
+    /**
+     * Calculate Haversine distance in miles between two coordinates.
+     */
+    public static function haversineDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 3958.8; // Miles
+
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLon / 2) * sin($dLon / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return round($earthRadius * $c, 2);
+    }
 }

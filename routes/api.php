@@ -28,6 +28,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/records/{record}', [RecordApiController::class, 'show']);
 
     Route::get('/lakes', [LakeApiController::class, 'index']);
+    Route::get('/lakes/nearby', [LakeApiController::class, 'nearby']);
     Route::get('/lakes/{lake}', [LakeApiController::class, 'show']);
 
     Route::get('/anglers', [AnglerApiController::class, 'index']);
