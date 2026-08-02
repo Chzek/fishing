@@ -11,23 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lake_daily_weather', function (Blueprint $table) {
-            $table->id();
-            $table->integer('lakes_id')->unsigned();
-            $table->date('date');
-            $table->decimal('air_temp_max', 5, 2)->nullable();
-            $table->decimal('air_temp_min', 5, 2)->nullable();
-            $table->decimal('air_temp_mean', 5, 2)->nullable();
-            $table->decimal('barometric_pressure', 6, 2)->nullable();
-            $table->decimal('wind_speed_max', 5, 2)->nullable();
-            $table->integer('wind_direction_dominant')->nullable();
-            $table->string('weather_condition')->nullable();
-            $table->integer('weather_code')->nullable();
-            $table->timestamps();
+        if (!Schema::hasTable('lake_daily_weather')) {
+            Schema::create('lake_daily_weather', function (Blueprint $table) {
+                $table->id();
+                $table->integer('lakes_id')->unsigned();
+                $table->date('date');
+                $table->decimal('air_temp_max', 5, 2)->nullable();
+                $table->decimal('air_temp_min', 5, 2)->nullable();
+                $table->decimal('air_temp_mean', 5, 2)->nullable();
+                $table->decimal('barometric_pressure', 6, 2)->nullable();
+                $table->decimal('wind_speed_max', 5, 2)->nullable();
+                $table->integer('wind_direction_dominant')->nullable();
+                $table->string('weather_condition')->nullable();
+                $table->integer('weather_code')->nullable();
+                $table->timestamps();
 
-            $table->unique(['lakes_id', 'date']);
-            $table->foreign('lakes_id')->references('id')->on('lakes')->onDelete('cascade');
-        });
+                $table->unique(['lakes_id', 'date']);
+                $table->foreign('lakes_id')->references('id')->on('lakes')->onDelete('cascade');
+            });
+        }
     }
 
     /**

@@ -23,61 +23,67 @@ return new class extends Migration
     {
         $connection = DB::connection($this->getConnection());
 
-        Schema::create('pulse_values', function (Blueprint $table) use ($connection) {
-            $table->id();
-            $table->unsignedInteger('timestamp');
-            $table->string('type');
-            $table->mediumText('key');
-            match ($driver = $connection->getDriverName()) {
-                'mysql' => $table->char('key_hash', 16)->charset('binary')->virtualAs('unhex(md5(`key`))'),
-                'pgsql' => $table->uuid('key_hash')->storedAs('md5("key")::uuid'),
-                default => throw new RuntimeException("Unsupported database driver [{$driver}]."),
-            };
-            $table->mediumText('value');
+        if (!Schema::hasTable('pulse_values')) {
+            Schema::create('pulse_values', function (Blueprint $table) use ($connection) {
+                $table->id();
+                $table->unsignedInteger('timestamp');
+                $table->string('type');
+                $table->mediumText('key');
+                match ($driver = $connection->getDriverName()) {
+                    'mysql' => $table->char('key_hash', 16)->charset('binary')->virtualAs('unhex(md5(`key`))'),
+                    'pgsql' => $table->uuid('key_hash')->storedAs('md5("key")::uuid'),
+                    default => throw new RuntimeException("Unsupported database driver [{$driver}]."),
+                };
+                $table->mediumText('value');
 
-            $table->index('timestamp'); // For trimming...
-            $table->index('type'); // For fast lookups and purging...
-            $table->unique(['type', 'key_hash']); // For data integrity and upserts...
-        });
+                $table->index('timestamp'); // For trimming...
+                $table->index('type'); // For fast lookups and purging...
+                $table->unique(['type', 'key_hash']); // For data integrity and upserts...
+            });
+        }
 
-        Schema::create('pulse_entries', function (Blueprint $table) use ($connection) {
-            $table->id();
-            $table->unsignedInteger('timestamp');
-            $table->string('type');
-            $table->mediumText('key');
-            match ($driver = $connection->getDriverName()) {
-                'mysql' => $table->char('key_hash', 16)->charset('binary')->virtualAs('unhex(md5(`key`))'),
-                'pgsql' => $table->uuid('key_hash')->storedAs('md5("key")::uuid'),
-                default => throw new RuntimeException("Unsupported database driver [{$driver}]."),
-            };
-            $table->bigInteger('value')->nullable();
+        if (!Schema::hasTable('pulse_entries')) {
+            Schema::create('pulse_entries', function (Blueprint $table) use ($connection) {
+                $table->id();
+                $table->unsignedInteger('timestamp');
+                $table->string('type');
+                $table->mediumText('key');
+                match ($driver = $connection->getDriverName()) {
+                    'mysql' => $table->char('key_hash', 16)->charset('binary')->virtualAs('unhex(md5(`key`))'),
+                    'pgsql' => $table->uuid('key_hash')->storedAs('md5("key")::uuid'),
+                    default => throw new RuntimeException("Unsupported database driver [{$driver}]."),
+                };
+                $table->bigInteger('value')->nullable();
 
-            $table->index('timestamp'); // For trimming...
-            $table->index('type'); // For purging...
-            $table->index('key_hash'); // For mapping...
-            $table->index(['timestamp', 'type', 'key_hash', 'value']); // For aggregate queries...
-        });
+                $table->index('timestamp'); // For trimming...
+                $table->index('type'); // For purging...
+                $table->index('key_hash'); // For mapping...
+                $table->index(['timestamp', 'type', 'key_hash', 'value']); // For aggregate queries...
+            });
+        }
 
-        Schema::create('pulse_aggregates', function (Blueprint $table) use ($connection) {
-            $table->id();
-            $table->unsignedInteger('bucket');
-            $table->unsignedMediumInteger('period');
-            $table->string('type');
-            $table->mediumText('key');
-            match ($driver = $connection->getDriverName()) {
-                'mysql' => $table->char('key_hash', 16)->charset('binary')->virtualAs('unhex(md5(`key`))'),
-                'pgsql' => $table->uuid('key_hash')->storedAs('md5("key")::uuid'),
-                default => throw new RuntimeException("Unsupported database driver [{$driver}]."),
-            };
-            $table->string('aggregate');
-            $table->decimal('value', 20, 2);
-            $table->unsignedInteger('count')->nullable();
+        if (!Schema::hasTable('pulse_aggregates')) {
+            Schema::create('pulse_aggregates', function (Blueprint $table) use ($connection) {
+                $table->id();
+                $table->unsignedInteger('bucket');
+                $table->unsignedMediumInteger('period');
+                $table->string('type');
+                $table->mediumText('key');
+                match ($driver = $connection->getDriverName()) {
+                    'mysql' => $table->char('key_hash', 16)->charset('binary')->virtualAs('unhex(md5(`key`))'),
+                    'pgsql' => $table->uuid('key_hash')->storedAs('md5("key")::uuid'),
+                    default => throw new RuntimeException("Unsupported database driver [{$driver}]."),
+                };
+                $table->string('aggregate');
+                $table->decimal('value', 20, 2);
+                $table->unsignedInteger('count')->nullable();
 
-            $table->unique(['bucket', 'period', 'type', 'aggregate', 'key_hash']); // Force "on duplicate update"...
-            $table->index(['period', 'bucket']); // For trimming...
-            $table->index('type'); // For purging...
-            $table->index(['period', 'type', 'aggregate', 'bucket']); // For aggregate queries...
-        });
+                $table->unique(['bucket', 'period', 'type', 'aggregate', 'key_hash']); // Force "on duplicate update"...
+                $table->index(['period', 'bucket']); // For trimming...
+                $table->index('type'); // For purging...
+                $table->index(['period', 'type', 'aggregate', 'bucket']); // For aggregate queries...
+            });
+        }
     }
 
     /**
