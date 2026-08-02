@@ -23,8 +23,8 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
 
     <!-- Leaflet CSS & JS for Offline Maps -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <link rel="stylesheet" href="{{ asset('css/leaflet.css') }}">
+    <script src="{{ asset('js/leaflet.js') }}"></script>
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -120,7 +120,7 @@
                     .catch((err) => console.log('Service Worker registration failed:', err));
             });
         }
-        @yield('scripts')
     </script>
+    @yield('scripts')
 </body>
 </html>

@@ -166,16 +166,16 @@
 
         statusMsg.innerText = `Starting download of ${total.toLocaleString()} map tiles...`;
 
-        // Batch download tiles concurrently (5 requests at a time)
-        const batchSize = 6;
+        // Batch download tiles concurrently (12 requests at a time for fast progress)
+        const batchSize = 12;
         for (let i = 0; i < urls.length; i += batchSize) {
             const batch = urls.slice(i, i + batchSize);
             await Promise.all(batch.map(async (url) => {
                 try {
                     const match = await cache.match(url);
                     if (!match) {
-                        const res = await fetch(url, { mode: 'cors' });
-                        if (res.ok || res.type === 'opaque') {
+                        const res = await fetch(url, { mode: 'no-cors' });
+                        if (res) {
                             await cache.put(url, res);
                         }
                     }
@@ -189,7 +189,9 @@
             progressBar.style.width = percent + '%';
             progressBar.innerText = percent + '%';
             statusMsg.innerText = `Cached ${completed.toLocaleString()} of ${total.toLocaleString()} tiles...`;
-            await updateStorageStats();
+            if (i % 60 === 0 || completed === total) {
+                await updateStorageStats();
+            }
         }
 
         btn.disabled = false;
