@@ -14,8 +14,8 @@ class CreateCrewsTable extends Migration
     public function up()
     {
         Schema::create('crews', function (Blueprint $table) {
-            $table->integer('expeditions_id')->required();
-            $table->integer('anglers_id')->required();
+            $table->integer('expeditions_id');
+            $table->integer('anglers_id');
             $table->date('joined')->nullable();
             $table->timestamps();
         });

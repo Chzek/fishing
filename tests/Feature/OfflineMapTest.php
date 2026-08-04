@@ -4,12 +4,12 @@ namespace Tests\Feature;
 
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class OfflineMapTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     public function test_authenticated_user_can_access_offline_map_downloader_page(): void
     {

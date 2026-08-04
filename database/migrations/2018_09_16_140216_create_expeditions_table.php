@@ -15,9 +15,9 @@ class CreateExpeditionsTable extends Migration
     {
         Schema::create('expeditions', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('description')->required();
-            $table->date('start')->required();
-            $table->date('finish')->required();
+            $table->text('description');
+            $table->date('start');
+            $table->date('finish');
             $table->timestamps();
         });
     }
