@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Unit;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\FishFamily;
@@ -11,7 +12,7 @@ class FishFamilyTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function a_fish_family_has_many_breeds()
     {
         $family = FishFamily::factory()->create();

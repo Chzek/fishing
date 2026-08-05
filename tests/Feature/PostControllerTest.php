@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Expedition;
 use Fishinglog\Models\User;
@@ -12,7 +13,7 @@ class PostControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function store_throws_model_not_found_if_user_has_no_angler()
     {
         $user = User::factory()->create();

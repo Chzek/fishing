@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\FishBreed;
@@ -15,7 +16,7 @@ class OfflineSyncApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_returns_reference_data_for_offline_cache()
     {
         $angler = Angler::factory()->create();
@@ -35,7 +36,7 @@ class OfflineSyncApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_store_catch_via_api_and_prevents_duplicate_client_id()
     {
         $angler = Angler::factory()->create();
@@ -73,7 +74,7 @@ class OfflineSyncApiTest extends TestCase
         $this->assertEquals(1, Record::where('client_id', $clientId)->count());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_access_quick_catch_web_route()
     {
         $user = User::factory()->create();

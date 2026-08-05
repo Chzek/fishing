@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Unit;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Angler;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,7 +20,7 @@ class AnglerTest extends TestCase
         $this->angler = Angler::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_create_a_duplicate_angler()
     {
         $this->expectException(\Illuminate\Database\QueryException::class);

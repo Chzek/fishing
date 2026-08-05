@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\User;

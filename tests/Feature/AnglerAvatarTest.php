@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\User;
@@ -21,7 +22,7 @@ class AnglerAvatarTest extends TestCase
         $this->angler = Angler::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_update_avatar_for_logged_in_angler()
     {
         Storage::fake('public');
@@ -45,7 +46,7 @@ class AnglerAvatarTest extends TestCase
         Storage::assertExists('avatars/' . $this->angler->avatar);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_non_image_files()
     {
         $user = $this->angler->user;
@@ -58,7 +59,7 @@ class AnglerAvatarTest extends TestCase
         $response->assertSessionHasErrors('avatar');
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_an_avatar_file()
     {
         $user = $this->angler->user;
@@ -69,7 +70,7 @@ class AnglerAvatarTest extends TestCase
         $response->assertSessionHasErrors('avatar');
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_users_cannot_upload_avatar()
     {
         $response = $this->post('/angler/avatar', [

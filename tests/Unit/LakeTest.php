@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Unit;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Lake;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,7 +20,7 @@ class LakeTest extends TestCase
         $this->lake = Lake::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_lake()
     {
         $this->assertDatabaseHas('lakes', ['id' => $this->lake->id]);

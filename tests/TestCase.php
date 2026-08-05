@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests;
+use PHPUnit\Framework\Attributes\Test;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 

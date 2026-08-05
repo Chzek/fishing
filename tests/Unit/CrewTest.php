@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Unit;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Crew;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -10,7 +11,7 @@ class CrewTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function crew_has_an_expedition_relationship_defined()
     {
         $crew = new Crew();
@@ -20,7 +21,7 @@ class CrewTest extends TestCase
         $this->assertEquals('crews.expeditions_id', $crew->expedition()->getQualifiedForeignKeyName());
     }
 
-    /** @test */
+    #[Test]
     public function crew_has_records_relationship_defined()
     {
         $crew = new Crew();

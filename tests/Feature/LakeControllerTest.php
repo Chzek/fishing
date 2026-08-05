@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\User;
@@ -21,14 +22,14 @@ class LakeControllerTest extends TestCase
         $this->lake = Lake::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_user_cannot_access_lakes()
     {
         $response = $this->get('/lake');
         $response->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_view_lakes_index()
     {
         $this->actingAs($this->user);
@@ -38,7 +39,7 @@ class LakeControllerTest extends TestCase
         $response->assertSee($this->lake->name);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_create_lake()
     {
         $this->actingAs($this->user);
@@ -55,7 +56,7 @@ class LakeControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_view_a_lake()
     {
         $this->actingAs($this->user);
@@ -65,7 +66,7 @@ class LakeControllerTest extends TestCase
         $response->assertSee($this->lake->name);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_update_a_lake()
     {
         $this->actingAs($this->user);

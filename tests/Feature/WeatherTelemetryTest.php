@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
@@ -14,7 +15,7 @@ class WeatherTelemetryTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_fetches_and_caches_daily_weather_for_a_lake()
     {
         Http::fake([
@@ -52,7 +53,7 @@ class WeatherTelemetryTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_offline_or_failed_weather_api_gracefully()
     {
         Http::fake([
@@ -70,7 +71,7 @@ class WeatherTelemetryTest extends TestCase
         $this->assertNull($weather);
     }
 
-    /** @test */
+    #[Test]
     public function it_runs_weather_sync_artisan_command()
     {
         Http::fake([

@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Expedition;
 use Fishinglog\Models\User;
@@ -19,14 +20,14 @@ class ExpeditionControllerTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_user_cannot_access_expeditions()
     {
         $response = $this->get('/expedition');
         $response->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_view_expeditions_index()
     {
         $this->actingAs($this->user);
@@ -35,7 +36,7 @@ class ExpeditionControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_create_an_expedition()
     {
         $this->actingAs($this->user);
@@ -52,7 +53,7 @@ class ExpeditionControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_view_an_expedition()
     {
         $this->actingAs($this->user);
@@ -68,7 +69,7 @@ class ExpeditionControllerTest extends TestCase
         $response->assertSee('Boundary Waters Trip');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_update_an_expedition()
     {
         $this->actingAs($this->user);

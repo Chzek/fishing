@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\User;
@@ -11,7 +12,7 @@ class FishBreedControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_can_update_fish_breed_without_image()
     {
         $user = User::factory()->create();

@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\FishBreed;
@@ -15,7 +16,7 @@ class RecordPrecisionTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function trophy_fish_weight_over_ten_pounds_can_be_saved()
     {
         $user = User::factory()->create();
@@ -47,7 +48,7 @@ class RecordPrecisionTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function trophy_fish_length_over_one_hundred_inches_can_be_saved()
     {
         $user = User::factory()->create();

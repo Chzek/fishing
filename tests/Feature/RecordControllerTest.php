@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\FishBreed;
@@ -25,14 +26,14 @@ class RecordControllerTest extends TestCase
         $this->record = Record::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_user_cannot_access_records()
     {
         $response = $this->get('/record');
         $response->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_view_records_index()
     {
         $this->actingAs($this->user);
@@ -41,7 +42,7 @@ class RecordControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_create_a_record()
     {
         $this->actingAs($this->user);
@@ -70,7 +71,7 @@ class RecordControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_view_a_record()
     {
         $this->actingAs($this->user);
@@ -79,7 +80,7 @@ class RecordControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_update_a_record()
     {
         $this->actingAs($this->user);

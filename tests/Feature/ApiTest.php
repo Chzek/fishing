@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\Lake;
@@ -12,7 +13,7 @@ class ApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_can_fetch_records_api_index()
     {
         $record = Record::factory()->create();
@@ -27,7 +28,7 @@ class ApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_fetch_lakes_api_index()
     {
         $lake = Lake::factory()->create();
@@ -42,7 +43,7 @@ class ApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_fetch_anglers_api_index()
     {
         $angler = Angler::factory()->create();

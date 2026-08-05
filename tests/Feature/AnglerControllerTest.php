@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\User;
@@ -22,7 +23,7 @@ class AnglerControllerTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_an_angler()
     {
         $this->be($this->user);
@@ -31,7 +32,7 @@ class AnglerControllerTest extends TestCase
         $this->assertDatabaseHas('anglers', $this->angler->toArray());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_view_all_anglers()
     {
         $this->be($this->user);
@@ -40,7 +41,7 @@ class AnglerControllerTest extends TestCase
         $response->assertSee($this->angler->lastName);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_view_an_angler()
     {
         $this->be($this->user);
@@ -49,7 +50,7 @@ class AnglerControllerTest extends TestCase
         $response->assertSee($this->angler->lastName);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_update_an_angler_without_avatar()
     {
         $this->be($this->user);

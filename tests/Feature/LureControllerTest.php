@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Lure;
 use Fishinglog\Models\User;
@@ -21,14 +22,14 @@ class LureControllerTest extends TestCase
         $this->lure = Lure::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function unauthenticated_user_cannot_access_lures()
     {
         $response = $this->get('/lure');
         $response->assertRedirect('/login');
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_view_lures_index()
     {
         $this->actingAs($this->user);
@@ -38,7 +39,7 @@ class LureControllerTest extends TestCase
         $response->assertSee($this->lure->name);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_create_lure()
     {
         $this->actingAs($this->user);
@@ -56,7 +57,7 @@ class LureControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_view_a_lure()
     {
         $this->actingAs($this->user);
@@ -66,7 +67,7 @@ class LureControllerTest extends TestCase
         $response->assertSee($this->lure->name);
     }
 
-    /** @test */
+    #[Test]
     public function authenticated_user_can_update_a_lure()
     {
         $this->actingAs($this->user);
