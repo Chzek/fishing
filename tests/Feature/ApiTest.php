@@ -5,12 +5,12 @@ namespace Tests\Feature;
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ApiTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     /** @test */
     public function it_can_fetch_records_api_index()

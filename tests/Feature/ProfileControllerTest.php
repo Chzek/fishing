@@ -4,12 +4,12 @@ namespace Tests\Feature;
 
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ProfileControllerTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     /** @test */
     public function it_shows_profile_for_user_without_angler()

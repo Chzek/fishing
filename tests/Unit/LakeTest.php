@@ -3,12 +3,12 @@
 namespace Tests\Unit;
 
 use Fishinglog\Models\Lake;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class LakeTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     protected $lake;
 

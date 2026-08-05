@@ -4,14 +4,14 @@ namespace Tests\Feature;
 
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AnglerAvatarTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     protected $angler;
 

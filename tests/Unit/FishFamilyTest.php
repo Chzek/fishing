@@ -4,12 +4,12 @@ namespace Tests\Unit;
 
 use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\FishFamily;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class FishFamilyTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     /** @test */
     public function a_fish_family_has_many_breeds()

@@ -4,12 +4,12 @@ namespace Tests\Feature;
 
 use Fishinglog\Models\Lure;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class LureControllerTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     protected $user;
     protected $lure;

@@ -38,11 +38,13 @@ class OfflineMapTest extends TestCase
 
         $this->assertDatabaseHas('lakes', [
             'name' => 'Wawa Lake',
-            'latitude' => 47.9942,
-            'longitude' => -84.7612,
             'structure' => 'Rock/Granite, Drop-off',
             'max_depth' => 105,
         ]);
+
+        $lake = Lake::where('name', 'Wawa Lake')->first();
+        $this->assertEquals(47.9942, round($lake->latitude, 4));
+        $this->assertEquals(-84.7612, round($lake->longitude, 4));
     }
 
     public function test_can_find_nearby_lakes_within_two_miles(): void

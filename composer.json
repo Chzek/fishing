@@ -8,27 +8,25 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^8.0",
-        "arcanedev/log-viewer": "^10",
-        "doctrine/dbal": "^3.0",
-        "guzzlehttp/guzzle": "^7.0.1",
-        "laravel/framework": "^10",
-        "laravel/helpers": "^1.1",
-        "laravel/pulse": "^1.0@beta",
-        "laravel/sail": "^1.21",
-        "laravel/telescope": "^5.0",
-        "laravel/tinker": "^2.0",
-        "laravel/ui": "^4.2.3",
-        "laravelcollective/html": "^6.0"
+        "php": "^8.2",
+        "doctrine/dbal": "^3.8 || ^4.0",
+        "guzzlehttp/guzzle": "^7.8",
+        "laravel/framework": "^12.0",
+        "laravel/helpers": "^1.7",
+        "laravel/pulse": "^1.2",
+        "laravel/sail": "^1.26",
+        "laravel/telescope": "^5.2",
+        "laravel/tinker": "^2.9",
+        "laravel/ui": "^4.5",
+        "spatie/laravel-html": "^3.0"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.5",
-        "beyondcode/laravel-dump-server": "^1.0",
-        "spatie/laravel-ignition": "^2.0",
-        "fzaninotto/faker": "^1.4",
-        "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^7.0",
-        "phpunit/phpunit": "^10.1"
+        "barryvdh/laravel-debugbar": "^3.14",
+        "spatie/laravel-ignition": "^2.9",
+        "fakerphp/faker": "^1.23",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.6",
+        "phpunit/phpunit": "^11.0"
     },
     "autoload": {
         "psr-4": {

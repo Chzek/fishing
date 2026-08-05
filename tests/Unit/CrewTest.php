@@ -3,12 +3,12 @@
 namespace Tests\Unit;
 
 use Fishinglog\Models\Crew;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class CrewTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     /** @test */
     public function crew_has_an_expedition_relationship_defined()

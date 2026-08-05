@@ -3,12 +3,12 @@
 namespace Tests\Unit;
 
 use Fishinglog\Models\Angler;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AnglerTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     protected $angler;
 

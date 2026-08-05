@@ -4,12 +4,12 @@ namespace Tests\Feature;
 
 use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class FishBreedControllerTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     /** @test */
     public function it_can_update_fish_breed_without_image()

@@ -4,14 +4,13 @@ namespace Tests\Feature;
 
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class AnglerControllerTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     protected $angler;
     protected $user;
