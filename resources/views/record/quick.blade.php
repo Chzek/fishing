@@ -1,118 +1,144 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0 font-weight-bold">⚡ Boat Quick Catch Log</h4>
-                    <span id="network-status" class="badge badge-light">Checking connection...</span>
-                </div>
-
-                <div class="card-body p-4">
-                    <div id="quick-catch-alert" class="alert d-none mb-3" role="alert"></div>
-
-                    <form id="quickCatchForm">
-                        @csrf
-                        <input type="hidden" id="client_id" name="client_id">
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="anglers_id" class="font-weight-bold">Angler</label>
-                                <select id="anglers_id" name="anglers_id" class="form-control form-control-lg" required>
-                                    <option value="">Select Angler...</option>
-                                    @foreach($anglers as $angler)
-                                        <option value="{{ $angler->id }}">{{ $angler->fullName }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label for="lakes_id" class="font-weight-bold">Lake</label>
-                                <select id="lakes_id" name="lakes_id" class="form-control form-control-lg" required>
-                                    <option value="">Select Lake...</option>
-                                    @foreach($lakes as $lake)
-                                        <option value="{{ $lake->id }}">{{ $lake->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="fish_breeds_id" class="font-weight-bold">Fish Species</label>
-                                <select id="fish_breeds_id" name="fish_breeds_id" class="form-control form-control-lg" required>
-                                    <option value="">Select Fish Species...</option>
-                                    @foreach($fishBreeds as $breed)
-                                        <option value="{{ $breed->id }}">{{ $breed->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label for="lures_id" class="font-weight-bold">Lure / Bait</label>
-                                <select id="lures_id" name="lures_id" class="form-control form-control-lg">
-                                    <option value="">Select Lure (Optional)...</option>
-                                    @foreach($lures as $lure)
-                                        <option value="{{ $lure->id }}">{{ $lure->displayName ?? $lure->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="length" class="font-weight-bold">Length (Inches)</label>
-                                <input type="number" step="0.25" id="length" name="length" class="form-control form-control-lg" placeholder="e.g. 18.5" required>
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label for="weight" class="font-weight-bold">Weight (Pounds - Optional)</label>
-                                <input type="number" step="0.1" id="weight" name="weight" class="form-control form-control-lg" placeholder="e.g. 4.2">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="caught" class="font-weight-bold">Date Caught</label>
-                                <input type="date" id="caught" name="caught" class="form-control form-control-lg" value="{{ date('Y-m-d') }}" required>
-                            </div>
-
-                            <div class="form-group col-md-6 d-flex align-items-end">
-                                <div class="custom-control custom-checkbox custom-control-lg mb-2">
-                                    <input type="checkbox" class="custom-control-input" id="released" name="released" value="1" checked>
-                                    <label class="custom-control-label font-weight-bold text-success" for="released">
-                                        🐟 Released Catch
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-3">
-                            <button type="submit" id="saveCatchBtn" class="btn btn-success btn-block btn-lg font-weight-bold py-3">
-                                💾 Save Catch Log
-                            </button>
-                        </div>
-                    </form>
-                </div>
+<div class="max-w-2xl mx-auto space-y-6">
+    <!-- Header Title & Network Mode Bar -->
+    <div class="bg-slate-900 text-white rounded-2xl p-5 shadow-md border border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
+                <i data-lucide="zap" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-white text-lg tracking-tight leading-tight">Boat Quick Catch Log</h1>
+                <p class="text-xs text-slate-400">Tactile on-the-water field logger</p>
             </div>
         </div>
+
+        <span id="network-status" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+            Checking connection...
+        </span>
+    </div>
+
+    <!-- Quick Catch Form Container -->
+    <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 space-y-6">
+        <div id="quick-catch-alert" class="hidden text-xs font-bold p-4 rounded-xl shadow-sm border transition-all" role="alert"></div>
+
+        <form id="quickCatchForm" class="space-y-5">
+            @csrf
+            <input type="hidden" id="client_id" name="client_id">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Angler Select -->
+                <div class="space-y-1.5">
+                    <label for="anglers_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Angler</label>
+                    <select id="anglers_id" name="anglers_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-medium text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors" required>
+                        <option value="">Select Angler...</option>
+                        @foreach($anglers as $angler)
+                            <option value="{{ $angler->id }}">{{ $angler->fullName }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Lake Select -->
+                <div class="space-y-1.5">
+                    <label for="lakes_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lake / Water</label>
+                    <select id="lakes_id" name="lakes_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-medium text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors" required>
+                        <option value="">Select Lake...</option>
+                        @foreach($lakes as $lake)
+                            <option value="{{ $lake->id }}">{{ $lake->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Species Select -->
+                <div class="space-y-1.5">
+                    <label for="fish_breeds_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Fish Species</label>
+                    <select id="fish_breeds_id" name="fish_breeds_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-medium text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors" required>
+                        <option value="">Select Fish Species...</option>
+                        @foreach($fishBreeds as $breed)
+                            <option value="{{ $breed->id }}">{{ $breed->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Lure Select -->
+                <div class="space-y-1.5">
+                    <label for="lures_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lure / Bait (Optional)</label>
+                    <select id="lures_id" name="lures_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-medium text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors">
+                        <option value="">Select Lure...</option>
+                        @foreach($lures as $lure)
+                            <option value="{{ $lure->id }}">{{ $lure->displayName ?? $lure->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Length Input -->
+                <div class="space-y-1.5">
+                    <label for="length" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Length (Inches)</label>
+                    <div class="relative">
+                        <input type="number" step="0.25" id="length" name="length" class="w-full h-11 pl-3.5 pr-12 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-mono font-bold text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors" placeholder="e.g. 18.5" required>
+                        <span class="absolute right-3.5 top-2.5 text-xs font-bold text-slate-400">in.</span>
+                    </div>
+                </div>
+
+                <!-- Weight Input -->
+                <div class="space-y-1.5">
+                    <label for="weight" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Weight (Pounds - Optional)</label>
+                    <div class="relative">
+                        <input type="number" step="0.1" id="weight" name="weight" class="w-full h-11 pl-3.5 pr-12 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-mono font-bold text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors" placeholder="e.g. 4.2">
+                        <span class="absolute right-3.5 top-2.5 text-xs font-bold text-slate-400">lbs.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2 items-center">
+                <!-- Date Input -->
+                <div class="space-y-1.5">
+                    <label for="caught" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Date Caught</label>
+                    <input type="date" id="caught" name="caught" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-medium text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors" value="{{ date('Y-m-d') }}" required>
+                </div>
+
+                <!-- Released Toggle Checkbox -->
+                <div class="pt-4 md:pt-6">
+                    <label class="flex items-center gap-3 cursor-pointer p-3 rounded-xl border border-emerald-100 bg-emerald-50/60 hover:bg-emerald-50 transition-colors">
+                        <input type="checkbox" id="released" name="released" value="1" class="w-5 h-5 rounded text-emerald-600 focus:ring-emerald-500 border-emerald-300" checked>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="heart" class="w-4 h-4 text-emerald-600"></i>
+                            <span class="text-sm font-bold text-emerald-800">Released Catch</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Submit Action -->
+            <div class="pt-4">
+                <button type="submit" id="saveCatchBtn" class="w-full py-4 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-base rounded-xl shadow-lg shadow-teal-900/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="save" class="w-5 h-5"></i>
+                    <span>Save Catch Log</span>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection
 
 @section('scripts')
+<script>
 document.addEventListener('DOMContentLoaded', () => {
     const netStatus = document.getElementById('network-status');
     const updateNetStatus = () => {
         if (navigator.onLine) {
-            netStatus.textContent = '🟢 Online (Cabin)';
-            netStatus.className = 'badge badge-success';
+            netStatus.innerHTML = '<i data-lucide="wifi" class="w-3.5 h-3.5 text-emerald-400"></i> Online (Cabin)';
+            netStatus.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
         } else {
-            netStatus.textContent = '⛵ Offline (Boat Mode)';
-            netStatus.className = 'badge badge-warning';
+            netStatus.innerHTML = '<i data-lucide="wifi-off" class="w-3.5 h-3.5 text-amber-400"></i> Offline (Boat Mode)';
+            netStatus.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30';
         }
+        if (window.initLucideIcons) window.initLucideIcons();
     };
 
     window.addEventListener('online', updateNetStatus);
@@ -164,32 +190,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (response.ok) {
-                    alertBox.className = 'alert alert-success';
+                    alertBox.className = 'text-xs font-bold p-4 rounded-xl shadow-sm border transition-all bg-emerald-50 text-emerald-800 border-emerald-200 block';
                     alertBox.textContent = '🎉 Catch successfully logged to server!';
-                    alertBox.classList.remove('d-none');
                 } else {
                     throw new Error('Server error');
                 }
             } catch (err) {
                 // Fallback to offline local storage
                 await window.offlineSyncManager.saveCatchOffline(catchData);
-                alertBox.className = 'alert alert-warning';
+                alertBox.className = 'text-xs font-bold p-4 rounded-xl shadow-sm border transition-all bg-amber-50 text-amber-800 border-amber-200 block';
                 alertBox.textContent = '⛵ Saved locally to boat offline queue!';
-                alertBox.classList.remove('d-none');
             }
         } else {
             // Save offline directly
             await window.offlineSyncManager.saveCatchOffline(catchData);
-            alertBox.className = 'alert alert-warning';
+            alertBox.className = 'text-xs font-bold p-4 rounded-xl shadow-sm border transition-all bg-amber-50 text-amber-800 border-amber-200 block';
             alertBox.textContent = '⛵ Saved locally to boat offline queue! Will auto-sync at cabin.';
-            alertBox.classList.remove('d-none');
         }
 
         // Reset length and weight for next entry
         form.length.value = '';
         form.weight.value = '';
 
-        setTimeout(() => alertBox.classList.add('d-none'), 3000);
+        setTimeout(() => alertBox.classList.add('hidden'), 3500);
     });
 });
+</script>
 @endsection
