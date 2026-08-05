@@ -1,81 +1,76 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        {{ $lake->name }} Visits
-                        <a href='/lake/{{ $lake->id }}' class='card-link btn btn-md btn-outline-dark m-0 float-right' role='button'>Back</a>
-                    </h3>
+<div class="space-y-6">
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-600 flex items-center justify-center shrink-0">
+                    <i data-lucide="calendar" class="w-5 h-5"></i>
                 </div>
-
-                @foreach($recordsByDate as $records)
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title">
-                                Visit: {{ $records[0]->caught }}
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <table class='table table-hover'>
-                                <thead class='thead-light'>
-                                    <tr>
-                                        <th>Angler</th>
-                                        <th>Fish</th>
-                                        <th>Lure</th>
-                                        <th class="text-center">Weight (lb)</th>
-                                        <th class="text-center">Length (in)</th>
-                                        <th class="text-center">Temp.</th>
-                                        <th>Released</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($records as $record)
-                                        <tr>
-                                            <td class="align-middle">{{ $record->angler->lastName }}, {{ $record->angler->firstName }} {{ $record->angler->middleName }}</td>
-                                            <td class="align-middle">{{ $record->fishBreed->name }}</td>
-                                            <td class="align-middle">
-                                                @if($record->lure)
-                                                    @if(strlen($record->lure->displayName) >= 20)
-                                                        <span title="{{ $record->lure->displayName }}">{{ substr($record->lure->displayName, 0, 17) }}...</span>
-                                                    @endif
-                                                @endif
-                                            </td>
-                                            <td class="align-middle text-center">{{ $record->weight }}</td>
-                                            <td class="align-middle text-center">{{ $record->length }}</td>
-                                            <td class="align-middle text-center">{{ $record->temperature }}</td>
-                                            <td class="align-middle">
-                                                @if($record->released == 1)
-                                                    <span class="badge badge-secondary">Released</span>
-                                                @else
-                                                    <span class="badge badge-primary">Caught</span>
-                                                @endif
-                                            </td>
-                                            <td class="align-middle text-center">
-                                                @if(view()->exists('record.edit'))
-                                                    <a href='/record/{{ $record->id }}/edit' class='btn btn-sm btn-light' role='button'>
-                                                        <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
-                                                    </a>
-                                                @endif
-                                                @if(view()->exists('record.show'))
-                                                    <a href='/record/{{ $record->id }}' class='btn btn-sm btn-light' role='button'>
-                                                        <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show"></i>
-                                                    </a>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                @endforeach
-
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-tight">{{ $lake->name }} Visits Log</h1>
+                    <p class="text-xs text-slate-500">Historical trip visit records</p>
+                </div>
             </div>
+            <a href="/lake/{{ $lake->id }}" class="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">Back to Lake</a>
+        </div>
+
+        <div class="space-y-6">
+            @foreach($recordsByDate as $records)
+                <div class="border border-slate-200/80 rounded-2xl p-4 bg-slate-50/50 space-y-3">
+                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
+                        <i data-lucide="clock" class="w-4 h-4 text-teal-600"></i>
+                        <span>Visit Date: {{ $records[0]->caught }}</span>
+                        <span class="text-slate-400">({{ count($records) }} Fish Logged)</span>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-200/80 bg-white">
+                        <table class="w-full text-left text-xs text-slate-700">
+                            <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
+                                <tr>
+                                    <th scope="col" class="py-2.5 px-3">Angler</th>
+                                    <th scope="col" class="py-2.5 px-3">Species</th>
+                                    <th scope="col" class="py-2.5 px-3">Lure</th>
+                                    <th scope="col" class="py-2.5 px-3 text-center">Weight (lbs)</th>
+                                    <th scope="col" class="py-2.5 px-3 text-center">Length (in)</th>
+                                    <th scope="col" class="py-2.5 px-3 text-center">Water Temp</th>
+                                    <th scope="col" class="py-2.5 px-3">Status</th>
+                                    <th scope="col" class="py-2.5 px-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @foreach($records as $record)
+                                    <tr class="hover:bg-slate-50/70 transition-colors">
+                                        <td class="py-2.5 px-3 font-semibold text-slate-800">{{ $record->angler->lastName }}, {{ $record->angler->firstName }}</td>
+                                        <td class="py-2.5 px-3 font-bold text-teal-700">{{ $record->fishBreed->name }}</td>
+                                        <td class="py-2.5 px-3 text-slate-600">
+                                            @if($record->lure)
+                                                <span title="{{ $record->lure->displayName }}">{{ \Illuminate\Support\Str::limit($record->lure->displayName, 20) }}</span>
+                                            @else
+                                                <span class="text-slate-400">—</span>
+                                            @endif
+                                        </td>
+                                        <td class="py-2.5 px-3 text-center font-mono">{{ $record->weight ?? '—' }}</td>
+                                        <td class="py-2.5 px-3 text-center font-mono">{{ $record->length ?? '—' }}</td>
+                                        <td class="py-2.5 px-3 text-center font-mono text-slate-600">{{ $record->temperature ? $record->temperature . '°F' : '—' }}</td>
+                                        <td class="py-2.5 px-3">
+                                            @if($record->released == 1)
+                                                <span class="inline-flex items-center bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">Released</span>
+                                            @else
+                                                <span class="inline-flex items-center bg-sky-50 text-sky-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-sky-200">Kept</span>
+                                            @endif
+                                        </td>
+                                        <td class="py-2.5 px-3 text-right whitespace-nowrap">
+                                            <x-tableOptions name='record' identifier='{{ $record->id }}' />
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endforeach
         </div>
     </div>
 </div>

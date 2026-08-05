@@ -1,148 +1,154 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class='card-title'>
-                    Lake
-                        <a href='/lake/{{ $lake->id }}/visits' class='card-link btn btn-md btn-outline-dark float-right' role='button'>Visits</a>
-                        <a href='/lake/{{ $lake->id }}/edit' class='card-link btn btn-md btn-outline-dark float-right' role='button'>Edit</a>
-                        <a href='{{ url('lake') }}' class='card-link btn btn-md btn-outline-dark m-0 float-right' role='button'>Back</a>
-                    </h3>
-                    
+<div class="space-y-6">
+    <!-- Lake Detail Hero Card -->
+    <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-sm border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
+                <i data-lucide="waves" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight">{{ $lake->name }}</h1>
+                <p class="text-xs text-slate-400 font-medium">Canadian Angling Waterbody</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <a href="/lake/{{ $lake->id }}/visits" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5">
+                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                <span>Visits Log</span>
+            </a>
+            <a href="/lake/{{ $lake->id }}/edit" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                <span>Edit</span>
+            </a>
+            <a href="/lake" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-slate-700 transition-colors">
+                Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Lake Badges & Map Card -->
+    @if($lake->structure || $lake->max_depth || ($lake->latitude && $lake->longitude))
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+            @if($lake->structure)
+                <span class="bg-teal-50 text-teal-800 border border-teal-200 px-3 py-1.5 rounded-xl font-medium">
+                    🌊 Bottom Cover: <strong>{{ $lake->structure }}</strong>
+                </span>
+            @endif
+            @if($lake->max_depth)
+                <span class="bg-slate-100 text-slate-800 border border-slate-200 px-3 py-1.5 rounded-xl font-medium">
+                    📏 Max Depth: <strong>{{ $lake->max_depth }} ft</strong>
+                </span>
+            @endif
+            @if($lake->latitude && $lake->longitude)
+                <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-xl font-medium">
+                    📍 GPS Coordinates: <strong>{{ number_format($lake->latitude, 4) }}°N, {{ number_format($lake->longitude, 4) }}°W</strong>
+                </span>
+            @endif
+        </div>
+    @endif
+
+    @if($lake->latitude && $lake->longitude)
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-3">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <i data-lucide="compass" class="w-4 h-4 text-teal-600"></i>
+                    <span>Location & Topographic Map</span>
+                </h2>
+                @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
+                    <span class="bg-teal-50 text-teal-700 border border-teal-200 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                        {{ $nearbyLakes->count() }} Nearby Lake(s) within 2 Miles
+                    </span>
+                @endif
+            </div>
+
+            <div id="lake-show-map" class="w-full h-[380px]"></div>
+
+            @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
+                <div class="p-4 bg-slate-50 border-t border-slate-100 text-xs space-y-2">
+                    <span class="font-bold text-slate-700 block">Identified Lakes Within 2 Miles:</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        @foreach($nearbyLakes as $nearLake)
+                            <a href="{{ url('/lake/' . $nearLake->id) }}" class="bg-white hover:bg-teal-50 text-slate-800 border border-slate-200 hover:border-teal-300 font-semibold px-2.5 py-1 rounded-lg transition-colors">
+                                🏞️ {{ $nearLake->name }} ({{ $nearLake->distance }} mi)
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
-                <div class="card-body">
-                    <h1 class="card-subtitle mb-2 text-muted">
-                        {{ $lake->name }}
-                    </h1>
+            @endif
+        </div>
+    @endif
 
-                    @if($lake->structure || $lake->max_depth || ($lake->latitude && $lake->longitude))
-                        <div class="mb-3">
-                            @if($lake->structure)
-                                <span class="badge badge-info p-2 mr-2">🌊 Bottom Terrain: <strong>{{ $lake->structure }}</strong></span>
-                            @endif
-                            @if($lake->max_depth)
-                                <span class="badge badge-secondary p-2 mr-2">📏 Max Depth: <strong>{{ $lake->max_depth }} ft</strong></span>
-                            @endif
-                            @if($lake->latitude && $lake->longitude)
-                                <span class="badge badge-success p-2">📍 Coordinates: <strong>{{ $lake->latitude }}°N, {{ $lake->longitude }}°W</strong></span>
-                            @endif
-                        </div>
-                    @endif
+    <!-- Key Trophy Metrics Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 text-center space-y-1">
+            <span class="text-3xl font-black text-slate-900 tracking-tight block">{{ $count }}</span>
+            <span class="text-xs text-slate-500 font-medium block">Total Fish Logged</span>
+            <div class="pt-2 flex justify-center gap-3 text-xs text-slate-400 border-t border-slate-100">
+                <span>{{ $visits }} Visits</span>
+                <span>•</span>
+                <span>{{ $anglers }} Anglers</span>
+            </div>
+        </div>
 
-                    @if($lake->latitude && $lake->longitude)
-                        <div class="card mb-4">
-                            <div class="card-header bg-light font-weight-bold d-flex justify-content-between align-items-center">
-                                <span>🗺️ Location & Topo Map</span>
-                                @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
-                                    <span class="badge badge-info">{{ $nearbyLakes->count() }} Nearby Lake(s) within 2 Miles</span>
-                                @endif
-                            </div>
-                            <div class="card-body p-0">
-                                <div id="lake-show-map" style="height: 350px; width: 100%; border-radius: 4px;"></div>
-                            </div>
-                            @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
-                                <div class="card-footer bg-light">
-                                    <small class="font-weight-bold text-dark d-block mb-1">🌲 Identified Lakes Within 2 Miles:</small>
-                                    @foreach($nearbyLakes as $nearLake)
-                                        <a href="{{ url('/lake/' . $nearLake->id) }}" class="badge badge-pill badge-outline-primary border p-2 mr-1 mb-1 text-dark">
-                                            🏞️ <strong>{{ $nearLake->name }}</strong> ({{ $nearLake->distance }} mi)
-                                        </a>
-                                    @endforeach
-                                </div>
-                            @endif
-                        </div>
-                    @endif
+        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-5 shadow-md border border-slate-700/50 text-center space-y-1">
+            @isset($longest)
+                <span class="text-3xl font-black text-white tracking-tight block">{{ $longest->length }} <span class="text-base font-normal">in.</span></span>
+                <span class="text-xs text-teal-300 font-semibold block">{{ $longest->fishBreed->name ?? 'Fish' }}</span>
+                <span class="text-[10px] uppercase font-bold tracking-wider text-amber-400 block pt-1">Longest Catch</span>
+            @else
+                <span class="text-2xl font-bold text-slate-400 block py-2">--</span>
+                <span class="text-xs text-slate-400 block">No length record yet</span>
+            @endisset
+        </div>
 
-                    <div class="card-group" style="margin-bottom: 0.5em">
-                        <div class="card">
-                            <div class="card-body">
-                                <h1 class="text-center">{{ $count }}</h1>
-                                <h6 class="text-muted text-center">{{ $visits }} Visits</h6>
-                                <h6 class="text-muted text-center">{{ $anglers }} Anglers</h6>
-                            </div>
-                            <div class="card-footer text-center">
-                            Total
-                            </div>
+        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-5 shadow-md border border-slate-700/50 text-center space-y-1">
+            @if(isset($fattest) && !is_null($fattest->weight))
+                <span class="text-3xl font-black text-white tracking-tight block">{{ $fattest->weight }} <span class="text-base font-normal">lbs.</span></span>
+                <span class="text-xs text-teal-300 font-semibold block">{{ $fattest->fishBreed->name ?? 'Fish' }}</span>
+                <span class="text-[10px] uppercase font-bold tracking-wider text-amber-400 block pt-1">Fattest Catch</span>
+            @else
+                <span class="text-2xl font-bold text-slate-400 block py-2">--</span>
+                <span class="text-xs text-slate-400 block">No weight record yet</span>
+            @endif
+        </div>
+    </div>
+
+    <!-- Species Statistics Grid -->
+    <div class="space-y-4">
+        <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <i data-lucide="fish" class="w-4 h-4 text-teal-600"></i>
+            <span>Species Statistics</span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            @foreach($stats as $stat)
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-3">
+                    <h3 class="font-bold text-slate-900 text-sm border-b border-slate-100 pb-2 flex items-center justify-between">
+                        <span>{{ $stat->fishBreed->name }}</span>
+                        <span class="bg-teal-50 text-teal-700 text-xs px-2.5 py-0.5 rounded-full border border-teal-200">{{ $stat->cnt }} Total</span>
+                    </h3>
+
+                    <div class="grid grid-cols-2 gap-3 text-center text-xs">
+                        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block">Avg. Length</span>
+                            <span class="text-base font-bold text-slate-800 block mt-0.5">{{ $stat->avg_length }} in.</span>
+                            <span class="text-[10px] text-slate-500 font-mono">{{ $stat->min_length }}/{{ $stat->max_length }} (Min/Max)</span>
                         </div>
-                        <div class="card">
-                            <div class="card-body">
-                                @isset($longest)
-                                    <h1 class="text-center" style="margin-bottom: 0">{{ $longest->length }} in.</h1>
-                                    <h6 class="text-muted text-center">{{ $longest->fishBreed->name }}</h6>
-                                @else
-                                    <h1 class="text-center" style="margin-bottom: 0">--</h1>
-                                    <h6 class="text-muted text-center">Please record more fish!</h6>
-                                @endisset
-                            </div>
-                            <div class="card-footer text-center">
-                            Longest
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                @if(isset($fattest) && !is_null($fattest->weight))
-                                    <h1 class="text-center" style="margin-bottom: 0">{{ $fattest->weight }} lbs.</h1>
-                                    <h6 class="text-muted text-center">{{ $fattest->fishBreed->name }}</h6>
-                                @else
-                                    <h1 class="text-center" style="margin-bottom: 0">--</h1>
-                                    <h6 class="text-muted text-center">Please record more fish!</h6>
-                                @endif
-                            </div>
-                            <div class="card-footer text-center">
-                            Fattest
-                            </div>
+                        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block">Avg. Weight</span>
+                            @if(!is_null($stat->avg_weight))
+                                <span class="text-base font-bold text-slate-800 block mt-0.5">{{ $stat->avg_weight }} lbs.</span>
+                                <span class="text-[10px] text-slate-500 font-mono">{{ $stat->min_weight }}/{{ $stat->max_weight }} (Min/Max)</span>
+                            @else
+                                <span class="text-xs text-slate-400 block py-1.5">—</span>
+                            @endif
                         </div>
                     </div>
-
-                    @foreach($stats as $stat)
-                        <div class="card-body">
-                            <h4 class="card-subtitle mb-2 text-muted">
-                                {{ $stat->fishBreed->name}}
-                            </h4>
-                            <div class="card-group" style="margin-bottom: 0.5em">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h1 class="text-center">{{ $stat->cnt }}</h1>
-                                    </div>
-                                    <div class="card-footer text-center">
-                                    Total
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h1 class="text-center">{{ $stat->avg_length }} in.</h1>
-                                        <h6 class="text-muted text-center">{{ $stat->min_length }}/{{ $stat->max_length }} in. (Min/Max)</h6>
-                                    </div>
-                                    <div class="card-footer text-center">
-                                    Avg. Length
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-body">
-                                        @if(!is_null($stat->avg_weight))
-                                            <h1 class="text-center">{{ $stat->avg_weight }} lbs.</h1>
-                                            <h6 class="text-muted text-center">{{ $stat->weighed_count }}/{{ $stat->min_weight }}/{{ $stat->max_weight }} (Cnt/Min/Max)</h6>
-                                        @else
-                                            <h1 class="text-center">--</h1>
-                                            <h6 class="text-muted text-center">Please record more fish!</h6>
-                                        @endif
-                                    </div>
-                                    <div class="card-footer text-center">
-                                    *Avg. Weight
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
                 </div>
-                <div class="card-footer">
-                    <i>*Average Weight of larger fish.</i>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </div>
@@ -174,27 +180,26 @@
 
         // Draw 2-mile radius circle around lake (3,218.68 meters = 2 miles)
         L.circle([lat, lng], {
-            color: '#17a2b8',
-            fillColor: '#17a2b8',
+            color: '#0d9488',
+            fillColor: '#0d9488',
             fillOpacity: 0.08,
             radius: 3218.68
         }).addTo(map);
 
-        // Target Lake Marker (Blue)
+        // Target Lake Marker
         L.marker([lat, lng]).addTo(map)
             .bindPopup("<b>{{ $lake->name }}</b><br>Coordinates: " + lat + ", " + lng)
             .openPopup();
 
-        // Render Nearby Lakes within 2 miles (Green Markers)
+        // Render Nearby Lakes within 2 miles
         @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
             const nearbyLakesData = @json($nearbyLakes);
 
             nearbyLakesData.forEach(function (nLake) {
                 if (nLake.latitude && nLake.longitude) {
-                    // Custom green circle marker for nearby identified lakes
                     const nMarker = L.circleMarker([nLake.latitude, nLake.longitude], {
                         radius: 8,
-                        fillColor: "#28a745",
+                        fillColor: "#10b981",
                         color: "#ffffff",
                         weight: 2,
                         opacity: 1,
@@ -213,4 +218,3 @@
 </script>
 @endif
 @endsection
-
