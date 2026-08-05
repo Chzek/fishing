@@ -1,173 +1,166 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid px-4">
-    <!-- Filter Toolbar Header -->
-    <div class="card shadow-sm border-info mb-3">
-        <div class="card-body py-2 px-3">
-            <div class="row align-items-center">
-                <div class="col-md-3 mb-2 mb-md-0">
-                    <h5 class="mb-0 text-primary font-weight-bold">
-                        🧭 Lake Explorer
-                        <span id="lake-count-badge" class="badge badge-info ml-2">0 Lakes in View</span>
-                    </h5>
+<div class="space-y-4">
+    <!-- Filter Toolbar Header Card -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-600 flex items-center justify-center shrink-0">
+                    <i data-lucide="compass" class="w-5 h-5"></i>
                 </div>
-                <div class="col-md-9">
-                    <form id="explorer-filter-form" class="form-inline justify-content-md-end">
-                        <!-- Species Filter -->
-                        <div class="form-group mr-2 mb-1">
-                            <select id="filter-species" class="form-control form-control-sm">
-                                <option value="">🐟 All Species</option>
-                                @foreach($fishBreeds as $breed)
-                                    <option value="{{ $breed->id }}">{{ $breed->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Angler Filter -->
-                        <div class="form-group mr-2 mb-1">
-                            <select id="filter-angler" class="form-control form-control-sm">
-                                <option value="">👨‍🌾 All Anglers</option>
-                                @foreach($anglers as $angler)
-                                    <option value="{{ $angler->id }}">{{ trim($angler->firstname . ' ' . $angler->lastname) ?: 'Angler #' . $angler->id }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Lure Filter -->
-                        <div class="form-group mr-2 mb-1">
-                            <select id="filter-lure" class="form-control form-control-sm">
-                                <option value="">🎣 All Lures</option>
-                                @foreach($lures as $lure)
-                                    <option value="{{ $lure->id }}">{{ $lure->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Trophy Filter -->
-                        <div class="form-group mr-2 mb-1">
-                            <select id="filter-trophy" class="form-control form-control-sm">
-                                <option value="">🏆 All Catches</option>
-                                <option value="1">🏆 Trophies Only (≥10lbs or ≥20in)</option>
-                            </select>
-                        </div>
-
-                        <!-- Season Year Filter -->
-                        <div class="form-group mr-2 mb-1">
-                            <select id="filter-year" class="form-control form-control-sm">
-                                <option value="">📅 All Seasons</option>
-                                @foreach($years as $yr)
-                                    <option value="{{ $yr }}">{{ $yr }} Season</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <button type="button" onclick="resetExplorerFilters()" class="btn btn-outline-secondary btn-sm mb-1">
-                            🔄 Reset
-                        </button>
-                    </form>
+                <div>
+                    <h1 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <span>Lake Explorer</span>
+                        <span id="lake-count-badge" class="bg-teal-50 text-teal-700 border border-teal-200 text-xs font-semibold px-2.5 py-0.5 rounded-full">0 Lakes in View</span>
+                    </h1>
                 </div>
             </div>
+
+            <!-- Filter Controls Form -->
+            <form id="explorer-filter-form" class="w-full lg:w-auto flex flex-wrap items-center gap-2">
+                <!-- Species Filter -->
+                <select id="filter-species" class="h-9 px-3 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    <option value="">🐟 All Species</option>
+                    @foreach($fishBreeds as $breed)
+                        <option value="{{ $breed->id }}">{{ $breed->name }}</option>
+                    @endforeach
+                </select>
+
+                <!-- Angler Filter -->
+                <select id="filter-angler" class="h-9 px-3 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    <option value="">👨‍🌾 All Anglers</option>
+                    @foreach($anglers as $angler)
+                        <option value="{{ $angler->id }}">{{ trim($angler->firstname . ' ' . $angler->lastname) ?: 'Angler #' . $angler->id }}</option>
+                    @endforeach
+                </select>
+
+                <!-- Lure Filter -->
+                <select id="filter-lure" class="h-9 px-3 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    <option value="">🎣 All Lures</option>
+                    @foreach($lures as $lure)
+                        <option value="{{ $lure->id }}">{{ $lure->name }}</option>
+                    @endforeach
+                </select>
+
+                <!-- Trophy Filter -->
+                <select id="filter-trophy" class="h-9 px-3 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    <option value="">🏆 All Catches</option>
+                    <option value="1">🏆 Trophies Only (≥10lbs or ≥20in)</option>
+                </select>
+
+                <!-- Season Year Filter -->
+                <select id="filter-year" class="h-9 px-3 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    <option value="">📅 All Seasons</option>
+                    @foreach($years as $yr)
+                        <option value="{{ $yr }}">{{ $yr }} Season</option>
+                    @endforeach
+                </select>
+
+                <button type="button" onclick="resetExplorerFilters()" class="h-9 px-3 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-colors flex items-center gap-1">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    <span>Reset</span>
+                </button>
+            </form>
         </div>
     </div>
 
-    <!-- Main Explorer Map Container -->
-    <div class="card shadow-sm border-0 position-relative overflow-hidden" style="height: calc(100vh - 180px); min-height: 520px;">
-        <div id="explorer-map" style="height: 100%; width: 100%;"></div>
+    <!-- Main Explorer Map & Slide Drawer Container -->
+    <div class="relative bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden" style="height: calc(100vh - 220px); min-height: 540px;">
+        <div id="explorer-map" class="w-full h-full z-0"></div>
 
-        <!-- Right Slide-Over Detail Drawer -->
-        <div id="explorer-drawer" class="position-absolute bg-white shadow-lg border-left" style="top: 0; right: -450px; width: 440px; height: 100%; z-index: 1050; transition: right 0.3s ease-in-out; overflow-y: auto;">
-            <div class="p-3 bg-primary text-white d-flex justify-content-between align-items-center sticky-top">
+        <!-- Right Slide-Over Detail Drawer (Dark Option C Styling) -->
+        <div id="explorer-drawer" class="absolute top-0 right-[-450px] w-[420px] max-w-full h-full bg-slate-900 text-slate-200 shadow-2xl border-l border-slate-800 z-30 transition-all duration-300 ease-in-out overflow-y-auto">
+            <div class="p-4 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between sticky top-0 backdrop-blur-md z-10">
                 <div>
-                    <h5 id="drawer-lake-name" class="mb-0 font-weight-bold">Lake Detail</h5>
-                    <small id="drawer-lake-sub" class="text-light">Lake Catch Analytics</small>
+                    <h2 id="drawer-lake-name" class="font-bold text-white text-base tracking-tight">Lake Detail</h2>
+                    <span id="drawer-lake-sub" class="text-xs text-teal-400 font-medium">Lake Catch Analytics</span>
                 </div>
-                <button type="button" onclick="closeLakeDrawer()" class="close text-white opacity-100" style="font-size: 1.8rem; line-height: 1;">&times;</button>
+                <button type="button" onclick="closeLakeDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
 
-            <div id="drawer-loading" class="text-center py-5">
-                <div class="spinner-border text-primary" role="status"></div>
-                <p class="mt-2 text-muted">Loading lake analytics...</p>
+            <div id="drawer-loading" class="text-center py-12">
+                <i data-lucide="loader-2" class="w-8 h-8 text-teal-400 animate-spin mx-auto"></i>
+                <p class="mt-2 text-xs text-slate-400">Loading lake analytics...</p>
             </div>
 
-            <div id="drawer-body" class="p-3" style="display: none;">
+            <div id="drawer-body" class="p-5 space-y-5" style="display: none;">
                 <!-- Lake Badges & Coordinates -->
-                <div class="mb-3">
-                    <span id="drawer-coords-badge" class="badge badge-success p-2 mr-1 mb-1">📍 Coordinates</span>
-                    <span id="drawer-terrain-badge" class="badge badge-info p-2 mr-1 mb-1" style="display: none;">🌊 Terrain</span>
-                    <span id="drawer-depth-badge" class="badge badge-secondary p-2 mr-1 mb-1" style="display: none;">📏 Depth</span>
+                <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span id="drawer-coords-badge" class="bg-teal-500/15 text-teal-300 border border-teal-500/30 px-2.5 py-1 rounded-lg font-medium">📍 Coordinates</span>
+                    <span id="drawer-terrain-badge" class="bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-lg font-medium" style="display: none;">🌊 Terrain</span>
+                    <span id="drawer-depth-badge" class="bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-lg font-medium" style="display: none;">📏 Depth</span>
                 </div>
 
                 <!-- Catch & Visit Stats Grid -->
-                <div class="row text-center mb-3">
-                    <div class="col-4">
-                        <div class="p-2 bg-light rounded border">
-                            <h4 id="drawer-stat-catches" class="font-weight-bold text-primary mb-0">0</h4>
-                            <small class="text-muted font-weight-bold">Catches</small>
-                        </div>
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/50">
+                        <span id="drawer-stat-catches" class="text-2xl font-black text-white block">0</span>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Catches</span>
                     </div>
-                    <div class="col-4">
-                        <div class="p-2 bg-light rounded border">
-                            <h4 id="drawer-stat-visits" class="font-weight-bold text-success mb-0">0</h4>
-                            <small class="text-muted font-weight-bold">Visits</small>
-                        </div>
+                    <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/50">
+                        <span id="drawer-stat-visits" class="text-2xl font-black text-emerald-400 block">0</span>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Visits</span>
                     </div>
-                    <div class="col-4">
-                        <div class="p-2 bg-light rounded border">
-                            <h4 id="drawer-stat-anglers" class="font-weight-bold text-info mb-0">0</h4>
-                            <small class="text-muted font-weight-bold">Anglers</small>
-                        </div>
+                    <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/50">
+                        <span id="drawer-stat-anglers" class="text-2xl font-black text-sky-400 block">0</span>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Anglers</span>
                     </div>
                 </div>
 
                 <!-- Record Highlights (Longest & Fattest) -->
-                <div class="card mb-3 border-warning">
-                    <div class="card-header bg-warning text-dark font-weight-bold py-1 px-2">
-                        🏆 Lake Trophy Records
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 border border-amber-500/30 space-y-2">
+                    <div class="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
+                        <i data-lucide="trophy" class="w-4 h-4"></i>
+                        <span>Lake Trophy Records</span>
                     </div>
-                    <div class="card-body p-2">
-                        <div class="row text-center">
-                            <div class="col-6 border-right">
-                                <small class="text-muted font-weight-bold">Longest Catch</small>
-                                <h5 id="drawer-longest-val" class="font-weight-bold text-dark mb-0">--</h5>
-                                <small id="drawer-longest-breed" class="text-secondary">--</small>
-                            </div>
-                            <div class="col-6">
-                                <small class="text-muted font-weight-bold">Fattest Catch</small>
-                                <h5 id="drawer-fattest-val" class="font-weight-bold text-dark mb-0">--</h5>
-                                <small id="drawer-fattest-breed" class="text-secondary">--</small>
-                            </div>
+                    <div class="grid grid-cols-2 gap-3 pt-2 text-center border-t border-slate-700/60">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Longest</span>
+                            <span id="drawer-longest-val" class="text-lg font-bold text-white block">--</span>
+                            <span id="drawer-longest-breed" class="text-xs text-teal-300 block">--</span>
+                        </div>
+                        <div class="border-l border-slate-700/60">
+                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Fattest</span>
+                            <span id="drawer-fattest-val" class="text-lg font-bold text-white block">--</span>
+                            <span id="drawer-fattest-breed" class="text-xs text-teal-300 block">--</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Species Catch Breakdown List -->
-                <div class="card mb-3">
-                    <div class="card-header bg-light font-weight-bold py-2">
-                        🐟 Species Caught Breakdown
+                <div class="bg-slate-800/60 rounded-xl border border-slate-700/50 overflow-hidden">
+                    <div class="px-4 py-2.5 bg-slate-800 border-b border-slate-700/60 font-bold text-xs text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="fish" class="w-3.5 h-3.5 text-teal-400"></i>
+                        <span>Species Breakdown</span>
                     </div>
-                    <ul id="drawer-species-list" class="list-group list-group-flush">
-                        <li class="list-group-item text-muted text-center py-3">No catches recorded for active filter.</li>
+                    <ul id="drawer-species-list" class="divide-y divide-slate-700/50 text-xs">
+                        <li class="p-3 text-slate-400 text-center italic">No catches recorded for active filter.</li>
                     </ul>
                 </div>
 
                 <!-- Top Producing Lures -->
-                <div class="card mb-3">
-                    <div class="card-header bg-light font-weight-bold py-2">
-                        🎣 Top Producing Lures
+                <div class="bg-slate-800/60 rounded-xl border border-slate-700/50 overflow-hidden">
+                    <div class="px-4 py-2.5 bg-slate-800 border-b border-slate-700/60 font-bold text-xs text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i data-lucide="hook" class="w-3.5 h-3.5 text-teal-400"></i>
+                        <span>Top Producing Lures</span>
                     </div>
-                    <ul id="drawer-lures-list" class="list-group list-group-flush">
-                        <li class="list-group-item text-muted text-center py-3">No lure records.</li>
+                    <ul id="drawer-lures-list" class="divide-y divide-slate-700/50 text-xs">
+                        <li class="p-3 text-slate-400 text-center italic">No lure records logged.</li>
                     </ul>
                 </div>
 
                 <!-- Quick Action Buttons -->
-                <div class="d-flex justify-content-between mt-4 mb-2">
-                    <a id="drawer-quick-catch-btn" href="#" class="btn btn-success btn-block font-weight-bold mr-2 shadow-sm">
-                        ⚡ Quick Catch Here
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <a id="drawer-quick-catch-btn" href="#" class="py-2.5 px-3 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl text-center shadow transition-colors flex items-center justify-center gap-1">
+                        <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                        <span>Quick Catch</span>
                     </a>
-                    <a id="drawer-full-log-btn" href="#" class="btn btn-outline-primary btn-block font-weight-bold mt-0 shadow-sm">
-                        View Full Log ↗
+                    <a id="drawer-full-log-btn" href="#" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs rounded-xl text-center transition-colors flex items-center justify-center gap-1">
+                        <span>Full Log</span>
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                     </a>
                 </div>
             </div>
@@ -360,20 +353,20 @@
                 if (data.species_breakdown && data.species_breakdown.length > 0) {
                     data.species_breakdown.forEach(item => {
                         const li = document.createElement('li');
-                        li.className = 'list-group-item d-flex justify-content-between align-items-center py-2 px-3';
+                        li.className = 'p-3 flex justify-between items-center hover:bg-slate-800/40 transition-colors';
                         const breedName = item.fish_breed ? item.fish_breed.name : 'Unknown Species';
                         const avgW = item.avg_weight ? `${item.avg_weight} lbs` : 'unweighed';
                         li.innerHTML = `
                             <div>
-                                <strong>🐟 ${breedName}</strong>
-                                <small class="d-block text-muted">Avg: ${item.avg_length} in. | ${avgW}</small>
+                                <strong class="text-white">🐟 ${breedName}</strong>
+                                <small class="block text-slate-400">Avg: ${item.avg_length} in. | ${avgW}</small>
                             </div>
-                            <span class="badge badge-primary badge-pill font-weight-bold" style="font-size: 0.9rem;">${item.count}</span>
+                            <span class="px-2.5 py-1 bg-teal-500/20 text-teal-300 font-bold rounded-lg border border-teal-500/30 text-xs">${item.count}</span>
                         `;
                         speciesListEl.appendChild(li);
                     });
                 } else {
-                    speciesListEl.innerHTML = '<li class="list-group-item text-muted text-center py-3">No catches recorded for active filter.</li>';
+                    speciesListEl.innerHTML = '<li class="p-3 text-slate-400 text-center italic">No catches recorded for active filter.</li>';
                 }
 
                 // Top Lures List
@@ -382,20 +375,21 @@
                 if (data.top_lures && data.top_lures.length > 0) {
                     data.top_lures.forEach(item => {
                         const li = document.createElement('li');
-                        li.className = 'list-group-item d-flex justify-content-between align-items-center py-2 px-3';
+                        li.className = 'p-3 flex justify-between items-center hover:bg-slate-800/40 transition-colors';
                         const lureName = item.lure ? item.lure.name : 'Unknown Lure';
                         li.innerHTML = `
-                            <span>🎣 <strong>${lureName}</strong></span>
-                            <span class="badge badge-success badge-pill">${item.count} Catches</span>
+                            <span>🎣 <strong class="text-white">${lureName}</strong></span>
+                            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 font-bold rounded-lg border border-emerald-500/30 text-xs">${item.count} Catches</span>
                         `;
                         luresListEl.appendChild(li);
                     });
                 } else {
-                    luresListEl.innerHTML = '<li class="list-group-item text-muted text-center py-3">No lure records logged.</li>';
+                    luresListEl.innerHTML = '<li class="p-3 text-slate-400 text-center italic">No lure records logged.</li>';
                 }
 
                 document.getElementById('drawer-loading').style.display = 'none';
                 document.getElementById('drawer-body').style.display = 'block';
+                if (window.initLucideIcons) window.initLucideIcons();
             })
             .catch(err => {
                 console.error(err);

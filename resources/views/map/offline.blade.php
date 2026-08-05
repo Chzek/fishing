@@ -1,76 +1,91 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow-sm border-info mb-4">
-                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">🗺️ Offline Map Region Downloader</h4>
-                    <span class="badge badge-light text-dark">Pre-trip PWA Cache</span>
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Header Title & Region Badge -->
+    <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-sm border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
+                <i data-lucide="map" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-white tracking-tight">Offline Map Region Downloader</h1>
+                <p class="text-xs text-slate-400">Pre-trip PWA Cache for on-the-water boat maps</p>
+            </div>
+        </div>
+
+        <span class="bg-teal-500/15 text-teal-300 border border-teal-500/30 text-xs font-semibold px-3 py-1 rounded-full">
+            Offline PWA Ready
+        </span>
+    </div>
+
+    <!-- Main Region Card -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-6">
+        <p class="text-sm text-slate-600 leading-relaxed">
+            Pre-download map tiles for your Canadian fishing region while connected to Wi-Fi/Internet. 
+            Once cached, interactive maps and GPS lake location pickers will function 100% offline out on the boat or at the cabin!
+        </p>
+
+        <!-- Wawa / Highway 17 Preset Region Card -->
+        <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="space-y-2">
+                <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <i data-lucide="trees" class="w-4 h-4 text-teal-600"></i>
+                    <span>Wawa, Hawk Junction & White River Region</span>
+                </h2>
+                <p class="text-xs text-slate-600">
+                    <strong>Coverage:</strong> Highway 17 Corridor (Lat 47.7°N to 48.7°N, Lng -85.5°W to -84.3°W) — Wawa Lake, Hawk Lake, Magpie River, Dubreuilville & White River waterbodies.
+                </p>
+                <div class="flex flex-wrap gap-1.5 pt-1">
+                    <span class="bg-teal-100 text-teal-800 text-[11px] font-semibold px-2.5 py-0.5 rounded-md border border-teal-200">Zoom 7 – 14</span>
+                    <span class="bg-sky-100 text-sky-800 text-[11px] font-semibold px-2.5 py-0.5 rounded-md border border-sky-200">Topographic Hydrography</span>
+                    <span class="bg-slate-200 text-slate-800 text-[11px] font-semibold px-2.5 py-0.5 rounded-md">~3,700 Tiles (~55 MB)</span>
                 </div>
-                <div class="card-body">
-                    <p class="text-muted">
-                        Pre-download map tiles for your Canadian fishing region while connected to Wi-Fi/Internet. 
-                        Once cached, interactive maps and GPS lake location pickers will function 100% offline out on the boat or at the cabin!
-                    </p>
+            </div>
 
-                    <!-- Wawa / Highway 17 Preset Region Card -->
-                    <div class="card mb-4 border-primary">
-                        <div class="card-body bg-light">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <h5 class="text-primary font-weight-bold mb-1">🌲 Wawa, Hawk Junction & White River Region</h5>
-                                    <p class="mb-1 text-secondary small">
-                                        <strong>Coverage:</strong> Highway 17 Corridor (Lat 47.7°N to 48.7°N, Lng -85.5°W to -84.3°W) — Wawa Lake, Hawk Lake, Magpie River, Dubreuilville & White River waterbodies.
-                                    </p>
-                                    <span class="badge badge-primary">Zoom 7 – 14</span>
-                                    <span class="badge badge-info">Topographic & Waterbody Map</span>
-                                    <span class="badge badge-secondary">~3,700 Tiles (~55 MB)</span>
-                                </div>
-                                <div class="col-md-4 text-right mt-3 mt-md-0">
-                                    <button id="btn-download-wawa" onclick="downloadWawaRegion()" class="btn btn-success btn-block font-weight-bold shadow-sm">
-                                        📥 Download Wawa Region Pack (~55 MB)
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <button id="btn-download-wawa" onclick="downloadWawaRegion()" class="w-full md:w-auto shrink-0 py-3 px-5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow-md shadow-teal-900/10 transition-all flex items-center justify-center gap-2">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span>Download Wawa Region Pack (~55 MB)</span>
+            </button>
+        </div>
 
-                    <!-- Live Download Progress & Storage Stats -->
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h6 class="font-weight-bold">📊 Offline Tile Storage Status</h6>
-                            <div class="progress mb-3" style="height: 22px;">
-                                <div id="tile-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" style="width: 0%;">
-                                    0%
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span id="storage-count" class="font-weight-bold text-dark">0</span> tiles cached 
-                                    (<span id="storage-size" class="text-muted">0 MB</span>)
-                                </div>
-                                <div>
-                                    <button onclick="clearTileCache()" class="btn btn-outline-danger btn-sm">
-                                        🗑️ Clear Cached Map Tiles
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="download-status-msg" class="small text-info mt-2"></div>
-                        </div>
-                    </div>
+        <!-- Live Download Progress & Storage Stats -->
+        <div class="bg-slate-900 text-slate-200 rounded-2xl p-5 border border-slate-800 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-sm text-white flex items-center gap-2">
+                    <i data-lucide="hard-drive" class="w-4 h-4 text-teal-400"></i>
+                    <span>Offline Tile Storage Status</span>
+                </h3>
+                <button onclick="clearTileCache()" class="text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 px-3 py-1 rounded-lg border border-rose-500/30 transition-colors flex items-center gap-1">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    <span>Clear Cache</span>
+                </button>
+            </div>
 
-                    <!-- Interactive Region Preview Map -->
-                    <div class="card">
-                        <div class="card-header bg-light font-weight-bold">
-                            🗺️ Map Coverage Preview & Layer Controls
-                        </div>
-                        <div class="card-body p-0">
-                            <div id="offline-preview-map" style="height: 450px; width: 100%;"></div>
-                        </div>
-                    </div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-800 rounded-full h-4 overflow-hidden border border-slate-700">
+                <div id="tile-progress-bar" class="bg-gradient-to-r from-teal-500 to-teal-400 h-full text-[10px] font-bold text-slate-950 flex items-center justify-center transition-all duration-200" style="width: 0%;">
+                    0%
                 </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+                <div class="text-slate-300">
+                    <span id="storage-count" class="font-bold text-white text-sm">0</span> tiles cached 
+                    (<span id="storage-size" class="text-teal-400 font-mono">0 MB</span>)
+                </div>
+                <div id="download-status-msg" class="text-teal-300 font-medium italic">Ready to download map tiles for offline boat use.</div>
+            </div>
+        </div>
+
+        <!-- Interactive Region Preview Map Card -->
+        <div class="space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-teal-600"></i>
+                <span>Map Coverage Preview</span>
+            </h3>
+            <div class="rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
+                <div id="offline-preview-map" class="w-full h-[400px]"></div>
             </div>
         </div>
     </div>
@@ -107,7 +122,7 @@
 
         // Draw Bounding Box Rectangle for Wawa / Highway 17 Region
         const bounds = [[47.7, -85.5], [48.7, -84.3]];
-        L.rectangle(bounds, { color: "#007bff", weight: 2, fillOpacity: 0.15 }).addTo(previewMap);
+        L.rectangle(bounds, { color: "#0d9488", weight: 2, fillOpacity: 0.15 }).addTo(previewMap);
         previewMap.fitBounds(bounds);
 
         updateStorageStats();
@@ -201,24 +216,24 @@
     }
 
     async function clearTileCache() {
-        if (!confirm('Are you sure you want to clear all cached map tiles?')) return;
-        if ('caches' in window) {
+        if (!confirm('Are you sure you want to clear all offline cached map tiles?')) return;
+        try {
             await caches.delete('fishinglog-map-tiles-v1');
+            await updateStorageStats();
             document.getElementById('tile-progress-bar').style.width = '0%';
             document.getElementById('tile-progress-bar').innerText = '0%';
-            document.getElementById('download-status-msg').innerText = 'Map cache cleared.';
-            document.getElementById('btn-download-wawa').innerText = '📥 Download Wawa Region Pack (~55 MB)';
-            updateStorageStats();
+            document.getElementById('download-status-msg').innerText = 'Offline tile cache cleared.';
+        } catch (e) {
+            console.error(e);
         }
     }
 
-    // Helper: Convert Lat/Lng/Zoom to Tile X/Y coordinates
     function latLngToTile(lat, lng, zoom) {
-        const rad = lat * Math.PI / 180;
+        const radLat = lat * Math.PI / 180;
         const n = Math.pow(2, zoom);
-        const x = Math.floor((lng + 180) / 360 * n);
-        const y = Math.floor((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2 * n);
-        return { x: Math.max(0, x), y: Math.max(0, y) };
+        const tileX = Math.floor((lng + 180) / 360 * n);
+        const tileY = Math.floor((1 - Math.log(Math.tan(radLat) + 1 / Math.cos(radLat)) / Math.PI) / 2 * n);
+        return { x: tileX, y: tileY };
     }
 </script>
 @endsection
