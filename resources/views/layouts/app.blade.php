@@ -14,13 +14,9 @@
 
     <title>{{ config('app.name', 'Fishing Logbook') }}</title>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <!-- Vite Scripts & Styles -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="{{ asset('js/offline-sync.js') }}" defer></script>
-
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
 
     <!-- Leaflet CSS & JS for Offline Maps -->
     <link rel="stylesheet" href="{{ asset('css/leaflet.css') }}">
@@ -30,9 +26,6 @@
             L.Icon.Default.imagePath = '/css/images/';
         }
     </script>
-
-    <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">
