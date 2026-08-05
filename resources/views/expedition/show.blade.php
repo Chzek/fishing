@@ -1,187 +1,163 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class='card-title'>
-                        {{ $expedition->description }}
-                        @if(view()->exists('expedition.edit'))
-                            <a href='/expedition/{{ $expedition->id }}/edit' class='btn btn-sm btn-light' role='button'>
-                                <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit Expedition"></i>
-                            </a>
-                        @endif
-                        <a href='/expedition' class='card-link btn btn-md btn-outline-dark m-0  float-right' role='button'>Return</a>
-                    </h3>
-                    <h5 class="card-subtitle mb-2 text-muted">{{ $expedition->start }} - {{ $expedition->finish }}</h5>
-                </div>
-                <div class="card-body">
-                    <div class="card-block">
-                        <div class="row">
-                            <div class="col-lg-6 pb-2">
-                                <h4>
-                                    Crew
-                                    @if(view()->exists('expedition.crew.create'))
-                                        <a href='/crew/create?expeditions_id={{ $expedition->id }}' class='btn btn-sm btn-light' role='button'>
-                                            <i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Add crew member"></i>
-                                        </a>
-                                    @endif
-                                </h4>
-                                <ul>
-                                    @foreach($expedition->crews as $crew)
-                                        <li>{{ $crew->angler->fullName }} 
-                                            @if($expedition->start != $crew->joined)
-                                                ({{ $crew->joined }})
-                                            @endif
-                                            @if(view()->exists('expedition.crew.delete'))
-                                                <a href='/crew/delete' class='btn btn-sm btn-light' role='button'>
-                                                    <i class="fa fa-trash" data-toggle="tooltip" data-placement="top" title="Remove crew member"></i>
-                                                </a>
-                                            @endif
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                            <div class="col-lg-4 offset-lg-1">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-block">
-                        <h4>
-                            Posts
-                            @if(view()->exists('expedition.post.create'))
-                                <a href='/post/create?expeditions_id={{ $expedition->id }}' class='btn btn-sm btn-light' role='button'>
-                                    <i class="fa fa-plus" data-toggle="tooltip" data-placement="top" title="Add post"></i>
-                                </a>
-                            @endif
-                        </h4>
-                        @foreach($expedition->posts as $post)
-                            <h5>{{ $post->creator->full_name }} [{{ $post->date }}]</h5>
-                            <div class='container-fluid d-flex'>
-                                @if($post->creator->user)
-                                    <img src="/storage/avatars/{{ ($post->creator->user->avatar ?: "user.jpg" ) }}"
-                                        alt="Profile picture."
-                                        style="height: 5em; width: 5em;"
-                                        class="img-thumbnail m-1"
-                                    >
-                                @endif
-                                <blockquote>
-                                    {{ $post->description }}
-                                </blockquote>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    @if(count($records) > 0)
-                        <h4>
-                            Records
-                        </h4>
-                        <table class='table table-hover'>
-                            <thead class='thead-light'>
-                                <tr>
-                                    <th>Caught</th>
-                                    <th>Angler</th>
-                                    <th>Lake</th>
-                                    <th>Released</th>
-                                    <th>Fish</th>
-                                    <th>Lure</th>
-                                    <th>Weight</th>
-                                    <th>Length</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($records as $record)
-                                    <tr>
-                                        <td>{{ $record->caught }}</td>
-                                        <td>{{ $record->angler->full_name }}</td>
-                                        <td>{{ $record->lake->name }}</td>
-                                        <td>
-                                            @if($record->released == 1)
-                                                <span class="badge badge-secondary">Released</span>
-                                            @else
-                                                <span class="badge badge-primary">Caught</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $record->fishBreed->name }}</td>
-                                        <td>
-                                            @if($record->lure)
-                                                @if(strlen($record->lure->displayName) >= 20)
-                                                    <span title="{{ $record->lure->displayName }}">{{ substr($record->lure->displayName, 0, 17) }}...</span>
-                                                @else
-                                                    {{ $record->lure->displayName }}
-                                                @endif
-                                            @endif
-                                        </td>
-                                        <td align="right">{{ $record->weight }}</td>
-                                        <td align="right">{{ $record->length }}</td>
-                                        <td align="center">
-                                            @if(view()->exists('record.edit'))
-                                                <a href='/record/{{ $record->id }}/edit' class='btn btn-sm btn-light' role='button'>
-                                                    <i class="fa fa-pencil-square-o" data-toggle="tooltip" data-placement="top" title="Edit"></i>
-                                                </a>
-                                            @endif
-                                            @if(view()->exists('record.show'))
-                                                <a href='/record/{{ $record->id }}' class='btn btn-sm btn-light' role='button'>
-                                                    <i class="fa fa-eye" data-toggle="tooltip" data-placement="top" title="Show"></i>
-                                                </a>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                            <caption>
-                                ({{ $records->firstItem() }} to {{ $records->lastItem() }}) of {{ $records->total() }} Records
-                                {{ $records->links() }}
-                            </caption>
-                        </table>
+<div class="space-y-6">
+    <!-- Expedition Header Card -->
+    <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-sm border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
+                <i data-lucide="ship" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
+                    <span>{{ $expedition->description }}</span>
+                    @if(view()->exists('expedition.edit'))
+                        <a href="/expedition/{{ $expedition->id }}/edit" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit Expedition">
+                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                        </a>
                     @endif
+                </h1>
+                <p class="text-xs text-teal-400 font-medium mt-0.5 flex items-center gap-1.5">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                    <span>{{ $expedition->start }} &mdash; {{ $expedition->finish }}</span>
+                </p>
+            </div>
+        </div>
 
-                    @foreach($stats as $stat)
-                        <div class="card-body">
-                            <h4 class="card-subtitle mb-2 text-muted">
-                                {{ $stat->fishBreed->name}}
-                            </h4>
-                            <div class="card-group" style="margin-bottom: 0.5em">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h1 class="text-center">{{ $stat->cnt }}</h1>
+        <a href="/expedition" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors">
+            Return to Index
+        </a>
+    </div>
+
+    <!-- Crew Roster & Posts Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Crew Members List Column -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h2 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <i data-lucide="users" class="w-4 h-4 text-teal-600"></i>
+                    <span>Crew Members</span>
+                </h2>
+                @if(view()->exists('expedition.crew.create'))
+                    <a href="/crew/create?expeditions_id={{ $expedition->id }}" class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-lg shadow transition-colors">
+                        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                        <span>Add</span>
+                    </a>
+                @endif
+            </div>
+
+            <div class="divide-y divide-slate-100">
+                @foreach($expedition->crews as $crew)
+                    <div class="py-2.5 flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="user" class="w-4 h-4 text-slate-400"></i>
+                            <span class="font-semibold text-slate-800">{{ $crew->angler->fullName }}</span>
+                        </div>
+                        @if($expedition->start != $crew->joined)
+                            <span class="text-[10px] text-slate-400 font-mono">Joined {{ $crew->joined }}</span>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Posts Journal Stream Column -->
+        <div class="lg:col-span-2 bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h2 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <i data-lucide="message-square" class="w-4 h-4 text-teal-600"></i>
+                    <span>Trip Posts & Logs</span>
+                </h2>
+                @if(view()->exists('expedition.post.create'))
+                    <a href="/post/create?expeditions_id={{ $expedition->id }}" class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-lg shadow transition-colors">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        <span>Post Update</span>
+                    </a>
+                @endif
+            </div>
+
+            @if(count($expedition->posts) > 0)
+                <div class="space-y-4">
+                    @foreach($expedition->posts as $post)
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden shrink-0">
+                                @if($post->creator->user && $post->creator->user->avatar)
+                                    <img src="/storage/avatars/{{ $post->creator->user->avatar }}" class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center text-slate-400">
+                                        <i data-lucide="user" class="w-5 h-5"></i>
                                     </div>
-                                    <div class="card-footer text-center">
-                                    Total
-                                    </div>
+                                @endif
+                            </div>
+                            <div class="space-y-1 flex-1">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="font-bold text-slate-900">{{ $post->creator->full_name }}</span>
+                                    <span class="text-slate-400 font-mono">{{ $post->date }}</span>
                                 </div>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h1 class="text-center">{{ $stat->avg_length }} in.</h1>
-                                        <h6 class="text-muted text-center">{{ $stat->min_length }}/{{ $stat->max_length }} in. (Min/Max)</h6>
-                                    </div>
-                                    <div class="card-footer text-center">
-                                    Avg. Length
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-body">
-                                        @if(!is_null($stat->avg_weight))
-                                            <h1 class="text-center">{{ $stat->avg_weight }} lbs.</h1>
-                                            <h6 class="text-muted text-center">{{ $stat->weighed_count }}/{{ $stat->min_weight }}/{{ $stat->max_weight }} (Cnt/Min/Max)</h6>
-                                        @else
-                                            <h1 class="text-center">--</h1>
-                                            <h6 class="text-muted text-center">Please record more fish!</h6>
-                                        @endif
-                                    </div>
-                                    <div class="card-footer text-center">
-                                    *Avg. Weight
-                                    </div>
-                                </div>
+                                <blockquote class="text-xs text-slate-700 italic border-l-2 border-teal-500 pl-2">
+                                    "{{ $post->description }}"
+                                </blockquote>
                             </div>
                         </div>
                     @endforeach
                 </div>
-            </div>
+            @else
+                <div class="text-center py-6 text-slate-400 text-xs italic">
+                    No posts logged for this expedition trip yet.
+                </div>
+            @endif
         </div>
     </div>
+
+    <!-- Expedition Catches Log -->
+    @if(count($records) > 0)
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
+            <h2 class="font-bold text-slate-900 text-base flex items-center gap-2 border-b border-slate-100 pb-3">
+                <i data-lucide="fish" class="w-4 h-4 text-teal-600"></i>
+                <span>Expedition Catches Log</span>
+            </h2>
+
+            <div class="overflow-x-auto rounded-xl border border-slate-200/80">
+                <table class="w-full text-left text-sm text-slate-700">
+                    <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
+                        <tr>
+                            <th scope="col" class="py-3 px-4">Date</th>
+                            <th scope="col" class="py-3 px-4">Angler</th>
+                            <th scope="col" class="py-3 px-4">Lake</th>
+                            <th scope="col" class="py-3 px-4">Species</th>
+                            <th scope="col" class="py-3 px-4">Lure</th>
+                            <th scope="col" class="py-3 px-4 text-center">Weight</th>
+                            <th scope="col" class="py-3 px-4 text-center">Length</th>
+                            <th scope="col" class="py-3 px-4">Status</th>
+                            <th scope="col" class="py-3 px-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        @foreach($records as $record)
+                            <tr class="hover:bg-slate-50/70 transition-colors text-xs">
+                                <td class="py-3 px-4 font-medium text-slate-900">{{ $record->caught }}</td>
+                                <td class="py-3 px-4 font-semibold text-slate-800">{{ $record->angler->full_name }}</td>
+                                <td class="py-3 px-4 text-slate-700">{{ $record->lake->name }}</td>
+                                <td class="py-3 px-4 font-bold text-teal-700">{{ $record->fishBreed->name }}</td>
+                                <td class="py-3 px-4 text-slate-600">{{ optional($record->lure)->displayName ?? '—' }}</td>
+                                <td class="py-3 px-4 text-center font-mono font-medium">{{ $record->weight ? number_format($record->weight, 2) . ' lbs' : '—' }}</td>
+                                <td class="py-3 px-4 text-center font-mono font-medium">{{ $record->length ? number_format($record->length, 2) . ' in' : '—' }}</td>
+                                <td class="py-3 px-4">
+                                    @if($record->released == 1)
+                                        <span class="inline-flex items-center bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">Released</span>
+                                    @else
+                                        <span class="inline-flex items-center bg-sky-50 text-sky-700 text-[11px] font-bold px-2 py-0.5 rounded-full border border-sky-200">Kept</span>
+                                    @endif
+                                </td>
+                                <td class="py-3 px-4 text-right">
+                                    <x-tableOptions name='record' identifier='{{ $record->id }}' />
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
 </div>
 @endsection
