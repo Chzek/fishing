@@ -22,8 +22,8 @@
 
 ## 🏗️ Architecture & Tech Stack
 
-- **Framework**: Laravel 10 (PHP 8.2)
-- **Runtime Environment**: Containerized via **Laravel Sail** running in **WSL 2 (Ubuntu)**
+- **Framework**: Laravel 12 (PHP 8.2+)
+- **Runtime Environment**: Containerized via **Laravel Sail** running directly in **WSL 2 (Ubuntu)**
 - **Database**: MySQL 8.0 (Containerized via Sail)
 - **Offline Engine**: Progressive Web App (Service Worker + IndexedDB + Client UUID Idempotency)
 - **Weather Engine**: Open-Meteo Historical Archive API + normalized `lake_daily_weather` table
@@ -107,7 +107,7 @@ The application automatically enriches catches with daily environmental weather 
 3. **Batch Syncing Weather via Command Line (`weather:sync`)**:
    - Whenever your server host connects to the internet (or after restoring a database backup), run this command to scan all catches and backfill missing daily weather telemetry:
      ```bash
-     wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail artisan weather:sync"
+     ./vendor/bin/sail artisan weather:sync
      ```
 
 ---
@@ -145,29 +145,29 @@ This guide documents environment management, server lifecycle commands, test exe
 #### 🚀 Starting the Application
 Start the containerized environment in detached mode:
 ```bash
-wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail up -d"
+./vendor/bin/sail up -d
 ```
 
 #### 🧪 Running Tests
-Run the PHPUnit test suite inside the Sail container:
+Run the PHPUnit test suite inside the Sail container (uses `RefreshDatabase` for rapid execution):
 ```bash
-wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail test"
+./vendor/bin/sail test
 ```
 
 Run a specific test class or filter:
 ```bash
-wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail test --filter=OfflineSyncApiTest"
+./vendor/bin/sail test --filter=OfflineSyncApiTest
 ```
 
 #### 🛑 Stopping the Application
 Stop running Sail containers:
 ```bash
-wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail stop"
+./vendor/bin/sail stop
 ```
 
 Stop containers and remove container networks/volumes:
 ```bash
-wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail down"
+./vendor/bin/sail down
 ```
 
 ---
@@ -176,12 +176,12 @@ wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail down"
 
 | Action | Command |
 | :--- | :--- |
-| **Sync Weather Telemetry** | `wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail artisan weather:sync"` |
-| **Check Container Status** | `wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail ps"` |
-| **Run Database Migrations** | `wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail artisan migrate"` |
-| **Laravel Tinker Shell** | `wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail artisan tinker"` |
-| **Container Bash Shell** | `wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail bash"` |
-| **View Realtime Logs** | `wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail logs -f"` |
+| **Sync Weather Telemetry** | `./vendor/bin/sail artisan weather:sync` |
+| **Check Container Status** | `./vendor/bin/sail ps` |
+| **Run Database Migrations** | `./vendor/bin/sail artisan migrate` |
+| **Laravel Tinker Shell** | `./vendor/bin/sail artisan tinker` |
+| **Container Bash Shell** | `./vendor/bin/sail bash` |
+| **View Realtime Logs** | `./vendor/bin/sail logs -f` |
 
 ---
 
@@ -195,12 +195,12 @@ Run this command to create a database backup file (uses environment variables au
 
 **Quick Backup (`backup.sql`):**
 ```bash
-wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail exec -T mysql bash -c 'mysqldump --no-tablespaces -u \$DB_USERNAME -p\$DB_PASSWORD \$DB_DATABASE'" > backup.sql
+./vendor/bin/sail exec -T mysql bash -c 'mysqldump --no-tablespaces -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE' > backup.sql
 ```
 
 **Timestamped Post-Trip Backup (e.g. `backup_20260801_0910.sql`):**
 ```bash
-wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail exec -T mysql bash -c 'mysqldump --no-tablespaces -u \$DB_USERNAME -p\$DB_PASSWORD \$DB_DATABASE'" > "backup_$(date +%Y%m%d_%H%M%S).sql"
+./vendor/bin/sail exec -T mysql bash -c 'mysqldump --no-tablespaces -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE' > "backup_$(date +%Y%m%d_%H%M%S).sql"
 ```
 
 ---
@@ -210,7 +210,7 @@ wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail exec -T mysql bash -c 'm
 To restore data from a `.sql` backup file back into the Sail MySQL database:
 
 ```bash
-wsl bash -c "cd /mnt/c/git/fishing && ./vendor/bin/sail exec -T mysql bash -c 'mysql -u \$DB_USERNAME -p\$DB_PASSWORD \$DB_DATABASE'" < backup.sql
+./vendor/bin/sail exec -T mysql bash -c 'mysql -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE' < backup.sql
 ```
 
 > **Note:** Ensure your Sail containers are running (`sail up -d`) prior to running backup or restore commands.
