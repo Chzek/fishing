@@ -13,12 +13,18 @@
             </div>
 
             <div class="flex items-center gap-2">
-                @if(view()->exists('angler.edit') && Auth::id() == $angler->id)
-                    <a href='/angler/{{ $angler->id }}/edit' class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5">
-                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                        <span>Edit</span>
-                    </a>
-                @endif
+                <a href='/angler/{{ $angler->id }}/edit' class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5">
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                    <span>Edit</span>
+                </a>
+                <form action="/angler/{{ $angler->id }}" method="POST" onsubmit="return confirm('Are you sure you want to remove this angler profile?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-3 py-2 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-500"></i>
+                        <span>Delete</span>
+                    </button>
+                </form>
                 <a href='/angler' class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200 transition-colors">Return</a>
             </div>
         </div>

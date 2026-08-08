@@ -23,6 +23,14 @@
                 <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                 <span>Edit</span>
             </a>
+            <form action="/lake/{{ $lake->id }}" method="POST" onsubmit="return confirm('Are you sure you want to remove this lake?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="px-3 py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-300 font-semibold text-xs rounded-xl border border-rose-800 transition-colors flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-400"></i>
+                    <span>Delete</span>
+                </button>
+            </form>
             <a href="/lake" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-slate-700 transition-colors">
                 Back
             </a>

@@ -43,9 +43,15 @@ Route::prefix('profile')->group(function () {
     Route::get('/edit', [ProfileController::class, 'edit']);
 });
 
-Route::get('/admin', [AdminController::class, 'index'])
-    ->middleware('is_admin')
-    ->name('admin');
+Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('admin');
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::post('/users/link', [AdminController::class, 'linkAngler'])->name('admin.users.link');
+    Route::post('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
+    Route::get('/trash', [AdminController::class, 'trash'])->name('admin.trash');
+    Route::post('/trash/restore', [AdminController::class, 'restore'])->name('admin.trash.restore');
+    Route::delete('/trash/force-delete', [AdminController::class, 'forceDelete'])->name('admin.trash.force-delete');
+});
 
 Route::group(['middleware' => 'auth'], function () {
 
@@ -60,6 +66,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{angler}/edit', [AnglerController::class, 'edit']);
         Route::post('/', [AnglerController::class, 'store']);
         Route::put('/', [AnglerController::class, 'update']);
+        Route::delete('/{angler}', [AnglerController::class, 'destroy']);
         Route::get('/{angler}/profile', [AnglerProfileController::class, 'show']);
         Route::post('/avatar', [AnglerController::class, 'updateAvatar'])->name('angler.avatar.update');
     });
@@ -76,6 +83,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{lake}/edit', [LakeController::class, 'edit']);
         Route::post('/', [LakeController::class, 'store']);
         Route::put('/', [LakeController::class, 'update']);
+        Route::delete('/{lake}', [LakeController::class, 'destroy']);
     });
 
     Route::get('/lake/{lake}/visits', [LakeVisitController::class, 'index']);
@@ -108,6 +116,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{lure}/edit', [LureController::class, 'edit']);
         Route::post('/', [LureController::class, 'store']);
         Route::put('/', [LureController::class, 'update']);
+        Route::delete('/{lure}', [LureController::class, 'destroy']);
     });
 
     // Record routes
@@ -120,6 +129,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{record}/edit', [RecordController::class, 'edit']);
         Route::post('/', [RecordController::class, 'store']);
         Route::put('/', [RecordController::class, 'update']);
+        Route::delete('/{record}', [RecordController::class, 'destroy']);
     });
 
     // Expedition routes
@@ -130,6 +140,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{expedition}/edit', [ExpeditionController::class, 'edit']);
         Route::post('/', [ExpeditionController::class, 'store']);
         Route::put('/', [ExpeditionController::class, 'update']);
+        Route::delete('/{expedition}', [ExpeditionController::class, 'destroy']);
     });
 
     // Crew routes

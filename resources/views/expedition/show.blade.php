@@ -24,9 +24,19 @@
             </div>
         </div>
 
-        <a href="/expedition" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors">
-            Return to Index
-        </a>
+        <div class="flex items-center gap-2">
+            <form action="/expedition/{{ $expedition->id }}" method="POST" onsubmit="return confirm('Are you sure you want to remove this expedition?')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="px-3 py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-300 font-semibold text-xs rounded-xl border border-rose-800 transition-colors flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-400"></i>
+                    <span>Delete</span>
+                </button>
+            </form>
+            <a href="/expedition" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors">
+                Return to Index
+            </a>
+        </div>
     </div>
 
     <!-- Crew Roster & Posts Grid -->

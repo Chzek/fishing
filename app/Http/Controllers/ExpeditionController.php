@@ -131,7 +131,9 @@ class ExpeditionController extends Controller
      */
     public function destroy(Expedition $expedition)
     {
-        //
+        $expedition->delete();
+
+        return redirect('/expedition')->with('status', 'Expedition removed successfully.');
     }
 
     public function stats(Expedition $expedition, $quantity = null)

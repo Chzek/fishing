@@ -155,17 +155,6 @@ class LakeController extends Controller
         return redirect('/lake/' . $targetLake->id);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \Fishinglog\Models\Lake  $lake
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Lake $lake)
-    {
-        //
-    }
-
     public function stats(Lake $lake, $quantity = null)
     {
         $query = Record::select(
@@ -189,5 +178,18 @@ class LakeController extends Controller
         }
 
         return $query->get();
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Fishinglog\Models\Lake  $lake
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Lake $lake)
+    {
+        $lake->delete();
+
+        return redirect('/lake')->with('status', 'Lake removed successfully.');
     }
 }

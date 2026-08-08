@@ -157,7 +157,9 @@ class AnglerController extends Controller
      */
     public function destroy(Angler $angler)
     {
-        //
+        $angler->delete();
+
+        return redirect('/angler')->with('status', 'Angler profile removed successfully.');
     }
 
     public function updateAvatar(UpdateAnglerAvatarRequest $request)

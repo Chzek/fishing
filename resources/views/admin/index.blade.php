@@ -1,101 +1,98 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Dashboard</div>
-
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    You are logged in as an admin!
-                    <div class="card-group">
-                        <div class="card">
-                            <div class="card-body">
-                                <h1 class="text-center">{{ $anglers }}</h1>
-                            </div>
-                            <div class="card-footer text-center">
-                            Anglers
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <h1 class="text-center">{{ $lakes }}</h1>
-                            </div>
-                            <div class="card-footer text-center">
-                            Lakes
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <h1 class="text-center">{{ $expeditions }}</h1>
-                            </div>
-                            <div class="card-footer text-center">
-                            Expeditions
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-group">
-                        <div class="card">
-                            <div class="card-body">
-                                <h1 class="text-center">{{ $records }}</h1>
-                                <h6 class="text-muted text-center">{{ number_format($records/$years, 2) }}/year</h6>
-                            </div>
-                            <div class="card-footer text-center">
-                            Records
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <h1 class="text-center">{{ $fishBreeds }}</h1>
-                            </div>
-                            <div class="card-footer text-center">
-                            Fish Breeds
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <h1 class="text-center">{{ $fishFamilies }}</h1>
-                            </div>
-                            <div class="card-footer text-center">
-                            Fish Families
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-group">
-                        <div class="card">
-                            <div class="card-body">
-                                <h1 class="text-center">{{ $users }}</h1>
-                            </div>
-                            <div class="card-footer text-center">
-                            Users
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <h1 class="text-center">{{ $lures }}</h1>
-                            </div>
-                            <div class="card-footer text-center">
-                            Lures
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <h1 class="text-center">{{ $posts }}</h1>
-                            </div>
-                            <div class="card-footer text-center">
-                            Posts
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<div class="max-w-6xl mx-auto space-y-6">
+    <!-- Admin Header -->
+    <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
+                <i data-lucide="shield-check" class="w-6 h-6"></i>
             </div>
+            <div>
+                <h1 class="text-xl font-bold text-white tracking-tight">System Administration Console</h1>
+                <p class="text-xs text-slate-400">Manage registered user accounts, angler profile mappings, and soft-deleted trash recovery</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.users') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                <span>User Account Linking</span>
+            </a>
+            <a href="{{ route('admin.trash') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-colors">
+                <i data-lucide="trash-2" class="w-4 h-4 text-rose-400"></i>
+                <span>Trash Bin ({{ $trashedCount }})</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Status Alerts -->
+    @if (session('status'))
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold p-4 rounded-xl shadow-sm">
+            {{ session('status') }}
+        </div>
+    @endif
+
+    <!-- System Telemetry Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Registered Users</span>
+            <span class="text-2xl font-black text-slate-900 block">{{ number_format($users) }}</span>
+            <a href="{{ route('admin.users') }}" class="text-[11px] font-bold text-teal-600 hover:underline inline-block pt-1">Manage Users →</a>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Anglers</span>
+            <span class="text-2xl font-black text-slate-900 block">{{ number_format($anglers) }}</span>
+            <a href="/angler" class="text-[11px] font-bold text-teal-600 hover:underline inline-block pt-1">View Profiles →</a>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Catches Logged</span>
+            <span class="text-2xl font-black text-slate-900 block">{{ number_format($records) }}</span>
+            <span class="text-[11px] font-semibold text-slate-500 block">{{ number_format($records / $years, 1) }} / year</span>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Lakes & Waters</span>
+            <span class="text-2xl font-black text-slate-900 block">{{ number_format($lakes) }}</span>
+            <a href="/lake" class="text-[11px] font-bold text-teal-600 hover:underline inline-block pt-1">Waterbody Index →</a>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Expeditions</span>
+            <span class="text-2xl font-black text-slate-900 block">{{ number_format($expeditions) }}</span>
+            <a href="/expedition" class="text-[11px] font-bold text-teal-600 hover:underline inline-block pt-1">Expedition Log →</a>
+        </div>
+    </div>
+
+    <!-- Secondary Telemetry Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Tackle & Lures</span>
+                <span class="text-xs font-mono font-bold text-slate-900">{{ $lures }} Total</span>
+            </div>
+            <p class="text-xs text-slate-500">Registered lures, baits, and terminal tackle entries.</p>
+            <a href="/lure" class="inline-flex items-center gap-1 text-xs font-bold text-teal-600 hover:underline">Manage Lures →</a>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Fish Taxonomy</span>
+                <span class="text-xs font-mono font-bold text-slate-900">{{ $fishBreeds }} Species / {{ $fishFamilies }} Families</span>
+            </div>
+            <p class="text-xs text-slate-500">Fish species, family taxonomy, and scientific breed metadata.</p>
+            <a href="/fish" class="inline-flex items-center gap-1 text-xs font-bold text-teal-600 hover:underline">Taxonomy Directory →</a>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Trash Bin Recovery</span>
+                <span class="text-xs font-mono font-bold text-rose-600">{{ $trashedCount }} Soft-Deleted</span>
+            </div>
+            <p class="text-xs text-slate-500">Restore accidentally deleted catches, lakes, or anglers.</p>
+            <a href="{{ route('admin.trash') }}" class="inline-flex items-center gap-1 text-xs font-bold text-rose-600 hover:underline">Open Trash Manager →</a>
         </div>
     </div>
 </div>

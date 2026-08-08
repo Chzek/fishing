@@ -115,6 +115,8 @@ class LureController extends Controller
      */
     public function destroy(Lure $lure)
     {
-        //
+        $lure->delete();
+
+        return redirect('/lure')->with('status', 'Lure removed successfully.');
     }
 }

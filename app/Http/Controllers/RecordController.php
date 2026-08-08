@@ -194,6 +194,8 @@ class RecordController extends Controller
      */
     public function destroy(Record $record)
     {
-        //
+        $record->delete();
+
+        return redirect('/record')->with('status', 'Catch record removed successfully.');
     }
 }
