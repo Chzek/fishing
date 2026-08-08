@@ -160,10 +160,19 @@ class ExpeditionController extends Controller
         ->whereNotNull('longitude')
         ->get();
 
+        $daysFishedCount = count($dailyCadence);
+        $startDate = strtotime($expedition->start);
+        $finishDate = strtotime($expedition->finish);
+        $totalTripDays = ($startDate && $finishDate && $finishDate >= $startDate) ? max(1, round(($finishDate - $startDate) / 86400) + 1) : 1;
+        $dailyAvgCatches = $daysFishedCount > 0 ? round($totalRecords / $daysFishedCount, 1) : 0;
+
         return view('expedition.show', [
             'totalRecords' => $totalRecords,
             'releasedCount' => $releasedCount,
             'releaseRate' => $releaseRate,
+            'daysFishedCount' => $daysFishedCount,
+            'totalTripDays' => $totalTripDays,
+            'dailyAvgCatches' => $dailyAvgCatches,
             'records' => $records,
             'expedition' => $expedition,
             'lunker' => $lunker,

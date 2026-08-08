@@ -183,8 +183,8 @@
                         </div>
                     @endif
 
-                    <div class="pt-4 space-y-2">
-                        <div class="h-52 flex items-end justify-between gap-2 px-1 pb-2 border-b border-slate-100">
+                    <div class="pt-3 space-y-2">
+                        <div class="h-60 flex items-end justify-between gap-2 px-1 pb-2 border-b border-slate-100">
                             @foreach($dailyCadence as $day)
                                 @php
                                     $heightPct = round(($day->count / $maxCount) * 100);
@@ -207,6 +207,20 @@
                     </div>
                 @endif
             </div>
+
+            <!-- Trip Pace Telemetry Summary Grid -->
+            @if(count($dailyCadence) > 0)
+                <div class="pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                    <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-0.5">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Daily Average</span>
+                        <strong class="text-sm font-black text-slate-900 font-mono block">{{ $dailyAvgCatches }} <span class="text-[10px] font-normal text-slate-500">fish/day</span></strong>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-0.5">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Active Days</span>
+                        <strong class="text-sm font-black text-slate-900 font-mono block">{{ $daysFishedCount }} <span class="text-[10px] font-normal text-slate-500">of {{ $totalTripDays }} d</span></strong>
+                    </div>
+                </div>
+            @endif
         </div>
 
         <!-- Col 2: Species Breakdown (Donut Pie Chart + Legend) -->
@@ -268,6 +282,25 @@
             @else
                 <div class="text-center py-10 text-slate-400 text-xs italic">
                     No species breakdown recorded.
+                </div>
+            @endif
+
+            <!-- Species Telemetry Summary Grid -->
+            @if(count($speciesDistribution) > 0)
+                @php
+                    $topSpecies = $speciesDistribution->first();
+                @endphp
+                <div class="pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
+                    <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-0.5">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Dominant Species</span>
+                        <strong class="text-xs font-black text-slate-900 truncate block">{{ $topSpecies->fishBreed->name ?? 'None' }}</strong>
+                        <span class="text-[10px] text-teal-600 font-bold font-mono block">{{ round(($topSpecies->count / $totalRecords) * 100) }}% share</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-0.5">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Release Rate</span>
+                        <strong class="text-sm font-black text-slate-900 font-mono block">{{ $releaseRate }}%</strong>
+                        <span class="text-[10px] text-slate-500 font-mono block">{{ $releasedCount }} released</span>
+                    </div>
                 </div>
             @endif
         </div>
