@@ -15,7 +15,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Paginator::useBootstrap();
+        Paginator::useTailwind();
+
+        // Disable Debugbar on mobile devices and boat field catch route
+        if (class_exists(\Barryvdh\Debugbar\Facades\Debugbar::class)) {
+            $userAgent = request()->header('User-Agent', '');
+            $isMobile = preg_match('/(android|bb\d+|meego).+mobile|blackberry|iphone|ipod|opera mini|iemobile|mobile/i', $userAgent)
+                || request()->is('record/quick');
+
+            if ($isMobile) {
+                \Barryvdh\Debugbar\Facades\Debugbar::disable();
+            }
+        }
     }
 
     /**
