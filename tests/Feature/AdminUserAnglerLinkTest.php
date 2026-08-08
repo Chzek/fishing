@@ -63,4 +63,20 @@ class AdminUserAnglerLinkTest extends TestCase
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
         $this->assertNull($angler->fresh()->user_id);
     }
+
+    public function test_admin_can_manually_verify_user_email()
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+        $unverifiedUser = User::factory()->create([
+            'type' => User::DEFAULT_TYPE,
+            'email_verified_at' => null,
+        ]);
+
+        $this->assertFalse($unverifiedUser->isRegistered());
+
+        $response = $this->actingAs($admin)->post("/admin/users/{$unverifiedUser->id}/verify");
+
+        $response->assertRedirect(route('admin.users'));
+        $this->assertTrue($unverifiedUser->fresh()->isRegistered());
+    }
 }

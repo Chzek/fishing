@@ -110,6 +110,16 @@ class AdminController extends Controller
         return redirect()->route('admin.users')->with('status', "User account {$name} has been removed successfully.");
     }
 
+    public function verifyUser(User $user)
+    {
+        if (!$user->isRegistered()) {
+            $user->markEmailAsVerified();
+            return redirect()->route('admin.users')->with('status', "User {$user->name} has been manually verified.");
+        }
+
+        return redirect()->route('admin.users')->with('status', "User {$user->name} is already verified.");
+    }
+
     public function trash()
     {
         return view('admin.trash.index', [

@@ -61,11 +61,17 @@
                             </td>
                             <td class="py-4 px-4">
                                 <div class="font-mono text-slate-800">{{ $user->email }}</div>
-                                <div class="mt-0.5">
+                                <div class="mt-1 flex items-center gap-2">
                                     @if($user->isRegistered())
                                         <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Verified</span>
                                     @else
                                         <span class="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Pending Verification</span>
+                                        <form action="{{ route('admin.users.verify', $user) }}" method="POST" class="inline" onsubmit="return confirm('Manually verify email address for {{ $user->name }}?')">
+                                            @csrf
+                                            <button type="submit" class="text-[10px] font-bold text-teal-800 hover:text-teal-900 bg-teal-50 hover:bg-teal-100 px-2 py-0.5 rounded border border-teal-300 shadow-sm transition-colors cursor-pointer" title="Manually mark user email as verified">
+                                                ✓ Verify Now
+                                            </button>
+                                        </form>
                                     @endif
                                 </div>
                             </td>
