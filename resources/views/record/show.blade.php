@@ -85,6 +85,16 @@
             </div>
         @endif
 
+        @if($record->latitude && $record->longitude)
+            <div class="space-y-2 pt-2">
+                <div class="flex items-center justify-between text-xs text-slate-700 font-bold uppercase tracking-wider">
+                    <span>📍 Catch GPS Pinpoint Location</span>
+                    <span class="font-mono text-slate-500 text-[11px] font-normal">{{ $record->latitude }}, {{ $record->longitude }}</span>
+                </div>
+                <div id="catch-pin-map" class="w-full h-56 rounded-xl border border-slate-200 overflow-hidden"></div>
+            </div>
+        @endif
+
         <div class="flex items-center justify-between pt-4 border-t border-slate-100">
             <a href='/record/{{ $record->id }}/edit' class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors">
                 <i data-lucide="edit-3" class="w-4 h-4"></i>
@@ -95,3 +105,25 @@
     </div>
 </div>
 @endsection
+
+@if($record->latitude && $record->longitude)
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const lat = {{ $record->latitude }};
+        const lng = {{ $record->longitude }};
+
+        const map = L.map('catch-pin-map').setView([lat, lng], 14);
+
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 16,
+            attribution: 'Tiles &copy; Esri, NRCan CanVec'
+        }).addTo(map);
+
+        L.marker([lat, lng]).addTo(map)
+            .bindPopup("<b>🐟 {{ $record->fishBreed->name ?? 'Catch' }}</b><br>Length: {{ $record->length }} in.")
+            .openPopup();
+    });
+</script>
+@endsection
+@endif

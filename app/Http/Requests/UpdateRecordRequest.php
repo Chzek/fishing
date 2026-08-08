@@ -30,6 +30,8 @@ class UpdateRecordRequest extends FormRequest
             'length' => 'required|numeric|gt:0',
             'weight' => 'nullable|numeric|gt:0',
             'temperature' => 'nullable|numeric',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'released' => 'required|boolean',
             'caught' => 'required|date|before_or_equal:today',
         ];

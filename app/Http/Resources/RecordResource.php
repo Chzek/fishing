@@ -20,6 +20,8 @@ class RecordResource extends JsonResource
             'length' => $this->length,
             'weight' => $this->weight,
             'temperature' => $this->temperature,
+            'latitude' => $this->latitude ? (float) $this->latitude : null,
+            'longitude' => $this->longitude ? (float) $this->longitude : null,
             'released' => (bool) $this->released,
             'angler' => new AnglerResource($this->whenLoaded('angler')),
             'lake' => new LakeResource($this->whenLoaded('lake')),

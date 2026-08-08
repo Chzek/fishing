@@ -177,6 +177,7 @@ class OfflineSyncManager {
     this.updateSyncBadge();
 
     if (syncedCount > 0) {
+      this.showSyncToast(syncedCount);
       const banner = document.getElementById('offline-sync-alert');
       if (banner) {
         banner.textContent = `🎉 Successfully synced ${syncedCount} catch(es) to server!`;
@@ -184,6 +185,38 @@ class OfflineSyncManager {
         setTimeout(() => banner.classList.add('d-none'), 4000);
       }
     }
+  }
+
+  showSyncToast(syncedCount) {
+    let toast = document.getElementById('offline-sync-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'offline-sync-toast';
+      toast.className = 'fixed bottom-5 right-5 z-50 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-slate-800 flex items-start gap-3 transition-all duration-300 transform translate-y-full opacity-0 max-w-sm';
+      document.body.appendChild(toast);
+    }
+
+    toast.innerHTML = `
+      <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+      </div>
+      <div class="flex-1 space-y-1">
+        <h4 class="font-bold text-sm text-white">⛵ Offline Catches Synced!</h4>
+        <p class="text-xs text-slate-400">Uploaded <strong>${syncedCount}</strong> field catch(es) to server.</p>
+        <div class="pt-1.5 flex items-center gap-2">
+          <a href="/record/offline-review" class="text-xs font-bold text-teal-400 hover:text-teal-300 underline">Review Synced Catches →</a>
+          <button onclick="document.getElementById('offline-sync-toast').classList.add('translate-y-full', 'opacity-0')" class="text-xs text-slate-500 hover:text-slate-400 px-2 py-0.5 rounded">Dismiss</button>
+        </div>
+      </div>
+    `;
+
+    setTimeout(() => {
+      toast.classList.remove('translate-y-full', 'opacity-0');
+    }, 100);
+
+    setTimeout(() => {
+      toast.classList.add('translate-y-full', 'opacity-0');
+    }, 8000);
   }
 }
 

@@ -26,6 +26,17 @@
         <form id="quickCatchForm" class="space-y-5">
             @csrf
             <input type="hidden" id="client_id" name="client_id">
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+
+            <!-- GPS Status Banner -->
+            <div id="gps-status-box" class="flex items-center justify-between px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                <div class="flex items-center gap-2 text-slate-600">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-teal-600 shrink-0"></i>
+                    <span id="gps-status-text" class="font-medium">Device Pinpoint GPS: Searching...</span>
+                </div>
+                <button type="button" onclick="acquireQuickGPS()" class="text-[11px] font-bold text-teal-600 hover:text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">Re-query</button>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <!-- Angler Select -->
@@ -145,6 +156,31 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('offline', updateNetStatus);
     updateNetStatus();
 
+    window.acquireQuickGPS = () => {
+        const textEl = document.getElementById('gps-status-text');
+        if (!navigator.geolocation) {
+            if (textEl) textEl.textContent = 'Device Pinpoint GPS: Hardware Not Supported';
+            return;
+        }
+        if (textEl) textEl.textContent = 'Device Pinpoint GPS: Querying satellite fix...';
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const lat = pos.coords.latitude.toFixed(6);
+                const lng = pos.coords.longitude.toFixed(6);
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+                if (textEl) textEl.textContent = `Device Pinpoint GPS: Acquired (${lat}, ${lng})`;
+            },
+            (err) => {
+                if (textEl) textEl.textContent = 'Device Pinpoint GPS: Unavailable (Will use Lake center)';
+            },
+            { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+        );
+    };
+
+    acquireQuickGPS();
+
     // Restore last selected Angler & Lake preferences from localStorage
     const savedAngler = localStorage.getItem('fishinglog_last_angler');
     const savedLake = localStorage.getItem('fishinglog_last_lake');
@@ -162,6 +198,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (anglerVal) localStorage.setItem('fishinglog_last_angler', anglerVal);
         if (lakeVal) localStorage.setItem('fishinglog_last_lake', lakeVal);
 
+        const latVal = form.latitude.value ? parseFloat(form.latitude.value) : null;
+        const lngVal = form.longitude.value ? parseFloat(form.longitude.value) : null;
+
         const catchData = {
             client_id: window.offlineSyncManager ? window.offlineSyncManager.generateUUID() : null,
             anglers_id: parseInt(form.anglers_id.value),
@@ -170,6 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lures_id: form.lures_id.value ? parseInt(form.lures_id.value) : null,
             length: parseFloat(form.length.value),
             weight: form.weight.value ? parseFloat(form.weight.value) : null,
+            latitude: latVal,
+            longitude: lngVal,
             released: form.released.checked ? 1 : 0,
             caught: form.caught.value
         };

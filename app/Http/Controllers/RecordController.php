@@ -67,6 +67,23 @@ class RecordController extends Controller
     }
 
     /**
+     * Show offline catch sync review page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function offlineReview()
+    {
+        $recentCatches = Record::with(['angler', 'lake', 'fishBreed', 'lure'])
+            ->orderBy('created_at', 'desc')
+            ->take(15)
+            ->get();
+
+        return view('record.offline-review', [
+            'recentCatches' => $recentCatches,
+        ]);
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -102,6 +119,8 @@ class RecordController extends Controller
         $record->weight = $request->weight;
         $record->length = $request->length;
         $record->temperature = $request->temperature;
+        $record->latitude = $request->latitude;
+        $record->longitude = $request->longitude;
         $record->released = $request->released;
         $record->caught = $request->caught;
 
@@ -157,6 +176,8 @@ class RecordController extends Controller
         $targetRecord->weight = $request->weight;
         $targetRecord->length = $request->length;
         $targetRecord->temperature = $request->temperature;
+        $targetRecord->latitude = $request->latitude;
+        $targetRecord->longitude = $request->longitude;
         $targetRecord->released = $request->released;
         $targetRecord->caught = $request->caught;
 

@@ -20,6 +20,8 @@ class Record extends Model
         'weight',
         'length',
         'temperature',
+        'latitude',
+        'longitude',
         'released',
         'caught',
         'trip_id',
