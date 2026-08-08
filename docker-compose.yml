@@ -39,6 +39,17 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
+    caddy:
+        image: 'caddy:2-alpine'
+        ports:
+            - '${APP_SERVICE_PORT:-443}:443'
+        volumes:
+            - './Caddyfile:/etc/caddy/Caddyfile'
+            - './.certs:/etc/caddy/certs'
+        depends_on:
+            - laravel.test
+        networks:
+            - sail
 networks:
     sail:
         driver: bridge
