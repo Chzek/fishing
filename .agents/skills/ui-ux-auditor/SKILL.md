@@ -90,6 +90,7 @@ When requested to run a UI/UX audit on a page or feature, follow these 4 steps:
 
 ### Step 3: Design Token & Layout Check
 - Verify color utility classes match the Telemetry v2 design matrix (Teal accents, Slate dark containers).
+- **CSS Contrast & Specificity Check**: Verify base CSS (`app.css`) does not force unlayered element rules (e.g. `html, body { background-color: ... }`) that override page background utilities (`bg-slate-950`), causing white text on white background or dark text on dark background contrast bugs.
 - Check responsive classes (`hidden lg:flex`, `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3`).
 - Confirm form inputs have `<label>` elements with matching `for` IDs.
 
