@@ -16,25 +16,26 @@
             <a href="/expedition/{{ $expedition->id }}" class="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">Return</a>
         </div>
 
-        {!! Form::model($post, ['url' => 'post', 'class' => 'space-y-4']) !!}
-            {!! Form::hidden('expeditions_id', $expedition->id ) !!}
+        <form action="{{ url('/post') }}" method="POST" class="space-y-4">
+            @csrf
+            <input type="hidden" name="expeditions_id" value="{{ $expedition->id }}">
 
             <div class="space-y-1.5">
-                {!! Form::label('description', 'Post Update / Note', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                {!! Form::textarea('description', null, ['class' => 'w-full p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 h-32', 'placeholder' => 'What happened on the trip today?']) !!}
+                <label for="description" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Post Update / Note</label>
+                <textarea id="description" name="description" placeholder="What happened on the trip today?" required class="w-full p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 h-32">{{ old('description') }}</textarea>
             </div>
 
             <div class="space-y-1.5">
-                {!! Form::label('date', 'Post Date ('.$expedition->start.' to '.$expedition->finish.')', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                {!! Form::date('date', $expedition->start, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500']) !!}
+                <label for="date" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Post Date ({{ $expedition->start }} to {{ $expedition->finish }})</label>
+                <input type="date" id="date" name="date" value="{{ old('date', $expedition->start) }}" required class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
             </div>
             
             <div class="pt-4 flex items-center gap-3">
-                {!! Form::submit('Post Update', ['class' => 'flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer']) !!}
-                <a href='/expedition/{{ $expedition->id }}' class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl border border-slate-200 transition-colors">Return</a>
+                <button type="submit" class="flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer">Post Update</button>
+                <a href="/expedition/{{ $expedition->id }}" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl border border-slate-200 transition-colors">Return</a>
             </div>
 
-        {!! Form::close() !!}
+        </form>
     </div>
 </div>
 @endsection

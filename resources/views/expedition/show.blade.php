@@ -50,7 +50,7 @@
                 @foreach($expedition->crews as $crew)
                     <div class="py-2.5 flex items-center justify-between text-xs">
                         <div class="flex items-center gap-2">
-                            <i data-lucide="user" class="w-4 h-4 text-slate-400"></i>
+                            <x-anglerAvatar :angler="$crew->angler" size="xs" />
                             <span class="font-semibold text-slate-800">{{ $crew->angler->fullName }}</span>
                         </div>
                         @if($expedition->start != $crew->joined)
@@ -80,15 +80,7 @@
                 <div class="space-y-4">
                     @foreach($expedition->posts as $post)
                         <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden shrink-0">
-                                @if($post->creator->user && $post->creator->user->avatar)
-                                    <img src="/storage/avatars/{{ $post->creator->user->avatar }}" class="w-full h-full object-cover">
-                                @else
-                                    <div class="w-full h-full flex items-center justify-center text-slate-400">
-                                        <i data-lucide="user" class="w-5 h-5"></i>
-                                    </div>
-                                @endif
-                            </div>
+                            <x-anglerAvatar :angler="$post->creator" size="md" />
                             <div class="space-y-1 flex-1">
                                 <div class="flex items-center justify-between text-xs">
                                     <span class="font-bold text-slate-900">{{ $post->creator->full_name }}</span>

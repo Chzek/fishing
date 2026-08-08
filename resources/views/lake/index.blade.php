@@ -91,9 +91,9 @@
             </table>
         </div>
 
-        <div class="flex items-center justify-between text-xs text-slate-500 pt-2">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
             <span>Showing {{ $lakes->firstItem() }} to {{ $lakes->lastItem() }} of {{ $lakes->total() }} Lakes</span>
-            <div>{{ $lakes->links() }}</div>
+            <div>{{ $lakes->links('vendor.pagination.tailwind') }}</div>
         </div>
     </div>
 </div>

@@ -16,31 +16,32 @@
             <a href="/lure" class="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">Cancel</a>
         </div>
 
-        {!! Form::model($lure, ['url' => 'lure', 'class' => 'space-y-4']) !!}
+        <form action="{{ url('/lure') }}" method="POST" class="space-y-4">
+            @csrf
 
             <div class="space-y-1.5">
-                {!! Form::label('name', 'Lure Model / Name', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                {!! Form::text('name', null, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500', 'placeholder' => 'e.g. Rapala Shad Rap']) !!}
+                <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lure Model / Name</label>
+                <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="e.g. Rapala Shad Rap" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
             </div>
 
             <div class="space-y-1.5">
-                {!! Form::label('color', 'Color Pattern', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                {!! Form::text('color', null, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500', 'placeholder' => 'e.g. Firetiger / Silver Flash']) !!}
+                <label for="color" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Color Pattern</label>
+                <input type="text" id="color" name="color" value="{{ old('color') }}" placeholder="e.g. Firetiger / Silver Flash" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
             </div>
 
             <div class="space-y-1.5">
-                {!! Form::label('size', 'Size / Weight', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                {!! Form::text('size', null, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500', 'placeholder' => 'e.g. 3/8 oz, #7']) !!}
+                <label for="size" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Size / Weight</label>
+                <input type="text" id="size" name="size" value="{{ old('size') }}" placeholder="e.g. 3/8 oz, #7" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
             </div>
 
             <div class="pt-4 flex items-center gap-3">
-                {!! Form::submit('Create Lure', ['class' => 'flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer']) !!}
-                <a href='/lure' class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl border border-slate-200 transition-colors">Cancel</a>
+                <button type="submit" class="flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer">Create Lure</button>
+                <a href="/lure" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl border border-slate-200 transition-colors">Cancel</a>
             </div>
 
-        {!! Form::close() !!}
+        </form>
 
-        @if ($errors->any())
+        @if (isset($errors) && $errors->any())
             <div class="bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl p-4 space-y-1">
                 <strong class="font-bold">Please correct the errors below:</strong>
                 <ul class="list-disc pl-5">

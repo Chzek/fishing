@@ -20,32 +20,33 @@
             </button>
         </div>
 
-        {!! Form::model($lake, ['url' => 'lake', 'class' => 'space-y-4']) !!}
+        <form action="{{ url('/lake') }}" method="POST" class="space-y-4">
+            @csrf
 
             <div class="space-y-1.5">
-                {!! Form::label('name', 'Lake / Waterbody Name', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                {!! Form::text('name', null, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500', 'required' => true, 'placeholder' => 'e.g. Wawa Lake, Hawk Lake, Magpie River']) !!}
+                <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lake / Waterbody Name</label>
+                <input type="text" id="name" name="name" value="{{ old('name') }}" required placeholder="e.g. Wawa Lake, Hawk Lake, Magpie River" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
-                    {!! Form::label('latitude', 'Latitude (°N)', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                    {!! Form::text('latitude', null, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-mono text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500', 'id' => 'input-lat', 'placeholder' => 'e.g. 48.0042']) !!}
+                    <label for="input-lat" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Latitude (°N)</label>
+                    <input type="text" id="input-lat" name="latitude" value="{{ old('latitude') }}" placeholder="e.g. 48.0042" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-mono text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                 </div>
                 <div class="space-y-1.5">
-                    {!! Form::label('longitude', 'Longitude (°W)', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                    {!! Form::text('longitude', null, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-mono text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500', 'id' => 'input-lng', 'placeholder' => 'e.g. -84.7712']) !!}
+                    <label for="input-lng" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Longitude (°W)</label>
+                    <input type="text" id="input-lng" name="longitude" value="{{ old('longitude') }}" placeholder="e.g. -84.7712" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-mono text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
-                    {!! Form::label('structure', 'Bottom Terrain / Cover', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                    {!! Form::text('structure', null, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500', 'placeholder' => 'e.g. Rock/Granite, Weedline, Drop-off']) !!}
+                    <label for="structure" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Bottom Terrain / Cover</label>
+                    <input type="text" id="structure" name="structure" value="{{ old('structure') }}" placeholder="e.g. Rock/Granite, Weedline, Drop-off" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                 </div>
                 <div class="space-y-1.5">
-                    {!! Form::label('max_depth', 'Max Depth (ft)', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                    {!! Form::number('max_depth', null, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-mono text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500', 'placeholder' => 'e.g. 45']) !!}
+                    <label for="max_depth" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Max Depth (ft)</label>
+                    <input type="number" id="max_depth" name="max_depth" value="{{ old('max_depth') }}" placeholder="e.g. 45" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-mono text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                 </div>
             </div>
 
@@ -58,10 +59,21 @@
 
             <div class="pt-4 flex items-center justify-between">
                 <a href="{{ url('/lake') }}" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200 transition-colors">Cancel</a>
-                {!! Form::submit('Save Lake Log', ['class' => 'px-6 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors cursor-pointer']) !!}
+                <button type="submit" class="px-6 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors cursor-pointer">Save Lake Log</button>
             </div>
 
-        {!! Form::close() !!}
+        </form>
+
+        @if (isset($errors) && $errors->any())
+            <div class="bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl p-4 space-y-1">
+                <strong class="font-bold">Please correct the errors below:</strong>
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </div>
 </div>
 @endsection

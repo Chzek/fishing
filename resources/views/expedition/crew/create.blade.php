@@ -16,26 +16,31 @@
             <a href="/expedition/{{ $expedition->id }}" class="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">Return</a>
         </div>
 
-        {!! Form::model($crew, ['url' => 'crew', 'class' => 'space-y-4']) !!}
-            {!! Form::hidden('expeditions_id', $expedition->id ) !!}
+        <form action="{{ url('/crew') }}" method="POST" class="space-y-4">
+            @csrf
+            <input type="hidden" name="expeditions_id" value="{{ $expedition->id }}">
 
             <div class="space-y-1.5">
-                {!! Form::label('anglers_id', 'Select Angler', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                {!! Form::select('anglers_id', $anglers, null, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500']) !!}
+                <label for="anglers_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Select Angler</label>
+                <select id="anglers_id" name="anglers_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    @foreach($anglers as $val => $label)
+                        <option value="{{ $val }}" {{ old('anglers_id') == $val ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="space-y-1.5">
-                {!! Form::label('joined', 'Date Joined ('.$expedition->start.' to '.$expedition->finish.')', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                {!! Form::date('joined', $expedition->start, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500']) !!}
+                <label for="joined" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Date Joined ({{ $expedition->start }} to {{ $expedition->finish }})</label>
+                <input type="date" id="joined" name="joined" value="{{ old('joined', $expedition->start) }}" required class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
             </div>
 
             <div class="pt-4 flex items-center gap-3">
-                {!! Form::submit('Add Crew Member', ['class' => 'flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer']) !!}
-                <a href='/expedition/{{ $expedition->id }}' class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl border border-slate-200 transition-colors">Return</a>
+                <button type="submit" class="flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer">Add Crew Member</button>
+                <a href="/expedition/{{ $expedition->id }}" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl border border-slate-200 transition-colors">Return</a>
             </div>
-        {!! Form::close() !!}
+        </form>
 
-        @if ($errors->any())
+        @if (isset($errors) && $errors->any())
             <div class="bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl p-4 space-y-1">
                 <strong class="font-bold">Please correct the errors below:</strong>
                 <ul class="list-disc pl-5">

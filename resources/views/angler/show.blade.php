@@ -5,15 +5,7 @@
     <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 space-y-6">
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-full bg-slate-100 overflow-hidden border border-slate-200 shrink-0">
-                    @if($angler->user && $angler->user->avatar)
-                        <img src="/storage/avatars/{{ $angler->user->avatar }}" class="w-full h-full object-cover">
-                    @else
-                        <div class="w-full h-full flex items-center justify-center text-slate-400">
-                            <i data-lucide="user" class="w-6 h-6"></i>
-                        </div>
-                    @endif
-                </div>
+                <x-anglerAvatar :angler="$angler" size="lg" />
                 <div>
                     <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">{{ $angler->firstName}} {{ $angler->middleName }} {{ $angler->lastName }}</h1>
                     <p class="text-xs text-slate-500 font-medium">Crew Angler Profile</p>

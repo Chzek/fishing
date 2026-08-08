@@ -14,7 +14,7 @@
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="flex flex-col md:flex-row items-center gap-5 text-center md:text-left">
                 <div class="relative">
-                    <img src="/storage/avatars/{{ ($angler->avatar ?: 'user.jpg') }}" alt="{{ $angler->firstName }} {{ $angler->lastName }}" class="w-20 h-20 rounded-2xl object-cover ring-4 ring-teal-500/10 shadow-md">
+                    <x-anglerAvatar :angler="$angler" size="xl" />
                     <div class="absolute -bottom-1 -right-1 bg-teal-500 text-white rounded-full p-1 shadow">
                         <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
                     </div>

@@ -16,11 +16,12 @@
             <a href="/fish" class="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">Cancel</a>
         </div>
 
-        {!! Form::model($breed, ['url' => 'fish/breed', 'class' => 'space-y-4']) !!}
+        <form action="{{ url('fish/breed') }}" method="POST" class="space-y-4">
+            @csrf
 
             <div class="space-y-1.5">
-                {!! Form::label('name', 'Species / Breed Name', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
-                {!! Form::text('name', null, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500', 'list' => 'nameList']) !!}
+                <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Species / Breed Name</label>
+                <input type="text" id="name" name="name" value="{{ old('name') }}" list="nameList" required class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
 
                 <datalist id="nameList">
                     @foreach($breeds as $item)
@@ -31,20 +32,24 @@
 
             <div class="space-y-1.5">
                 <div class="flex items-center justify-between">
-                    {!! Form::label('fish_families_id', 'Fish Family', ['class' => 'block text-xs font-bold uppercase tracking-wider text-slate-700']) !!}
+                    <label for="fish_families_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Fish Family</label>
                     <a href="/fish/family/create" class="text-xs text-teal-600 hover:underline font-bold">+ New Family</a>
                 </div>
-                {!! Form::select('fish_families_id', $families, null, ['class' => 'w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500']) !!}
+                <select id="fish_families_id" name="fish_families_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    @foreach($families as $val => $label)
+                        <option value="{{ $val }}" {{ old('fish_families_id') == $val ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="pt-4 flex items-center gap-3">
-                {!! Form::submit('Create Species', ['class' => 'flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer']) !!}
-                <a href='/fish' class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl border border-slate-200 transition-colors">Cancel</a>
+                <button type="submit" class="flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer">Create Species</button>
+                <a href="/fish" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl border border-slate-200 transition-colors">Cancel</a>
             </div>
 
-        {!! Form::close() !!}
+        </form>
 
-        @if ($errors->any())
+        @if (isset($errors) && $errors->any())
             <div class="bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl p-4 space-y-1">
                 <strong class="font-bold">Please correct the errors below:</strong>
                 <ul class="list-disc pl-5">
