@@ -121,6 +121,15 @@
                                                 {{ $user->isAdmin() ? 'Demote' : 'Make Admin' }}
                                             </button>
                                         </form>
+
+                                        <!-- Delete User Account -->
+                                        <form action="{{ route('admin.users.delete', $user) }}" method="POST" onsubmit="return confirm('Are you sure you want to PERMANENTLY remove user account {{ $user->name }}?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="h-8 px-2.5 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 font-bold text-xs rounded-lg transition-colors cursor-pointer" title="Delete User">
+                                                Delete
+                                            </button>
+                                        </form>
                                     @endif
                                 </div>
                             </td>

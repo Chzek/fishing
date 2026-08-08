@@ -103,6 +103,25 @@
                         <i data-lucide="users" class="w-4 h-4"></i>
                         <span>Anglers</span>
                     </a>
+
+                    @if(Auth::user()->isAdmin())
+                        <div class="px-3 pt-4 pb-2 text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-400"></i>
+                            <span>Admin Console</span>
+                        </div>
+                        <a href="{{ route('admin') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('admin') ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
+                            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+                            <span>Admin Overview</span>
+                        </a>
+                        <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('admin/users*') ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
+                            <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i>
+                            <span>User Accounts</span>
+                        </a>
+                        <a href="{{ route('admin.trash') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('admin/trash*') ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
+                            <i data-lucide="trash-2" class="w-4 h-4 text-amber-400"></i>
+                            <span>Trash Bin</span>
+                        </a>
+                    @endif
                 @endauth
             </nav>
 
@@ -206,6 +225,23 @@
                 <a href="{{ url('/lure') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
                     <i data-lucide="fishing-hook" class="w-4 h-4 text-teal-400"></i> Lures
                 </a>
+
+                @if(Auth::user()->isAdmin())
+                    <div class="pt-3 border-t border-slate-800 space-y-1">
+                        <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider block px-3 flex items-center gap-1.5">
+                            <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-400"></i> Admin Console
+                        </span>
+                        <a href="{{ route('admin') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800">
+                            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i> Admin Overview
+                        </a>
+                        <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800">
+                            <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i> User Accounts & Anglers
+                        </a>
+                        <a href="{{ route('admin.trash') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800">
+                            <i data-lucide="trash-2" class="w-4 h-4 text-amber-400"></i> Trash Bin
+                        </a>
+                    </div>
+                @endif
                 <div class="pt-2 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
                     <span>Logged in as <strong>{{ Auth::user()->name }}</strong></span>
                     <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="text-red-400 hover:underline">Logout</a>

@@ -9,6 +9,8 @@ class Expedition extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = ['description', 'title', 'start', 'finish'];
+
     public function crews()
     {
         return $this->hasMany(Crew::class, 'expeditions_id', 'id');

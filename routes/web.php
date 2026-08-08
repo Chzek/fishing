@@ -48,6 +48,7 @@ Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
     Route::post('/users/link', [AdminController::class, 'linkAngler'])->name('admin.users.link');
     Route::post('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
+    Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
     Route::get('/trash', [AdminController::class, 'trash'])->name('admin.trash');
     Route::post('/trash/restore', [AdminController::class, 'restore'])->name('admin.trash.restore');
     Route::delete('/trash/force-delete', [AdminController::class, 'forceDelete'])->name('admin.trash.force-delete');

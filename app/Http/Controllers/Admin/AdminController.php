@@ -95,6 +95,21 @@ class AdminController extends Controller
         return redirect()->route('admin.users')->with('status', "Admin permissions updated for user {$user->name}.");
     }
 
+    public function deleteUser(User $user)
+    {
+        if (auth()->id() === $user->id) {
+            return redirect()->route('admin.users')->with('error', 'You cannot delete your own account from the admin panel.');
+        }
+
+        // Unlink associated angler if any
+        Angler::where('user_id', $user->id)->update(['user_id' => null]);
+
+        $name = $user->name;
+        $user->delete();
+
+        return redirect()->route('admin.users')->with('status', "User account {$name} has been removed successfully.");
+    }
+
     public function trash()
     {
         return view('admin.trash.index', [

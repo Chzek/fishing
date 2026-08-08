@@ -50,4 +50,17 @@ class AdminUserAnglerLinkTest extends TestCase
         $response = $this->actingAs($user)->get('/admin/users');
         $response->assertStatus(302);
     }
+
+    public function test_admin_can_delete_user_account()
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+        $user = User::factory()->create(['type' => User::DEFAULT_TYPE]);
+        $angler = Angler::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($admin)->delete("/admin/users/{$user->id}");
+
+        $response->assertRedirect(route('admin.users'));
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+        $this->assertNull($angler->fresh()->user_id);
+    }
 }
