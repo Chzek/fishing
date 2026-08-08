@@ -13,6 +13,7 @@ use Fishinglog\Pipes\Filters\FilterByAngler;
 use Fishinglog\Pipes\Filters\FilterByLength;
 use Fishinglog\Pipes\Filters\FilterByName;
 use Fishinglog\Pipes\Filters\FilterByRecordsCount;
+use Fishinglog\Pipes\Filters\FilterBySearch;
 use Fishinglog\Pipes\Filters\SortBy;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
@@ -38,12 +39,12 @@ class RecordController extends Controller
         $records = $pipeline->send($records)
             ->through([
                 SortBy::class,
+                FilterBySearch::class,
                 FilterByLength::class,
-                FilterByName::class,
             ])
             ->thenReturn();
 
-        $records = $records->paginate(10);
+        $records = $records->paginate(10)->withQueryString();
 
         return view('record.index', [
             'records' => $records,

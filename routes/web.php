@@ -16,6 +16,7 @@ use Fishinglog\Http\Controllers\LureController;
 use Fishinglog\Http\Controllers\PostController;
 use Fishinglog\Http\Controllers\ProfileController;
 use Fishinglog\Http\Controllers\RecordController;
+use Fishinglog\Http\Controllers\SearchController;
 
 use Fishinglog\Http\Controllers\MapController;
 use Fishinglog\Http\Controllers\ExplorerController;
@@ -47,6 +48,9 @@ Route::get('/admin', [AdminController::class, 'index'])
     ->name('admin');
 
 Route::group(['middleware' => 'auth'], function () {
+
+    // Global Omnibox & Command Palette Search
+    Route::get('/search', [SearchController::class, 'index'])->name('search');
 
     // Angler routes
     Route::prefix('angler')->group(function () {

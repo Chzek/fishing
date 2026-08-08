@@ -9,10 +9,10 @@ class FilterByName implements FilterPipeContract
 {
     public function handle($query, Closure $next)
     {
-        if(request('name')) {
-            $query->where('name', 'like', "%".request('name')."%");
+        if (request('name')) {
+            $query->where('name', 'like', "%" . request('name') . "%");
         }
-        
+
         return $next($query);
     }
 }

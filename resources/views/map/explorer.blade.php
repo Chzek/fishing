@@ -144,7 +144,7 @@
                 <!-- Top Producing Lures -->
                 <div class="bg-slate-800/60 rounded-xl border border-slate-700/50 overflow-hidden">
                     <div class="px-4 py-2.5 bg-slate-800 border-b border-slate-700/60 font-bold text-xs text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                        <i data-lucide="hook" class="w-3.5 h-3.5 text-teal-400"></i>
+                        <i data-lucide="fishing-hook" class="w-3.5 h-3.5 text-teal-400"></i>
                         <span>Top Producing Lures</span>
                     </div>
                     <ul id="drawer-lures-list" class="divide-y divide-slate-700/50 text-xs">

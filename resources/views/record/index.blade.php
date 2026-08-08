@@ -6,28 +6,40 @@
         <x-pageNavigation name="record" />
 
         <!-- Filters form -->
-        <form class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-            <div class="flex items-center gap-2">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Filter Length</span>
-                <input id="length" name="length" type="number" step="0.25"
-                    @if(Request::input('length', false))
-                        value='{{ Request::input('length') }}'
-                    @endif
-                    placeholder="Inches..."
-                    class="h-9 px-3 w-28 text-xs rounded-xl border border-slate-200 bg-white font-mono text-slate-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
-                />
+        <form action="{{ url('/record') }}" method="GET" class="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
+                <!-- Unified Keyword Search (Species, Lake, Angler, Lure, Notes) -->
+                <div class="relative flex-1 flex items-center min-w-[180px]">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none shrink-0"></i>
+                    <input type="text" name="search" value="{{ Request::input('search') }}" placeholder="Search species, lake, angler, lure..."
+                        class="w-full h-9 pl-10 pr-3 text-xs rounded-xl border border-slate-200 bg-white text-slate-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                </div>
 
-                <select name="length_operator" class="h-9 px-3 text-xs rounded-xl border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
-                    <option value=">" {{ Request::input('length_operator') === ">" ? "selected" : ""}} >&gt; (Greater than)</option>
-                    <option value="=" {{ Request::input('length_operator') === "=" ? "selected" : ""}} >= (Equal)</option>
-                    <option value="<" {{ Request::input('length_operator') === "<" ? "selected" : ""}} >&lt; (Less than)</option>
-                </select>
+                <!-- Streamlined Length Numeric Filter -->
+                <div class="flex items-center gap-1.5">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Length</span>
+                    <select name="length_operator" class="h-9 px-2 text-xs rounded-xl border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20">
+                        <option value=">" {{ Request::input('length_operator') === '>' ? 'selected' : '' }}>&gt;</option>
+                        <option value="=" {{ Request::input('length_operator') === '=' ? 'selected' : '' }}>=</option>
+                        <option value="<" {{ Request::input('length_operator') === '<' ? 'selected' : '' }}>&lt;</option>
+                    </select>
+                    <input type="number" step="0.25" name="length" value="{{ Request::input('length') }}" placeholder="Inches..."
+                        class="h-9 px-3 w-24 text-xs rounded-xl border border-slate-200 bg-white font-mono text-slate-800 focus:ring-2 focus:ring-teal-500/20">
+                </div>
             </div>
 
-            <button type="submit" class="h-9 px-4 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5">
-                <i data-lucide="filter" class="w-3.5 h-3.5"></i>
-                <span>Apply Filter</span>
-            </button>
+            <div class="flex items-center gap-2">
+                <button type="submit" class="h-9 px-4 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5">
+                    <i data-lucide="filter" class="w-3.5 h-3.5"></i>
+                    <span>Filter</span>
+                </button>
+                @if(Request::hasAny(['search', 'length', 'length_operator']))
+                    <a href="{{ url('/record') }}" class="h-9 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-xs rounded-xl transition-colors flex items-center gap-1">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                        <span>Reset</span>
+                    </a>
+                @endif
+            </div>
         </form>
 
         <!-- Records Data Table -->
@@ -97,9 +109,9 @@
             </table>
         </div>
 
-        <div class="flex items-center justify-between text-xs text-slate-500 pt-2">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
             <span>Showing {{ $records->firstItem() }} to {{ $records->lastItem() }} of {{ $records->total() }} Records</span>
-            <div>{{ $records->links() }}</div>
+            <div>{{ $records->links('vendor.pagination.tailwind') }}</div>
         </div>
     </div>
 </div>

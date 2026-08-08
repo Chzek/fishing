@@ -128,7 +128,7 @@
 
             <a href="{{ url('/lure') }}" class="bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-teal-500/40 p-6 rounded-2xl transition-all space-y-3 group">
                 <div class="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center border border-teal-500/20 group-hover:scale-110 transition-transform">
-                    <i data-lucide="hook" class="w-5 h-5"></i>
+                    <i data-lucide="fishing-hook" class="w-5 h-5"></i>
                 </div>
                 <h2 class="text-base font-bold text-white group-hover:text-teal-300 transition-colors">Lures & Bait</h2>
                 <p class="text-xs text-slate-400 leading-relaxed">Tackle box inventory tracking top producing lures and catch success rates.</p>

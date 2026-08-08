@@ -45,9 +45,19 @@
                 </a>
             </div>
 
-            <!-- Quick Catch Primary Action Button -->
+            <!-- Global Omnibox Search Input -->
             @auth
-            <div class="px-4 pt-5 pb-2">
+            <div class="px-4 pt-4 pb-1">
+                <form action="{{ route('search') }}" method="GET" class="relative flex items-center">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none shrink-0"></i>
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Search & commands..."
+                        class="w-full h-9 pl-10 pr-14 text-xs rounded-xl border border-slate-800 bg-slate-950/80 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 transition-colors">
+                    <kbd class="absolute right-2.5 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-500 bg-slate-900 border border-slate-800 rounded pointer-events-none">Ctrl K</kbd>
+                </form>
+            </div>
+
+            <!-- Quick Catch Primary Action Button -->
+            <div class="px-4 pt-2 pb-2">
                 <a href="{{ url('/record/quick') }}" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-semibold py-2.5 px-4 rounded-xl shadow-lg shadow-teal-900/30 hover:shadow-teal-800/40 transition-all duration-200 group">
                     <i data-lucide="zap" class="w-4 h-4 text-teal-200 group-hover:scale-110 transition-transform"></i>
                     <span>Quick Catch</span>
@@ -86,7 +96,7 @@
                         <span>Lakes & Waters</span>
                     </a>
                     <a href="{{ url('/lure') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('lure*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="hook" class="w-4 h-4"></i>
+                        <i data-lucide="fishing-hook" class="w-4 h-4"></i>
                         <span>Lures & Gear</span>
                     </a>
                     <a href="{{ url('/angler') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('angler*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
@@ -149,6 +159,9 @@
 
             <div class="flex items-center gap-2">
                 @auth
+                    <a href="{{ route('search') }}" class="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors" title="Search">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </a>
                     <a href="{{ url('/record/quick') }}" class="flex items-center gap-1 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold py-1.5 px-3 rounded-lg shadow-sm">
                         <i data-lucide="zap" class="w-3.5 h-3.5"></i>
                         <span>Quick Catch</span>
@@ -191,7 +204,7 @@
                     <i data-lucide="waves" class="w-4 h-4 text-teal-400"></i> Lakes
                 </a>
                 <a href="{{ url('/lure') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
-                    <i data-lucide="hook" class="w-4 h-4 text-teal-400"></i> Lures
+                    <i data-lucide="fishing-hook" class="w-4 h-4 text-teal-400"></i> Lures
                 </a>
                 <div class="pt-2 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
                     <span>Logged in as <strong>{{ Auth::user()->name }}</strong></span>

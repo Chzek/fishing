@@ -21,7 +21,7 @@
                         <tr class="hover:bg-slate-50/70 transition-colors">
                             <td class="py-3.5 px-4 font-mono text-xs text-slate-400">#{{ $lure->id }}</td>
                             <td class="py-3.5 px-4 font-bold text-slate-900 flex items-center gap-2">
-                                <i data-lucide="hook" class="w-4 h-4 text-teal-600 shrink-0"></i>
+                                <i data-lucide="fishing-hook" class="w-4 h-4 text-teal-600 shrink-0"></i>
                                 <span>{{ $lure->name }}</span>
                             </td>
                             <td class="py-3.5 px-4 text-slate-700 font-medium">{{ $lure->color }}</td>
@@ -35,9 +35,9 @@
             </table>
         </div>
 
-        <div class="flex items-center justify-between text-xs text-slate-500 pt-2">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
             <span>Showing {{ $lures->firstItem() }} to {{ $lures->lastItem() }} of {{ $lures->total() }} Lures</span>
-            <div>{{ $lures->links() }}</div>
+            <div>{{ $lures->links('vendor.pagination.tailwind') }}</div>
         </div>
     </div>
 </div>

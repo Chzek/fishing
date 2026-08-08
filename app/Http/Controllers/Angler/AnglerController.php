@@ -20,14 +20,23 @@ class AnglerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $anglers = Angler::withCount('records')
+        $query = Angler::withCount('records')
             ->withCount(['records as lakes_count' => function ($query) {
                 $query->select(DB::raw('count(distinct records.lakes_id)'));
             }])
-            ->orderBy('records_count', 'desc')
-            ->paginate(10);
+            ->orderBy('records_count', 'desc');
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('firstName', 'like', "%{$search}%")
+                  ->orWhere('lastName', 'like', "%{$search}%")
+                  ->orWhere('middleName', 'like', "%{$search}%");
+            });
+        }
+
+        $anglers = $query->paginate(10)->withQueryString();
 
         return view('angler.index', [
             'anglers' => $anglers,
