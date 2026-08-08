@@ -52,7 +52,10 @@
                                 <td class="py-3.5 px-4 text-center font-mono font-bold text-teal-700">{{ $angler->records_count }}</td>
                                 <td class="py-3.5 px-4 text-center font-mono font-bold text-slate-800">{{ $angler->lakes_count }}</td>
                                 <td class="py-3.5 px-4 text-right whitespace-nowrap">
-                                    <x-tableOptions name='angler' identifier='{{ $angler->id }}' user='{{ $angler->user_id }}' />
+                                    <a href="{{ url('/angler/' . $angler->id . '/profile') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-700 font-semibold text-xs rounded-xl border border-slate-200 hover:border-teal-200 transition-colors">
+                                        <i data-lucide="user" class="w-3.5 h-3.5 text-teal-600"></i>
+                                        <span>Profile</span>
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach

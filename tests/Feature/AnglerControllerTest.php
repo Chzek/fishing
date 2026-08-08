@@ -71,4 +71,16 @@ class AnglerControllerTest extends TestCase
             'firstName' => 'Updated',
         ]);
     }
+
+    #[Test]
+    public function it_can_view_angler_profile()
+    {
+        $this->be($this->user);
+
+        $response = $this->get('/angler/' . $this->angler->id . '/profile');
+        $response->assertStatus(200);
+        $response->assertSeeText($this->angler->firstName);
+        $response->assertSeeText($this->angler->lastName);
+        $response->assertSeeText('Angler Catches Logbook');
+    }
 }
