@@ -158,6 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.acquireQuickGPS = () => {
         const textEl = document.getElementById('gps-status-text');
+        if (!window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            if (textEl) {
+                textEl.innerHTML = `🔒 GPS blocked by browser: Requires HTTPS or Chrome flag (http://${location.hostname} is HTTP)`;
+            }
+            return;
+        }
+
         if (!navigator.geolocation) {
             if (textEl) textEl.textContent = 'Device Pinpoint GPS: Hardware Not Supported';
             return;
@@ -173,7 +180,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (textEl) textEl.textContent = `Device Pinpoint GPS: Acquired (${lat}, ${lng})`;
             },
             (err) => {
-                if (textEl) textEl.textContent = 'Device Pinpoint GPS: Unavailable (Will use Lake center)';
+                if (textEl) {
+                    if (err.code === 1) {
+                        textEl.textContent = `⚠️ GPS Permission Denied (Ensure location permissions & HTTPS)`;
+                    } else {
+                        textEl.textContent = `Device Pinpoint GPS: Unavailable (${err.message || 'Timeout'})`;
+                    }
+                }
             },
             { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
         );

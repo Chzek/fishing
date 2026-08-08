@@ -131,6 +131,11 @@
 @section('scripts')
 <script>
     function acquireDeviceGPS() {
+        if (!window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            alert('🔒 Browsers block GPS on HTTP over LAN.\n\nTo enable GPS on your mobile device:\n1. Use HTTPS or localhost, OR\n2. In Chrome on mobile, visit chrome://flags/#unsafely-treat-insecure-origin-as-secure and add http://' + location.hostname);
+            return;
+        }
+
         if (!navigator.geolocation) {
             alert('Hardware GPS is not supported on this browser.');
             return;
@@ -141,7 +146,7 @@
                 document.getElementById('longitude').value = pos.coords.longitude.toFixed(6);
             },
             (err) => {
-                alert('Could not acquire GPS position. Ensure location permissions are granted.');
+                alert('Could not acquire GPS position: ' + (err.message || 'Permission denied. Ensure HTTPS or Chrome flags allow location.'));
             },
             { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
         );
