@@ -18,7 +18,7 @@ use Fishinglog\Pipes\Filters\SortBy;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Pipeline\Pipeline;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RecordController extends Controller
 {
@@ -31,12 +31,12 @@ class RecordController extends Controller
      */
     public function index(Pipeline $pipeline, Request $request)
     {
-        $records = Record::with(['angler', 'lake.dailyWeather', 'fishBreed', 'lure'])
+        $recordsQuery = Record::with(['angler', 'lake.dailyWeather', 'fishBreed', 'lure'])
             ->orderBy('caught', 'desc')
             ->orderBy('lakes_id', 'asc')
             ->orderBy('anglers_id', 'asc');
 
-        $records = $pipeline->send($records)
+        $filteredRecords = $pipeline->send($recordsQuery)
             ->through([
                 SortBy::class,
                 FilterBySearch::class,
@@ -45,10 +45,111 @@ class RecordController extends Controller
             ])
             ->thenReturn();
 
-        $records = $records->paginate(10)->withQueryString();
+        $records = (clone $filteredRecords)->paginate(10)->withQueryString();
+
+        // High-level telemetry stats based on active filter query
+        $totalCatches = (clone $filteredRecords)->count();
+        $totalInches = round((clone $filteredRecords)->sum('length'), 1);
+        $totalFeet = round($totalInches / 12, 1);
+        $avgLength = round((clone $filteredRecords)->whereNotNull('length')->avg('length') ?? 0, 1);
+
+        $releasedCount = (clone $filteredRecords)->where('released', 1)->count();
+        $releaseRate = $totalCatches > 0 ? round(($releasedCount / $totalCatches) * 100) : 0;
+
+        $longestCatch = (clone $filteredRecords)->whereNotNull('length')
+            ->reorder()
+            ->orderBy('length', 'desc')
+            ->with(['angler', 'lake', 'fishBreed'])
+            ->first();
+
+        $heaviestCatch = (clone $filteredRecords)->whereNotNull('weight')
+            ->reorder()
+            ->orderBy('weight', 'desc')
+            ->with(['angler', 'lake', 'fishBreed'])
+            ->first();
+
+        $avgWaterTemp = round((clone $filteredRecords)->whereNotNull('temperature')->avg('temperature') ?? 0, 1);
+
+        // Top 5 Anglers by production & longest fish
+        $topAnglers = (clone $filteredRecords)->select('anglers_id', DB::raw('count(*) as catches_count'), DB::raw('max(length) as max_length'))
+            ->reorder()
+            ->whereNotNull('anglers_id')
+            ->groupBy('anglers_id')
+            ->orderBy('catches_count', 'desc')
+            ->take(5)
+            ->with('angler')
+            ->get();
+
+        // Top 5 Lakes by production & longest fish
+        $topLakes = (clone $filteredRecords)->select('lakes_id', DB::raw('count(*) as catches_count'), DB::raw('max(length) as max_length'))
+            ->reorder()
+            ->whereNotNull('lakes_id')
+            ->groupBy('lakes_id')
+            ->orderBy('catches_count', 'desc')
+            ->take(5)
+            ->with('lake')
+            ->get();
+
+        // Macro Target Species Shifts & Trends
+        $latestYear = (clone $filteredRecords)->whereNotNull('caught')->max(DB::raw('year(caught)')) ?: date('Y');
+        $prevYear = $latestYear - 1;
+
+        $currentYearBreeds = (clone $filteredRecords)->select('fish_breeds_id', DB::raw('count(*) as count'))
+            ->reorder()
+            ->whereNotNull('fish_breeds_id')
+            ->whereRaw('year(caught) = ?', [$latestYear])
+            ->groupBy('fish_breeds_id')
+            ->pluck('count', 'fish_breeds_id');
+
+        $prevYearBreeds = (clone $filteredRecords)->select('fish_breeds_id', DB::raw('count(*) as count'))
+            ->reorder()
+            ->whereNotNull('fish_breeds_id')
+            ->whereRaw('year(caught) = ?', [$prevYear])
+            ->groupBy('fish_breeds_id')
+            ->pluck('count', 'fish_breeds_id');
+
+        $allBreedsWithCatches = (clone $filteredRecords)->select('fish_breeds_id', DB::raw('count(*) as total_count'))
+            ->reorder()
+            ->whereNotNull('fish_breeds_id')
+            ->groupBy('fish_breeds_id')
+            ->orderBy('total_count', 'desc')
+            ->take(5)
+            ->with('fishBreed')
+            ->get();
+
+        $speciesTrends = $allBreedsWithCatches->map(function ($item) use ($currentYearBreeds, $prevYearBreeds, $totalCatches) {
+            $breedId = $item->fish_breeds_id;
+            $currCount = $currentYearBreeds[$breedId] ?? 0;
+            $prevCount = $prevYearBreeds[$breedId] ?? 0;
+            $percentage = $totalCatches > 0 ? round(($item->total_count / $totalCatches) * 100, 1) : 0;
+            $shift = $prevCount > 0 ? round((($currCount - $prevCount) / $prevCount) * 100) : ($currCount > 0 ? 100 : 0);
+
+            return (object) [
+                'fishBreed' => $item->fishBreed,
+                'total_count' => $item->total_count,
+                'percentage' => $percentage,
+                'curr_count' => $currCount,
+                'prev_count' => $prevCount,
+                'shift' => $shift,
+            ];
+        });
 
         return view('record.index', [
             'records' => $records,
+            'totalCatches' => $totalCatches,
+            'totalFeet' => $totalFeet,
+            'totalInches' => $totalInches,
+            'avgLength' => $avgLength,
+            'releasedCount' => $releasedCount,
+            'releaseRate' => $releaseRate,
+            'longestCatch' => $longestCatch,
+            'heaviestCatch' => $heaviestCatch,
+            'avgWaterTemp' => $avgWaterTemp,
+            'topAnglers' => $topAnglers,
+            'topLakes' => $topLakes,
+            'speciesTrends' => $speciesTrends,
+            'latestYear' => $latestYear,
+            'prevYear' => $prevYear,
         ]);
     }
 
