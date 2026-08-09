@@ -4,6 +4,7 @@ namespace Fishinglog\Http\Controllers;
 
 use Fishinglog\Http\Requests\StoreLakeRequest;
 use Fishinglog\Http\Requests\UpdateLakeRequest;
+use Fishinglog\Models\FishingZone;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
 use Fishinglog\Pipes\Filters\FilterByName;
@@ -22,7 +23,8 @@ class LakeController extends Controller
      */
     public function index(Pipeline $pipeline, Request $request)
     {
-        $lakes = Lake::withCount('records')
+        $lakes = Lake::with('fishingZone')
+            ->withCount('records')
             ->withCount(['records as visits' => function ($query) {
                 $query->select(DB::raw('count(distinct records.caught)'));
             }])
@@ -54,8 +56,11 @@ class LakeController extends Controller
     public function create()
     {
         $lake = new Lake;
+        $fishingZones = FishingZone::orderBy('code', 'asc')->get();
+
         return view('lake.create', [
             'lake' => $lake,
+            'fishingZones' => $fishingZones,
         ]);
     }
 
@@ -74,6 +79,15 @@ class LakeController extends Controller
         $lake->structure = $request->structure;
         $lake->max_depth = $request->max_depth;
 
+        if ($request->filled('fishing_zone_id')) {
+            $lake->fishing_zone_id = $request->fishing_zone_id;
+        } elseif ($request->latitude && $request->longitude) {
+            $detectedZone = \Fishinglog\Services\GeoZoneDetector::detectZone($request->latitude, $request->longitude);
+            if ($detectedZone) {
+                $lake->fishing_zone_id = $detectedZone->id;
+            }
+        }
+
         $lake->save();
 
         return redirect('/lake');
@@ -87,6 +101,8 @@ class LakeController extends Controller
      */
     public function show(Lake $lake)
     {
+        $lake->load('fishingZone.rules');
+
         $count = Record::where('lakes_id', $lake->id)->count();
         $longest = Record::where('lakes_id', $lake->id)
             ->orderBy('length', 'desc')
@@ -125,11 +141,14 @@ class LakeController extends Controller
      */
     public function edit(Lake $lake)
     {
+        $lake->load('fishingZone');
         $nearbyLakes = Lake::nearby($lake->latitude, $lake->longitude, 2.0, $lake->id);
+        $fishingZones = FishingZone::orderBy('code', 'asc')->get();
 
         return view('lake.edit', [
             'lake' => $lake,
             'nearbyLakes' => $nearbyLakes,
+            'fishingZones' => $fishingZones,
         ]);
     }
 
@@ -149,6 +168,15 @@ class LakeController extends Controller
         $targetLake->longitude = $request->longitude;
         $targetLake->structure = $request->structure;
         $targetLake->max_depth = $request->max_depth;
+
+        if ($request->filled('fishing_zone_id')) {
+            $targetLake->fishing_zone_id = $request->fishing_zone_id;
+        } elseif ($request->latitude && $request->longitude) {
+            $detectedZone = \Fishinglog\Services\GeoZoneDetector::detectZone($request->latitude, $request->longitude);
+            if ($detectedZone) {
+                $targetLake->fishing_zone_id = $detectedZone->id;
+            }
+        }
 
         $targetLake->save();
 

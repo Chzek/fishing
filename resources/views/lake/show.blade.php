@@ -38,8 +38,15 @@
     </div>
 
     <!-- Lake Badges & Map Card -->
-    @if($lake->structure || $lake->max_depth || ($lake->latitude && $lake->longitude))
+    @if($lake->structure || $lake->max_depth || ($lake->latitude && $lake->longitude) || $lake->fishingZone)
         <div class="flex flex-wrap items-center gap-2 text-xs">
+            @if($lake->fishingZone)
+                <a href="{{ url('/fishing-zone/' . $lake->fishingZone->id) }}" class="bg-indigo-50 text-indigo-800 border border-indigo-200 hover:bg-indigo-100 px-3 py-1.5 rounded-xl font-medium transition-colors flex items-center gap-1">
+                    <i data-lucide="shield" class="w-3.5 h-3.5 text-indigo-600"></i>
+                    <span>Zone: <strong class="font-mono">{{ $lake->fishingZone->code }}</strong> — {{ $lake->fishingZone->name }}</span>
+                    <i data-lucide="arrow-up-right" class="w-3 h-3 text-indigo-500"></i>
+                </a>
+            @endif
             @if($lake->structure)
                 <span class="bg-teal-50 text-teal-800 border border-teal-200 px-3 py-1.5 rounded-xl font-medium">
                     🌊 Bottom Cover: <strong>{{ $lake->structure }}</strong>
@@ -86,6 +93,66 @@
                     </div>
                 </div>
             @endif
+        </div>
+    @endif
+
+    <!-- Applicable Zone Regulations & Limits Card -->
+    @if($lake->fishingZone && isset($lake->fishingZone->rules) && count($lake->fishingZone->rules) > 0)
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="space-y-0.5">
+                    <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-5 h-5 text-indigo-600"></i>
+                        <span>Applicable Regulations & Possession Limits</span>
+                    </h2>
+                    <p class="text-xs text-slate-500">Governed by <strong>{{ $lake->fishingZone->code }} — {{ $lake->fishingZone->name }}</strong></p>
+                </div>
+                <a href="{{ url('/fishing-zone/' . $lake->fishingZone->id) }}" class="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1">
+                    <span>Full Zone Guide</span>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </a>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-slate-200/80">
+                <table class="w-full text-left text-xs text-slate-700">
+                    <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
+                        <tr>
+                            <th scope="col" class="py-2.5 px-3.5">Species</th>
+                            <th scope="col" class="py-2.5 px-3.5">Season</th>
+                            <th scope="col" class="py-2.5 px-3.5 text-center">Sport (S)</th>
+                            <th scope="col" class="py-2.5 px-3.5 text-center">Conservation (C)</th>
+                            <th scope="col" class="py-2.5 px-3.5">Size Restrictions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        @foreach($lake->fishingZone->rules as $rule)
+                            <tr class="{{ $rule->is_aggregate ? 'bg-indigo-50/40 border-l-4 border-l-indigo-500' : '' }}">
+                                <td class="py-2.5 px-3.5 font-bold text-slate-900">
+                                    <div class="flex items-center gap-2">
+                                        @if($rule->is_aggregate)
+                                            <i data-lucide="layers" class="w-3.5 h-3.5 text-indigo-600 shrink-0"></i>
+                                        @else
+                                            <i data-lucide="fish" class="w-3.5 h-3.5 text-teal-600 shrink-0"></i>
+                                        @endif
+                                        <div>
+                                            <span>{{ $rule->species_name }}</span>
+                                            @if($rule->is_aggregate)
+                                                <span class="block text-[9px] font-black uppercase text-indigo-800 font-mono">
+                                                    Aggregate Limit
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-2.5 px-3.5 font-medium text-slate-800">{{ $rule->season }}</td>
+                                <td class="py-2.5 px-3.5 text-center font-mono font-bold text-slate-900">{{ $rule->sport_limit }}</td>
+                                <td class="py-2.5 px-3.5 text-center font-mono font-bold text-teal-700">{{ $rule->conservation_limit }}</td>
+                                <td class="py-2.5 px-3.5 text-slate-600">{{ $rule->size_restriction }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     @endif
 

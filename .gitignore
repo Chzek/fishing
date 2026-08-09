@@ -17,3 +17,5 @@ yarn-error.log
 /fishing/storage
 /resources/views/vendor
 *.sql
+public/json/ontario-fmz-boundaries.geojson
+public/json/ontario-fmz-boundaries.json

@@ -192,12 +192,46 @@
             attribution: 'Source: Esri, Maxar'
         });
 
-        L.control.layers({
+        const layerControl = L.control.layers({
             "🗺️ Topo / Waterbody": topoLayer,
             "🛰️ Satellite Imagery": satLayer
         }).addTo(explorerMap);
 
         markersLayer = L.layerGroup().addTo(explorerMap);
+        let fmzLayer = L.layerGroup();
+
+        // Load FMZ GeoJSON boundaries overlay
+        fetch('/json/ontario-fmz-boundaries-web.geojson')
+            .then(res => res.json())
+            .then(geoJson => {
+                const fmzGeoJson = L.geoJSON(geoJson, {
+                    style: function (feature) {
+                        return {
+                            color: '#6366f1',
+                            weight: 2,
+                            opacity: 0.8,
+                            fillColor: '#818cf8',
+                            fillOpacity: 0.12
+                        };
+                    },
+                    onEachFeature: function (feature, layer) {
+                        const code = feature.properties.code || ('FMZ ' + feature.properties.zone_id);
+                        layer.bindPopup(`
+                            <div class="p-1 text-slate-900 font-sans space-y-1">
+                                <span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-2 py-0.5 rounded font-mono">${code}</span>
+                                <div class="font-bold text-xs pt-1">Ontario Fisheries Management Zone ${feature.properties.zone_id}</div>
+                                <a href="/fishing-zone?search=${code}" target="_blank" class="text-xs text-indigo-600 font-bold hover:underline block pt-1">View Zone Regulations & Lakes ↗</a>
+                            </div>
+                        `);
+                    }
+                });
+                fmzGeoJson.addTo(fmzLayer);
+                fmzLayer.addTo(explorerMap);
+
+                // Add to Layer Switcher
+                layerControl.addOverlay(fmzLayer, "🛡️ FMZ License Boundaries");
+            })
+            .catch(err => console.log('FMZ GeoJSON overlay load status:', err));
 
         // Listen for map pan/zoom events to query visible bounding box
         explorerMap.on('moveend zoomend', function () {

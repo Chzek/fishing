@@ -23,9 +23,25 @@
         <form action="{{ url('/lake') }}" method="POST" class="space-y-4">
             @csrf
 
-            <div class="space-y-1.5">
-                <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lake / Waterbody Name</label>
-                <input type="text" id="name" name="name" value="{{ old('name') }}" required placeholder="e.g. Wawa Lake, Hawk Lake, Magpie River" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lake / Waterbody Name</label>
+                    <input type="text" id="name" name="name" value="{{ old('name') }}" required placeholder="e.g. Wawa Lake, Hawk Lake, Magpie River" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="fishing_zone_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Fishing License Zone (FMZ)</label>
+                    <select id="fishing_zone_id" name="fishing_zone_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-xs font-semibold focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                        <option value="">— Unspecified Zone —</option>
+                        @if(isset($fishingZones))
+                            @foreach($fishingZones as $zone)
+                                <option value="{{ $zone->id }}" {{ old('fishing_zone_id', $lake->fishing_zone_id ?? '') == $zone->id ? 'selected' : '' }}>
+                                    {{ $zone->code }} — {{ $zone->name }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

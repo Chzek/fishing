@@ -10,6 +10,7 @@ use Fishinglog\Http\Controllers\ExpeditionController;
 use Fishinglog\Http\Controllers\FishBreedController;
 use Fishinglog\Http\Controllers\FishController;
 use Fishinglog\Http\Controllers\FishFamilyController;
+use Fishinglog\Http\Controllers\FishingZoneController;
 use Fishinglog\Http\Controllers\LakeController;
 use Fishinglog\Http\Controllers\LakeVisitController;
 use Fishinglog\Http\Controllers\LureController;
@@ -76,6 +77,12 @@ Route::group(['middleware' => 'auth'], function () {
     // Offline Map & Explorer routes
     Route::get('/map/offline', [MapController::class, 'offline'])->name('map.offline');
     Route::get('/map/explorer', [ExplorerController::class, 'index'])->name('map.explorer');
+
+    // Fishing Zone routes
+    Route::prefix('fishing-zone')->group(function () {
+        Route::get('/', [FishingZoneController::class, 'index'])->name('fishing-zone.index');
+        Route::get('/{fishingZone}', [FishingZoneController::class, 'show'])->name('fishing-zone.show');
+    });
 
     // Lake routes
     Route::prefix('lake')->group(function () {

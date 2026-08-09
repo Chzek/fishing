@@ -91,9 +91,17 @@
                         <i data-lucide="fish" class="w-4 h-4"></i>
                         <span>Catches Log</span>
                     </a>
+                    <a href="{{ url('/fish') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('fish*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
+                        <i data-lucide="dna" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Fish & Species</span>
+                    </a>
                     <a href="{{ url('/lake') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('lake*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
                         <i data-lucide="waves" class="w-4 h-4"></i>
                         <span>Lakes & Waters</span>
+                    </a>
+                    <a href="{{ url('/fishing-zone') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('fishing-zone*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
+                        <i data-lucide="shield" class="w-4 h-4 text-indigo-400"></i>
+                        <span>License Zones (FMZs)</span>
                     </a>
                     <a href="{{ url('/lure') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('lure*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
                         <i data-lucide="fishing-hook" class="w-4 h-4"></i>
@@ -216,11 +224,17 @@
                 <a href="{{ url('/record') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
                     <i data-lucide="fish" class="w-4 h-4 text-teal-400"></i> Catches Log
                 </a>
+                <a href="{{ url('/fish') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
+                    <i data-lucide="dna" class="w-4 h-4 text-emerald-400"></i> Fish & Species
+                </a>
                 <a href="{{ url('/expedition') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
                     <i data-lucide="ship" class="w-4 h-4 text-teal-400"></i> Expeditions
                 </a>
                 <a href="{{ url('/lake') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
                     <i data-lucide="waves" class="w-4 h-4 text-teal-400"></i> Lakes
+                </a>
+                <a href="{{ url('/fishing-zone') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
+                    <i data-lucide="shield" class="w-4 h-4 text-indigo-400"></i> License Zones (FMZs)
                 </a>
                 <a href="{{ url('/lure') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
                     <i data-lucide="fishing-hook" class="w-4 h-4 text-teal-400"></i> Lures

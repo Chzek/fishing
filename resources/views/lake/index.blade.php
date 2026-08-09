@@ -70,9 +70,18 @@
                 <tbody class="divide-y divide-slate-100 bg-white">
                     @foreach($lakes as $lake)
                         <tr class="hover:bg-slate-50/70 transition-colors">
-                            <td class="py-3.5 px-4 font-bold text-slate-900 flex items-center gap-2">
-                                <i data-lucide="waves" class="w-4 h-4 text-teal-600 shrink-0"></i>
-                                <span>{{ $lake->name }}</span>
+                            <td class="py-3.5 px-4 font-bold text-slate-900">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="waves" class="w-4 h-4 text-teal-600 shrink-0"></i>
+                                    <div>
+                                        <span class="block leading-tight">{{ $lake->name }}</span>
+                                        @if($lake->fishingZone)
+                                            <a href="{{ url('/fishing-zone/' . $lake->fishingZone->id) }}" class="text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100 hover:bg-indigo-100 inline-block mt-0.5">
+                                                {{ $lake->fishingZone->code }}
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
                             </td>
                             <td class="py-3.5 px-4 text-center text-xs font-mono text-slate-600">{{ $lake->latitude ? number_format($lake->latitude, 4) : '—' }}</td>
                             <td class="py-3.5 px-4 text-center text-xs font-mono text-slate-600">{{ $lake->longitude ? number_format($lake->longitude, 4) : '—' }}</td>

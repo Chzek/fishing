@@ -17,7 +17,18 @@ class Lake extends Model
         'longitude',
         'structure',
         'max_depth',
+        'fishing_zone_id',
     ];
+
+    public function fishingZone()
+    {
+        return $this->belongsTo(FishingZone::class, 'fishing_zone_id', 'id');
+    }
+
+    public function rules()
+    {
+        return $this->hasMany(FishingRule::class, 'lake_id', 'id');
+    }
 
     public function records()
     {
