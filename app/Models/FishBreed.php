@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class FishBreed extends Model
 {
     use HasFactory;
+    use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
-    protected $fillable = ['name', 'fish_families_id'];
+    protected $fillable = ['uuid', 'sync_status', 'synced_at', 'name', 'fish_families_id', 'image'];
 
     public function family()
     {

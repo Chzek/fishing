@@ -10,8 +10,12 @@ class FishingZone extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
     protected $fillable = [
+        'uuid',
+        'sync_status',
+        'synced_at',
         'code',
         'name',
         'province_state',

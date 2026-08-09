@@ -8,10 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class LakeDailyWeather extends Model
 {
     use HasFactory;
+    use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
     protected $table = 'lake_daily_weather';
 
     protected $fillable = [
+        'uuid',
+        'sync_status',
+        'synced_at',
         'lakes_id',
         'date',
         'air_temp_max',

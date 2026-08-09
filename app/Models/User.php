@@ -11,6 +11,7 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
     use HasFactory;
+    use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
     const ADMIN_TYPE = 'admin';
     const DEFAULT_TYPE = 'default';
@@ -21,7 +22,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'uuid', 'sync_status', 'synced_at', 'name', 'email', 'password',
     ];
 
     /**

@@ -10,8 +10,12 @@ class Lake extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
     protected $fillable = [
+        'uuid',
+        'sync_status',
+        'synced_at',
         'name',
         'latitude',
         'longitude',

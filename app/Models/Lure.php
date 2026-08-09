@@ -10,8 +10,9 @@ class Lure extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
-    protected $fillable = ['name', 'color', 'size'];
+    protected $fillable = ['uuid', 'sync_status', 'synced_at', 'name', 'color', 'size'];
 
     public function record()
     {

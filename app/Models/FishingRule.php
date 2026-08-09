@@ -8,8 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class FishingRule extends Model
 {
     use HasFactory;
+    use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
     protected $fillable = [
+        'uuid',
+        'sync_status',
+        'synced_at',
         'fishing_zone_id',
         'lake_id',
         'fish_breed_id',

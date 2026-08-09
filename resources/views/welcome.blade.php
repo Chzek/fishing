@@ -33,7 +33,9 @@
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="text-xs font-semibold text-slate-300 hover:text-white px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">Login</a>
-                        <a href="{{ route('register') }}" class="inline-flex items-center gap-1 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold py-2 px-4 rounded-xl shadow transition-colors">Register</a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="inline-flex items-center gap-1 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold py-2 px-4 rounded-xl shadow transition-colors">Register</a>
+                        @endif
                     @endauth
                 @endif
             </div>
@@ -67,10 +69,12 @@
                         <span>Open Map Explorer</span>
                     </a>
                 @else
-                    <a href="{{ route('register') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-sm py-3 px-6 rounded-xl shadow-lg shadow-teal-950/50 transition-all transform active:scale-95">
-                        <i data-lucide="user-plus" class="w-4 h-4"></i>
-                        <span>Create Free Account</span>
-                    </a>
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-sm py-3 px-6 rounded-xl shadow-lg shadow-teal-950/50 transition-all transform active:scale-95">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i>
+                            <span>Create Free Account</span>
+                        </a>
+                    @endif
                     <a href="{{ route('login') }}" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-sm py-3 px-6 rounded-xl transition-all">
                         <span>Sign In</span>
                     </a>

@@ -37,7 +37,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
+Auth::routes(['register' => false]);
+
+Route::get('/register/invited', [Fishinglog\Http\Controllers\Admin\AdminInviteController::class, 'showInvitedRegistration'])->name('register.invited')->middleware('signed');
+Route::post('/register/invited', [Fishinglog\Http\Controllers\Admin\AdminInviteController::class, 'processInvitedRegistration'])->name('register.invited.process')->middleware('signed');
 
 Route::prefix('profile')->group(function () {
     Route::get('/', [ProfileController::class, 'show'])->name('home');
@@ -46,7 +49,10 @@ Route::prefix('profile')->group(function () {
 
 Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
+    Route::post('/sync/trigger', [AdminController::class, 'triggerSync'])->name('admin.sync.trigger');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::post('/users/invite', [Fishinglog\Http\Controllers\Admin\AdminInviteController::class, 'invite'])->name('admin.users.invite');
+    Route::post('/users/quick-add', [Fishinglog\Http\Controllers\Admin\AdminQuickAddController::class, 'store'])->name('admin.users.quick-add');
     Route::post('/users/link', [AdminController::class, 'linkAngler'])->name('admin.users.link');
     Route::post('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
     Route::post('/users/{user}/verify', [AdminController::class, 'verifyUser'])->name('admin.users.verify');

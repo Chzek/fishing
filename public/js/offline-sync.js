@@ -15,6 +15,14 @@ class OfflineSyncManager {
     this.initDB();
   }
 
+  getApiEndpoint() {
+    return localStorage.getItem('fishinglog_api_endpoint') || 'http://fishing.local/api/v1';
+  }
+
+  setApiEndpoint(url) {
+    localStorage.setItem('fishinglog_api_endpoint', url);
+  }
+
   generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);

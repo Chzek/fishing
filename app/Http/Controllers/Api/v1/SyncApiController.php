@@ -1,0 +1,134 @@
+<?php
+
+namespace Fishinglog\Http\Controllers\Api\v1;
+
+use Fishinglog\Http\Controllers\Controller;
+use Fishinglog\Models\Angler;
+use Fishinglog\Models\Crew;
+use Fishinglog\Models\Expedition;
+use Fishinglog\Models\FishBreed;
+use Fishinglog\Models\FishFamily;
+use Fishinglog\Models\FishingRule;
+use Fishinglog\Models\FishingZone;
+use Fishinglog\Models\Lake;
+use Fishinglog\Models\Lure;
+use Fishinglog\Models\Post;
+use Fishinglog\Models\Record;
+use Fishinglog\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+
+class SyncApiController extends Controller
+{
+    /**
+     * Entity key to model class mapping.
+     */
+    protected array $modelMap = [
+        'users' => User::class,
+        'anglers' => Angler::class,
+        'lakes' => Lake::class,
+        'fish_families' => FishFamily::class,
+        'fish_breeds' => FishBreed::class,
+        'lures' => Lure::class,
+        'records' => Record::class,
+        'expeditions' => Expedition::class,
+        'crews' => Crew::class,
+        'posts' => Post::class,
+        'fishing_zones' => FishingZone::class,
+        'fishing_rules' => FishingRule::class,
+    ];
+
+    /**
+     * Receive outbox push payload from client.
+     */
+    public function push(Request $request)
+    {
+        if (!$request->user() || !$request->user()->isAdmin()) {
+            return response()->json(['message' => 'Only admin users are authorized to perform database sync.'], 403);
+        }
+
+        $syncedUuids = [];
+        $processedCount = 0;
+
+        foreach ($this->modelMap as $key => $modelClass) {
+            $items = $request->input($key, []);
+            if (!is_array($items)) {
+                continue;
+            }
+
+            foreach ($items as $itemData) {
+                if (empty($itemData['uuid'])) {
+                    continue;
+                }
+
+                $uuid = $itemData['uuid'];
+                $existing = $modelClass::where('uuid', $uuid)->first();
+
+                $attributes = $itemData;
+                unset($attributes['id']); // Do not overwrite local integer autoincrement ID if present
+                $attributes['sync_status'] = 'synced';
+                $attributes['synced_at'] = now();
+
+                if (!$existing) {
+                    // Create new entity
+                    $modelClass::create($attributes);
+                    $syncedUuids[] = $uuid;
+                    $processedCount++;
+                } else {
+                    // Compare timestamps for Last-Write-Wins
+                    $incomingUpdated = isset($itemData['updated_at']) ? Carbon::parse($itemData['updated_at']) : null;
+                    $localUpdated = $existing->updated_at ? Carbon::parse($existing->updated_at) : null;
+
+                    if (!$localUpdated || ($incomingUpdated && $incomingUpdated->greaterThanOrEqualTo($localUpdated))) {
+                        $existing->update($attributes);
+                    } else {
+                        // Keep local version, but mark as synced
+                        $existing->update([
+                            'sync_status' => 'synced',
+                            'synced_at' => now(),
+                        ]);
+                    }
+
+                    $syncedUuids[] = $uuid;
+                    $processedCount++;
+                }
+            }
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'synced_uuids' => $syncedUuids,
+            'processed_count' => $processedCount,
+            'timestamp' => now()->toIso8601String(),
+        ]);
+    }
+
+    /**
+     * Return downstream updates modified since 'since' timestamp.
+     */
+    public function pull(Request $request)
+    {
+        if (!$request->user() || !$request->user()->isAdmin()) {
+            return response()->json(['message' => 'Only admin users are authorized to perform database sync.'], 403);
+        }
+
+        $sinceStr = $request->query('since');
+        $since = $sinceStr ? Carbon::parse($sinceStr) : Carbon::createFromTimestamp(0);
+
+        $payload = [];
+
+        foreach ($this->modelMap as $key => $modelClass) {
+            $query = $modelClass::where('updated_at', '>', $since);
+
+            if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive($modelClass))) {
+                $query->withTrashed();
+            }
+
+            $payload[$key] = $query->get();
+        }
+
+        $payload['server_timestamp'] = now()->toIso8601String();
+
+        return response()->json($payload);
+    }
+}

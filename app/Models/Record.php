@@ -10,8 +10,12 @@ class Record extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
     protected $fillable = [
+        'uuid',
+        'sync_status',
+        'synced_at',
         'client_id',
         'anglers_id',
         'lakes_id',

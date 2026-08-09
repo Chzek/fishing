@@ -22,6 +22,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->group(function () {
+    Route::post('/sync/push', [Fishinglog\Http\Controllers\Api\v1\SyncApiController::class, 'push']);
+    Route::get('/sync/pull', [Fishinglog\Http\Controllers\Api\v1\SyncApiController::class, 'pull']);
+
     Route::get('/reference-data', [ReferenceApiController::class, 'index']);
 
     Route::get('/records', [RecordApiController::class, 'index']);

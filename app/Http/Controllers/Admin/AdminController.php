@@ -22,7 +22,7 @@ class AdminController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(\Fishinglog\Services\NasSyncService $syncService)
     {
         $anglers = Angler::count();
         $lakes = Lake::count();
@@ -47,7 +47,19 @@ class AdminController extends Controller
             'posts' => $posts,
             'years' => $years > 0 ? $years : 1,
             'trashedCount' => Record::onlyTrashed()->count() + Lake::onlyTrashed()->count() + Angler::onlyTrashed()->count() + Lure::onlyTrashed()->count() + Expedition::onlyTrashed()->count(),
+            'pendingSyncCount' => $syncService->getPendingCount(),
+            'lastSyncedAt' => $syncService->getLastSyncedAt(),
         ]);
+    }
+
+    public function triggerSync(\Fishinglog\Services\NasSyncService $syncService)
+    {
+        try {
+            $result = $syncService->sync();
+            return redirect()->route('admin')->with('status', "NAS Sync completed! Pushed {$result['pushed']} items, pulled {$result['pulled']} items.");
+        } catch (\Throwable $e) {
+            return redirect()->route('admin')->with('error', "NAS Sync failed: {$e->getMessage()}");
+        }
     }
 
     public function users()

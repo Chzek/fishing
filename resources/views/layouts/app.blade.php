@@ -169,7 +169,9 @@
                 @else
                     <div class="flex flex-col gap-2">
                         <a href="{{ route('login') }}" class="w-full text-center py-2 px-3 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-medium text-xs transition-colors">Login</a>
-                        <a href="{{ route('register') }}" class="w-full text-center py-2 px-3 rounded-lg border border-slate-700 text-slate-300 hover:text-white text-xs transition-colors">Register</a>
+@if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="w-full text-center py-2 px-3 rounded-lg border border-slate-700 text-slate-300 hover:text-white text-xs transition-colors">Register</a>
+@endif
                     </div>
                 @endauth
             </div>
@@ -262,7 +264,9 @@
                 </div>
             @else
                 <a href="{{ route('login') }}" class="block text-center py-2 bg-teal-600 text-white rounded-lg font-medium text-xs">Login</a>
-                <a href="{{ route('register') }}" class="block text-center py-2 border border-slate-700 text-slate-300 rounded-lg font-medium text-xs">Register</a>
+                @if (Route::has('register'))
+                    <a href="{{ route('register') }}" class="block text-center py-2 border border-slate-700 text-slate-300 rounded-lg font-medium text-xs">Register</a>
+                @endif
             @endauth
         </div>
 

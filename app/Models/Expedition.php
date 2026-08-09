@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Expedition extends Model
 {
     use SoftDeletes;
+    use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
-    protected $fillable = ['description', 'title', 'start', 'finish'];
+    protected $fillable = ['uuid', 'sync_status', 'synced_at', 'description', 'title', 'start', 'finish'];
 
     public function crews()
     {

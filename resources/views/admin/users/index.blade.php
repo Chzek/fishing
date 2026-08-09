@@ -33,6 +33,50 @@
         </div>
     @endif
 
+    <!-- Invitation & Offline Quick-Add Action Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Email Invitation Card -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-3">
+            <div class="flex items-center gap-2 border-b border-slate-100 pb-2.5">
+                <i data-lucide="mail-plus" class="w-4 h-4 text-teal-600"></i>
+                <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider">Email Signed Invitation (Home Mode)</h3>
+            </div>
+            <p class="text-xs text-slate-500">Generates a secure signed registration URL valid for 7 days to email an angler.</p>
+            <form action="{{ route('admin.users.invite') }}" method="POST" class="space-y-3">
+                @csrf
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <input type="text" name="name" required placeholder="Angler Full Name" class="h-9 px-3 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                    <input type="email" name="email" required placeholder="Angler Email Address" class="h-9 px-3 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                </div>
+                <button type="submit" class="w-full py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    <span>Generate Signed Invite</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Canada Field Offline Quick-Add Card -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-3">
+            <div class="flex items-center gap-2 border-b border-slate-100 pb-2.5">
+                <i data-lucide="user-plus" class="w-4 h-4 text-amber-600"></i>
+                <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider">Canada Offline Quick-Add (Field Mode)</h3>
+            </div>
+            <p class="text-xs text-slate-500">Create an Angler account locally without internet. Syncs upstream to NAS when returning home.</p>
+            <form action="{{ route('admin.users.quick-add') }}" method="POST" class="space-y-3">
+                @csrf
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input type="text" name="name" required placeholder="Angler Name" class="h-9 px-3 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                    <input type="email" name="email" required placeholder="Email" class="h-9 px-3 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                    <input type="password" name="password" required placeholder="Temp Password" class="h-9 px-3 rounded-xl border border-slate-200 text-xs bg-slate-50">
+                </div>
+                <button type="submit" class="w-full py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
+                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                    <span>Create Offline Angler Account</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Users Table -->
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">

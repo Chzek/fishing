@@ -62,7 +62,11 @@
         </form>
 
         <div class="pt-4 border-t border-slate-100 text-center text-xs text-slate-500">
-            Don't have an account? <a href="{{ route('register') }}" class="font-bold text-teal-600 hover:underline">Register now</a>
+            @if (Route::has('register'))
+                Don't have an account? <a href="{{ route('register') }}" class="font-bold text-teal-600 hover:underline">Register now</a>
+            @else
+                Registration is by administrator invitation only.
+            @endif
         </div>
     </div>
 </div>

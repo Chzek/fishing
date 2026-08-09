@@ -10,6 +10,7 @@ class Angler extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
     /**
      * The attributes that are mass assignable.
@@ -17,7 +18,7 @@ class Angler extends Model
      * @var array
      */
     protected $fillable = [
-        'firstName', 'middleName', 'lastName', 'firstname', 'middlename', 'lastname', 'name', 'user_id',
+        'uuid', 'sync_status', 'synced_at', 'firstName', 'middleName', 'lastName', 'firstname', 'middlename', 'lastname', 'name', 'user_id',
     ];
 
     public function records()

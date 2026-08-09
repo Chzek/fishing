@@ -32,6 +32,37 @@
             {{ session('status') }}
         </div>
     @endif
+    @if (session('error'))
+        <div class="bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold p-4 rounded-xl shadow-sm">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <!-- Synology NAS Synchronization Console -->
+    <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-1">
+            <div class="flex items-center gap-2">
+                <i data-lucide="refresh-cw" class="w-5 h-5 text-teal-400"></i>
+                <h2 class="text-base font-bold text-white">Synology NAS Two-Way Sync Engine</h2>
+            </div>
+            <p class="text-xs text-slate-300">
+                Synchronize local laptop catches, lakes, and anglers with your home Synology NAS server.
+            </p>
+            <div class="flex items-center gap-4 pt-1 text-xs font-medium text-slate-400">
+                <span>Last Synced: <strong class="text-slate-200">{{ $lastSyncedAt ? \Illuminate\Support\Carbon::parse($lastSyncedAt)->diffForHumans() : 'Never' }}</strong></span>
+                <span>•</span>
+                <span>Pending Outbox: <strong class="text-amber-400 font-mono font-bold">{{ $pendingSyncCount }} item(s)</strong></span>
+            </div>
+        </div>
+
+        <form action="{{ route('admin.sync.trigger') }}" method="POST">
+            @csrf
+            <button type="submit" class="inline-flex items-center gap-2 px-5 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0 cursor-pointer">
+                <i data-lucide="cloud-sync" class="w-4 h-4"></i>
+                <span>Sync Now with NAS</span>
+            </button>
+        </form>
+    </div>
 
     <!-- System Telemetry Grid -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
