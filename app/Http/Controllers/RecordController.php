@@ -41,6 +41,7 @@ class RecordController extends Controller
                 SortBy::class,
                 FilterBySearch::class,
                 FilterByLength::class,
+                FilterByAngler::class,
             ])
             ->thenReturn();
 

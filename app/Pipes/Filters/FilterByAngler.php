@@ -9,8 +9,18 @@ class FilterByAngler implements FilterPipeContract
 {
     public function handle($query, Closure $next)
     {
-        if(request('angler')) {
-            $query->where('anglers.name', 'like', "%".request('angler')."%");
+        $anglerParam = request('angler') ?: request('angler_id');
+
+        if ($anglerParam) {
+            if (is_numeric($anglerParam)) {
+                $query->where('anglers_id', $anglerParam);
+            } else {
+                $query->whereHas('angler', function ($a) use ($anglerParam) {
+                    $a->where('firstName', 'like', "%{$anglerParam}%")
+                      ->orWhere('lastName', 'like', "%{$anglerParam}%")
+                      ->orWhereRaw("CONCAT(COALESCE(firstName, ''), ' ', COALESCE(lastName, '')) LIKE ?", ["%{$anglerParam}%"]);
+                });
+            }
         }
         
         return $next($query);
