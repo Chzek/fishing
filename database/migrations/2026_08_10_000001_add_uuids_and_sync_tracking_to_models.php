@@ -103,27 +103,44 @@ return new class extends Migration
             });
 
             if (Schema::hasColumn($tableName, 'id')) {
-                if ($driver === 'mysql') {
-                    DB::statement("ALTER TABLE `{$tableName}` MODIFY `id` CHAR(36) NOT NULL;");
+                if ($tableName === 'crews') {
+                    $crews = DB::table('crews')->whereNull('id')->orWhere('id', '')->get();
+                    foreach ($crews as $crew) {
+                        DB::table('crews')->whereNull('id')->orWhere('id', '')->limit(1)->update(['id' => (string) Str::uuid()]);
+                    }
+                    if ($driver === 'mysql') {
+                        try {
+                            DB::statement("ALTER TABLE `crews` MODIFY `id` CHAR(36) NOT NULL PRIMARY KEY;");
+                        } catch (\Throwable $e) {}
+                    }
                 } else {
-                    Schema::table($tableName, function (Blueprint $table) {
-                        $table->string('id', 36)->change();
-                    });
-                }
+                    if ($driver === 'mysql') {
+                        DB::statement("ALTER TABLE `{$tableName}` MODIFY `id` CHAR(36) NOT NULL;");
+                    } else {
+                        Schema::table($tableName, function (Blueprint $table) {
+                            $table->string('id', 36)->change();
+                        });
+                    }
 
-                // Update integer IDs to generated UUID strings
-                if (isset($idMap[$tableName])) {
-                    foreach ($idMap[$tableName] as $oldId => $newUuid) {
-                        DB::table($tableName)->where('id', $oldId)->update(['id' => $newUuid]);
+                    // Update integer IDs to generated UUID strings
+                    if (isset($idMap[$tableName])) {
+                        foreach ($idMap[$tableName] as $oldId => $newUuid) {
+                            DB::table($tableName)->where('id', (string) $oldId)->update(['id' => $newUuid]);
+                        }
                     }
                 }
             } else if ($tableName === 'crews') {
-                Schema::table($tableName, function (Blueprint $table) {
-                    $table->uuid('id')->primary()->first();
+                Schema::table('crews', function (Blueprint $table) {
+                    $table->char('id', 36)->nullable()->first();
                 });
-                $crews = DB::table('crews')->get();
+                $crews = DB::table('crews')->whereNull('id')->orWhere('id', '')->get();
                 foreach ($crews as $crew) {
-                    DB::table('crews')->whereNull('id')->limit(1)->update(['id' => (string) Str::uuid()]);
+                    DB::table('crews')->whereNull('id')->orWhere('id', '')->limit(1)->update(['id' => (string) Str::uuid()]);
+                }
+                if ($driver === 'mysql') {
+                    try {
+                        DB::statement("ALTER TABLE `crews` MODIFY `id` CHAR(36) NOT NULL PRIMARY KEY;");
+                    } catch (\Throwable $e) {}
                 }
             }
         }
@@ -144,7 +161,7 @@ return new class extends Migration
 
             if (isset($idMap[$targetTable])) {
                 foreach ($idMap[$targetTable] as $oldId => $newUuid) {
-                    DB::table($table)->where($col, $oldId)->update([$col => $newUuid]);
+                    DB::table($table)->where($col, (string) $oldId)->update([$col => $newUuid]);
                 }
             }
         }

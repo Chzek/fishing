@@ -37,7 +37,7 @@
                 <tbody class="divide-y divide-slate-100 bg-white">
                     @foreach($fishes as $fish)
                         <tr class="hover:bg-slate-50/70 transition-colors">
-                            <td class="py-3.5 px-4 font-semibold text-slate-600">{{ $fish->family->name }}</td>
+                            <td class="py-3.5 px-4 font-semibold text-slate-600">{{ $fish->family?->name ?? 'N/A' }}</td>
                             <td class="py-3.5 px-4 font-bold text-slate-900 flex items-center gap-2">
                                 <i data-lucide="fish" class="w-4 h-4 text-teal-600 shrink-0"></i>
                                 <span>{{ $fish->name }}</span>

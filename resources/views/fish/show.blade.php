@@ -9,7 +9,7 @@
             </div>
             <div>
                 <h1 class="text-2xl font-extrabold text-white tracking-tight">{{ $fish->name }}</h1>
-                <p class="text-xs text-teal-400 font-medium">{{ $fish->family->name }} Family</p>
+                <p class="text-xs text-teal-400 font-medium">{{ $fish->family?->name ?? 'N/A' }} Family</p>
             </div>
         </div>
 

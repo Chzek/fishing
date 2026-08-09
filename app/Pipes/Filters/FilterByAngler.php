@@ -3,7 +3,9 @@
 namespace Fishinglog\Pipes\Filters;
 
 use Closure;
+use Fishinglog\Models\Angler;
 use Fishinglog\Pipes\FilterPipeContract;
+use Illuminate\Support\Str;
 
 class FilterByAngler implements FilterPipeContract
 {
@@ -12,7 +14,7 @@ class FilterByAngler implements FilterPipeContract
         $anglerParam = request('angler') ?: request('angler_id');
 
         if ($anglerParam) {
-            if (is_numeric($anglerParam)) {
+            if (Str::isUuid($anglerParam) || is_numeric($anglerParam) || Angler::where('id', $anglerParam)->exists()) {
                 $query->where('anglers_id', $anglerParam);
             } else {
                 $query->whereHas('angler', function ($a) use ($anglerParam) {
@@ -22,7 +24,7 @@ class FilterByAngler implements FilterPipeContract
                 });
             }
         }
-        
+
         return $next($query);
     }
 }
