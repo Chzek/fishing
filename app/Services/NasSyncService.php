@@ -86,7 +86,7 @@ class NasSyncService
             if ($pending->isNotEmpty()) {
                 $pushPayload[$key] = $pending->toArray();
                 foreach ($pending as $item) {
-                    $localPendingByUuid[$item->uuid] = $item;
+                    $localPendingByUuid[$item->id ?? $item->uuid] = $item;
                 }
             }
         }
@@ -131,14 +131,16 @@ class NasSyncService
         foreach ($this->modelMap as $key => $modelClass) {
             $remoteItems = $pullData[$key] ?? [];
             foreach ($remoteItems as $remoteItem) {
-                if (empty($remoteItem['uuid'])) {
+                $id = $remoteItem['id'] ?? $remoteItem['uuid'] ?? null;
+                if (empty($id)) {
                     continue;
                 }
 
-                $existing = $modelClass::where('uuid', $remoteItem['uuid'])->first();
+                $existing = $modelClass::find($id);
 
                 $attributes = $remoteItem;
-                unset($attributes['id']);
+                $attributes['id'] = $id;
+                unset($attributes['uuid']);
                 $attributes['sync_status'] = 'synced';
                 $attributes['synced_at'] = now();
 

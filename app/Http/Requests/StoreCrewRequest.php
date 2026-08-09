@@ -22,8 +22,8 @@ class StoreCrewRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'expeditions_id' => 'integer',
-            'anglers_id' => 'integer',
+            'expeditions_id' => 'string',
+            'anglers_id' => 'string',
             'joined' => 'date',
         ];
     }

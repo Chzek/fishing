@@ -51,7 +51,7 @@ class NasSyncApiTest extends TestCase
         $response->assertJsonPath('processed_count', 1);
 
         $this->assertDatabaseHas('lakes', [
-            'uuid' => $lakeUuid,
+            'id' => $lakeUuid,
             'name' => 'Remote NAS Lake',
             'sync_status' => 'synced',
         ]);

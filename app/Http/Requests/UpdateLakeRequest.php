@@ -22,13 +22,13 @@ class UpdateLakeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|integer|exists:lakes,id',
+            'id' => 'required|string|exists:lakes,id',
             'name' => 'required|string|max:255',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'structure' => 'nullable|string|max:255',
             'max_depth' => 'nullable|integer|min:0|max:5000',
-            'fishing_zone_id' => 'nullable|integer|exists:fishing_zones,id',
+            'fishing_zone_id' => 'nullable|string|exists:fishing_zones,id',
         ];
     }
 }

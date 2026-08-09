@@ -13,7 +13,7 @@ class Record extends Model
     use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
     protected $fillable = [
-        'uuid',
+        'id',
         'sync_status',
         'synced_at',
         'client_id',

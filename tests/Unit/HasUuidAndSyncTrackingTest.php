@@ -23,8 +23,8 @@ class HasUuidAndSyncTrackingTest extends TestCase
             'longitude' => -78.0,
         ]);
 
-        $this->assertNotEmpty($lake->uuid);
-        $this->assertEquals(36, strlen($lake->uuid));
+        $this->assertNotEmpty($lake->id);
+        $this->assertEquals(36, strlen($lake->id));
         $this->assertEquals('pending_upstream', $lake->sync_status);
         $this->assertNull($lake->synced_at);
     }

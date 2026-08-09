@@ -13,7 +13,7 @@ class LakeDailyWeather extends Model
     protected $table = 'lake_daily_weather';
 
     protected $fillable = [
-        'uuid',
+        'id',
         'sync_status',
         'synced_at',
         'lakes_id',

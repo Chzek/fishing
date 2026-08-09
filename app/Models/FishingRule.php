@@ -11,7 +11,7 @@ class FishingRule extends Model
     use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
     protected $fillable = [
-        'uuid',
+        'id',
         'sync_status',
         'synced_at',
         'fishing_zone_id',

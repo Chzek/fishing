@@ -25,7 +25,7 @@ class UpdateAnglerRequest extends FormRequest
             'firstName' => 'required|max:255',
             'middleName' => 'required|max:255',
             'lastName' => 'required|max:255',
-            'user_id' => 'integer|nullable',
+            'user_id' => 'nullable|string',
             'birthdate' => 'date|nullable',
             'avatar' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];

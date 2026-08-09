@@ -12,7 +12,7 @@ class Lure extends Model
     use SoftDeletes;
     use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
-    protected $fillable = ['uuid', 'sync_status', 'synced_at', 'name', 'color', 'size'];
+    protected $fillable = ['id', 'sync_status', 'synced_at', 'name', 'color', 'size'];
 
     public function record()
     {

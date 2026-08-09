@@ -57,22 +57,23 @@ class SyncApiController extends Controller
             }
 
             foreach ($items as $itemData) {
-                if (empty($itemData['uuid'])) {
+                $id = $itemData['id'] ?? $itemData['uuid'] ?? null;
+                if (empty($id)) {
                     continue;
                 }
 
-                $uuid = $itemData['uuid'];
-                $existing = $modelClass::where('uuid', $uuid)->first();
+                $existing = $modelClass::find($id);
 
                 $attributes = $itemData;
-                unset($attributes['id']); // Do not overwrite local integer autoincrement ID if present
+                $attributes['id'] = $id;
+                unset($attributes['uuid']);
                 $attributes['sync_status'] = 'synced';
                 $attributes['synced_at'] = now();
 
                 if (!$existing) {
-                    // Create new entity
+                    // Create new entity with explicit UUID primary key
                     $modelClass::create($attributes);
-                    $syncedUuids[] = $uuid;
+                    $syncedUuids[] = $id;
                     $processedCount++;
                 } else {
                     // Compare timestamps for Last-Write-Wins
@@ -89,7 +90,7 @@ class SyncApiController extends Controller
                         ]);
                     }
 
-                    $syncedUuids[] = $uuid;
+                    $syncedUuids[] = $id;
                     $processedCount++;
                 }
             }

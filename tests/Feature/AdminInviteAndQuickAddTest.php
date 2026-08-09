@@ -75,7 +75,7 @@ class AdminInviteAndQuickAddTest extends TestCase
         $user = User::where('email', 'canada@example.com')->first();
         $this->assertNotNull($user);
         $this->assertEquals('pending_upstream', $user->sync_status);
-        $this->assertNotEmpty($user->uuid);
+        $this->assertNotEmpty($user->id);
 
         $angler = Angler::where('user_id', $user->id)->first();
         $this->assertNotNull($angler);

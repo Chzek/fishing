@@ -8,7 +8,7 @@ class Crew extends Model
 {
     use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
-    protected $fillable = ['uuid', 'sync_status', 'synced_at', 'expeditions_id', 'anglers_id'];
+    protected $fillable = ['id', 'sync_status', 'synced_at', 'expeditions_id', 'anglers_id'];
     public function expedition()
     {
         return $this->belongsTo(Expedition::class, 'expeditions_id');

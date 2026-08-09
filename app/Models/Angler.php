@@ -18,7 +18,7 @@ class Angler extends Model
      * @var array
      */
     protected $fillable = [
-        'uuid', 'sync_status', 'synced_at', 'firstName', 'middleName', 'lastName', 'firstname', 'middlename', 'lastname', 'name', 'user_id',
+        'id', 'sync_status', 'synced_at', 'firstName', 'middleName', 'lastName', 'firstname', 'middlename', 'lastname', 'name', 'user_id',
     ];
 
     public function records()

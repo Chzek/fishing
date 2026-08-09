@@ -13,7 +13,7 @@ class Lake extends Model
     use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
     protected $fillable = [
-        'uuid',
+        'id',
         'sync_status',
         'synced_at',
         'name',

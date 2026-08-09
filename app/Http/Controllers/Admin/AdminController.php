@@ -147,7 +147,7 @@ class AdminController extends Controller
     {
         $request->validate([
             'type' => 'required|in:record,lake,angler,lure,expedition',
-            'id' => 'required|integer',
+            'id' => 'required|string',
         ]);
 
         $modelClass = $this->getModelClass($request->type);
@@ -161,7 +161,7 @@ class AdminController extends Controller
     {
         $request->validate([
             'type' => 'required|in:record,lake,angler,lure,expedition',
-            'id' => 'required|integer',
+            'id' => 'required|string',
         ]);
 
         $modelClass = $this->getModelClass($request->type);

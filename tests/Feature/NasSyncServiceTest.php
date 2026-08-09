@@ -27,13 +27,13 @@ class NasSyncServiceTest extends TestCase
         Http::fake([
             'https://nas.example.com/api/v1/sync/push' => Http::response([
                 'status' => 'success',
-                'synced_uuids' => [$lake->uuid],
+                'synced_uuids' => [$lake->id],
                 'processed_count' => 1,
             ], 200),
             'https://nas.example.com/api/v1/sync/pull*' => Http::response([
                 'lakes' => [
                     [
-                        'uuid' => $remoteUuid,
+                        'id' => $remoteUuid,
                         'name' => 'NAS Home Lake',
                         'latitude' => 46.1,
                         'longitude' => -79.1,
@@ -55,7 +55,7 @@ class NasSyncServiceTest extends TestCase
 
         // Verify remote NAS lake pulled into local DB
         $this->assertDatabaseHas('lakes', [
-            'uuid' => $remoteUuid,
+            'id' => $remoteUuid,
             'name' => 'NAS Home Lake',
             'sync_status' => 'synced',
         ]);

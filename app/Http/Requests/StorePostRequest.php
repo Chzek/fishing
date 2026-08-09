@@ -24,7 +24,7 @@ class StorePostRequest extends FormRequest
         return [
             'date' => 'date|required',
             'description' => 'string|required',
-            'expeditions_id' => 'integer|required',
+            'expeditions_id' => 'required',
         ];
     }
 }

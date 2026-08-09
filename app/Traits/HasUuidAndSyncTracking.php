@@ -2,20 +2,18 @@
 
 namespace Fishinglog\Traits;
 
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 trait HasUuidAndSyncTracking
 {
+    use HasUuids;
+
     /**
      * Boot the trait for Eloquent models.
      */
     public static function bootHasUuidAndSyncTracking(): void
     {
         static::creating(function ($model) {
-            if (empty($model->uuid)) {
-                $model->uuid = (string) Str::uuid();
-            }
-
             if (empty($model->sync_status)) {
                 $model->sync_status = 'pending_upstream';
             }

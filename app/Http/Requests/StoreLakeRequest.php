@@ -27,7 +27,7 @@ class StoreLakeRequest extends FormRequest
             'longitude' => 'nullable|numeric|between:-180,180',
             'structure' => 'nullable|string|max:255',
             'max_depth' => 'nullable|integer|min:0|max:5000',
-            'fishing_zone_id' => 'nullable|integer|exists:fishing_zones,id',
+            'fishing_zone_id' => 'nullable|string|exists:fishing_zones,id',
         ];
     }
 }

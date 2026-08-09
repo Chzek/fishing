@@ -10,7 +10,7 @@ class FishBreed extends Model
     use HasFactory;
     use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
-    protected $fillable = ['uuid', 'sync_status', 'synced_at', 'name', 'fish_families_id', 'image'];
+    protected $fillable = ['id', 'sync_status', 'synced_at', 'name', 'fish_families_id', 'image'];
 
     public function family()
     {
