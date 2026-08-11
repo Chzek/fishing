@@ -31,34 +31,34 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-3 border-t border-slate-800 text-xs font-mono">
-            <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold">Total Catches</span>
-                <span class="text-xl font-black text-white block pt-0.5">{{ number_format($totalCatches) }}</span>
+        <div class="flex flex-row items-stretch gap-2.5 pt-3.5 border-t border-slate-800 text-xs font-mono">
+            <div class="flex-1 p-2.5 rounded-xl bg-slate-800/50 border border-slate-700/60 min-w-0 flex flex-col justify-between">
+                <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold truncate">Total Catches</span>
+                <span class="text-base sm:text-xl font-black text-white block pt-1 truncate">{{ number_format($totalCatches) }}</span>
             </div>
-            <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold">Landed Feet</span>
-                <span class="text-xl font-black text-teal-400 block pt-0.5">{{ number_format($totalFeet, 1) }} ft</span>
+            <div class="flex-1 p-2.5 rounded-xl bg-slate-800/50 border border-slate-700/60 min-w-0 flex flex-col justify-between">
+                <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold truncate">Landed Feet</span>
+                <span class="text-base sm:text-xl font-black text-teal-400 block pt-1 truncate">{{ number_format($totalFeet, 1) }} ft</span>
             </div>
-            <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold">C&R Release Rate</span>
-                <span class="text-xl font-black text-emerald-400 block pt-0.5">{{ $releaseRate }}%</span>
+            <div class="flex-1 p-2.5 rounded-xl bg-slate-800/50 border border-slate-700/60 min-w-0 flex flex-col justify-between">
+                <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold truncate">C&R Release</span>
+                <span class="text-base sm:text-xl font-black text-emerald-400 block pt-1 truncate">{{ $releaseRate }}%</span>
             </div>
-            <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold">Average Length</span>
-                <span class="text-xl font-black text-sky-400 block pt-0.5">{{ $avgLength }} in</span>
+            <div class="flex-1 p-2.5 rounded-xl bg-slate-800/50 border border-slate-700/60 min-w-0 flex flex-col justify-between">
+                <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold truncate">Average Length</span>
+                <span class="text-base sm:text-xl font-black text-sky-400 block pt-1 truncate">{{ $avgLength }} in</span>
             </div>
-            <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold">Weather Coverage</span>
-                <span class="text-xl font-black text-amber-400 block pt-0.5">{{ $weatherCoverageRate }}%</span>
+            <div class="flex-1 p-2.5 rounded-xl bg-slate-800/50 border border-slate-700/60 min-w-0 flex flex-col justify-between">
+                <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold truncate">Weather Sync</span>
+                <span class="text-base sm:text-xl font-black text-amber-400 block pt-1 truncate">{{ $weatherCoverageRate }}%</span>
             </div>
         </div>
     </div>
 
     <!-- 2. High-Level Telemetry Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div class="flex flex-col lg:flex-row items-stretch gap-4">
         <!-- Card 1: Cumulative Production -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+        <div class="flex-1 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2 min-w-0">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
                     <i data-lucide="ruler" class="w-3.5 h-3.5 text-teal-600"></i> Lifetime Production
@@ -78,7 +78,7 @@
         </div>
 
         <!-- Card 2: C&R Conservation Index -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+        <div class="flex-1 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2 min-w-0">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
                     <i data-lucide="heart-handshake" class="w-3.5 h-3.5 text-emerald-600"></i> C&R Conservation Rate
@@ -98,7 +98,7 @@
         </div>
 
         <!-- Card 3: All-Time Longest Catch -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+        <div class="flex-1 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2 min-w-0">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
                     <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-500"></i> Longest Catch Record
@@ -121,7 +121,7 @@
         </div>
 
         <!-- Card 4: All-Time Heaviest Catch -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+        <div class="flex-1 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2 min-w-0">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
                     <i data-lucide="scale" class="w-3.5 h-3.5 text-sky-600"></i> Heavyweight Record
@@ -144,7 +144,7 @@
         </div>
 
         <!-- Card 5: Atmospheric & Weather Telemetry -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+        <div class="flex-1 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2 min-w-0">
             <div class="flex items-center justify-between">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
                     <i data-lucide="cloud-sun" class="w-3.5 h-3.5 text-indigo-600"></i> Atmospheric Weather
