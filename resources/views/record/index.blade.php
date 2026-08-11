@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-800 text-xs font-mono">
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-3 border-t border-slate-800 text-xs font-mono">
             <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
                 <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold">Total Catches</span>
                 <span class="text-xl font-black text-white block pt-0.5">{{ number_format($totalCatches) }}</span>
@@ -48,11 +48,15 @@
                 <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold">Average Length</span>
                 <span class="text-xl font-black text-sky-400 block pt-0.5">{{ $avgLength }} in</span>
             </div>
+            <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
+                <span class="text-slate-400 block text-[10px] uppercase font-sans font-bold">Weather Coverage</span>
+                <span class="text-xl font-black text-amber-400 block pt-0.5">{{ $weatherCoverageRate }}%</span>
+            </div>
         </div>
     </div>
 
     <!-- 2. High-Level Telemetry Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <!-- Card 1: Cumulative Production -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
             <div class="flex items-center justify-between">
@@ -137,6 +141,26 @@
             @else
                 <p class="text-xs text-slate-400 pt-3 italic">No weight records logged.</p>
             @endif
+        </div>
+
+        <!-- Card 5: Atmospheric & Weather Telemetry -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+            <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                    <i data-lucide="cloud-sun" class="w-3.5 h-3.5 text-indigo-600"></i> Atmospheric Weather
+                </span>
+                <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200 font-mono">Air & Wind</span>
+            </div>
+            <div class="space-y-1 pt-1">
+                <div class="flex items-baseline gap-1.5">
+                    <span class="text-2xl font-black text-slate-900 font-mono">{{ $avgAirTemp ? $avgAirTemp . '°F' : 'N/A' }}</span>
+                    <span class="text-xs font-bold text-indigo-600 font-mono">mean temp</span>
+                </div>
+                <div class="text-[11px] text-slate-500 pt-1.5 border-t border-slate-100 flex items-center justify-between font-mono">
+                    <span>Press: <strong class="text-slate-800">{{ $avgBarometricPressure ? $avgBarometricPressure . ' hPa' : '—' }}</strong></span>
+                    <span>Wind: <strong class="text-slate-800">{{ $avgWindSpeed ? $avgWindSpeed . ' mph' : '—' }}</strong></span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -237,7 +261,6 @@
                                 @endif
                             </div>
                         </div>
-                        <!-- Progress bar -->
                         <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                             <div class="bg-gradient-to-r from-teal-500 to-indigo-500 h-full rounded-full transition-all duration-300" style="width: {{ min(100, max(5, $trend->percentage)) }}%"></div>
                         </div>
@@ -247,7 +270,89 @@
         </div>
     </div>
 
-    <!-- 4. Catches Logbook Directory Quick Access Banner Card -->
+    <!-- 4. Weather Condition Distribution & Best Lake Analytics Section -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-5">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+                <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                    <i data-lucide="cloud-sun" class="w-5 h-5 text-sky-600"></i>
+                    <span>Weather Condition Distribution & Top Producing Lakes</span>
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">Atmospheric field telemetry breakdown and top performing waterbody for each weather condition</p>
+            </div>
+
+            <span class="text-xs font-mono font-bold text-sky-700 bg-sky-50 px-3 py-1 rounded-full border border-sky-200">
+                {{ $weatherDistribution->count() }} Weather Conditions Logged
+            </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @forelse($weatherDistribution as $item)
+                @php
+                    $cond = strtolower($item->weather_condition ?? '');
+                    $emoji = '🌤️';
+                    if (str_contains($cond, 'clear')) { $emoji = '☀️'; }
+                    elseif (str_contains($cond, 'overcast') || str_contains($cond, 'cloud')) { $emoji = '☁️'; }
+                    elseif (str_contains($cond, 'rain') || str_contains($cond, 'drizzle')) { $emoji = '🌧️'; }
+                    elseif (str_contains($cond, 'thunder') || str_contains($cond, 'storm')) { $emoji = '🌩️'; }
+                    elseif (str_contains($cond, 'snow')) { $emoji = '❄️'; }
+                    elseif (str_contains($cond, 'fog')) { $emoji = '🌫️'; }
+                    
+                    $cleanTitle = trim(preg_replace('/[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]/u', '', $item->weather_condition ?? 'Unknown'));
+                @endphp
+                <div class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 hover:bg-slate-50 hover:border-slate-300 transition-all space-y-3">
+                    <div class="flex items-center gap-3">
+                        <!-- Prominent Left Weather Icon Badge -->
+                        <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-700 border border-sky-200/80 flex items-center justify-center text-xl shrink-0 shadow-xs">
+                            {{ $emoji }}
+                        </div>
+
+                        <div class="flex-1 min-w-0 space-y-1">
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="font-extrabold text-sm text-slate-900 truncate" title="{{ $cleanTitle }}">
+                                    {{ $cleanTitle }}
+                                </span>
+                                <div class="flex items-center gap-1 font-mono text-[11px] shrink-0">
+                                    <span class="text-slate-800 font-black">{{ number_format($item->catches_count) }} catches</span>
+                                    <span class="text-teal-700 font-bold bg-teal-50 px-1.5 py-0.5 rounded-full border border-teal-200">{{ $item->percentage }}%</span>
+                                </div>
+                            </div>
+
+                            <!-- Progress bar -->
+                            <div class="w-full bg-slate-200/80 h-2 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-teal-500 to-sky-500 h-full rounded-full transition-all duration-300" style="width: {{ min(100, max(5, $item->percentage)) }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Key Weather Metrics -->
+                    <div class="flex items-center justify-between text-xs text-slate-500 font-mono pt-0.5">
+                        <span>Avg Length: <strong class="text-slate-900">{{ $item->avg_length ? $item->avg_length . '″' : '—' }}</strong></span>
+                        <span>Barometer: <strong class="text-slate-900">{{ $item->avg_pressure ? $item->avg_pressure . ' hPa' : '—' }}</strong></span>
+                    </div>
+
+                    <!-- Best Lake Banner -->
+                    @if($item->best_lake_name)
+                        <div class="pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-xs">
+                            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                <i data-lucide="waves" class="w-3.5 h-3.5 text-teal-600"></i> Best Lake:
+                            </span>
+                            <a href="{{ url('/lake/' . $item->best_lake_id) }}" class="font-extrabold text-teal-700 hover:text-teal-900 hover:underline truncate max-w-[170px]" title="{{ $item->best_lake_name }}">
+                                {{ $item->best_lake_name }}
+                                <span class="font-mono text-[10px] font-normal text-slate-500">({{ $item->best_lake_catches }})</span>
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <div class="col-span-3 py-8 text-center text-slate-400 italic text-xs">
+                    No daily weather telemetry logged yet.
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    <!-- 5. Catches Logbook Directory Quick Access Banner Card -->
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
