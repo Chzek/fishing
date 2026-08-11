@@ -41,8 +41,12 @@ class RecordFilterTest extends TestCase
             'caught' => '2026-07-11',
         ]);
 
-        // Search for "Walleye" with length > 20
-        $response = $this->actingAs($user)->get('/record?search=Walleye&length=20&length_operator=>');
+        // Redirect test for search on /record
+        $redirectResponse = $this->actingAs($user)->get('/record?search=Walleye&length=20&length_operator=>');
+        $redirectResponse->assertRedirect('/record/directory?search=Walleye&length=20&length_operator=%3E');
+
+        // Search directly on /record/directory
+        $response = $this->actingAs($user)->get('/record/directory?search=Walleye&length=20&length_operator=>');
 
         $response->assertStatus(200);
         $response->assertSee('Walleye');

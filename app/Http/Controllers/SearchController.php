@@ -80,6 +80,13 @@ class SearchController extends Controller
                 'icon' => 'layout-dashboard',
                 'aliases' => ['dashboard', 'profile', 'my stats', 'stats'],
             ],
+            [
+                'title' => 'Catches Logbook Directory',
+                'description' => 'Search and filter complete catches table',
+                'url' => url('/record/directory'),
+                'icon' => 'list',
+                'aliases' => ['catches directory', 'logbook directory', 'all catches', 'catch list'],
+            ],
         ];
 
         $matchedActions = [];

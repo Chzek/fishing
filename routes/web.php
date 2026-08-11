@@ -136,7 +136,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Record routes
     Route::prefix('record')->group(function () {
-        Route::get('/', [RecordController::class, 'index']);
+        Route::get('/', [RecordController::class, 'index'])->name('record.index');
+        Route::get('/directory', [RecordController::class, 'directory'])->name('record.directory');
         Route::get('/quick', [RecordController::class, 'quick']);
         Route::get('/offline-review', [RecordController::class, 'offlineReview'])->name('record.offline-review');
         Route::get('/create', [RecordController::class, 'create']);

@@ -57,5 +57,6 @@ class RecordSummaryDashboardTest extends TestCase
         $response->assertSee('Macro Species Target Shifts');
         $response->assertSee('Wawa Lake');
         $response->assertSee('Walleye');
+        $response->assertSee('Open Logbook Directory');
     }
 }

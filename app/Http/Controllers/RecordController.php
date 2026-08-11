@@ -31,6 +31,10 @@ class RecordController extends Controller
      */
     public function index(Pipeline $pipeline, Request $request)
     {
+        if ($request->hasAny(['search', 'length', 'length_operator', 'angler', 'sort_by', 'sort_order'])) {
+            return redirect()->route('record.directory', $request->query());
+        }
+
         $recordsQuery = Record::with(['angler', 'lake.dailyWeather', 'fishBreed', 'lure'])
             ->orderBy('caught', 'desc')
             ->orderBy('lakes_id', 'asc')
@@ -150,6 +154,38 @@ class RecordController extends Controller
             'speciesTrends' => $speciesTrends,
             'latestYear' => $latestYear,
             'prevYear' => $prevYear,
+        ]);
+    }
+
+    /**
+     * Display the Catches Logbook Directory table with search and filters.
+     *
+     * @param Pipeline $pipeline
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function directory(Pipeline $pipeline, Request $request)
+    {
+        $recordsQuery = Record::with(['angler', 'lake.dailyWeather', 'fishBreed', 'lure'])
+            ->orderBy('caught', 'desc')
+            ->orderBy('lakes_id', 'asc')
+            ->orderBy('anglers_id', 'asc');
+
+        $filteredRecords = $pipeline->send($recordsQuery)
+            ->through([
+                SortBy::class,
+                FilterBySearch::class,
+                FilterByLength::class,
+                FilterByAngler::class,
+            ])
+            ->thenReturn();
+
+        $records = (clone $filteredRecords)->paginate(15)->withQueryString();
+        $totalCount = (clone $filteredRecords)->count();
+
+        return view('record.directory', [
+            'records' => $records,
+            'totalCount' => $totalCount,
         ]);
     }
 

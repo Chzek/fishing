@@ -87,9 +87,13 @@
                         <i data-lucide="ship" class="w-4 h-4"></i>
                         <span>Expeditions</span>
                     </a>
-                    <a href="{{ url('/record') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('record') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="fish" class="w-4 h-4"></i>
-                        <span>Catches Log</span>
+                    <a href="{{ url('/record') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('record') && !Request::is('record/directory*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4 text-teal-400"></i>
+                        <span>Catches Telemetry</span>
+                    </a>
+                    <a href="{{ url('/record/directory') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('record/directory*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
+                        <i data-lucide="list" class="w-4 h-4"></i>
+                        <span>Catches Directory</span>
                     </a>
                     <a href="{{ url('/fish') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('fish*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
                         <i data-lucide="dna" class="w-4 h-4 text-emerald-400"></i>

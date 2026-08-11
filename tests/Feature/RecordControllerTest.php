@@ -43,6 +43,16 @@ class RecordControllerTest extends TestCase
     }
 
     #[Test]
+    public function authenticated_user_can_view_records_directory()
+    {
+        $this->actingAs($this->user);
+
+        $response = $this->get('/record/directory');
+        $response->assertStatus(200);
+        $response->assertSee('Catches Logbook Directory');
+    }
+
+    #[Test]
     public function authenticated_user_can_create_a_record()
     {
         $this->actingAs($this->user);
