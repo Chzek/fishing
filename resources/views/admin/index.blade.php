@@ -38,30 +38,64 @@
         </div>
     @endif
 
-    <!-- Synology NAS Synchronization Console -->
-    <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div class="space-y-1">
-            <div class="flex items-center gap-2">
-                <i data-lucide="refresh-cw" class="w-5 h-5 text-teal-400"></i>
-                <h2 class="text-base font-bold text-white">Synology NAS Two-Way Sync Engine</h2>
+    <!-- Synchronization Engine Consoles Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Synology NAS Sync Console -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col justify-between space-y-4">
+            <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="refresh-cw" class="w-5 h-5 text-teal-400"></i>
+                    <h2 class="text-base font-bold text-white">Synology NAS Two-Way Sync Engine</h2>
+                </div>
+                <p class="text-xs text-slate-300">
+                    Synchronize local laptop catches, lakes, and anglers with your home Synology NAS server.
+                </p>
+                <div class="flex items-center gap-3 pt-1 text-xs font-medium text-slate-400 font-mono">
+                    <span>Pending Outbox: <strong class="text-amber-400 font-bold">{{ $pendingSyncCount }} item(s)</strong></span>
+                    <span>•</span>
+                    <span>Last: <strong class="text-slate-200">{{ $lastSyncedAt ? \Illuminate\Support\Carbon::parse($lastSyncedAt)->diffForHumans() : 'Never' }}</strong></span>
+                </div>
             </div>
-            <p class="text-xs text-slate-300">
-                Synchronize local laptop catches, lakes, and anglers with your home Synology NAS server.
-            </p>
-            <div class="flex items-center gap-4 pt-1 text-xs font-medium text-slate-400">
-                <span>Last Synced: <strong class="text-slate-200">{{ $lastSyncedAt ? \Illuminate\Support\Carbon::parse($lastSyncedAt)->diffForHumans() : 'Never' }}</strong></span>
-                <span>•</span>
-                <span>Pending Outbox: <strong class="text-amber-400 font-mono font-bold">{{ $pendingSyncCount }} item(s)</strong></span>
-            </div>
+
+            <form action="{{ route('admin.sync.trigger') }}" method="POST">
+                @csrf
+                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all shrink-0 cursor-pointer">
+                    <i data-lucide="cloud-sync" class="w-4 h-4"></i>
+                    <span>Sync Now with NAS</span>
+                </button>
+            </form>
         </div>
 
-        <form action="{{ route('admin.sync.trigger') }}" method="POST">
-            @csrf
-            <button type="submit" class="inline-flex items-center gap-2 px-5 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all hover:scale-105 active:scale-95 shrink-0 cursor-pointer">
-                <i data-lucide="cloud-sync" class="w-4 h-4"></i>
-                <span>Sync Now with NAS</span>
-            </button>
-        </form>
+        <!-- Weather Telemetry Sync Console -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-sky-950 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col justify-between space-y-4">
+            <div class="space-y-1">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="cloud-sun" class="w-5 h-5 text-sky-400"></i>
+                        <h2 class="text-base font-bold text-white">Weather Telemetry Sync Engine</h2>
+                    </div>
+                    <span class="text-xs font-mono font-bold text-sky-300 bg-sky-950/80 px-2.5 py-0.5 rounded-full border border-sky-800">
+                        {{ $weatherCoverageRate }}% Synced
+                    </span>
+                </div>
+                <p class="text-xs text-slate-300">
+                    Fetch atmospheric daily weather telemetry (air temp, pressure, wind) from Open-Meteo API.
+                </p>
+                <div class="flex items-center gap-3 pt-1 text-xs font-medium text-slate-400 font-mono">
+                    <span>Pending Weather Sync: <strong class="text-amber-400 font-bold">{{ number_format($pendingWeatherSyncCount) }} record(s)</strong></span>
+                    <span>•</span>
+                    <span>Synced: <strong class="text-emerald-400 font-bold">{{ number_format($weatherJoinedRecordsCount) }}</strong></span>
+                </div>
+            </div>
+
+            <form action="{{ route('admin.weather.sync') }}" method="POST">
+                @csrf
+                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all shrink-0 cursor-pointer">
+                    <i data-lucide="cloud-download" class="w-4 h-4"></i>
+                    <span>Issue Weather Sync Now</span>
+                </button>
+            </form>
+        </div>
     </div>
 
     <!-- System Telemetry Grid -->

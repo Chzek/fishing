@@ -34,6 +34,24 @@ class AdminController extends Controller
         $lures = Lure::count();
         $posts = Post::count();
         $years = Record::count(DB::raw('distinct year(caught)'));
+        $weatherJoinedRecordsCount = DB::table('records')
+            ->join('lake_daily_weather', function ($join) {
+                $join->on('records.lakes_id', '=', 'lake_daily_weather.lakes_id')
+                     ->on(DB::raw('DATE(records.caught)'), '=', 'lake_daily_weather.date');
+            })
+            ->whereNull('records.deleted_at')
+            ->count();
+
+        $weatherCoverageRate = $records > 0 ? round(($weatherJoinedRecordsCount / $records) * 100) : 0;
+
+        $pendingWeatherSyncCount = DB::table('records')
+            ->leftJoin('lake_daily_weather', function ($join) {
+                $join->on('records.lakes_id', '=', 'lake_daily_weather.lakes_id')
+                     ->on(DB::raw('DATE(records.caught)'), '=', 'lake_daily_weather.date');
+            })
+            ->whereNull('records.deleted_at')
+            ->whereNull('lake_daily_weather.id')
+            ->count();
 
         return view('admin.index', [
             'anglers' => $anglers,
@@ -49,6 +67,9 @@ class AdminController extends Controller
             'trashedCount' => Record::onlyTrashed()->count() + Lake::onlyTrashed()->count() + Angler::onlyTrashed()->count() + Lure::onlyTrashed()->count() + Expedition::onlyTrashed()->count(),
             'pendingSyncCount' => $syncService->getPendingCount(),
             'lastSyncedAt' => $syncService->getLastSyncedAt(),
+            'weatherJoinedRecordsCount' => $weatherJoinedRecordsCount,
+            'weatherCoverageRate' => $weatherCoverageRate,
+            'pendingWeatherSyncCount' => $pendingWeatherSyncCount,
         ]);
     }
 
@@ -59,6 +80,16 @@ class AdminController extends Controller
             return redirect()->route('admin')->with('status', "NAS Sync completed! Pushed {$result['pushed']} items, pulled {$result['pulled']} items.");
         } catch (\Throwable $e) {
             return redirect()->route('admin')->with('error', "NAS Sync failed: {$e->getMessage()}");
+        }
+    }
+
+    public function triggerWeatherSync()
+    {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('weather:sync');
+            return redirect()->route('admin')->with('status', 'Weather Telemetry Sync triggered successfully!');
+        } catch (\Throwable $e) {
+            return redirect()->route('admin')->with('error', "Weather sync failed: {$e->getMessage()}");
         }
     }
 
