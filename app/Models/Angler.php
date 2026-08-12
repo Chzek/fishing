@@ -26,6 +26,11 @@ class Angler extends Model
         return $this->hasMany(Record::class, 'anglers_id', 'id');
     }
 
+    public function crews()
+    {
+        return $this->hasMany(Crew::class, 'anglers_id', 'id');
+    }
+
     public function lakes()
     {
         return $this->hasManyThrough(

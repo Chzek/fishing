@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Fishinglog\Http\Controllers\Admin\AdminController;
 use Fishinglog\Http\Controllers\Angler\AnglerController;
 use Fishinglog\Http\Controllers\Angler\AnglerProfileController;
+use Fishinglog\Http\Controllers\Angler\AnglerStatsController;
 use Fishinglog\Http\Controllers\CrewController;
 use Fishinglog\Http\Controllers\ExpeditionController;
 use Fishinglog\Http\Controllers\FishBreedController;
@@ -71,6 +72,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Angler routes
     Route::prefix('angler')->group(function () {
         Route::get('/', [AnglerController::class, 'index']);
+        Route::get('/stats', [AnglerStatsController::class, 'index'])->name('angler.stats');
         Route::get('/create', [AnglerController::class, 'create']);
         Route::get('/{angler}', [AnglerController::class, 'show']);
         Route::get('/{angler}/edit', [AnglerController::class, 'edit']);
