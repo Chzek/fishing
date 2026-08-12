@@ -81,10 +81,14 @@
                 <p class="text-xs text-slate-300">
                     Fetch atmospheric daily weather telemetry (air temp, pressure, wind) from Open-Meteo API.
                 </p>
-                <div class="flex items-center gap-3 pt-1 text-xs font-medium text-slate-400 font-mono">
-                    <span>Pending Weather Sync: <strong class="text-amber-400 font-bold">{{ number_format($pendingWeatherSyncCount) }} record(s)</strong></span>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-xs font-medium text-slate-400 font-mono">
+                    <span>Pending Fetchable: <strong class="text-amber-400 font-bold">{{ number_format($pendingWeatherSyncCount) }} record(s)</strong></span>
                     <span>•</span>
                     <span>Synced: <strong class="text-emerald-400 font-bold">{{ number_format($weatherJoinedRecordsCount) }}</strong></span>
+                    @if($missingCoordsRecordsCount > 0)
+                        <span>•</span>
+                        <span class="text-slate-400" title="Catch records on lakes missing latitude and longitude coordinates">Unmappable (No Lat/Lng): <strong class="text-rose-400 font-bold">{{ number_format($missingCoordsRecordsCount) }}</strong></span>
+                    @endif
                 </div>
             </div>
 

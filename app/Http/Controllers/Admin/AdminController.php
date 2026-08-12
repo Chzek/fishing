@@ -45,11 +45,29 @@ class AdminController extends Controller
         $weatherCoverageRate = $records > 0 ? round(($weatherJoinedRecordsCount / $records) * 100) : 0;
 
         $pendingWeatherSyncCount = DB::table('records')
+            ->join('lakes', 'records.lakes_id', '=', 'lakes.id')
             ->leftJoin('lake_daily_weather', function ($join) {
                 $join->on('records.lakes_id', '=', 'lake_daily_weather.lakes_id')
                      ->on(DB::raw('DATE(records.caught)'), '=', 'lake_daily_weather.date');
             })
             ->whereNull('records.deleted_at')
+            ->whereNull('lakes.deleted_at')
+            ->whereNotNull('lakes.latitude')
+            ->whereNotNull('lakes.longitude')
+            ->whereNull('lake_daily_weather.id')
+            ->count();
+
+        $missingCoordsRecordsCount = DB::table('records')
+            ->join('lakes', 'records.lakes_id', '=', 'lakes.id')
+            ->leftJoin('lake_daily_weather', function ($join) {
+                $join->on('records.lakes_id', '=', 'lake_daily_weather.lakes_id')
+                     ->on(DB::raw('DATE(records.caught)'), '=', 'lake_daily_weather.date');
+            })
+            ->whereNull('records.deleted_at')
+            ->whereNull('lakes.deleted_at')
+            ->where(function ($q) {
+                $q->whereNull('lakes.latitude')->orWhereNull('lakes.longitude');
+            })
             ->whereNull('lake_daily_weather.id')
             ->count();
 
@@ -70,6 +88,7 @@ class AdminController extends Controller
             'weatherJoinedRecordsCount' => $weatherJoinedRecordsCount,
             'weatherCoverageRate' => $weatherCoverageRate,
             'pendingWeatherSyncCount' => $pendingWeatherSyncCount,
+            'missingCoordsRecordsCount' => $missingCoordsRecordsCount,
         ]);
     }
 

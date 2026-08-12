@@ -17,7 +17,7 @@ class AdminWeatherSyncTest extends TestCase
     public function test_admin_can_view_weather_sync_console_with_pending_count()
     {
         $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
-        $lake = Lake::factory()->create();
+        $lake = Lake::factory()->create(['latitude' => 45.123, 'longitude' => -78.456]);
         $angler = Angler::factory()->create();
 
         Record::factory()->create([
@@ -26,11 +26,19 @@ class AdminWeatherSyncTest extends TestCase
             'caught' => '2026-06-15',
         ]);
 
+        $unmappableLake = Lake::factory()->create(['latitude' => null, 'longitude' => null]);
+        Record::factory()->create([
+            'lakes_id' => $unmappableLake->id,
+            'anglers_id' => $angler->id,
+            'caught' => '2026-06-16',
+        ]);
+
         $response = $this->actingAs($admin)->get('/admin');
 
         $response->assertStatus(200);
         $response->assertSee('Weather Telemetry Sync Engine');
-        $response->assertSee('Pending Weather Sync:');
+        $response->assertSee('Pending Fetchable:');
+        $response->assertSee('Unmappable (No Lat/Lng):');
         $response->assertSee('Issue Weather Sync Now');
     }
 
