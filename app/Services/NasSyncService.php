@@ -85,7 +85,13 @@ class NasSyncService
             }
 
             foreach ($pending->chunk(50) as $chunk) {
-                $pushPayload = [$key => $chunk->toArray()];
+                $itemsArray = $chunk->map(function ($item) {
+                    return method_exists($item, 'makeVisible')
+                        ? $item->makeVisible(['password', 'remember_token'])->toArray()
+                        : $item->toArray();
+                })->all();
+
+                $pushPayload = [$key => $itemsArray];
                 $localPendingByUuid = [];
                 foreach ($chunk as $item) {
                     $localPendingByUuid[$item->id ?? $item->uuid] = $item;
