@@ -77,38 +77,37 @@ class NasSyncService
         $pushedCount = 0;
         $pulledCount = 0;
 
-        // 1. Prepare Push Outbox Payload
-        $pushPayload = [];
-        $localPendingByUuid = [];
-
+        // 1. Execute Push model by model in chunks to prevent request payload size and timeout limits on NAS server
         foreach ($this->modelMap as $key => $modelClass) {
             $pending = $modelClass::pendingUpstream()->get();
-            if ($pending->isNotEmpty()) {
-                $pushPayload[$key] = $pending->toArray();
-                foreach ($pending as $item) {
+            if ($pending->isEmpty()) {
+                continue;
+            }
+
+            foreach ($pending->chunk(50) as $chunk) {
+                $pushPayload = [$key => $chunk->toArray()];
+                $localPendingByUuid = [];
+                foreach ($chunk as $item) {
                     $localPendingByUuid[$item->id ?? $item->uuid] = $item;
                 }
-            }
-        }
 
-        // 2. Execute Push if outbox items exist
-        if (!empty($pushPayload)) {
-            $pushResponse = Http::withToken($this->apiToken)
-                ->acceptJson()
-                ->post("{$this->nasUrl}/api/v1/sync/push", $pushPayload);
+                $pushResponse = Http::withToken($this->apiToken)
+                    ->acceptJson()
+                    ->post("{$this->nasUrl}/api/v1/sync/push", $pushPayload);
 
-            if (!$pushResponse->successful()) {
-                Log::error('NAS Sync Push Failed', ['status' => $pushResponse->status(), 'body' => $pushResponse->body()]);
-                throw new \RuntimeException("NAS Sync Push Failed with status {$pushResponse->status()}");
-            }
+                if (!$pushResponse->successful()) {
+                    Log::error('NAS Sync Push Failed', ['status' => $pushResponse->status(), 'body' => $pushResponse->body()]);
+                    throw new \RuntimeException("NAS Sync Push Failed for {$key} with status {$pushResponse->status()}");
+                }
 
-            $responseData = $pushResponse->json();
-            $syncedUuids = $responseData['synced_uuids'] ?? [];
+                $responseData = $pushResponse->json();
+                $syncedUuids = $responseData['synced_uuids'] ?? [];
 
-            foreach ($syncedUuids as $uuid) {
-                if (isset($localPendingByUuid[$uuid])) {
-                    $localPendingByUuid[$uuid]->markSynced();
-                    $pushedCount++;
+                foreach ($syncedUuids as $uuid) {
+                    if (isset($localPendingByUuid[$uuid])) {
+                        $localPendingByUuid[$uuid]->markSynced();
+                        $pushedCount++;
+                    }
                 }
             }
         }
@@ -144,21 +143,25 @@ class NasSyncService
                 $attributes['sync_status'] = 'synced';
                 $attributes['synced_at'] = now();
 
+                $entity = $existing ?? new $modelClass();
+                $columns = \Illuminate\Support\Facades\Schema::getColumnListing($entity->getTable());
+                $filtered = array_intersect_key($attributes, array_flip($columns));
+
                 if (!$existing) {
-                    $modelClass::create($attributes);
+                    $entity->forceFill($filtered)->save();
                     $pulledCount++;
                 } else {
                     $incomingUpdated = isset($remoteItem['updated_at']) ? Carbon::parse($remoteItem['updated_at']) : null;
                     $localUpdated = $existing->updated_at ? Carbon::parse($existing->updated_at) : null;
 
                     if (!$localUpdated || ($incomingUpdated && $incomingUpdated->greaterThanOrEqualTo($localUpdated))) {
-                        $existing->update($attributes);
+                        $existing->forceFill($filtered)->save();
                         $pulledCount++;
                     } else {
-                        $existing->update([
+                        $existing->forceFill([
                             'sync_status' => 'synced',
                             'synced_at' => now(),
-                        ]);
+                        ])->save();
                     }
                 }
             }

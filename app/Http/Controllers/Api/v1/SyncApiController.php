@@ -86,24 +86,25 @@ class SyncApiController extends Controller
                 $attributes['sync_status'] = 'synced';
                 $attributes['synced_at'] = now();
 
+                $entity = $existing ?? new $modelClass();
+                $columns = \Illuminate\Support\Facades\Schema::getColumnListing($entity->getTable());
+                $filtered = array_intersect_key($attributes, array_flip($columns));
+
                 if (!$existing) {
-                    // Create new entity with explicit UUID primary key
-                    $modelClass::create($attributes);
+                    $entity->forceFill($filtered)->save();
                     $syncedUuids[] = $id;
                     $processedCount++;
                 } else {
-                    // Compare timestamps for Last-Write-Wins
                     $incomingUpdated = isset($itemData['updated_at']) ? Carbon::parse($itemData['updated_at']) : null;
                     $localUpdated = $existing->updated_at ? Carbon::parse($existing->updated_at) : null;
 
                     if (!$localUpdated || ($incomingUpdated && $incomingUpdated->greaterThanOrEqualTo($localUpdated))) {
-                        $existing->update($attributes);
+                        $existing->forceFill($filtered)->save();
                     } else {
-                        // Keep local version, but mark as synced
-                        $existing->update([
+                        $existing->forceFill([
                             'sync_status' => 'synced',
                             'synced_at' => now(),
-                        ]);
+                        ])->save();
                     }
 
                     $syncedUuids[] = $id;

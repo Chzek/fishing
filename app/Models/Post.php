@@ -8,7 +8,7 @@ class Post extends Model
 {
     use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
-    protected $fillable = ['id', 'sync_status', 'synced_at', 'expeditions_id', 'anglers_id', 'title', 'body'];
+    protected $fillable = ['id', 'sync_status', 'synced_at', 'expeditions_id', 'anglers_id', 'date', 'description', 'title', 'body'];
 
     public function expedition()
     {
