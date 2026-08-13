@@ -74,4 +74,16 @@ class NasSyncApiTest extends TestCase
         $response->assertJsonStructure(['lakes', 'records', 'anglers', 'server_timestamp']);
         $this->assertNotEmpty($response->json('lakes'));
     }
+
+    #[Test]
+    public function bearer_token_can_access_sync_api()
+    {
+        User::factory()->create();
+        config(['services.nas.token' => 'valid-secret-token']);
+
+        $response = $this->withToken('valid-secret-token')
+            ->getJson('/api/v1/sync/pull');
+
+        $response->assertStatus(200);
+    }
 }

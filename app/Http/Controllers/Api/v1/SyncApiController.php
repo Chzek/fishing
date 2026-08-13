@@ -39,11 +39,27 @@ class SyncApiController extends Controller
     ];
 
     /**
+     * Check if request is authorized via NAS_API_TOKEN or admin user.
+     */
+    protected function isAuthorized(Request $request): bool
+    {
+        $token = $request->bearerToken() ?? $request->header('X-API-TOKEN') ?? $request->input('api_token');
+        $configuredToken = config('services.nas.token', env('NAS_API_TOKEN'));
+
+        if (!empty($configuredToken) && !empty($token) && hash_equals($configuredToken, $token)) {
+            return true;
+        }
+
+        $user = $request->user() ?? auth('api')->user();
+        return (bool) ($user && $user->isAdmin());
+    }
+
+    /**
      * Receive outbox push payload from client.
      */
     public function push(Request $request)
     {
-        if (!$request->user() || !$request->user()->isAdmin()) {
+        if (!$this->isAuthorized($request)) {
             return response()->json(['message' => 'Only admin users are authorized to perform database sync.'], 403);
         }
 
@@ -109,7 +125,7 @@ class SyncApiController extends Controller
      */
     public function pull(Request $request)
     {
-        if (!$request->user() || !$request->user()->isAdmin()) {
+        if (!$this->isAuthorized($request)) {
             return response()->json(['message' => 'Only admin users are authorized to perform database sync.'], 403);
         }
 
