@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.nas
+    container_name: fishinglog_app
+    restart: always
+    volumes:
+      - .:/var/www/html
+    environment:
+      - CONTAINER_ROLE=app
+    networks:
+      - fishing_net
+    depends_on:
+      - mysql
+
+  webserver:
+    image: nginx:alpine
+    container_name: fishinglog_web
+    restart: always
+    ports:
+      - "8085:80"
+    volumes:
+      - .:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - fishing_net
+    depends_on:
+      - app
+
+  mysql:
+    image: mysql:8.0
+    container_name: fishinglog_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_DATABASE: ${DB_DATABASE:-fishinglog}
+      MYSQL_USER: ${DB_USERNAME:-fishing_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - db_data2:/var/lib/mysql
+    networks:
+      - fishing_net
+
+networks:
+  fishing_net:
+    driver: bridge
+
+volumes:
+  db_data2:
