@@ -24,9 +24,9 @@
         </div>
     </div>
 
-    @if($fish->image)
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex justify-center">
-            <img src="{{ asset('/images/fish/'.$fish->image.'.jpg') }}" class="max-h-64 object-contain rounded-xl">
+    @if($fish->imageUrl || $fish->image)
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex justify-center">
+            <img src="{{ $fish->imageUrl ?? asset('/images/fish/'.$fish->image.'.jpg') }}" alt="{{ $fish->name }}" class="max-h-64 object-contain">
         </div>
     @endif
 

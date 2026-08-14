@@ -178,38 +178,32 @@
         @if($fishes->count() > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 @foreach($fishes as $fish)
-                    <div class="group bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-teal-500/40 transition-all flex flex-col overflow-hidden">
-                        <!-- Card Header & Image Area -->
-                        <div class="h-40 bg-gradient-to-br from-slate-900 to-slate-800 relative overflow-hidden flex items-center justify-center">
+                    <div class="group bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-teal-500/50 transition-all flex flex-col justify-between overflow-hidden">
+                        <!-- Top Meta Header -->
+                        <div class="p-3.5 pb-0 flex items-center justify-between gap-2">
+                            <span class="text-[11px] font-bold tracking-tight text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200/70 truncate">
+                                {{ $fish->family?->name ?? 'Taxonomy' }}
+                            </span>
+                            <span class="text-[11px] font-black bg-teal-50 text-teal-700 border border-teal-200 px-2.5 py-0.5 rounded-lg font-mono flex items-center gap-1 shrink-0" title="Total Catches Logged">
+                                <i data-lucide="hook" class="w-3 h-3 text-teal-600"></i>
+                                <span>{{ $fish->records_count }}</span>
+                            </span>
+                        </div>
+
+                        <!-- Image Canvas Area -->
+                        <div class="h-36 bg-white relative flex items-center justify-center p-3.5">
                             @if($fish->imageUrl)
-                                <img src="{{ $fish->imageUrl }}" alt="{{ $fish->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300">
+                                <img src="{{ $fish->imageUrl }}" alt="{{ $fish->name }}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
                             @else
-                                <div class="text-center space-y-1">
-                                    <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-400/60 flex items-center justify-center mx-auto">
-                                        <i data-lucide="fish" class="w-6 h-6"></i>
-                                    </div>
-                                    <span class="text-[10px] text-slate-500 font-mono">No photo</span>
+                                <div class="w-full h-full rounded-xl bg-slate-50/80 border border-slate-100 flex flex-col items-center justify-center gap-1">
+                                    <i data-lucide="fish" class="w-7 h-7 text-slate-300"></i>
+                                    <span class="text-[10px] text-slate-400 font-medium">No photo uploaded</span>
                                 </div>
                             @endif
-
-                            <!-- Family Badge (Top Left) -->
-                            <div class="absolute top-2.5 left-2.5">
-                                <span class="text-[10px] font-bold tracking-tight bg-slate-950/80 backdrop-blur-sm text-teal-300 border border-teal-500/30 px-2 py-0.5 rounded-lg shadow-sm">
-                                    {{ $fish->family?->name ?? 'Taxonomy' }}
-                                </span>
-                            </div>
-
-                            <!-- Total Catches Badge (Top Right) -->
-                            <div class="absolute top-2.5 right-2.5">
-                                <span class="text-[11px] font-black bg-teal-500 text-slate-950 px-2 py-0.5 rounded-lg shadow-sm font-mono flex items-center gap-1" title="Total Catches Logged">
-                                    <i data-lucide="hook" class="w-3 h-3 text-slate-950"></i>
-                                    <span>{{ $fish->records_count }}</span>
-                                </span>
-                            </div>
                         </div>
 
                         <!-- Card Body -->
-                        <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+                        <div class="px-4 pb-3 space-y-3">
                             <div>
                                 <a href="/fish/{{ $fish->id }}" class="font-extrabold text-slate-900 text-base hover:text-teal-600 transition-colors line-clamp-1 block">
                                     {{ $fish->name }}
@@ -237,7 +231,7 @@
                         </div>
 
                         <!-- Card Actions Footer -->
-                        <div class="p-3 bg-slate-50/80 rounded-b-2xl border-t border-slate-100 flex items-center justify-between gap-2">
+                        <div class="p-3 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2">
                             <a href="/fish/{{ $fish->id }}" class="text-xs font-bold text-teal-700 hover:text-teal-800 flex items-center gap-1">
                                 <span>Dossier</span>
                                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
@@ -301,15 +295,15 @@
                             <tr class="hover:bg-slate-50/70 transition-colors">
                                 <td class="py-3 px-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-lg bg-slate-900 overflow-hidden shrink-0 flex items-center justify-center">
+                                        <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 p-0.5 shrink-0 flex items-center justify-center">
                                             @if($fish->imageUrl)
                                                 <img src="{{ $fish->imageUrl }}" alt="{{ $fish->name }}" class="w-full h-full object-contain">
                                             @else
-                                                <i data-lucide="fish" class="w-4 h-4 text-teal-400/60"></i>
+                                                <i data-lucide="fish" class="w-4 h-4 text-slate-400"></i>
                                             @endif
                                         </div>
                                         <div>
-                                            <a href="/fish/{{ $fish->id }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline">
+                                            <a href="/fish/{{ $fish->id }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline text-xs sm:text-sm">
                                                 {{ $fish->name }}
                                             </a>
                                         </div>
