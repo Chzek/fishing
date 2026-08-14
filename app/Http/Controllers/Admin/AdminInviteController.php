@@ -21,13 +21,27 @@ class AdminInviteController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        $signedUrl = URL::temporarySignedRoute(
+        $relativeSignedPath = URL::temporarySignedRoute(
             'register.invited',
             now()->addDays(7),
-            ['email' => $request->email, 'name' => $request->name]
+            ['email' => $request->email, 'name' => $request->name],
+            false
         );
 
-        return redirect()->route('admin.users')->with('status', "Invitation signed URL generated for {$request->email}: {$signedUrl}");
+        $localSignedUrl = url($relativeSignedPath);
+        $nasBaseUrl = rtrim(env('NAS_URL', config('app.url')), '/');
+        $nasSignedUrl = $nasBaseUrl . $relativeSignedPath;
+
+        $preferredSignedUrl = (!empty(env('NAS_URL')) && env('NAS_URL') !== url('/')) ? $nasSignedUrl : $localSignedUrl;
+
+        return redirect()->route('admin.users')->with([
+            'status' => "Invitation signed URL generated for {$request->email}: {$preferredSignedUrl}",
+            'invite_email' => $request->email,
+            'invite_name' => $request->name,
+            'invite_url_local' => $localSignedUrl,
+            'invite_url_nas' => $nasSignedUrl,
+            'invite_url' => $preferredSignedUrl,
+        ]);
     }
 
     /**
@@ -35,7 +49,7 @@ class AdminInviteController extends Controller
      */
     public function showInvitedRegistration(Request $request)
     {
-        if (!$request->hasValidSignature()) {
+        if (!$request->hasValidRelativeSignature()) {
             abort(403, 'Invalid or expired invitation link.');
         }
 
@@ -50,7 +64,7 @@ class AdminInviteController extends Controller
      */
     public function processInvitedRegistration(Request $request)
     {
-        if (!$request->hasValidSignature()) {
+        if (!$request->hasValidRelativeSignature()) {
             abort(403, 'Invalid or expired invitation link.');
         }
 

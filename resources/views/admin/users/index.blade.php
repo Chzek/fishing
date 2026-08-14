@@ -23,10 +23,75 @@
 
     <!-- Status / Error Alerts -->
     @if (session('status'))
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold p-4 rounded-xl shadow-sm">
-            {{ session('status') }}
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold p-4 rounded-xl shadow-sm flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 shrink-0"></i>
+                <span>{{ session('status') }}</span>
+            </div>
         </div>
     @endif
+
+    @if (session('invite_url'))
+        <div class="bg-gradient-to-r from-teal-900 to-slate-900 border border-teal-500/40 text-white rounded-2xl p-5 shadow-lg space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center shrink-0">
+                        <i data-lucide="link" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white tracking-tight">Invitation Link Ready for {{ session('invite_name') }}</h3>
+                        <p class="text-xs text-teal-300/80">{{ session('invite_email') }} • Valid for 7 days</p>
+                    </div>
+                </div>
+                <span class="text-[11px] font-semibold bg-teal-500/20 text-teal-300 px-2.5 py-1 rounded-lg border border-teal-500/30 self-start sm:self-auto">
+                    Relative Signature Enabled
+                </span>
+            </div>
+
+            <!-- NAS URL if available -->
+            @if (session('invite_url_nas'))
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-teal-200 flex items-center gap-1.5">
+                            <i data-lucide="globe" class="w-3.5 h-3.5 text-teal-400"></i> NAS / Production URL (Recommended for sending):
+                        </span>
+                        <span class="text-[10px] text-slate-400">Accessible anywhere via DDNS</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="invite-url-nas" readonly value="{{ session('invite_url_nas') }}" class="w-full h-10 px-3.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs font-mono text-teal-300 focus:outline-none select-all">
+                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('invite-url-nas').value); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy NAS Link', 2000)" class="h-10 px-4 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow transition-colors shrink-0 cursor-pointer flex items-center gap-1.5">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            <span>Copy NAS Link</span>
+                        </button>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Localhost / Field URL if different -->
+            @if (session('invite_url_local') && session('invite_url_local') !== session('invite_url_nas'))
+                <div class="space-y-1.5 pt-1">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-slate-300 flex items-center gap-1.5">
+                            <i data-lucide="laptop" class="w-3.5 h-3.5 text-slate-400"></i> Local Machine URL:
+                        </span>
+                        <span class="text-[10px] text-slate-400">For field laptop direct testing</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="invite-url-local" readonly value="{{ session('invite_url_local') }}" class="w-full h-9 px-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-xs font-mono text-slate-300 focus:outline-none select-all">
+                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('invite-url-local').value); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy Local Link', 2000)" class="h-9 px-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors shrink-0 cursor-pointer flex items-center gap-1.5">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            <span>Copy Local Link</span>
+                        </button>
+                    </div>
+                </div>
+            @endif
+
+            <p class="text-[11px] text-slate-400 italic">
+                Tip: If authenticating on the NAS, ensure the NAS and laptop share the same <code>APP_KEY</code> in their <code>.env</code>.
+            </p>
+        </div>
+    @endif
+
     @if (session('error'))
         <div class="bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold p-4 rounded-xl shadow-sm">
             {{ session('error') }}

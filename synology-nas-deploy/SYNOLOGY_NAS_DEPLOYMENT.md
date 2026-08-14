@@ -106,7 +106,7 @@ To avoid browser drag-and-drop file loss when uploading folders via File Station
 
 ```bash
 composer install
-php artisan key:generate --force
+# Important: Ensure APP_KEY in .env matches your laptop's APP_KEY so signed URLs / invitations validate on both machines
 php artisan migrate --force
 php artisan storage:link
 php artisan config:clear

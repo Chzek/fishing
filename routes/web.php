@@ -40,8 +40,8 @@ Route::get('/', function () {
 
 Auth::routes(['register' => false]);
 
-Route::get('/register/invited', [Fishinglog\Http\Controllers\Admin\AdminInviteController::class, 'showInvitedRegistration'])->name('register.invited')->middleware('signed');
-Route::post('/register/invited', [Fishinglog\Http\Controllers\Admin\AdminInviteController::class, 'processInvitedRegistration'])->name('register.invited.process')->middleware('signed');
+Route::get('/register/invited', [Fishinglog\Http\Controllers\Admin\AdminInviteController::class, 'showInvitedRegistration'])->name('register.invited')->middleware('signed:relative');
+Route::post('/register/invited', [Fishinglog\Http\Controllers\Admin\AdminInviteController::class, 'processInvitedRegistration'])->name('register.invited.process')->middleware('signed:relative');
 
 Route::prefix('profile')->group(function () {
     Route::get('/', [ProfileController::class, 'show'])->name('home');
