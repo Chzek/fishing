@@ -1,61 +1,365 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-6">
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-5">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <h1 class="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                <i data-lucide="fish" class="w-5 h-5 text-teal-600"></i>
-                <span>Fish Taxonomy Index</span>
-            </h1>
-            <div class="flex items-center gap-2">
-                <a href="/fish/family/create" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-xl shadow transition-colors">
-                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                    <span>Add Family</span>
-                </a>
-                <a href="/fish/breed/create" class="inline-flex items-center gap-1 px-3 py-1.5 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl shadow transition-colors">
-                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                    <span>Add Species / Breed</span>
-                </a>
-                <a href="/" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200 transition-colors">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-                    <span>Return</span>
-                </a>
+<div class="space-y-6 max-w-7xl mx-auto" x-data="{ viewMode: 'grid' }">
+    <!-- Telemetry Header Banner -->
+    <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-5">
+        <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
+                <i data-lucide="fish" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                    <span>Fish Species & Taxonomy Guide</span>
+                    <span class="text-[10px] font-mono font-semibold bg-teal-500/20 text-teal-300 border border-teal-500/30 px-2 py-0.5 rounded-full">Field Guide</span>
+                </h1>
+                <p class="text-xs text-slate-400">Biological taxonomy, family hierarchy, species profiles, and trophy records</p>
             </div>
         </div>
 
-        <div class="overflow-x-auto rounded-xl border border-slate-200/80">
-            <table class="w-full text-left text-sm text-slate-700">
-                <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
-                    <tr>
-                        <th scope="col" class="py-3 px-4">Family</th>
-                        <th scope="col" class="py-3 px-4">Name (Species / Breed)</th>
-                        <th scope="col" class="py-3 px-4 text-center">Total Caught</th>
-                        <th scope="col" class="py-3 px-4 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 bg-white">
-                    @foreach($fishes as $fish)
-                        <tr class="hover:bg-slate-50/70 transition-colors">
-                            <td class="py-3.5 px-4 font-semibold text-slate-600">{{ $fish->family?->name ?? 'N/A' }}</td>
-                            <td class="py-3.5 px-4 font-bold text-slate-900 flex items-center gap-2">
-                                <i data-lucide="fish" class="w-4 h-4 text-teal-600 shrink-0"></i>
-                                <span>{{ $fish->name }}</span>
-                            </td>
-                            <td class="py-3.5 px-4 text-center font-mono font-bold text-teal-700">{{ $fish->records_count }}</td>
-                            <td class="py-3.5 px-4 text-right whitespace-nowrap">
-                                <x-tableOptions name='fish' identifier='{{ $fish->id }}' />
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <div class="flex flex-wrap items-center gap-2.5">
+            <a href="/record/quick" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                <span>Log Catch</span>
+            </a>
+            <a href="/fish/breed/create" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span>Add Species</span>
+            </a>
+            <a href="/fish/family/create" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
+                <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
+                <span>Add Family</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Taxonomy Overview Telemetry Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
+                <i data-lucide="fish" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <span class="text-2xl font-black text-slate-900 block leading-tight">{{ $totalBreedsCount }}</span>
+                <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Tracked Species</span>
+            </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
+                <i data-lucide="layers" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <span class="text-2xl font-black text-slate-900 block leading-tight">{{ $totalFamiliesCount }}</span>
+                <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Taxonomic Families</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0">
+                <i data-lucide="award" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <span class="text-2xl font-black text-slate-900 block leading-tight">{{ $totalCatchesCount }}</span>
+                <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Total Catches Logged</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0">
+                <i data-lucide="flame" class="w-5 h-5"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+                <span class="text-sm font-bold text-slate-900 block truncate">{{ $topSpecies?->name ?? 'None' }}</span>
+                <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
+                    Most Caught ({{ $topSpecies?->records_count ?? 0 }})
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <!-- Search Form -->
+            <form method="GET" action="/fish" class="flex-1 relative">
+                @if($selectedFamilyId)
+                    <input type="hidden" name="family" value="{{ $selectedFamilyId }}">
+                @endif
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        name="search" 
+                        value="{{ $search ?? '' }}" 
+                        placeholder="Search species or biological family..."
+                        class="w-full h-10 pl-10 pr-10 rounded-xl border border-slate-200 bg-slate-50/70 text-slate-800 text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors placeholder:text-slate-400"
+                    >
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                    @if(!empty($search))
+                        <a href="/fish{{ $selectedFamilyId ? '?family='.$selectedFamilyId : '' }}" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600" title="Clear Search">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </a>
+                    @endif
+                </div>
+            </form>
+
+            <!-- View Mode Switcher -->
+            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80 shrink-0 self-end sm:self-auto">
+                <button 
+                    type="button" 
+                    @click="viewMode = 'grid'" 
+                    :class="viewMode === 'grid' ? 'bg-white text-teal-700 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800 font-medium'"
+                    class="px-3 py-1.5 text-xs rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                    <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                    <span>Grid View</span>
+                </button>
+                <button 
+                    type="button" 
+                    @click="viewMode = 'table'" 
+                    :class="viewMode === 'table' ? 'bg-white text-teal-700 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800 font-medium'"
+                    class="px-3 py-1.5 text-xs rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                    <i data-lucide="list" class="w-3.5 h-3.5"></i>
+                    <span>Table View</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Biological Family Filter Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+            <span class="text-slate-400 font-bold uppercase text-[10px] tracking-wider shrink-0 flex items-center gap-1">
+                <i data-lucide="filter" class="w-3 h-3 text-slate-400"></i> Families:
+            </span>
+
+            <a 
+                href="/fish{{ $search ? '?search='.urlencode($search) : '' }}" 
+                class="px-3 py-1 rounded-lg font-semibold transition-colors shrink-0 {{ empty($selectedFamilyId) ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700' }}"
+            >
+                All Families ({{ $totalBreedsCount }})
+            </a>
+
+            @foreach($families as $family)
+                <a 
+                    href="/fish?family={{ $family->id }}{{ $search ? '&search='.urlencode($search) : '' }}" 
+                    class="px-3 py-1 rounded-lg font-semibold transition-colors shrink-0 flex items-center gap-1.5 {{ $selectedFamilyId == $family->id ? 'bg-teal-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-700' }}"
+                >
+                    <span>{{ $family->name }}</span>
+                    <span class="text-[10px] px-1.5 py-0.2 rounded-full {{ $selectedFamilyId == $family->id ? 'bg-white/20 text-white' : 'bg-slate-200/80 text-slate-600' }}">
+                        {{ $family->breeds_count }}
+                    </span>
+                </a>
+            @endforeach
+        </div>
+    </div>
+
+    <!-- Active Filter Status Indicator -->
+    @if(!empty($selectedFamilyId) || !empty($search))
+        <div class="flex items-center justify-between bg-teal-50 border border-teal-200 text-teal-900 text-xs px-4 py-2.5 rounded-xl">
+            <div class="flex items-center gap-2">
+                <i data-lucide="info" class="w-4 h-4 text-teal-600 shrink-0"></i>
+                <span>
+                    Filtered by:
+                    @if(!empty($selectedFamilyId))
+                        <strong>Family: {{ $families->firstWhere('id', $selectedFamilyId)?->name }}</strong>
+                    @endif
+                    @if(!empty($search))
+                        {{ !empty($selectedFamilyId) ? '•' : '' }} <strong>Query: "{{ $search }}"</strong>
+                    @endif
+                    ({{ $fishes->total() }} matching)
+                </span>
+            </div>
+            <a href="/fish" class="font-bold text-teal-700 hover:text-teal-900 underline text-xs">Clear All Filters</a>
+        </div>
+    @endif
+
+    <!-- Content Area: Field Guide Grid View -->
+    <div x-show="viewMode === 'grid'" class="space-y-6">
+        @if($fishes->count() > 0)
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                @foreach($fishes as $fish)
+                    <div class="group bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-teal-500/40 transition-all flex flex-col overflow-hidden">
+                        <!-- Card Header & Image Area -->
+                        <div class="h-40 bg-gradient-to-br from-slate-900 to-slate-800 relative overflow-hidden flex items-center justify-center">
+                            @if($fish->imageUrl)
+                                <img src="{{ $fish->imageUrl }}" alt="{{ $fish->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300">
+                            @else
+                                <div class="text-center space-y-1">
+                                    <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-400/60 flex items-center justify-center mx-auto">
+                                        <i data-lucide="fish" class="w-6 h-6"></i>
+                                    </div>
+                                    <span class="text-[10px] text-slate-500 font-mono">No photo</span>
+                                </div>
+                            @endif
+
+                            <!-- Family Badge (Top Left) -->
+                            <div class="absolute top-2.5 left-2.5">
+                                <span class="text-[10px] font-bold tracking-tight bg-slate-950/80 backdrop-blur-sm text-teal-300 border border-teal-500/30 px-2 py-0.5 rounded-lg shadow-sm">
+                                    {{ $fish->family?->name ?? 'Taxonomy' }}
+                                </span>
+                            </div>
+
+                            <!-- Total Catches Badge (Top Right) -->
+                            <div class="absolute top-2.5 right-2.5">
+                                <span class="text-[11px] font-black bg-teal-500 text-slate-950 px-2 py-0.5 rounded-lg shadow-sm font-mono flex items-center gap-1" title="Total Catches Logged">
+                                    <i data-lucide="hook" class="w-3 h-3 text-slate-950"></i>
+                                    <span>{{ $fish->records_count }}</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+                            <div>
+                                <a href="/fish/{{ $fish->id }}" class="font-extrabold text-slate-900 text-base hover:text-teal-600 transition-colors line-clamp-1 block">
+                                    {{ $fish->name }}
+                                </a>
+                                <span class="text-xs text-slate-400 font-medium">
+                                    {{ $fish->family?->name ? $fish->family->name . ' Family' : 'Species' }}
+                                </span>
+                            </div>
+
+                            <!-- Trophy Records Mini Grid -->
+                            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                                <div class="bg-slate-50 rounded-xl p-2 text-center border border-slate-100">
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Max Length</span>
+                                    <span class="text-xs font-black text-slate-800 font-mono">
+                                        {{ $fish->longest_record ? $fish->longest_record . ' in.' : '—' }}
+                                    </span>
+                                </div>
+                                <div class="bg-slate-50 rounded-xl p-2 text-center border border-slate-100">
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Max Weight</span>
+                                    <span class="text-xs font-black text-slate-800 font-mono">
+                                        {{ $fish->heaviest_record ? $fish->heaviest_record . ' lbs.' : '—' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Actions Footer -->
+                        <div class="p-3 bg-slate-50/80 rounded-b-2xl border-t border-slate-100 flex items-center justify-between gap-2">
+                            <a href="/fish/{{ $fish->id }}" class="text-xs font-bold text-teal-700 hover:text-teal-800 flex items-center gap-1">
+                                <span>Dossier</span>
+                                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </a>
+
+                            <div class="flex items-center gap-1">
+                                <a 
+                                    href="/record/quick?fish_breed_id={{ $fish->id }}" 
+                                    class="p-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 rounded-lg border border-teal-200 transition-colors" 
+                                    title="Quick Catch for {{ $fish->name }}"
+                                >
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                                </a>
+                                <a 
+                                    href="/fish/breed/{{ $fish->id }}/edit" 
+                                    class="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg border border-slate-200 transition-colors" 
+                                    title="Edit Species"
+                                >
+                                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <!-- Empty Search / Filter State -->
+            <div class="bg-white rounded-2xl p-12 text-center border border-slate-200/80 shadow-sm space-y-4">
+                <div class="w-16 h-16 rounded-2xl bg-slate-50 text-slate-400 border border-slate-200 flex items-center justify-center mx-auto">
+                    <i data-lucide="fish-off" class="w-8 h-8"></i>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="text-base font-bold text-slate-800">No fish species found</h3>
+                    <p class="text-xs text-slate-500">No species match your current search or family filter criteria.</p>
+                </div>
+                <a href="/fish" class="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    <span>Reset All Filters</span>
+                </a>
+            </div>
+        @endif
+    </div>
+
+    <!-- Content Area: Compact Taxonomy Table View -->
+    <div x-show="viewMode === 'table'" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
+        @if($fishes->count() > 0)
+            <div class="overflow-x-auto rounded-xl border border-slate-200/80">
+                <table class="w-full text-left text-xs text-slate-700">
+                    <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/80">
+                        <tr>
+                            <th scope="col" class="py-3 px-4">Species & Taxonomy</th>
+                            <th scope="col" class="py-3 px-4">Family</th>
+                            <th scope="col" class="py-3 px-4 text-center">Total Logged</th>
+                            <th scope="col" class="py-3 px-4 text-center">Longest Record</th>
+                            <th scope="col" class="py-3 px-4 text-center">Heaviest Record</th>
+                            <th scope="col" class="py-3 px-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        @foreach($fishes as $fish)
+                            <tr class="hover:bg-slate-50/70 transition-colors">
+                                <td class="py-3 px-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-slate-900 overflow-hidden shrink-0 flex items-center justify-center">
+                                            @if($fish->imageUrl)
+                                                <img src="{{ $fish->imageUrl }}" alt="{{ $fish->name }}" class="w-full h-full object-contain">
+                                            @else
+                                                <i data-lucide="fish" class="w-4 h-4 text-teal-400/60"></i>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <a href="/fish/{{ $fish->id }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline">
+                                                {{ $fish->name }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-4 font-semibold text-slate-600">
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
+                                        {{ $fish->family?->name ?? 'N/A' }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 text-center font-mono font-bold text-teal-700">
+                                    {{ $fish->records_count }}
+                                </td>
+                                <td class="py-3 px-4 text-center font-mono text-slate-700 font-semibold">
+                                    {{ $fish->longest_record ? $fish->longest_record . ' in.' : '—' }}
+                                </td>
+                                <td class="py-3 px-4 text-center font-mono text-slate-700 font-semibold">
+                                    {{ $fish->heaviest_record ? $fish->heaviest_record . ' lbs.' : '—' }}
+                                </td>
+                                <td class="py-3 px-4 text-right whitespace-nowrap">
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <a href="/fish/{{ $fish->id }}" class="p-1.5 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="View Dossier">
+                                            <i data-lucide="eye" class="w-4 h-4"></i>
+                                        </a>
+                                        <a href="/record/quick?fish_breed_id={{ $fish->id }}" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Quick Catch">
+                                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                                        </a>
+                                        <a href="/fish/breed/{{ $fish->id }}/edit" class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors" title="Edit Species">
+                                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="py-8 text-center text-slate-500 text-xs">
+                No fish species matching query.
+            </div>
+        @endif
+    </div>
+
+    <!-- Pagination -->
+    @if($fishes->hasPages())
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
             <span>Showing {{ $fishes->firstItem() }} to {{ $fishes->lastItem() }} of {{ $fishes->total() }} Species</span>
             <div>{{ $fishes->links('vendor.pagination.tailwind') }}</div>
         </div>
-    </div>
+    @endif
 </div>
 @endsection
