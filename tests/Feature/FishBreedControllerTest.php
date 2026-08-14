@@ -81,6 +81,44 @@ class FishBreedControllerTest extends TestCase
     }
 
     #[Test]
+    public function it_can_view_species_dossier_with_telemetry()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $family = \Fishinglog\Models\FishFamily::factory()->create(['name' => 'Salmonidae']);
+        $breed = FishBreed::factory()->create([
+            'name' => 'Atlantic Salmon',
+            'fish_families_id' => $family->id,
+            'image' => 'atlantic_salmon',
+        ]);
+
+        $angler = \Fishinglog\Models\Angler::factory()->create(['firstName' => 'John', 'lastName' => 'Fisherman']);
+        $lake = \Fishinglog\Models\Lake::factory()->create(['name' => 'Lake Huron']);
+        $lure = \Fishinglog\Models\Lure::factory()->create(['name' => 'Silver Spoon']);
+
+        \Fishinglog\Models\Record::factory()->create([
+            'fish_breeds_id' => $breed->id,
+            'anglers_id' => $angler->id,
+            'lakes_id' => $lake->id,
+            'lures_id' => $lure->id,
+            'length' => 24.50,
+            'weight' => 6.20,
+            'caught' => '2026-06-15',
+        ]);
+
+        $response = $this->get('/fish/' . $breed->id);
+        $response->assertStatus(200);
+        $response->assertSee('Atlantic Salmon');
+        $response->assertSee('Salmonidae');
+        $response->assertSee('24.5');
+        $response->assertSee('6.2');
+        $response->assertSee('Silver Spoon');
+        $response->assertSee('John Fisherman');
+        $response->assertSee('Lake Huron');
+    }
+
+    #[Test]
     public function it_can_update_fish_breed_without_image()
     {
         $user = User::factory()->create();

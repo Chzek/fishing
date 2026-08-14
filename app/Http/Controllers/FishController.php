@@ -67,7 +67,7 @@ class FishController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  string|int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -78,6 +78,72 @@ class FishController extends Controller
         $fattest = Record::where('fish_breeds_id', $fish->id)->max('weight');
         $count = Record::where('fish_breeds_id', $fish->id)->count();
 
+        // Trophy record holders
+        $recordTrophy = Record::with(['angler', 'lake'])
+            ->where('fish_breeds_id', $fish->id)
+            ->whereNotNull('length')
+            ->orderBy('length', 'desc')
+            ->first();
+
+        $heaviestTrophy = Record::with(['angler', 'lake'])
+            ->where('fish_breeds_id', $fish->id)
+            ->whereNotNull('weight')
+            ->orderBy('weight', 'desc')
+            ->first();
+
+        // Top productive lures
+        $topLures = Record::where('fish_breeds_id', $fish->id)
+            ->whereNotNull('lures_id')
+            ->select('lures_id', DB::raw('count(*) as catches_count'))
+            ->groupBy('lures_id')
+            ->with('lure')
+            ->orderBy('catches_count', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Top anglers leaderboard
+        $topAnglers = Record::where('fish_breeds_id', $fish->id)
+            ->whereNotNull('anglers_id')
+            ->select('anglers_id', DB::raw('count(*) as catches_count'), DB::raw('max(length) as longest_catch'))
+            ->groupBy('anglers_id')
+            ->with('angler')
+            ->orderBy('catches_count', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Monthly catch distribution (May - Oct)
+        $monthlyCatchesRaw = Record::where('fish_breeds_id', $fish->id)
+            ->whereNotNull('caught')
+            ->select(DB::raw('MONTH(caught) as month_num'), DB::raw('count(*) as count'))
+            ->groupBy('month_num')
+            ->pluck('count', 'month_num')
+            ->toArray();
+
+        $monthNames = [
+            4 => 'Apr',
+            5 => 'May',
+            6 => 'Jun',
+            7 => 'Jul',
+            8 => 'Aug',
+            9 => 'Sep',
+            10 => 'Oct',
+            11 => 'Nov',
+        ];
+
+        $monthlyStats = [];
+        $maxMonthCount = max(array_values($monthlyCatchesRaw) ?: [1]);
+
+        foreach ($monthNames as $mNum => $mLabel) {
+            $mCount = $monthlyCatchesRaw[$mNum] ?? 0;
+            $pct = $maxMonthCount > 0 ? round(($mCount / $maxMonthCount) * 100) : 0;
+            $monthlyStats[] = [
+                'month' => $mLabel,
+                'count' => $mCount,
+                'percentage' => $pct,
+            ];
+        }
+
+        // Lakes distribution
         $lakes = $fish->records()
             ->select(
                 'lakes_id',
@@ -92,12 +158,26 @@ class FishController extends Controller
             ->orderBy('count', 'desc')
             ->get();
 
+        // Recent catches feed
+        $recentCatches = Record::with(['angler', 'lake', 'lure'])
+            ->where('fish_breeds_id', $fish->id)
+            ->orderBy('caught', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->limit(6)
+            ->get();
+
         return view('fish.show', [
             'fish' => $fish,
             'longest' => $longest,
             'fattest' => $fattest,
             'count' => $count,
+            'recordTrophy' => $recordTrophy,
+            'heaviestTrophy' => $heaviestTrophy,
+            'topLures' => $topLures,
+            'topAnglers' => $topAnglers,
+            'monthlyStats' => $monthlyStats,
             'lakes' => $lakes,
+            'recentCatches' => $recentCatches,
         ]);
     }
 }
