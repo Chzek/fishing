@@ -15,7 +15,7 @@ yarn-error.log
 .phpunit.result.cache
 /resources/lang
 /fishing/storage
-/resources/views/vendor
+/resources/views/vendor/log-viewer
 *.sql
 *.sql.gz
 public/json/ontario-fmz-boundaries.geojson

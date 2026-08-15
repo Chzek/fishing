@@ -82,7 +82,7 @@
 
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
                 <span>Showing {{ $anglers->firstItem() }} to {{ $anglers->lastItem() }} of {{ $anglers->total() }} Anglers</span>
-                <div>{{ $anglers->links('vendor.pagination.tailwind') }}</div>
+                <div>{{ $anglers->links() }}</div>
             </div>
         @else
             <div class="text-center py-12 px-4 space-y-3">

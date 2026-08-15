@@ -342,7 +342,7 @@
     @if($fishes->hasPages())
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
             <span>Showing {{ $fishes->firstItem() }} to {{ $fishes->lastItem() }} of {{ $fishes->total() }} Species</span>
-            <div>{{ $fishes->links('vendor.pagination.tailwind') }}</div>
+            <div>{{ $fishes->links() }}</div>
         </div>
     @endif
 </div>

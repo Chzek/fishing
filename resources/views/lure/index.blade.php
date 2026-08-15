@@ -37,7 +37,7 @@
 
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
             <span>Showing {{ $lures->firstItem() }} to {{ $lures->lastItem() }} of {{ $lures->total() }} Lures</span>
-            <div>{{ $lures->links('vendor.pagination.tailwind') }}</div>
+            <div>{{ $lures->links() }}</div>
         </div>
     </div>
 </div>
