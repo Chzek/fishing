@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 set -e
 
+# Source user and system profiles if available in non-interactive SSH
+[ -f /etc/profile ] && source /etc/profile 2>/dev/null || true
+[ -f ~/.profile ] && source ~/.profile 2>/dev/null || true
+[ -f ~/.bashrc ] && source ~/.bashrc 2>/dev/null || true
+
+# Export common Synology DSM package paths to PATH
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/packages/Git/target/bin:/var/packages/Git/target/usr/bin:/var/packages/ContainerManager/target/usr/bin:/var/packages/Docker/target/usr/bin:$PATH"
+
 echo "=================================================="
 echo "    Synology NAS Application Update Script       "
 echo "=================================================="
@@ -9,10 +17,26 @@ echo "=================================================="
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR/.." 2>/dev/null || cd "$SCRIPT_DIR"
 
+# Locate git binary
+GIT_BIN="git"
+if ! command -v git >/dev/null 2>&1; then
+    if [ -f "/var/packages/Git/target/bin/git" ]; then
+        GIT_BIN="/var/packages/Git/target/bin/git"
+    elif [ -f "/var/packages/Git/target/usr/bin/git" ]; then
+        GIT_BIN="/var/packages/Git/target/usr/bin/git"
+    elif [ -f "/usr/local/bin/git" ]; then
+        GIT_BIN="/usr/local/bin/git"
+    else
+        echo "--> [Error] Git binary not found in PATH or Synology package directories."
+        echo "--> PATH is: $PATH"
+        exit 1
+    fi
+fi
+
 # 1. Pull latest changes from master
-echo "--> Fetching and resetting to latest origin/master..."
-git fetch origin master
-git reset --hard origin/master
+echo "--> Fetching and resetting to latest origin/master using ($GIT_BIN)..."
+$GIT_BIN fetch origin master
+$GIT_BIN reset --hard origin/master
 
 # 2. Re-apply NAS deployment configs to project root if needed
 echo "--> Syncing Synology NAS configurations..."
