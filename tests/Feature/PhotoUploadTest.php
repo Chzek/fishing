@@ -158,4 +158,13 @@ class PhotoUploadTest extends TestCase
         $response->assertRedirect();
         $this->assertSoftDeleted('photos', ['id' => $photo->id]);
     }
+
+    #[Test]
+    public function uploaded_storage_media_can_be_retrieved_via_storage_route()
+    {
+        Storage::disk('public')->put('photos/test_image.jpg', 'dummy image content');
+
+        $response = $this->get('/storage/photos/test_image.jpg');
+        $response->assertStatus(200);
+    }
 }

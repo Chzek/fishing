@@ -41,6 +41,14 @@ Route::get('/', function () {
 
 Auth::routes(['register' => false]);
 
+// Fallback direct storage delivery for uploaded media (ensures photos display across all platforms)
+Route::get('/storage/{path}', function ($path) {
+    if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+        abort(404);
+    }
+    return \Illuminate\Support\Facades\Storage::disk('public')->response($path);
+})->where('path', '.*')->name('storage.local');
+
 Route::get('/register/invited', [Fishinglog\Http\Controllers\Admin\AdminInviteController::class, 'showInvitedRegistration'])->name('register.invited')->middleware('signed:relative');
 Route::post('/register/invited', [Fishinglog\Http\Controllers\Admin\AdminInviteController::class, 'processInvitedRegistration'])->name('register.invited.process')->middleware('signed:relative');
 
