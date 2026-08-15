@@ -55,11 +55,19 @@
                 </div>
             </div>
 
-            <div class="space-y-2 pt-1">
-                <label for="avatar" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Profile Photo Avatar</label>
-                <div class="flex items-center gap-4">
+            <div class="space-y-2 pt-2 border-t border-slate-100">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Profile Photo Avatar</label>
+                <div class="flex flex-col sm:flex-row items-center gap-4 p-3 bg-slate-50 rounded-2xl border border-slate-200/60">
                     <x-anglerAvatar :angler="$angler" size="lg" />
-                    <input type="file" id="avatar" name="avatar" onchange="readURL(this);" class="flex-1 p-2 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-700">
+                    <div class="flex-1 w-full">
+                        <x-photo-upload-input 
+                            name="avatar" 
+                            id="angler-avatar-uploader" 
+                            :multiple="false"
+                            label="Upload or Take New Avatar" 
+                            hint="Take a selfie on the boat or choose from album. Auto-compressed." 
+                        />
+                    </div>
                 </div>
             </div>
 

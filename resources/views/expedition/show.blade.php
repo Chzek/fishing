@@ -401,6 +401,110 @@
         @endif
     </div>
 
+    <!-- TRIP SCRAPBOOK & PHOTO GALLERY -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
+                    <i data-lucide="camera" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-slate-900 text-base tracking-tight">Trip Scrapbook & Photo Gallery</h2>
+                    <p class="text-xs text-slate-500">Shared memories, scenic shots, and brag board captures</p>
+                </div>
+            </div>
+
+            <button type="button" onclick="document.getElementById('expedition-upload-card').classList.toggle('hidden')" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                <span>Add Trip Photos</span>
+            </button>
+        </div>
+
+        <!-- Optional Upload Drawer -->
+        <div id="expedition-upload-card" class="hidden bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-4">
+            <form action="{{ route('photos.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                @csrf
+                <input type="hidden" name="photoable_type" value="expedition">
+                <input type="hidden" name="photoable_id" value="{{ $expedition->id }}">
+
+                <x-photo-upload-input 
+                    name="photos[]" 
+                    id="expedition-album-uploader" 
+                    label="Select or Take Photos to Upload" 
+                    hint="Drag photos here or tap to shoot from camera. Automatically compressed." 
+                />
+
+                <div class="space-y-1">
+                    <label for="exp-photo-caption" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Optional Caption / Tagline</label>
+                    <input type="text" id="exp-photo-caption" name="caption" placeholder="e.g., Evening topwater action on the north bay" class="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" onclick="document.getElementById('expedition-upload-card').classList.add('hidden')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-xl">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-xl shadow transition-colors">Upload to Album</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Photos Grid -->
+        @if($expedition->photos && $expedition->photos->count() > 0)
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                @foreach($expedition->photos as $photo)
+                    <div class="relative group aspect-4/3 rounded-2xl overflow-hidden border border-slate-200 shadow-xs bg-slate-900">
+                        <img src="{{ $photo->url }}" alt="Expedition photo" class="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-300" onclick="openPhotoLightbox('{{ $photo->url }}', '{{ addslashes($photo->caption ?? $expedition->description) }}')">
+                        
+                        @if($photo->is_cover)
+                            <span class="absolute top-2 left-2 bg-teal-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs backdrop-blur-xs">Cover</span>
+                        @endif
+
+                        @if($photo->caption)
+                            <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/90 via-slate-950/60 to-transparent p-2.5 pointer-events-none">
+                                <p class="text-[11px] text-white font-medium line-clamp-1 drop-shadow-xs">{{ $photo->caption }}</p>
+                            </div>
+                        @endif
+
+                        <!-- Hover Action Bar -->
+                        <div class="absolute inset-0 bg-slate-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] text-slate-300 font-mono">{{ $photo->created_at->format('M j') }}</span>
+                                <form action="{{ route('photos.destroy', $photo) }}" method="POST" class="inline" onsubmit="return confirm('Remove photo from album?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="w-6 h-6 rounded-full bg-rose-600/90 hover:bg-rose-600 text-white flex items-center justify-center text-xs shadow-xs cursor-pointer" title="Delete photo">✕</button>
+                                </form>
+                            </div>
+
+                            <div class="flex items-center gap-1.5 pt-2">
+                                @if(!$photo->is_cover)
+                                    <form action="{{ route('photos.cover', $photo) }}" method="POST" class="flex-1">
+                                        @csrf
+                                        <button type="submit" class="w-full py-1 bg-white/90 hover:bg-white text-slate-950 text-[10px] font-bold rounded-lg shadow-xs cursor-pointer">Set Cover</button>
+                                    </form>
+                                @endif
+                                @auth
+                                    @if(auth()->user()->angler)
+                                        <form action="{{ route('photos.avatar', $photo) }}" method="POST" class="flex-1" onsubmit="return confirm('Set this photo as your profile avatar?')">
+                                            @csrf
+                                            <button type="submit" class="w-full py-1 bg-teal-500/90 hover:bg-teal-400 text-slate-950 text-[10px] font-bold rounded-lg shadow-xs cursor-pointer">Avatar</button>
+                                        </form>
+                                    @endif
+                                @endauth
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="text-center py-10 border-2 border-dashed border-slate-100 rounded-2xl space-y-2">
+                <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                    <i data-lucide="image" class="w-5 h-5"></i>
+                </div>
+                <p class="text-xs text-slate-500 font-medium">No trip photos uploaded yet.</p>
+                <p class="text-[11px] text-slate-400">Capture the memories from the boat and build your trip scrapbook.</p>
+            </div>
+        @endif
+    </div>
+
     <!-- Expedition Catches Log -->
     @if(count($records) > 0)
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
@@ -456,10 +560,33 @@
         </div>
     @endif
 </div>
+
+<!-- Expedition Photo Lightbox Modal -->
+<div id="photo-lightbox-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm hidden flex items-center justify-center p-4" onclick="closePhotoLightbox()">
+    <div class="relative max-w-5xl max-h-[90vh] flex flex-col items-center" onclick="event.stopPropagation()">
+        <img id="photo-lightbox-img" src="" alt="Full Expedition Photo" class="max-w-full max-h-[80vh] rounded-2xl object-contain shadow-2xl">
+        <p id="photo-lightbox-caption" class="text-white text-xs font-semibold mt-3 text-center"></p>
+        <button type="button" onclick="closePhotoLightbox()" class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-sm hover:bg-slate-700 shadow-lg cursor-pointer">✕</button>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
 <script>
+function openPhotoLightbox(src, caption) {
+    document.getElementById('photo-lightbox-img').src = src;
+    document.getElementById('photo-lightbox-caption').textContent = caption || '';
+    document.getElementById('photo-lightbox-modal').classList.remove('hidden');
+}
+
+function closePhotoLightbox() {
+    document.getElementById('photo-lightbox-modal').classList.add('hidden');
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePhotoLightbox();
+});
+
 document.addEventListener('DOMContentLoaded', function () {
     const gpsRecords = @json($recordsWithGps);
     const visitedLakes = @json($visitedLakes);

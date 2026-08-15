@@ -1,4 +1,5 @@
 import './bootstrap';
+import './image-compressor';
 import Alpine from 'alpinejs';
 import { createIcons, icons } from 'lucide';
 

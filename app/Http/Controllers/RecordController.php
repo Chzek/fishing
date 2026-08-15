@@ -8,6 +8,7 @@ use Fishinglog\Models\Angler;
 use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Lure;
+use Fishinglog\Models\Photo;
 use Fishinglog\Models\Record;
 use Fishinglog\Pipes\Filters\FilterByAngler;
 use Fishinglog\Pipes\Filters\FilterByLength;
@@ -19,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class RecordController extends Controller
 {
@@ -365,6 +367,25 @@ class RecordController extends Controller
 
         $record->save();
 
+        // Handle optional uploaded photos
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $index => $file) {
+                $extension = $file->getClientOriginalExtension() ?: 'jpg';
+                $filename = Str::uuid() . '.' . $extension;
+                $path = $file->storeAs('photos/records', $filename, 'public');
+
+                Photo::create([
+                    'photoable_type' => Record::class,
+                    'photoable_id' => $record->id,
+                    'path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                    'is_cover' => ($index === 0),
+                    'user_id' => auth()->id(),
+                    'sync_status' => 'pending_upstream',
+                ]);
+            }
+        }
+
         return redirect()->action(
             [self::class, 'create'],
             ['record' => $record->id]
@@ -379,6 +400,8 @@ class RecordController extends Controller
      */
     public function show(Record $record)
     {
+        $record->load(['angler', 'lake.dailyWeather', 'fishBreed', 'lure', 'photos']);
+
         return view('record.show', [
             'record' => $record,
         ]);
@@ -392,6 +415,8 @@ class RecordController extends Controller
      */
     public function edit(Record $record)
     {
+        $record->load('photos');
+
         return view('record.edit', [
             'record' => $record,
         ]);
@@ -421,6 +446,26 @@ class RecordController extends Controller
         $targetRecord->caught = $request->caught;
 
         $targetRecord->save();
+
+        // Handle optional uploaded photos
+        if ($request->hasFile('photos')) {
+            $hasExistingPhotos = $targetRecord->photos()->count() > 0;
+            foreach ($request->file('photos') as $index => $file) {
+                $extension = $file->getClientOriginalExtension() ?: 'jpg';
+                $filename = Str::uuid() . '.' . $extension;
+                $path = $file->storeAs('photos/records', $filename, 'public');
+
+                Photo::create([
+                    'photoable_type' => Record::class,
+                    'photoable_id' => $targetRecord->id,
+                    'path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                    'is_cover' => (!$hasExistingPhotos && $index === 0),
+                    'user_id' => auth()->id(),
+                    'sync_status' => 'pending_upstream',
+                ]);
+            }
+        }
 
         return redirect('/record/' . $targetRecord->id);
     }

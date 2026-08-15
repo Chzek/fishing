@@ -12,6 +12,7 @@ use Fishinglog\Models\FishingRule;
 use Fishinglog\Models\FishingZone;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Lure;
+use Fishinglog\Models\Photo;
 use Fishinglog\Models\Post;
 use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
@@ -36,6 +37,7 @@ class SyncApiController extends Controller
         'posts' => Post::class,
         'fishing_zones' => FishingZone::class,
         'fishing_rules' => FishingRule::class,
+        'photos' => Photo::class,
     ];
 
     /**

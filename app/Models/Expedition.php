@@ -33,4 +33,24 @@ class Expedition extends Model
             'anglers_id'
         );
     }
+
+    /**
+     * Get all attached gallery photos for this expedition trip.
+     */
+    public function photos()
+    {
+        return $this->morphMany(Photo::class, 'photoable')->orderBy('is_cover', 'desc')->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Get the cover photo for this expedition trip.
+     */
+    public function coverPhoto(): ?Photo
+    {
+        if ($this->relationLoaded('photos')) {
+            return $this->photos->firstWhere('is_cover', true) ?? $this->photos->first();
+        }
+
+        return $this->photos()->where('is_cover', true)->first() ?? $this->photos()->first();
+    }
 }

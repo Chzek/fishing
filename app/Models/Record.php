@@ -52,6 +52,26 @@ class Record extends Model
     }
 
     /**
+     * Get all attached photos for this catch record.
+     */
+    public function photos()
+    {
+        return $this->morphMany(Photo::class, 'photoable')->orderBy('is_cover', 'desc')->orderBy('created_at', 'asc');
+    }
+
+    /**
+     * Get the primary display photo for this catch record.
+     */
+    public function primaryPhoto(): ?Photo
+    {
+        if ($this->relationLoaded('photos')) {
+            return $this->photos->firstWhere('is_cover', true) ?? $this->photos->first();
+        }
+
+        return $this->photos()->where('is_cover', true)->first() ?? $this->photos()->first();
+    }
+
+    /**
      * Get daily weather matching record's lake and caught date.
      */
     public function getDailyWeatherAttribute()

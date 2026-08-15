@@ -21,6 +21,7 @@ use Fishinglog\Http\Controllers\RecordController;
 use Fishinglog\Http\Controllers\SearchController;
 
 use Fishinglog\Http\Controllers\MapController;
+use Fishinglog\Http\Controllers\PhotoController;
 use Fishinglog\Http\Controllers\ExplorerController;
 
 /*
@@ -177,6 +178,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{post}/edit', [PostController::class, 'edit']);
         Route::post('/', [PostController::class, 'store']);
         Route::put('/', [PostController::class, 'update']);
+    });
+
+    // Photo management routes
+    Route::prefix('photos')->group(function () {
+        Route::post('/', [PhotoController::class, 'store'])->name('photos.store');
+        Route::delete('/{photo}', [PhotoController::class, 'destroy'])->name('photos.destroy');
+        Route::post('/{photo}/cover', [PhotoController::class, 'setCover'])->name('photos.cover');
+        Route::post('/{photo}/avatar', [PhotoController::class, 'setAsAvatar'])->name('photos.avatar');
     });
 
 });

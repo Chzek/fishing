@@ -31,6 +31,47 @@
             </div>
         </div>
 
+        <!-- Catch Photos Showcase -->
+        @if($record->photos && $record->photos->count() > 0)
+            <div class="space-y-3">
+                @php $primary = $record->primaryPhoto(); @endphp
+                <div class="relative group rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-900 aspect-16/10 max-h-[380px]">
+                    <img id="main-catch-photo" src="{{ $primary->url }}" alt="Catch photo" class="w-full h-full object-cover cursor-pointer hover:scale-102 transition-transform duration-300" onclick="openPhotoLightbox('{{ $primary->url }}', '{{ addslashes($record->fishBreed->name ?? 'Catch') }} - {{ $record->length }}in')">
+                    
+                    <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/80 via-slate-950/40 to-transparent p-4 flex items-center justify-between text-white">
+                        <span class="text-xs font-semibold drop-shadow-sm flex items-center gap-1.5">
+                            <i data-lucide="camera" class="w-4 h-4 text-teal-400"></i>
+                            <span>Catch Photo ({{ $record->photos->count() }} attached)</span>
+                        </span>
+
+                        <div class="flex items-center gap-2">
+                            @auth
+                                @if(auth()->user()->angler && auth()->user()->angler->id == $record->anglers_id)
+                                    <form action="{{ route('photos.avatar', $primary) }}" method="POST" class="inline" onsubmit="return confirm('Use this catch photo as your profile avatar?')">
+                                        @csrf
+                                        <button type="submit" class="px-3 py-1.5 bg-teal-500/90 hover:bg-teal-400 text-slate-950 text-[11px] font-bold rounded-xl shadow backdrop-blur-xs transition flex items-center gap-1 cursor-pointer">
+                                            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                                            <span>Set as Avatar</span>
+                                        </button>
+                                    </form>
+                                @endif
+                            @endauth
+                        </div>
+                    </div>
+                </div>
+
+                @if($record->photos->count() > 1)
+                    <div class="grid grid-cols-4 sm:grid-cols-6 gap-2 pt-1">
+                        @foreach($record->photos as $p)
+                            <button type="button" onclick="document.getElementById('main-catch-photo').src='{{ $p->url }}'" class="aspect-square rounded-xl overflow-hidden border-2 hover:border-teal-500 transition-all focus:outline-none focus:ring-2 focus:ring-teal-500/50 bg-slate-100 cursor-pointer">
+                                <img src="{{ $p->url }}" alt="Thumbnail" class="w-full h-full object-cover">
+                            </button>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        @endif
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 space-y-1">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Angler</span>
@@ -114,11 +155,34 @@
         </div>
     </div>
 </div>
+
+<!-- Simple Lightbox Modal -->
+<div id="photo-lightbox-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm hidden flex items-center justify-center p-4" onclick="closePhotoLightbox()">
+    <div class="relative max-w-4xl max-h-[90vh] flex flex-col items-center" onclick="event.stopPropagation()">
+        <img id="photo-lightbox-img" src="" alt="Catch Full Photo" class="max-w-full max-h-[80vh] rounded-2xl object-contain shadow-2xl">
+        <p id="photo-lightbox-caption" class="text-white text-xs font-semibold mt-3 text-center"></p>
+        <button type="button" onclick="closePhotoLightbox()" class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-sm hover:bg-slate-700 shadow-lg cursor-pointer">✕</button>
+    </div>
+</div>
 @endsection
 
-@if($record->latitude && $record->longitude)
 @section('scripts')
 <script>
+    function openPhotoLightbox(src, caption) {
+        document.getElementById('photo-lightbox-img').src = src;
+        document.getElementById('photo-lightbox-caption').textContent = caption || '';
+        document.getElementById('photo-lightbox-modal').classList.remove('hidden');
+    }
+
+    function closePhotoLightbox() {
+        document.getElementById('photo-lightbox-modal').classList.add('hidden');
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closePhotoLightbox();
+    });
+
+    @if($record->latitude && $record->longitude)
     document.addEventListener('DOMContentLoaded', function () {
         const lat = {{ $record->latitude }};
         const lng = {{ $record->longitude }};
@@ -134,6 +198,6 @@
             .bindPopup("<b>🐟 {{ $record->fishBreed->name ?? 'Catch' }}</b><br>Length: {{ $record->length }} in.")
             .openPopup();
     });
+    @endif
 </script>
 @endsection
-@endif

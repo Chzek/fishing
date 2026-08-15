@@ -16,7 +16,7 @@
             <a href="/record/{{ $record->id }}" class="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">Cancel</a>
         </div>
 
-        <form action="{{ url('/record') }}" method="POST" class="space-y-4">
+        <form action="{{ url('/record/' . $record->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             @method('PUT')
             <input type="hidden" name="id" value="{{ $record->id }}">
@@ -110,6 +110,39 @@
                 </select>
             </div>
 
+            <!-- Existing Photos Gallery with management -->
+            @if($record->photos && $record->photos->count() > 0)
+                <div class="space-y-2 pt-3 border-t border-slate-100">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Attached Catch Photos ({{ $record->photos->count() }})</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        @foreach($record->photos as $photo)
+                            <div class="relative group aspect-square rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100">
+                                <img src="{{ $photo->url }}" alt="Catch photo" class="w-full h-full object-cover">
+                                @if($photo->is_cover)
+                                    <span class="absolute top-1.5 left-1.5 bg-teal-600/90 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-xs">Cover</span>
+                                @endif
+                                <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2">
+                                    @if(!$photo->is_cover)
+                                        <button type="submit" form="cover-form-{{ $photo->id }}" class="px-2 py-1 bg-white/90 hover:bg-white text-slate-900 text-[10px] font-bold rounded shadow cursor-pointer" title="Set as primary cover">Cover</button>
+                                    @endif
+                                    <button type="submit" form="delete-form-{{ $photo->id }}" class="w-7 h-7 bg-rose-600 hover:bg-rose-500 text-white rounded-full flex items-center justify-center text-xs shadow cursor-pointer" title="Remove photo" onclick="return confirm('Remove this photo?')">✕</button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <!-- Add More Photos Uploader -->
+            <div class="pt-2 border-t border-slate-100">
+                <x-photo-upload-input 
+                    name="photos[]" 
+                    id="record-edit-photos" 
+                    label="Add More Photos" 
+                    hint="Take or select photos to attach. Auto-compressed for offline speed." 
+                />
+            </div>
+
             <div class="flex items-center gap-3 pt-4">
                 <button type="submit" class="flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer">Save Changes</button>
                 <a href="/record/{{ $record->id }}" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl border border-slate-200 transition-colors">Cancel</a>
@@ -126,6 +159,17 @@
                     @endforeach
                 </ul>
             </div>
+        @endif
+        @if($record->photos && $record->photos->count() > 0)
+            @foreach($record->photos as $photo)
+                <form id="delete-form-{{ $photo->id }}" action="{{ route('photos.destroy', $photo) }}" method="POST" class="hidden">
+                    @csrf
+                    @method('DELETE')
+                </form>
+                <form id="cover-form-{{ $photo->id }}" action="{{ route('photos.cover', $photo) }}" method="POST" class="hidden">
+                    @csrf
+                </form>
+            @endforeach
         @endif
     </div>
 </div>

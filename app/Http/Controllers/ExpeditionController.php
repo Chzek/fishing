@@ -70,6 +70,8 @@ class ExpeditionController extends Controller
      */
     public function show(Expedition $expedition)
     {
+        $expedition->load('photos');
+
         $records = Record::with(['angler', 'lake', 'fishBreed', 'lure'])
             ->where('caught', '>=', $expedition->start)
             ->where('caught', '<=',  $expedition->finish)

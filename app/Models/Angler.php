@@ -74,4 +74,25 @@ class Angler extends Model
             ->orderBy('caught', 'desc')
             ->first();
     }
+
+    /**
+     * Get all photos attached directly to this angler.
+     */
+    public function photos()
+    {
+        return $this->morphMany(Photo::class, 'photoable')->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Set avatar from an existing Photo model.
+     */
+    public function setAvatarFromPhoto(Photo $photo): bool
+    {
+        if (empty($photo->path)) {
+            return false;
+        }
+
+        $this->avatar = $photo->path;
+        return $this->save();
+    }
 }
