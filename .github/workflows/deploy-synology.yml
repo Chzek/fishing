@@ -68,7 +68,16 @@ jobs:
           username: ${{ secrets.NAS_USER }}
           key: ${{ secrets.NAS_SSH_KEY }}
           port: ${{ secrets.NAS_PORT || 22 }}
-          script_stop: true
           script: |
+            export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/packages/Git/target/bin:/var/packages/Git/target/usr/bin:/var/packages/ContainerManager/target/usr/bin:/var/packages/Docker/target/usr/bin:$PATH"
+            [ -f /etc/profile ] && source /etc/profile 2>/dev/null || true
+            [ -f ~/.profile ] && source ~/.profile 2>/dev/null || true
             cd ${{ secrets.NAS_PROJECT_PATH }}
+            if command -v git >/dev/null 2>&1; then
+                git fetch origin master && git reset --hard origin/master
+            elif [ -f "/var/packages/Git/target/bin/git" ]; then
+                /var/packages/Git/target/bin/git fetch origin master && /var/packages/Git/target/bin/git reset --hard origin/master
+            elif [ -f "/usr/local/bin/git" ]; then
+                /usr/local/bin/git fetch origin master && /usr/local/bin/git reset --hard origin/master
+            fi
             bash synology-nas-deploy/update_nas.sh
