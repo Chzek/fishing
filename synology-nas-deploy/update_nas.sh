@@ -33,10 +33,23 @@ if ! command -v git >/dev/null 2>&1; then
     fi
 fi
 
-# 1. Pull latest changes from master
-echo "--> Fetching and resetting to latest origin/master using ($GIT_BIN)..."
-$GIT_BIN fetch origin master
-$GIT_BIN reset --hard origin/master
+$GIT_BIN config --global --add safe.directory '*' 2>/dev/null || true
+
+# 1. Pull latest changes from master (or initialize git repo if previously extracted from ZIP)
+if [ ! -d ".git" ]; then
+    echo "--> [Notice] .git directory missing. Initializing git repository..."
+    $GIT_BIN init
+    $GIT_BIN remote add origin https://github.com/Chzek/fishing.git 2>/dev/null || $GIT_BIN remote set-url origin https://github.com/Chzek/fishing.git
+    echo "--> Fetching origin/master..."
+    $GIT_BIN fetch origin master
+    $GIT_BIN reset --hard origin/master
+    $GIT_BIN branch -M master 2>/dev/null || true
+    $GIT_BIN branch --set-upstream-to=origin/master master 2>/dev/null || true
+else
+    echo "--> Fetching and resetting to latest origin/master using ($GIT_BIN)..."
+    $GIT_BIN fetch origin master
+    $GIT_BIN reset --hard origin/master
+fi
 
 # 2. Re-apply NAS deployment configs to project root if needed
 echo "--> Syncing Synology NAS configurations..."

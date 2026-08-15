@@ -73,11 +73,12 @@ jobs:
             [ -f /etc/profile ] && source /etc/profile 2>/dev/null || true
             [ -f ~/.profile ] && source ~/.profile 2>/dev/null || true
             cd ${{ secrets.NAS_PROJECT_PATH }}
-            if command -v git >/dev/null 2>&1; then
-                git fetch origin master && git reset --hard origin/master
-            elif [ -f "/var/packages/Git/target/bin/git" ]; then
-                /var/packages/Git/target/bin/git fetch origin master && /var/packages/Git/target/bin/git reset --hard origin/master
-            elif [ -f "/usr/local/bin/git" ]; then
-                /usr/local/bin/git fetch origin master && /usr/local/bin/git reset --hard origin/master
+            git config --global --add safe.directory '*' 2>/dev/null || true
+            if [ ! -d ".git" ]; then
+                echo "--> Initializing Git repository on Synology NAS..."
+                git init
+                git remote add origin https://github.com/Chzek/fishing.git 2>/dev/null || git remote set-url origin https://github.com/Chzek/fishing.git
             fi
+            git fetch origin master
+            git reset --hard origin/master
             bash synology-nas-deploy/update_nas.sh
