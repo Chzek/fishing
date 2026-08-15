@@ -57,7 +57,8 @@ class AdminInviteAndQuickAddTest extends TestCase
 
         $postResponse->assertRedirect(route('home'));
         $this->assertDatabaseHas('users', ['email' => 'invited@example.com']);
-        $this->assertDatabaseHas('anglers', ['firstName' => 'Invited Angler']);
+        $this->assertDatabaseMissing('anglers', ['firstName' => 'Invited Angler']);
+        $this->assertCount(1, $admin->fresh()->notifications);
     }
 
     #[Test]

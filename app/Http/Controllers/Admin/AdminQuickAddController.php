@@ -24,7 +24,7 @@ class AdminQuickAddController extends Controller
 
         $nameParts = explode(' ', trim($request->name), 2);
         $firstName = $nameParts[0] ?? $request->name;
-        $lastName = $nameParts[1] ?? 'Angler';
+        $lastName = $nameParts[1] ?? '';
 
         // 1. Create User locally with pending_upstream status
         $user = User::create([

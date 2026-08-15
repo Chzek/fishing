@@ -82,13 +82,11 @@ class AdminInviteController extends Controller
 
         $user->markEmailAsVerified();
 
-        // Create associated Angler profile
-        Angler::create([
-            'firstName' => $user->name,
-            'middleName' => '',
-            'lastName' => 'Angler',
-            'user_id' => $user->id,
-        ]);
+        // Notify administrators to pair the new user with an Angler profile
+        $admins = User::where('type', User::ADMIN_TYPE)->get();
+        if ($admins->count() > 0) {
+            \Illuminate\Support\Facades\Notification::send($admins, new \Fishinglog\Notifications\InvitedUserRegistered($user));
+        }
 
         auth()->login($user);
 
