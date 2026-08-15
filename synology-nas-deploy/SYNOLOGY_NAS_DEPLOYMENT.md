@@ -158,3 +158,44 @@ The app includes an automated two-way Outbox sync engine (`sync:nas`) between yo
    ./vendor/bin/sail artisan sync:nas
    ```
    Or click **Sync Now with NAS** in the laptop web app interface.
+
+---
+
+## 9. Automated GitHub Actions CI/CD Deployment
+
+Whenever code is merged and pushed to `master` on GitHub, GitHub Actions runs all automated tests, and upon success, connects to your Synology NAS via SSH to automatically update the code and run migrations.
+
+### A. Create Deployment User on Synology DSM
+1. In DSM, go to **Control Panel > User & Group > User > Create**.
+2. Set Username: `github-deploy` with a strong password.
+3. Add to the **`administrators`** group (required for Docker execution over SSH).
+4. Grant **Read/Write** permissions to the `/docker/fishinglog` shared folder.
+5. In Application permissions, allow **DSM** (SSH access).
+6. Enable user home service if not already enabled (**Control Panel > User & Group > Advanced > User Home > Enable user home service**).
+
+### B. Setup SSH Key Pair
+1. On your computer terminal, generate a dedicated SSH key:
+   ```bash
+   ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/synology_github_deploy
+   ```
+   *(Press enter to leave passphrase empty)*
+2. Authorize the public key on the Synology NAS:
+   ```bash
+   ssh-copy-id -i ~/.ssh/synology_github_deploy.pub -p <PORT> github-deploy@fishinglog.chzek-safe.synology.me
+   ```
+   *(Or append the contents of `synology_github_deploy.pub` into `/volume1/homes/github-deploy/.ssh/authorized_keys` on the NAS)*
+
+### C. Add Secrets to GitHub Repository
+In your GitHub repository (**Settings > Secrets and variables > Actions > New repository secret**), add:
+
+| Secret Name | Value Example | Description |
+| :--- | :--- | :--- |
+| `NAS_HOST` | `fishinglog.chzek-safe.synology.me` | Your NAS DDNS or public IP |
+| `NAS_PORT` | `22` (or custom SSH port) | Synology SSH Port |
+| `NAS_USER` | `github-deploy` | Deployment user created above |
+| `NAS_SSH_KEY` | *(Contents of `~/.ssh/synology_github_deploy`)* | Private SSH key |
+| `NAS_PROJECT_PATH` | `/volume1/docker/fishinglog` | Path to repo directory on NAS |
+
+### D. Verification
+Push any commit to `master` (or trigger the workflow manually from the **Actions** tab in GitHub). GitHub will test and deploy the application within ~30–45 seconds.
+

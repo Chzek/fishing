@@ -5,7 +5,7 @@ echo "=================================================="
 echo "    Synology NAS Application Update Script       "
 echo "=================================================="
 
-# Move to script directory
+# Move to repository root directory
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR/.." 2>/dev/null || cd "$SCRIPT_DIR"
 
@@ -14,7 +14,7 @@ echo "--> Fetching and resetting to latest origin/master..."
 git fetch origin master
 git reset --hard origin/master
 
-# 2. Re-apply NAS deployment configs to project root
+# 2. Re-apply NAS deployment configs to project root if needed
 echo "--> Syncing Synology NAS configurations..."
 if [ -d "synology-nas-deploy" ]; then
     cp synology-nas-deploy/docker-compose.yml docker-compose.yml 2>/dev/null || true
@@ -28,23 +28,35 @@ if [ ! -f ".env" ] && [ -f "synology-nas-deploy/.env.nas" ]; then
     cp synology-nas-deploy/.env.nas .env
 fi
 
+# Determine docker execution method (direct or with sudo)
+DOCKER_CMD="docker"
+if ! docker ps >/dev/null 2>&1; then
+    if sudo -n docker ps >/dev/null 2>&1; then
+        DOCKER_CMD="sudo docker"
+    fi
+fi
+
 # 3. Execute Laravel optimization & migration commands
-if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' | grep -q "^fishinglog_app$"; then
-    echo "--> Running optimization commands inside fishinglog_app container..."
-    docker exec fishinglog_app php artisan config:clear
-    docker exec fishinglog_app php artisan cache:clear
-    docker exec fishinglog_app php artisan view:clear
-    docker exec fishinglog_app php artisan migrate --force
-    docker exec fishinglog_app chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
+if command -v docker >/dev/null 2>&1 && $DOCKER_CMD ps --format '{{.Names}}' | grep -q "^fishinglog_app$"; then
+    echo "--> Running optimization and migrations inside fishinglog_app container..."
+    $DOCKER_CMD exec fishinglog_app php artisan optimize:clear
+    $DOCKER_CMD exec fishinglog_app php artisan migrate --force
+    $DOCKER_CMD exec fishinglog_app php artisan config:clear
+    $DOCKER_CMD exec fishinglog_app php artisan route:clear
+    $DOCKER_CMD exec fishinglog_app php artisan view:clear
+    $DOCKER_CMD exec fishinglog_app chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 elif [ -f "artisan" ]; then
-    echo "--> Running optimization commands in current container environment..."
-    php artisan config:clear
-    php artisan cache:clear
-    php artisan view:clear
+    echo "--> Running optimization commands in local environment..."
+    php artisan optimize:clear
     php artisan migrate --force
+    php artisan config:clear
+    php artisan route:clear
+    php artisan view:clear
     chmod -R 777 storage bootstrap/cache 2>/dev/null || true
+else
+    echo "--> [Warning] Neither fishinglog_app container nor local artisan was found."
 fi
 
 echo "=================================================="
-echo "  UPDATE COMPLETE! Synology NAS is ready to sync. "
+echo "  UPDATE COMPLETE! Synology NAS is up to date.    "
 echo "=================================================="
