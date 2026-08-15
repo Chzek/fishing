@@ -238,22 +238,14 @@
                                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                             </a>
 
-                            <div class="flex items-center gap-1.5">
-                                <a 
-                                    href="/record/quick?fish_breed_id={{ $fish->id }}" 
-                                    class="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl border border-emerald-200 transition-colors" 
-                                    title="Quick Catch for {{ $fish->name }}"
-                                >
-                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                                </a>
-                                <a 
-                                    href="/fish/breed/{{ $fish->id }}/edit" 
-                                    class="p-2 bg-white hover:bg-slate-100 text-slate-600 rounded-xl border border-slate-200 transition-colors" 
-                                    title="Edit Species"
-                                >
-                                    <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                                </a>
-                            </div>
+                            <a 
+                                href="/fish/breed/{{ $fish->id }}/edit" 
+                                class="p-1.5 bg-white hover:bg-slate-100 text-slate-600 rounded-xl border border-slate-200 transition-colors flex items-center gap-1 text-xs font-medium" 
+                                title="Edit Species"
+                            >
+                                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                <span class="text-[11px] font-semibold text-slate-600">Edit</span>
+                            </a>
                         </div>
                     </div>
                 @endforeach
@@ -328,9 +320,6 @@
                                     <div class="flex items-center justify-end gap-1.5">
                                         <a href="/fish/{{ $fish->id }}" class="p-1.5 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="View Dossier">
                                             <i data-lucide="eye" class="w-4 h-4"></i>
-                                        </a>
-                                        <a href="/record/quick?fish_breed_id={{ $fish->id }}" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Quick Catch">
-                                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
                                         </a>
                                         <a href="/fish/breed/{{ $fish->id }}/edit" class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors" title="Edit Species">
                                             <i data-lucide="edit-3" class="w-4 h-4"></i>
