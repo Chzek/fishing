@@ -95,7 +95,7 @@
                         <i data-lucide="list" class="w-4 h-4"></i>
                         <span>Catches Directory</span>
                     </a>
-                    <a href="{{ url('/fish') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('fish*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
+                    <a href="{{ url('/fish') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('fish', 'fish/*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
                         <i data-lucide="dna" class="w-4 h-4 text-emerald-400"></i>
                         <span>Fish & Species</span>
                     </a>
