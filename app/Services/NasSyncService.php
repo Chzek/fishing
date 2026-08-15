@@ -11,6 +11,7 @@ use Fishinglog\Models\FishingRule;
 use Fishinglog\Models\FishingZone;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Lure;
+use Fishinglog\Models\Photo;
 use Fishinglog\Models\Post;
 use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
@@ -18,6 +19,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class NasSyncService
 {
@@ -37,6 +39,7 @@ class NasSyncService
         'posts' => Post::class,
         'fishing_zones' => FishingZone::class,
         'fishing_rules' => FishingRule::class,
+        'photos' => Photo::class,
     ];
 
     public function __construct(?string $nasUrl = null, ?string $apiToken = null)
@@ -85,10 +88,16 @@ class NasSyncService
             }
 
             foreach ($pending->chunk(50) as $chunk) {
-                $itemsArray = $chunk->map(function ($item) {
-                    return method_exists($item, 'makeVisible')
+                $itemsArray = $chunk->map(function ($item) use ($key) {
+                    $data = method_exists($item, 'makeVisible')
                         ? $item->makeVisible(['password', 'remember_token'])->toArray()
                         : $item->toArray();
+
+                    if ($key === 'photos' && !empty($item->path) && Storage::disk('public')->exists($item->path)) {
+                        $data['file_base64'] = base64_encode(Storage::disk('public')->get($item->path));
+                    }
+
+                    return $data;
                 })->all();
 
                 $pushPayload = [$key => $itemsArray];
@@ -141,11 +150,17 @@ class NasSyncService
                     continue;
                 }
 
+                // If remote photo includes binary file payload, write to local storage
+                if ($key === 'photos' && !empty($remoteItem['file_base64']) && !empty($remoteItem['path'])) {
+                    Storage::disk('public')->put($remoteItem['path'], base64_decode($remoteItem['file_base64']));
+                }
+
                 $existing = $modelClass::find($id);
 
                 $attributes = $remoteItem;
                 $attributes['id'] = $id;
                 unset($attributes['uuid']);
+                unset($attributes['file_base64']);
                 $attributes['sync_status'] = 'synced';
                 $attributes['synced_at'] = now();
 

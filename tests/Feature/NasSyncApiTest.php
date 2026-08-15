@@ -86,4 +86,49 @@ class NasSyncApiTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    #[Test]
+    public function admin_can_push_and_pull_photos_with_binary_files()
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+        $photoUuid = 'photo-uuid-push-test-123';
+        $photoPath = 'photos/expeditions/boat_sunset.jpg';
+        $imageContent = 'real-binary-image-stream-content';
+
+        $payload = [
+            'photos' => [
+                [
+                    'id' => $photoUuid,
+                    'photoable_type' => \Fishinglog\Models\Expedition::class,
+                    'photoable_id' => 'expedition-uuid-1',
+                    'path' => $photoPath,
+                    'original_name' => 'boat_sunset.jpg',
+                    'caption' => 'Boat Sunset',
+                    'file_base64' => base64_encode($imageContent),
+                    'updated_at' => '2026-08-15T12:00:00Z',
+                ]
+            ]
+        ];
+
+        // 1. Test Push
+        $pushResponse = $this->actingAs($admin)->postJson('/api/v1/sync/push', $payload);
+        $pushResponse->assertStatus(200);
+        $pushResponse->assertJsonPath('status', 'success');
+
+        $this->assertDatabaseHas('photos', [
+            'id' => $photoUuid,
+            'caption' => 'Boat Sunset',
+        ]);
+        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($photoPath);
+        $this->assertEquals($imageContent, \Illuminate\Support\Facades\Storage::disk('public')->get($photoPath));
+
+        // 2. Test Pull
+        $pullResponse = $this->actingAs($admin)->getJson('/api/v1/sync/pull?since=2026-01-01T00:00:00Z');
+        $pullResponse->assertStatus(200);
+        $pulledPhotos = $pullResponse->json('photos');
+        $this->assertNotEmpty($pulledPhotos);
+        $this->assertEquals(base64_encode($imageContent), $pulledPhotos[0]['file_base64']);
+    }
 }

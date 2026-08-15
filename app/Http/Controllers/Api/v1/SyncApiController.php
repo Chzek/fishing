@@ -80,11 +80,17 @@ class SyncApiController extends Controller
                     continue;
                 }
 
+                // If receiving a photo with binary content, store to disk
+                if ($key === 'photos' && !empty($itemData['file_base64']) && !empty($itemData['path'])) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->put($itemData['path'], base64_decode($itemData['file_base64']));
+                }
+
                 $existing = $modelClass::find($id);
 
                 $attributes = $itemData;
                 $attributes['id'] = $id;
                 unset($attributes['uuid']);
+                unset($attributes['file_base64']);
                 $attributes['sync_status'] = 'synced';
                 $attributes['synced_at'] = now();
 
@@ -144,7 +150,13 @@ class SyncApiController extends Controller
                 $query->withTrashed();
             }
 
-            $payload[$key] = $query->get();
+            $payload[$key] = $query->get()->map(function ($item) use ($key) {
+                $data = $item->toArray();
+                if ($key === 'photos' && !empty($item->path) && \Illuminate\Support\Facades\Storage::disk('public')->exists($item->path)) {
+                    $data['file_base64'] = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($item->path));
+                }
+                return $data;
+            });
         }
 
         $payload['server_timestamp'] = now()->toIso8601String();
