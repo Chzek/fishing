@@ -130,4 +130,65 @@ class NasSyncServiceTest extends TestCase
         \Illuminate\Support\Facades\Storage::disk('public')->assertExists($remotePhotoPath);
         $this->assertEquals($remoteImageContent, \Illuminate\Support\Facades\Storage::disk('public')->get($remotePhotoPath));
     }
+
+    #[Test]
+    public function it_returns_accurate_pending_breakdown_per_model()
+    {
+        Lake::create(['name' => 'Pending Lake 1', 'latitude' => 45.0, 'longitude' => -78.0]);
+        Lake::create(['name' => 'Pending Lake 2', 'latitude' => 45.1, 'longitude' => -78.1]);
+
+        \Fishinglog\Models\Angler::create(['firstName' => 'Bob', 'middleName' => 'J', 'lastName' => 'Fisherman']);
+
+        $service = new NasSyncService('https://nas.example.com', 'test-token');
+
+        $this->assertEquals(3, $service->getPendingCount());
+
+        $breakdown = $service->getPendingBreakdown();
+
+        $this->assertArrayHasKey('lakes', $breakdown);
+        $this->assertEquals(2, $breakdown['lakes']['count']);
+        $this->assertEquals('Lakes & Waters', $breakdown['lakes']['label']);
+
+        $this->assertArrayHasKey('anglers', $breakdown);
+        $this->assertEquals(1, $breakdown['anglers']['count']);
+        $this->assertEquals('Anglers', $breakdown['anglers']['label']);
+
+        // Models with 0 pending items are not in breakdown
+        $this->assertArrayNotHasKey('records', $breakdown);
+    }
+
+    #[Test]
+    public function it_includes_per_model_breakdown_in_sync_result()
+    {
+        $lake = Lake::create(['name' => 'Lake Push Test', 'latitude' => 45.0, 'longitude' => -78.0]);
+        $remoteLakeUuid = '88888888-4444-4444-4444-888888888888';
+
+        Http::fake([
+            'https://nas.example.com/api/v1/sync/push' => Http::response([
+                'status' => 'success',
+                'synced_uuids' => [$lake->id],
+                'processed_count' => 1,
+            ], 200),
+            'https://nas.example.com/api/v1/sync/pull*' => Http::response([
+                'lakes' => [
+                    [
+                        'id' => $remoteLakeUuid,
+                        'name' => 'Remote Pulled Lake',
+                        'latitude' => 46.0,
+                        'longitude' => -79.0,
+                        'updated_at' => '2026-08-16T10:00:00Z',
+                    ]
+                ],
+                'server_timestamp' => '2026-08-16T15:00:00Z',
+            ], 200),
+        ]);
+
+        $service = new NasSyncService('https://nas.example.com', 'test-token');
+        $result = $service->sync();
+
+        $this->assertEquals(1, $result['pushed']);
+        $this->assertEquals(1, $result['pulled']);
+        $this->assertEquals(['Lakes & Waters' => 1], $result['pushed_breakdown']);
+        $this->assertEquals(['Lakes & Waters' => 1], $result['pulled_breakdown']);
+    }
 }

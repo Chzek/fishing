@@ -84,6 +84,7 @@ class AdminController extends Controller
             'years' => $years > 0 ? $years : 1,
             'trashedCount' => Record::onlyTrashed()->count() + Lake::onlyTrashed()->count() + Angler::onlyTrashed()->count() + Lure::onlyTrashed()->count() + Expedition::onlyTrashed()->count(),
             'pendingSyncCount' => $syncService->getPendingCount(),
+            'pendingSyncBreakdown' => $syncService->getPendingBreakdown(),
             'lastSyncedAt' => $syncService->getLastSyncedAt(),
             'weatherJoinedRecordsCount' => $weatherJoinedRecordsCount,
             'weatherCoverageRate' => $weatherCoverageRate,
@@ -96,7 +97,14 @@ class AdminController extends Controller
     {
         try {
             $result = $syncService->sync();
-            return redirect()->route('admin')->with('status', "NAS Sync completed! Pushed {$result['pushed']} items, pulled {$result['pulled']} items.");
+            $pushedDetails = !empty($result['pushed_breakdown'])
+                ? ' (' . collect($result['pushed_breakdown'])->map(fn($c, $k) => "$c $k")->join(', ') . ')'
+                : '';
+            $pulledDetails = !empty($result['pulled_breakdown'])
+                ? ' (' . collect($result['pulled_breakdown'])->map(fn($c, $k) => "$c $k")->join(', ') . ')'
+                : '';
+
+            return redirect()->route('admin')->with('status', "NAS Sync completed! Pushed {$result['pushed']} items{$pushedDetails}, pulled {$result['pulled']} items{$pulledDetails}.");
         } catch (\Throwable $e) {
             return redirect()->route('admin')->with('error', "NAS Sync failed: {$e->getMessage()}");
         }

@@ -10,6 +10,10 @@
     --color-card-dark: #1e293b;
 }
 
+[x-cloak] {
+    display: none !important;
+}
+
 /* Custom scrollbar & base utilities */
 @layer base {
     html, body {

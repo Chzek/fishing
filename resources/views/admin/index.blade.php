@@ -50,8 +50,67 @@
                 <p class="text-xs text-slate-300">
                     Synchronize local laptop catches, lakes, and anglers with your home Synology NAS server.
                 </p>
-                <div class="flex items-center gap-3 pt-1 text-xs font-medium text-slate-400 font-mono">
-                    <span>Pending Outbox: <strong class="text-amber-400 font-bold">{{ $pendingSyncCount }} item(s)</strong></span>
+                @php
+                    $outboxSummary = !empty($pendingSyncBreakdown)
+                        ? 'Pending push: ' . collect($pendingSyncBreakdown)->map(fn($item) => "{$item['count']} {$item['label']}")->join(', ')
+                        : 'All models are synchronized with NAS';
+                @endphp
+                <div class="flex flex-wrap items-center gap-3 pt-1 text-xs font-medium text-slate-400 font-mono">
+                    <div class="relative inline-block" x-data="{ showBreakdown: false }" @keydown.escape.window="showBreakdown = false" @click.outside="showBreakdown = false">
+                        <button type="button"
+                                @mouseenter="showBreakdown = true"
+                                @mouseleave="showBreakdown = false"
+                                @click="showBreakdown = !showBreakdown"
+                                title="{{ $outboxSummary }}"
+                                aria-label="Pending Outbox breakdown"
+                                class="group inline-flex items-center gap-1.5 focus:outline-hidden text-left cursor-pointer">
+                            <span class="text-slate-400">Pending Outbox:</span>
+                            <strong class="text-amber-400 font-bold border-b border-dotted border-amber-400/60 group-hover:text-amber-300 group-hover:border-amber-300 transition-colors">{{ $pendingSyncCount }} item(s)</strong>
+                            <i data-lucide="info" class="w-3.5 h-3.5 text-amber-400/80 group-hover:text-amber-300 transition-colors"></i>
+                        </button>
+
+                        <!-- Alpine Popover Card -->
+                        <div x-show="showBreakdown"
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 translate-y-1 scale-95"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave-end="opacity-0 translate-y-1 scale-95"
+                             x-cloak
+                             class="absolute z-30 left-0 bottom-full mb-2 w-64 bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-xl shadow-2xl p-3 text-xs text-slate-200">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+                                <span class="font-bold text-slate-100 flex items-center gap-1.5">
+                                    <i data-lucide="layers" class="w-3.5 h-3.5 text-teal-400"></i>
+                                    Outbox by Model
+                                </span>
+                                <span class="text-[10px] font-mono bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-bold">
+                                    {{ $pendingSyncCount }} Total
+                                </span>
+                            </div>
+
+                            @if(!empty($pendingSyncBreakdown))
+                                <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                                    @foreach($pendingSyncBreakdown as $item)
+                                        <div class="flex items-center justify-between text-slate-300 font-mono text-[11px] bg-slate-800/40 hover:bg-slate-800/80 px-2 py-1 rounded transition-colors">
+                                            <span class="flex items-center gap-1.5 text-slate-300">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                                                {{ $item['label'] }}
+                                            </span>
+                                            <span class="font-bold text-amber-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700">
+                                                {{ $item['count'] }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="text-slate-400 text-center py-2 flex items-center justify-center gap-1.5">
+                                    <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                    <span>All models up to date</span>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
                     <span>•</span>
                     <span>Last: <strong class="text-slate-200">{{ $lastSyncedAt ? \Illuminate\Support\Carbon::parse($lastSyncedAt)->diffForHumans() : 'Never' }}</strong></span>
                 </div>

@@ -42,6 +42,22 @@ class NasSyncService
         'photos' => Photo::class,
     ];
 
+    protected array $modelLabels = [
+        'records' => 'Catches',
+        'photos' => 'Photos',
+        'lakes' => 'Lakes & Waters',
+        'expeditions' => 'Expeditions',
+        'anglers' => 'Anglers',
+        'lures' => 'Lures & Tackle',
+        'fish_breeds' => 'Fish Species',
+        'fish_families' => 'Fish Families',
+        'posts' => 'Log Posts',
+        'crews' => 'Crews',
+        'fishing_zones' => 'Zones',
+        'fishing_rules' => 'Rules',
+        'users' => 'Users',
+    ];
+
     public function __construct(?string $nasUrl = null, ?string $apiToken = null)
     {
         $this->nasUrl = rtrim($nasUrl ?? config('services.nas.url', env('NAS_URL', '')), '/');
@@ -58,6 +74,25 @@ class NasSyncService
             $total += $modelClass::pendingUpstream()->count();
         }
         return $total;
+    }
+
+    /**
+     * Get associative list of models and their pending counts.
+     */
+    public function getPendingBreakdown(): array
+    {
+        $breakdown = [];
+        foreach ($this->modelMap as $key => $modelClass) {
+            $count = $modelClass::pendingUpstream()->count();
+            if ($count > 0) {
+                $breakdown[$key] = [
+                    'key' => $key,
+                    'label' => $this->modelLabels[$key] ?? ucfirst(str_replace('_', ' ', $key)),
+                    'count' => $count,
+                ];
+            }
+        }
+        return $breakdown;
     }
 
     /**
@@ -79,6 +114,8 @@ class NasSyncService
 
         $pushedCount = 0;
         $pulledCount = 0;
+        $pushedBreakdown = [];
+        $pulledBreakdown = [];
 
         // 1. Execute Push model by model in chunks to prevent request payload size and timeout limits on NAS server
         foreach ($this->modelMap as $key => $modelClass) {
@@ -122,6 +159,8 @@ class NasSyncService
                     if (isset($localPendingByUuid[$uuid])) {
                         $localPendingByUuid[$uuid]->markSynced();
                         $pushedCount++;
+                        $label = $this->modelLabels[$key] ?? ucfirst(str_replace('_', ' ', $key));
+                        $pushedBreakdown[$label] = ($pushedBreakdown[$label] ?? 0) + 1;
                     }
                 }
             }
@@ -171,6 +210,8 @@ class NasSyncService
                 if (!$existing) {
                     $entity->forceFill($filtered)->save();
                     $pulledCount++;
+                    $label = $this->modelLabels[$key] ?? ucfirst(str_replace('_', ' ', $key));
+                    $pulledBreakdown[$label] = ($pulledBreakdown[$label] ?? 0) + 1;
                 } else {
                     $incomingUpdated = isset($remoteItem['updated_at']) ? Carbon::parse($remoteItem['updated_at']) : null;
                     $localUpdated = $existing->updated_at ? Carbon::parse($existing->updated_at) : null;
@@ -178,6 +219,8 @@ class NasSyncService
                     if (!$localUpdated || ($incomingUpdated && $incomingUpdated->greaterThanOrEqualTo($localUpdated))) {
                         $existing->forceFill($filtered)->save();
                         $pulledCount++;
+                        $label = $this->modelLabels[$key] ?? ucfirst(str_replace('_', ' ', $key));
+                        $pulledBreakdown[$label] = ($pulledBreakdown[$label] ?? 0) + 1;
                     } else {
                         $existing->forceFill([
                             'sync_status' => 'synced',
@@ -194,6 +237,8 @@ class NasSyncService
         return [
             'pushed' => $pushedCount,
             'pulled' => $pulledCount,
+            'pushed_breakdown' => $pushedBreakdown,
+            'pulled_breakdown' => $pulledBreakdown,
             'last_synced_at' => $nowTimestamp,
         ];
     }
