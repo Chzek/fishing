@@ -278,4 +278,20 @@ class NasSyncService
         }
         return $total;
     }
+
+    /**
+     * Get the configured name of the remote synchronization target (e.g., 'Laptop' or 'NAS').
+     */
+    public function getTargetName(): string
+    {
+        return config('services.nas.target_name', app()->isProduction() ? 'Laptop' : 'NAS');
+    }
+
+    /**
+     * Get the configured name of the local application instance (e.g., 'Field Laptop' or 'Synology NAS').
+     */
+    public function getInstanceName(): string
+    {
+        return config('services.nas.instance_name', app()->isProduction() ? 'Synology NAS' : 'Field Laptop');
+    }
 }

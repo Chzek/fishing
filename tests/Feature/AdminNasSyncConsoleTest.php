@@ -49,6 +49,7 @@ class AdminNasSyncConsoleTest extends TestCase
                 'pulled_breakdown' => ['Lakes & Waters' => 1],
                 'last_synced_at' => now()->toIso8601String(),
             ]);
+            $mock->shouldReceive('getTargetName')->andReturn('NAS');
         });
 
         $response = $this->actingAs($admin)->post('/admin/sync/trigger');
@@ -71,6 +72,7 @@ class AdminNasSyncConsoleTest extends TestCase
                 'last_synced_at' => now()->toIso8601String(),
                 'is_baseline' => true,
             ]);
+            $mock->shouldReceive('getTargetName')->andReturn('NAS');
         });
 
         $response = $this->actingAs($admin)->post('/admin/sync/baseline');
@@ -92,5 +94,22 @@ class AdminNasSyncConsoleTest extends TestCase
 
         $response->assertRedirect(route('admin'));
         $response->assertSessionHas('status', 'Successfully marked 12 local record(s) as synced.');
+    }
+
+    #[Test]
+    public function admin_can_view_dynamic_sync_labels_when_target_is_laptop()
+    {
+        config(['services.nas.target_name' => 'Laptop']);
+
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+        $admin->markSynced();
+
+        $response = $this->actingAs($admin)->get('/admin');
+
+        $response->assertStatus(200);
+        $response->assertSee('Field Laptop Two-Way Sync Engine');
+        $response->assertSee('Synchronize server catches, lakes, and anglers with your field laptop.');
+        $response->assertSee('Sync Now with Laptop');
+        $response->assertSee('Perform a Full Baseline Pull from Laptop?');
     }
 }

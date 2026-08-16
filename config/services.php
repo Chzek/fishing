@@ -35,4 +35,11 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'nas' => [
+        'url' => env('NAS_URL', ''),
+        'token' => env('NAS_API_TOKEN', ''),
+        'target_name' => env('SYNC_TARGET_NAME', (env('APP_ENV') === 'production' ? 'Laptop' : 'NAS')),
+        'instance_name' => env('SYNC_INSTANCE_NAME', (env('APP_ENV') === 'production' ? 'Synology NAS' : 'Field Laptop')),
+    ],
+
 ];

@@ -86,6 +86,8 @@ class AdminController extends Controller
             'pendingSyncCount' => $syncService->getPendingCount(),
             'pendingSyncBreakdown' => $syncService->getPendingBreakdown(),
             'lastSyncedAt' => $syncService->getLastSyncedAt(),
+            'syncTargetName' => $syncService->getTargetName(),
+            'syncInstanceName' => $syncService->getInstanceName(),
             'weatherJoinedRecordsCount' => $weatherJoinedRecordsCount,
             'weatherCoverageRate' => $weatherCoverageRate,
             'pendingWeatherSyncCount' => $pendingWeatherSyncCount,
@@ -97,6 +99,7 @@ class AdminController extends Controller
     {
         try {
             $result = $syncService->sync();
+            $targetName = $syncService->getTargetName();
             $pushedDetails = !empty($result['pushed_breakdown'])
                 ? ' (' . collect($result['pushed_breakdown'])->map(fn($c, $k) => "$c $k")->join(', ') . ')'
                 : '';
@@ -104,9 +107,9 @@ class AdminController extends Controller
                 ? ' (' . collect($result['pulled_breakdown'])->map(fn($c, $k) => "$c $k")->join(', ') . ')'
                 : '';
 
-            return redirect()->route('admin')->with('status', "NAS Sync completed! Pushed {$result['pushed']} items{$pushedDetails}, pulled {$result['pulled']} items{$pulledDetails}.");
+            return redirect()->route('admin')->with('status', "{$targetName} Sync completed! Pushed {$result['pushed']} items{$pushedDetails}, pulled {$result['pulled']} items{$pulledDetails}.");
         } catch (\Throwable $e) {
-            return redirect()->route('admin')->with('error', "NAS Sync failed: {$e->getMessage()}");
+            return redirect()->route('admin')->with('error', "Sync failed: {$e->getMessage()}");
         }
     }
 
@@ -114,6 +117,7 @@ class AdminController extends Controller
     {
         try {
             $result = $syncService->sync(forceBaseline: true);
+            $targetName = $syncService->getTargetName();
             $pushedDetails = !empty($result['pushed_breakdown'])
                 ? ' (' . collect($result['pushed_breakdown'])->map(fn($c, $k) => "$c $k")->join(', ') . ')'
                 : '';
@@ -121,9 +125,9 @@ class AdminController extends Controller
                 ? ' (' . collect($result['pulled_breakdown'])->map(fn($c, $k) => "$c $k")->join(', ') . ')'
                 : '';
 
-            return redirect()->route('admin')->with('status', "Full Baseline NAS Sync completed! Pushed {$result['pushed']} items{$pushedDetails}, pulled {$result['pulled']} items{$pulledDetails}.");
+            return redirect()->route('admin')->with('status', "Full Baseline {$targetName} Sync completed! Pushed {$result['pushed']} items{$pushedDetails}, pulled {$result['pulled']} items{$pulledDetails}.");
         } catch (\Throwable $e) {
-            return redirect()->route('admin')->with('error', "Baseline NAS Sync failed: {$e->getMessage()}");
+            return redirect()->route('admin')->with('error', "Baseline Sync failed: {$e->getMessage()}");
         }
     }
 
