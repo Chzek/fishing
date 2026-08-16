@@ -152,7 +152,7 @@
     </div>
 
     <!-- Right Slide-Over Detail Drawer (Dark Option C Styling) -->
-    <div id="explorer-drawer" class="absolute top-0 right-[-450px] w-full sm:w-[420px] max-w-full h-full bg-slate-900 text-slate-200 shadow-2xl border-l border-slate-800 z-30 transition-all duration-300 ease-in-out overflow-y-auto">
+    <div id="explorer-drawer" class="absolute top-0 right-0 w-full sm:w-[420px] max-w-full h-full bg-slate-900 text-slate-200 shadow-2xl border-l border-slate-800 z-30 transition-transform duration-300 ease-in-out overflow-y-auto pointer-events-auto" style="transform: translateX(100%);">
         <div class="p-4 bg-slate-950/90 border-b border-slate-800 flex items-center justify-between sticky top-0 backdrop-blur-md z-10">
             <div>
                 <h2 id="drawer-lake-name" class="font-bold text-white text-base tracking-tight truncate max-w-[280px]">Lake Detail</h2>
@@ -502,7 +502,7 @@
         document.getElementById('drawer-full-log-btn').href = `/lake/${lake.id}`;
 
         // Slide drawer in from right
-        drawer.style.right = '0';
+        drawer.style.transform = 'translateX(0%)';
 
         loadLakeDrawerDetail(lake.id);
     }
@@ -602,7 +602,10 @@
 
     function closeLakeDrawer() {
         activeSelectedLakeId = null;
-        document.getElementById('explorer-drawer').style.right = '-450px';
+        const drawer = document.getElementById('explorer-drawer');
+        if (drawer) {
+            drawer.style.transform = 'translateX(100%)';
+        }
     }
 
     function resetExplorerFilters() {
