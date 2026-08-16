@@ -1,168 +1,249 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-4">
-    <!-- Filter Toolbar Header Card -->
-    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
-        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-600 flex items-center justify-center shrink-0">
-                    <i data-lucide="compass" class="w-5 h-5"></i>
+<div class="relative w-full bg-slate-900 rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden" style="height: calc(100dvh - 135px); min-height: 520px;">
+    <!-- Leaflet Map Container -->
+    <div id="explorer-map" class="w-full h-full z-0"></div>
+
+    <!-- In-Map Floating Header & Filter Toolbar (Telemetry v2 Option C) -->
+    <div id="explorer-floating-panel" class="absolute top-3 left-3 right-3 z-20 bg-slate-900/95 backdrop-blur-md border border-slate-700/80 text-white rounded-2xl shadow-2xl p-2.5 sm:p-3 transition-all duration-200">
+        <!-- Top Toolbar Header Row -->
+        <div class="flex items-center justify-between gap-2">
+            <!-- Title & Active View Badge -->
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-teal-500/15 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
+                    <i data-lucide="compass" class="w-4 h-4"></i>
                 </div>
-                <div>
-                    <h1 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <div class="min-w-0">
+                    <h1 class="text-xs sm:text-sm font-bold text-white tracking-tight flex items-center gap-1.5 truncate">
                         <span>Lake Explorer</span>
-                        <span id="lake-count-badge" class="bg-teal-50 text-teal-700 border border-teal-200 text-xs font-semibold px-2.5 py-0.5 rounded-full">0 Lakes in View</span>
+                        <span id="lake-count-badge" class="bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full shrink-0">0 Lakes</span>
                     </h1>
                 </div>
             </div>
 
-            <!-- Filter Controls Form -->
-            <form id="explorer-filter-form" class="w-full lg:w-auto flex flex-wrap items-center gap-2">
-                <!-- Species Filter -->
-                <select id="filter-species" class="h-9 px-3 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+            <!-- Mobile Controls Action Buttons -->
+            <div class="flex items-center gap-1.5 shrink-0">
+                <!-- Mobile Filter Toggle Button (lg:hidden) -->
+                <button type="button" id="mobile-filter-toggle-btn" onclick="toggleMobileFilters()" class="lg:hidden h-8 px-2.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors flex items-center gap-1.5">
+                    <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-teal-400"></i>
+                    <span>Filters</span>
+                    <span id="mobile-filter-count-badge" class="hidden px-1.5 py-0.2 bg-teal-400 text-slate-950 font-black text-[10px] rounded-full">0</span>
+                </button>
+
+                <!-- Reset Button -->
+                <button type="button" onclick="resetExplorerFilters()" class="h-8 px-2.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition-colors flex items-center gap-1">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <span class="hidden sm:inline">Reset</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Desktop Inline Filter Row (lg:flex) -->
+        <form id="explorer-filter-form" class="hidden lg:flex items-center gap-2 mt-2.5 pt-2.5 border-t border-slate-800/80">
+            <!-- Species Filter -->
+            <div class="flex-1 min-w-0">
+                <select id="filter-species" class="w-full h-8 px-2.5 text-xs rounded-xl border border-slate-700 bg-slate-800/90 text-slate-200 font-medium focus:ring-1 focus:ring-teal-500 focus:border-teal-500">
                     <option value="">🐟 All Species</option>
                     @foreach($fishBreeds as $breed)
                         <option value="{{ $breed->id }}">{{ $breed->name }}</option>
                     @endforeach
                 </select>
+            </div>
 
-                <!-- Angler Filter -->
-                <select id="filter-angler" class="h-9 px-3 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+            <!-- Angler Filter -->
+            <div class="flex-1 min-w-0">
+                <select id="filter-angler" class="w-full h-8 px-2.5 text-xs rounded-xl border border-slate-700 bg-slate-800/90 text-slate-200 font-medium focus:ring-1 focus:ring-teal-500 focus:border-teal-500">
                     <option value="">👨‍🌾 All Anglers</option>
                     @foreach($anglers as $angler)
                         <option value="{{ $angler->id }}">{{ trim($angler->firstname . ' ' . $angler->lastname) ?: 'Angler #' . $angler->id }}</option>
                     @endforeach
                 </select>
+            </div>
 
-                <!-- Lure Filter -->
-                <select id="filter-lure" class="h-9 px-3 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+            <!-- Lure Filter -->
+            <div class="flex-1 min-w-0">
+                <select id="filter-lure" class="w-full h-8 px-2.5 text-xs rounded-xl border border-slate-700 bg-slate-800/90 text-slate-200 font-medium focus:ring-1 focus:ring-teal-500 focus:border-teal-500">
                     <option value="">🎣 All Lures</option>
                     @foreach($lures as $lure)
                         <option value="{{ $lure->id }}">{{ $lure->name }}</option>
                     @endforeach
                 </select>
+            </div>
 
-                <!-- Trophy Filter -->
-                <select id="filter-trophy" class="h-9 px-3 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+            <!-- Trophy Filter -->
+            <div class="flex-1 min-w-0">
+                <select id="filter-trophy" class="w-full h-8 px-2.5 text-xs rounded-xl border border-slate-700 bg-slate-800/90 text-slate-200 font-medium focus:ring-1 focus:ring-teal-500 focus:border-teal-500">
                     <option value="">🏆 All Catches</option>
-                    <option value="1">🏆 Trophies Only (≥10lbs or ≥20in)</option>
+                    <option value="1">🏆 Trophies (≥10lbs / ≥20in)</option>
                 </select>
+            </div>
 
-                <!-- Season Year Filter -->
-                <select id="filter-year" class="h-9 px-3 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+            <!-- Season Year Filter -->
+            <div class="flex-1 min-w-0">
+                <select id="filter-year" class="w-full h-8 px-2.5 text-xs rounded-xl border border-slate-700 bg-slate-800/90 text-slate-200 font-medium focus:ring-1 focus:ring-teal-500 focus:border-teal-500">
                     <option value="">📅 All Seasons</option>
                     @foreach($years as $yr)
                         <option value="{{ $yr }}">{{ $yr }} Season</option>
                     @endforeach
                 </select>
+            </div>
+        </form>
 
-                <button type="button" onclick="resetExplorerFilters()" class="h-9 px-3 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-colors flex items-center gap-1">
-                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-                    <span>Reset</span>
+        <!-- Mobile Expandable Filter Overlay Panel (lg:hidden) -->
+        <div id="mobile-filter-drawer" class="hidden lg:hidden mt-3 pt-3 border-t border-slate-800 space-y-2.5 max-h-[60vh] overflow-y-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                    <label for="m-filter-species" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Species</label>
+                    <select id="m-filter-species" onchange="syncMobileFilter('filter-species', this.value)" class="w-full h-10 px-3 text-xs rounded-xl border border-slate-700 bg-slate-800 text-slate-200 font-medium">
+                        <option value="">🐟 All Species</option>
+                        @foreach($fishBreeds as $breed)
+                            <option value="{{ $breed->id }}">{{ $breed->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label for="m-filter-angler" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Angler</label>
+                    <select id="m-filter-angler" onchange="syncMobileFilter('filter-angler', this.value)" class="w-full h-10 px-3 text-xs rounded-xl border border-slate-700 bg-slate-800 text-slate-200 font-medium">
+                        <option value="">👨‍🌾 All Anglers</option>
+                        @foreach($anglers as $angler)
+                            <option value="{{ $angler->id }}">{{ trim($angler->firstname . ' ' . $angler->lastname) ?: 'Angler #' . $angler->id }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label for="m-filter-lure" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Lure</label>
+                    <select id="m-filter-lure" onchange="syncMobileFilter('filter-lure', this.value)" class="w-full h-10 px-3 text-xs rounded-xl border border-slate-700 bg-slate-800 text-slate-200 font-medium">
+                        <option value="">🎣 All Lures</option>
+                        @foreach($lures as $lure)
+                            <option value="{{ $lure->id }}">{{ $lure->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label for="m-filter-trophy" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Trophy Status</label>
+                    <select id="m-filter-trophy" onchange="syncMobileFilter('filter-trophy', this.value)" class="w-full h-10 px-3 text-xs rounded-xl border border-slate-700 bg-slate-800 text-slate-200 font-medium">
+                        <option value="">🏆 All Catches</option>
+                        <option value="1">🏆 Trophies (≥10lbs / ≥20in)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="m-filter-year" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Season Year</label>
+                    <select id="m-filter-year" onchange="syncMobileFilter('filter-year', this.value)" class="w-full h-10 px-3 text-xs rounded-xl border border-slate-700 bg-slate-800 text-slate-200 font-medium">
+                        <option value="">📅 All Seasons</option>
+                        @foreach($years as $yr)
+                            <option value="{{ $yr }}">{{ $yr }} Season</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <!-- Done / Dismiss Button for Mobile -->
+            <div class="pt-1 flex gap-2">
+                <button type="button" onclick="toggleMobileFilters()" class="w-full py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl text-center shadow transition-colors">
+                    Done & View Lakes
                 </button>
-            </form>
+            </div>
         </div>
     </div>
 
-    <!-- Main Explorer Map & Slide Drawer Container -->
-    <div class="relative bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden" style="height: calc(100vh - 220px); min-height: 540px;">
-        <div id="explorer-map" class="w-full h-full z-0"></div>
+    <!-- Right Slide-Over Detail Drawer (Dark Option C Styling) -->
+    <div id="explorer-drawer" class="absolute top-0 right-[-450px] w-full sm:w-[420px] max-w-full h-full bg-slate-900 text-slate-200 shadow-2xl border-l border-slate-800 z-30 transition-all duration-300 ease-in-out overflow-y-auto">
+        <div class="p-4 bg-slate-950/90 border-b border-slate-800 flex items-center justify-between sticky top-0 backdrop-blur-md z-10">
+            <div>
+                <h2 id="drawer-lake-name" class="font-bold text-white text-base tracking-tight truncate max-w-[280px]">Lake Detail</h2>
+                <span id="drawer-lake-sub" class="text-xs text-teal-400 font-medium">Lake Catch Analytics</span>
+            </div>
+            <button type="button" onclick="closeLakeDrawer()" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
 
-        <!-- Right Slide-Over Detail Drawer (Dark Option C Styling) -->
-        <div id="explorer-drawer" class="absolute top-0 right-[-450px] w-[420px] max-w-full h-full bg-slate-900 text-slate-200 shadow-2xl border-l border-slate-800 z-30 transition-all duration-300 ease-in-out overflow-y-auto">
-            <div class="p-4 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between sticky top-0 backdrop-blur-md z-10">
-                <div>
-                    <h2 id="drawer-lake-name" class="font-bold text-white text-base tracking-tight">Lake Detail</h2>
-                    <span id="drawer-lake-sub" class="text-xs text-teal-400 font-medium">Lake Catch Analytics</span>
-                </div>
-                <button type="button" onclick="closeLakeDrawer()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+        <div id="drawer-loading" class="text-center py-12">
+            <i data-lucide="loader-2" class="w-8 h-8 text-teal-400 animate-spin mx-auto"></i>
+            <p class="mt-2 text-xs text-slate-400">Loading lake analytics...</p>
+        </div>
+
+        <div id="drawer-body" class="p-5 space-y-5" style="display: none;">
+            <!-- Lake Badges & Coordinates -->
+            <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                <span id="drawer-coords-badge" class="bg-teal-500/15 text-teal-300 border border-teal-500/30 px-2.5 py-1 rounded-lg font-medium">📍 Coordinates</span>
+                <span id="drawer-terrain-badge" class="bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-lg font-medium" style="display: none;">🌊 Terrain</span>
+                <span id="drawer-depth-badge" class="bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-lg font-medium" style="display: none;">📏 Depth</span>
             </div>
 
-            <div id="drawer-loading" class="text-center py-12">
-                <i data-lucide="loader-2" class="w-8 h-8 text-teal-400 animate-spin mx-auto"></i>
-                <p class="mt-2 text-xs text-slate-400">Loading lake analytics...</p>
+            <!-- Catch & Visit Stats Grid -->
+            <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/50">
+                    <span id="drawer-stat-catches" class="text-2xl font-black text-white block">0</span>
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Catches</span>
+                </div>
+                <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/50">
+                    <span id="drawer-stat-visits" class="text-2xl font-black text-emerald-400 block">0</span>
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Visits</span>
+                </div>
+                <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/50">
+                    <span id="drawer-stat-anglers" class="text-2xl font-black text-sky-400 block">0</span>
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Anglers</span>
+                </div>
             </div>
 
-            <div id="drawer-body" class="p-5 space-y-5" style="display: none;">
-                <!-- Lake Badges & Coordinates -->
-                <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                    <span id="drawer-coords-badge" class="bg-teal-500/15 text-teal-300 border border-teal-500/30 px-2.5 py-1 rounded-lg font-medium">📍 Coordinates</span>
-                    <span id="drawer-terrain-badge" class="bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-lg font-medium" style="display: none;">🌊 Terrain</span>
-                    <span id="drawer-depth-badge" class="bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-lg font-medium" style="display: none;">📏 Depth</span>
+            <!-- Record Highlights (Longest & Fattest) -->
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 border border-amber-500/30 space-y-2">
+                <div class="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
+                    <i data-lucide="trophy" class="w-4 h-4"></i>
+                    <span>Lake Trophy Records</span>
                 </div>
+                <div class="grid grid-cols-2 gap-3 pt-2 text-center border-t border-slate-700/60">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase text-slate-400 block">Longest</span>
+                        <span id="drawer-longest-val" class="text-lg font-bold text-white block">--</span>
+                        <span id="drawer-longest-breed" class="text-xs text-teal-300 block">--</span>
+                    </div>
+                    <div class="border-l border-slate-700/60">
+                        <span class="text-[10px] font-bold uppercase text-slate-400 block">Fattest</span>
+                        <span id="drawer-fattest-val" class="text-lg font-bold text-white block">--</span>
+                        <span id="drawer-fattest-breed" class="text-xs text-teal-300 block">--</span>
+                    </div>
+                </div>
+            </div>
 
-                <!-- Catch & Visit Stats Grid -->
-                <div class="grid grid-cols-3 gap-3 text-center">
-                    <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/50">
-                        <span id="drawer-stat-catches" class="text-2xl font-black text-white block">0</span>
-                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Catches</span>
-                    </div>
-                    <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/50">
-                        <span id="drawer-stat-visits" class="text-2xl font-black text-emerald-400 block">0</span>
-                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Visits</span>
-                    </div>
-                    <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700/50">
-                        <span id="drawer-stat-anglers" class="text-2xl font-black text-sky-400 block">0</span>
-                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Anglers</span>
-                    </div>
+            <!-- Species Catch Breakdown List -->
+            <div class="bg-slate-800/60 rounded-xl border border-slate-700/50 overflow-hidden">
+                <div class="px-4 py-2.5 bg-slate-800 border-b border-slate-700/60 font-bold text-xs text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="fish" class="w-3.5 h-3.5 text-teal-400"></i>
+                    <span>Species Breakdown</span>
                 </div>
+                <ul id="drawer-species-list" class="divide-y divide-slate-700/50 text-xs">
+                    <li class="p-3 text-slate-400 text-center italic">No catches recorded for active filter.</li>
+                </ul>
+            </div>
 
-                <!-- Record Highlights (Longest & Fattest) -->
-                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 border border-amber-500/30 space-y-2">
-                    <div class="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
-                        <i data-lucide="trophy" class="w-4 h-4"></i>
-                        <span>Lake Trophy Records</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3 pt-2 text-center border-t border-slate-700/60">
-                        <div>
-                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Longest</span>
-                            <span id="drawer-longest-val" class="text-lg font-bold text-white block">--</span>
-                            <span id="drawer-longest-breed" class="text-xs text-teal-300 block">--</span>
-                        </div>
-                        <div class="border-l border-slate-700/60">
-                            <span class="text-[10px] font-bold uppercase text-slate-400 block">Fattest</span>
-                            <span id="drawer-fattest-val" class="text-lg font-bold text-white block">--</span>
-                            <span id="drawer-fattest-breed" class="text-xs text-teal-300 block">--</span>
-                        </div>
-                    </div>
+            <!-- Top Producing Lures -->
+            <div class="bg-slate-800/60 rounded-xl border border-slate-700/50 overflow-hidden">
+                <div class="px-4 py-2.5 bg-slate-800 border-b border-slate-700/60 font-bold text-xs text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                    <i data-lucide="fishing-hook" class="w-3.5 h-3.5 text-teal-400"></i>
+                    <span>Top Producing Lures</span>
                 </div>
+                <ul id="drawer-lures-list" class="divide-y divide-slate-700/50 text-xs">
+                    <li class="p-3 text-slate-400 text-center italic">No lure records logged.</li>
+                </ul>
+            </div>
 
-                <!-- Species Catch Breakdown List -->
-                <div class="bg-slate-800/60 rounded-xl border border-slate-700/50 overflow-hidden">
-                    <div class="px-4 py-2.5 bg-slate-800 border-b border-slate-700/60 font-bold text-xs text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                        <i data-lucide="fish" class="w-3.5 h-3.5 text-teal-400"></i>
-                        <span>Species Breakdown</span>
-                    </div>
-                    <ul id="drawer-species-list" class="divide-y divide-slate-700/50 text-xs">
-                        <li class="p-3 text-slate-400 text-center italic">No catches recorded for active filter.</li>
-                    </ul>
-                </div>
-
-                <!-- Top Producing Lures -->
-                <div class="bg-slate-800/60 rounded-xl border border-slate-700/50 overflow-hidden">
-                    <div class="px-4 py-2.5 bg-slate-800 border-b border-slate-700/60 font-bold text-xs text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                        <i data-lucide="fishing-hook" class="w-3.5 h-3.5 text-teal-400"></i>
-                        <span>Top Producing Lures</span>
-                    </div>
-                    <ul id="drawer-lures-list" class="divide-y divide-slate-700/50 text-xs">
-                        <li class="p-3 text-slate-400 text-center italic">No lure records logged.</li>
-                    </ul>
-                </div>
-
-                <!-- Quick Action Buttons -->
-                <div class="grid grid-cols-2 gap-3 pt-2">
-                    <a id="drawer-quick-catch-btn" href="#" class="py-2.5 px-3 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl text-center shadow transition-colors flex items-center justify-center gap-1">
-                        <i data-lucide="zap" class="w-3.5 h-3.5"></i>
-                        <span>Quick Catch</span>
-                    </a>
-                    <a id="drawer-full-log-btn" href="#" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs rounded-xl text-center transition-colors flex items-center justify-center gap-1">
-                        <span>Full Log</span>
-                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                    </a>
-                </div>
+            <!-- Quick Action Buttons -->
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <a id="drawer-quick-catch-btn" href="#" class="py-2.5 px-3 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl text-center shadow transition-colors flex items-center justify-center gap-1">
+                    <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                    <span>Quick Catch</span>
+                </a>
+                <a id="drawer-full-log-btn" href="#" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs rounded-xl text-center transition-colors flex items-center justify-center gap-1">
+                    <span>Full Log</span>
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -178,7 +259,12 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         // Initialize Leaflet Map centered over Wawa / Northern Ontario
-        explorerMap = L.map('explorer-map').setView([48.15, -84.85], 9);
+        explorerMap = L.map('explorer-map', {
+            zoomControl: false
+        }).setView([48.15, -84.85], 9);
+
+        // Zoom Control repositioned to bottom-right for clean UI
+        L.control.zoom({ position: 'bottomright' }).addTo(explorerMap);
 
         // ESRI Topo Layer
         const topoLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
@@ -193,9 +279,9 @@
         });
 
         const layerControl = L.control.layers({
-            "🗺️ Topo / Waterbody": topoLayer,
-            "🛰️ Satellite Imagery": satLayer
-        }).addTo(explorerMap);
+            "🗺️ Topo": topoLayer,
+            "🛰️ Satellite": satLayer
+        }, null, { position: 'bottomleft' }).addTo(explorerMap);
 
         markersLayer = L.layerGroup().addTo(explorerMap);
         let fmzLayer = L.layerGroup();
@@ -233,14 +319,27 @@
             })
             .catch(err => console.log('FMZ GeoJSON overlay load status:', err));
 
+        // Prevent Leaflet touch & click propagation on floating panels
+        const floatingPanel = document.getElementById('explorer-floating-panel');
+        const explorerDrawer = document.getElementById('explorer-drawer');
+        if (floatingPanel) {
+            L.DomEvent.disableScrollPropagation(floatingPanel);
+            L.DomEvent.disableClickPropagation(floatingPanel);
+        }
+        if (explorerDrawer) {
+            L.DomEvent.disableScrollPropagation(explorerDrawer);
+            L.DomEvent.disableClickPropagation(explorerDrawer);
+        }
+
         // Listen for map pan/zoom events to query visible bounding box
         explorerMap.on('moveend zoomend', function () {
             debouncedFetchExplorerLakes();
         });
 
-        // Listen for filter dropdown changes
+        // Listen for desktop filter dropdown changes
         document.querySelectorAll('#explorer-filter-form select').forEach(select => {
             select.addEventListener('change', function () {
+                syncDesktopFilter(this.id, this.value);
                 fetchExplorerLakes();
                 if (activeSelectedLakeId) {
                     loadLakeDrawerDetail(activeSelectedLakeId);
@@ -250,7 +349,76 @@
 
         // Initial fetch
         fetchExplorerLakes();
+        updateActiveFilterBadge();
     });
+
+    function toggleMobileFilters() {
+        const drawer = document.getElementById('mobile-filter-drawer');
+        const btn = document.getElementById('mobile-filter-toggle-btn');
+        if (drawer.classList.contains('hidden')) {
+            drawer.classList.remove('hidden');
+            btn.classList.add('bg-teal-600', 'text-white', 'border-teal-500');
+            btn.classList.remove('bg-slate-800', 'text-slate-200', 'border-slate-700');
+        } else {
+            drawer.classList.add('hidden');
+            btn.classList.remove('bg-teal-600', 'text-white', 'border-teal-500');
+            btn.classList.add('bg-slate-800', 'text-slate-200', 'border-slate-700');
+        }
+        if (window.initLucideIcons) window.initLucideIcons();
+    }
+
+    function syncMobileFilter(targetDesktopId, value) {
+        const desktopEl = document.getElementById(targetDesktopId);
+        if (desktopEl) {
+            desktopEl.value = value;
+        }
+        updateActiveFilterBadge();
+        fetchExplorerLakes();
+        if (activeSelectedLakeId) {
+            loadLakeDrawerDetail(activeSelectedLakeId);
+        }
+    }
+
+    function syncDesktopFilter(desktopId, value) {
+        const mobileIdMap = {
+            'filter-species': 'm-filter-species',
+            'filter-angler': 'm-filter-angler',
+            'filter-lure': 'm-filter-lure',
+            'filter-trophy': 'm-filter-trophy',
+            'filter-year': 'm-filter-year'
+        };
+        const mobileId = mobileIdMap[desktopId];
+        if (mobileId) {
+            const mobileEl = document.getElementById(mobileId);
+            if (mobileEl) mobileEl.value = value;
+        }
+        updateActiveFilterBadge();
+    }
+
+    function updateActiveFilterBadge() {
+        const species = document.getElementById('filter-species').value;
+        const angler = document.getElementById('filter-angler').value;
+        const lure = document.getElementById('filter-lure').value;
+        const trophy = document.getElementById('filter-trophy').value;
+        const year = document.getElementById('filter-year').value;
+
+        let activeCount = 0;
+        if (species) activeCount++;
+        if (angler) activeCount++;
+        if (lure) activeCount++;
+        if (trophy) activeCount++;
+        if (year) activeCount++;
+
+        const badge = document.getElementById('mobile-filter-count-badge');
+        if (badge) {
+            if (activeCount > 0) {
+                badge.innerText = activeCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+    }
 
     function debouncedFetchExplorerLakes() {
         clearTimeout(debounceTimer);
@@ -285,7 +453,7 @@
                 markersLayer.clearLayers();
 
                 const lakes = resData.data || [];
-                document.getElementById('lake-count-badge').innerText = `${lakes.length} Lake(s) in View`;
+                document.getElementById('lake-count-badge').innerText = `${lakes.length} Lake${lakes.length === 1 ? '' : 's'}`;
 
                 lakes.forEach(lake => {
                     if (lake.latitude && lake.longitude) {
@@ -443,6 +611,19 @@
         document.getElementById('filter-lure').value = '';
         document.getElementById('filter-trophy').value = '';
         document.getElementById('filter-year').value = '';
+
+        const mSpecies = document.getElementById('m-filter-species');
+        const mAngler = document.getElementById('m-filter-angler');
+        const mLure = document.getElementById('m-filter-lure');
+        const mTrophy = document.getElementById('m-filter-trophy');
+        const mYear = document.getElementById('m-filter-year');
+        if (mSpecies) mSpecies.value = '';
+        if (mAngler) mAngler.value = '';
+        if (mLure) mLure.value = '';
+        if (mTrophy) mTrophy.value = '';
+        if (mYear) mYear.value = '';
+
+        updateActiveFilterBadge();
         fetchExplorerLakes();
         if (activeSelectedLakeId) {
             loadLakeDrawerDetail(activeSelectedLakeId);

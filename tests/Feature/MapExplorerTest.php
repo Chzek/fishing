@@ -25,6 +25,13 @@ class MapExplorerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Lake Explorer');
+        $response->assertSee('explorer-floating-panel');
+        $response->assertSee('mobile-filter-drawer');
+        $response->assertSee('filter-species');
+        $response->assertSee('filter-angler');
+        $response->assertSee('filter-lure');
+        $response->assertSee('filter-trophy');
+        $response->assertSee('filter-year');
     }
 
     public function test_explorer_lakes_api_returns_lakes_in_bounding_box_with_filters(): void
