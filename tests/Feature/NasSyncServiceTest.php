@@ -191,4 +191,48 @@ class NasSyncServiceTest extends TestCase
         $this->assertEquals(['Lakes & Waters' => 1], $result['pushed_breakdown']);
         $this->assertEquals(['Lakes & Waters' => 1], $result['pulled_breakdown']);
     }
+
+    #[Test]
+    public function it_performs_full_baseline_pull_ignoring_last_synced_at()
+    {
+        // Set a cached last_synced_at in the future
+        \Illuminate\Support\Facades\Cache::forever('nas_last_synced_at', '2026-08-16T12:00:00Z');
+
+        $remoteLakeUuid = '77777777-7777-7777-7777-777777777777';
+
+        Http::fake([
+            'https://nas.example.com/api/v1/sync/pull*' => function (\Illuminate\Http\Client\Request $request) use ($remoteLakeUuid) {
+                // In baseline mode, 'since' query parameter should not be present
+                $url = $request->url();
+                $hasSince = str_contains($url, 'since=');
+
+                if (!$hasSince) {
+                    return Http::response([
+                        'lakes' => [
+                            [
+                                'id' => $remoteLakeUuid,
+                                'name' => 'Baseline Pulled Lake',
+                                'latitude' => 45.5,
+                                'longitude' => -78.5,
+                                'updated_at' => '2026-01-01T10:00:00Z', // older than cache
+                            ]
+                        ],
+                        'server_timestamp' => '2026-08-16T15:00:00Z',
+                    ], 200);
+                }
+
+                return Http::response(['lakes' => []], 200);
+            },
+        ]);
+
+        $service = new NasSyncService('https://nas.example.com', 'test-token');
+        $result = $service->sync(forceBaseline: true);
+
+        $this->assertEquals(1, $result['pulled']);
+        $this->assertTrue($result['is_baseline']);
+        $this->assertDatabaseHas('lakes', [
+            'id' => $remoteLakeUuid,
+            'name' => 'Baseline Pulled Lake',
+        ]);
+    }
 }

@@ -12,7 +12,7 @@ class SyncWithNasCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'sync:nas {--url= : Override NAS URL} {--token= : Override NAS API Token}';
+    protected $signature = 'sync:nas {--url= : Override NAS URL} {--token= : Override NAS API Token} {--baseline : Force full baseline synchronization without timestamp filtering}';
 
     /**
      * The console command description.
@@ -26,7 +26,8 @@ class SyncWithNasCommand extends Command
      */
     public function handle(NasSyncService $defaultSyncService): int
     {
-        $this->info('Starting Synology NAS Two-Way Synchronization...');
+        $forceBaseline = (bool) $this->option('baseline');
+        $this->info($forceBaseline ? 'Starting Full Baseline Synology NAS Synchronization...' : 'Starting Synology NAS Two-Way Synchronization...');
 
         $nasUrl = $this->option('url');
         $token = $this->option('token');
@@ -39,12 +40,12 @@ class SyncWithNasCommand extends Command
             $pendingCount = $syncService->getPendingCount();
             $this->line("Found {$pendingCount} local record(s) pending upstream sync.");
 
-            $result = $syncService->sync();
+            $result = $syncService->sync(forceBaseline: $forceBaseline);
 
             $this->info('Synchronization finished successfully!');
             $this->table(
-                ['Pushed Upstream', 'Pulled Downstream', 'Last Synced At'],
-                [[$result['pushed'], $result['pulled'], $result['last_synced_at']]]
+                ['Pushed Upstream', 'Pulled Downstream', 'Last Synced At', 'Baseline Mode'],
+                [[$result['pushed'], $result['pulled'], $result['last_synced_at'], $forceBaseline ? 'Yes' : 'No']]
             );
 
             return Command::SUCCESS;

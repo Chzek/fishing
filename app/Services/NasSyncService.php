@@ -106,7 +106,7 @@ class NasSyncService
     /**
      * Execute full two-way sync with NAS server.
      */
-    public function sync(): array
+    public function sync(bool $forceBaseline = false): array
     {
         if (empty($this->nasUrl)) {
             throw new \RuntimeException('NAS URL is not configured. Set NAS_URL in environment.');
@@ -167,8 +167,8 @@ class NasSyncService
         }
 
         // 3. Execute Pull for downstream updates
-        $lastSyncedAt = $this->getLastSyncedAt();
-        $pullQueryParams = $lastSyncedAt ? ['since' => $lastSyncedAt] : [];
+        $lastSyncedAt = $forceBaseline ? null : $this->getLastSyncedAt();
+        $pullQueryParams = $lastSyncedAt ? ['since' => $lastSyncedAt, 'mark_synced' => 1] : ['mark_synced' => 1];
 
         $pullResponse = Http::withToken($this->apiToken)
             ->acceptJson()
@@ -216,7 +216,7 @@ class NasSyncService
                     $incomingUpdated = isset($remoteItem['updated_at']) ? Carbon::parse($remoteItem['updated_at']) : null;
                     $localUpdated = $existing->updated_at ? Carbon::parse($existing->updated_at) : null;
 
-                    if (!$localUpdated || ($incomingUpdated && $incomingUpdated->greaterThanOrEqualTo($localUpdated))) {
+                    if ($forceBaseline || !$localUpdated || ($incomingUpdated && $incomingUpdated->greaterThanOrEqualTo($localUpdated))) {
                         $existing->forceFill($filtered)->save();
                         $pulledCount++;
                         $label = $this->modelLabels[$key] ?? ucfirst(str_replace('_', ' ', $key));
@@ -240,6 +240,7 @@ class NasSyncService
             'pushed_breakdown' => $pushedBreakdown,
             'pulled_breakdown' => $pulledBreakdown,
             'last_synced_at' => $nowTimestamp,
+            'is_baseline' => $forceBaseline,
         ];
     }
 }

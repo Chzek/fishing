@@ -116,13 +116,22 @@
                 </div>
             </div>
 
-            <form action="{{ route('admin.sync.trigger') }}" method="POST">
-                @csrf
-                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all shrink-0 cursor-pointer">
-                    <i data-lucide="cloud-sync" class="w-4 h-4"></i>
-                    <span>Sync Now with NAS</span>
-                </button>
-            </form>
+            <div class="flex flex-col sm:flex-row items-stretch gap-2 pt-1">
+                <form action="{{ route('admin.sync.trigger') }}" method="POST" class="flex-1">
+                    @csrf
+                    <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all cursor-pointer">
+                        <i data-lucide="cloud-sync" class="w-4 h-4"></i>
+                        <span>Sync Now with NAS</span>
+                    </button>
+                </form>
+                <form action="{{ route('admin.sync.baseline') }}" method="POST" onsubmit="return confirm('Perform a Full Baseline Pull from NAS? This will pull and reconcile all records regardless of timestamps.');">
+                    @csrf
+                    <button type="submit" title="Pull and reconcile all records from NAS from scratch" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 font-bold text-xs rounded-xl transition-all cursor-pointer shadow-sm">
+                        <i data-lucide="cloud-download" class="w-4 h-4 text-teal-400"></i>
+                        <span class="whitespace-nowrap">Baseline Pull</span>
+                    </button>
+                </form>
+            </div>
         </div>
 
         <!-- Weather Telemetry Sync Console -->

@@ -58,7 +58,7 @@ class NasSyncApiTest extends TestCase
     }
 
     #[Test]
-    public function admin_can_pull_updated_models_since_timestamp()
+    public function admin_can_pull_updated_models_since_timestamp_and_mark_served_as_synced()
     {
         $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
         $lake = Lake::create([
@@ -67,12 +67,16 @@ class NasSyncApiTest extends TestCase
             'longitude' => -78.2,
         ]);
         $lake->touch(); // ensure updated_at is recent
+        $this->assertEquals('pending_upstream', $lake->fresh()->sync_status);
 
-        $response = $this->actingAs($admin)->getJson('/api/v1/sync/pull?since=2026-01-01T00:00:00Z');
+        $response = $this->actingAs($admin)->getJson('/api/v1/sync/pull?since=2026-01-01T00:00:00Z&mark_synced=1');
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['lakes', 'records', 'anglers', 'server_timestamp']);
         $this->assertNotEmpty($response->json('lakes'));
+
+        // Verify server marked served record as synced
+        $this->assertEquals('synced', $lake->fresh()->sync_status);
     }
 
     #[Test]

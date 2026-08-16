@@ -56,4 +56,26 @@ class AdminNasSyncConsoleTest extends TestCase
         $response->assertRedirect(route('admin'));
         $response->assertSessionHas('status', 'NAS Sync completed! Pushed 2 items (2 Catches), pulled 1 items (1 Lakes & Waters).');
     }
+
+    #[Test]
+    public function admin_trigger_baseline_sync_redirects_with_baseline_status()
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+
+        $this->mock(NasSyncService::class, function ($mock) {
+            $mock->shouldReceive('sync')->once()->with(true)->andReturn([
+                'pushed' => 0,
+                'pulled' => 34,
+                'pushed_breakdown' => [],
+                'pulled_breakdown' => ['Catches' => 34],
+                'last_synced_at' => now()->toIso8601String(),
+                'is_baseline' => true,
+            ]);
+        });
+
+        $response = $this->actingAs($admin)->post('/admin/sync/baseline');
+
+        $response->assertRedirect(route('admin'));
+        $response->assertSessionHas('status', 'Full Baseline NAS Sync completed! Pushed 0 items, pulled 34 items (34 Catches).');
+    }
 }

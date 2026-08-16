@@ -150,7 +150,19 @@ class SyncApiController extends Controller
                 $query->withTrashed();
             }
 
-            $payload[$key] = $query->get()->map(function ($item) use ($key) {
+            $items = $query->get();
+
+            // When requested, mark served records that were pending on server as synced
+            if ($request->boolean('mark_synced', false) && $items->isNotEmpty()) {
+                $modelClass::whereIn('id', $items->pluck('id'))
+                    ->where('sync_status', 'pending_upstream')
+                    ->update([
+                        'sync_status' => 'synced',
+                        'synced_at' => now(),
+                    ]);
+            }
+
+            $payload[$key] = $items->map(function ($item) use ($key) {
                 $data = $item->toArray();
                 if ($key === 'photos' && !empty($item->path) && \Illuminate\Support\Facades\Storage::disk('public')->exists($item->path)) {
                     $data['file_base64'] = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($item->path));

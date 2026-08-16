@@ -60,6 +60,7 @@ Route::prefix('profile')->group(function () {
 Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
     Route::post('/sync/trigger', [AdminController::class, 'triggerSync'])->name('admin.sync.trigger');
+    Route::post('/sync/baseline', [AdminController::class, 'triggerBaselineSync'])->name('admin.sync.baseline');
     Route::post('/weather/sync', [AdminController::class, 'triggerWeatherSync'])->name('admin.weather.sync');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
     Route::post('/users/invite', [Fishinglog\Http\Controllers\Admin\AdminInviteController::class, 'invite'])->name('admin.users.invite');

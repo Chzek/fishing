@@ -110,6 +110,23 @@ class AdminController extends Controller
         }
     }
 
+    public function triggerBaselineSync(\Fishinglog\Services\NasSyncService $syncService)
+    {
+        try {
+            $result = $syncService->sync(forceBaseline: true);
+            $pushedDetails = !empty($result['pushed_breakdown'])
+                ? ' (' . collect($result['pushed_breakdown'])->map(fn($c, $k) => "$c $k")->join(', ') . ')'
+                : '';
+            $pulledDetails = !empty($result['pulled_breakdown'])
+                ? ' (' . collect($result['pulled_breakdown'])->map(fn($c, $k) => "$c $k")->join(', ') . ')'
+                : '';
+
+            return redirect()->route('admin')->with('status', "Full Baseline NAS Sync completed! Pushed {$result['pushed']} items{$pushedDetails}, pulled {$result['pulled']} items{$pulledDetails}.");
+        } catch (\Throwable $e) {
+            return redirect()->route('admin')->with('error', "Baseline NAS Sync failed: {$e->getMessage()}");
+        }
+    }
+
     public function triggerWeatherSync()
     {
         try {
