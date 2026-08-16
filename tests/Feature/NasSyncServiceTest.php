@@ -235,4 +235,63 @@ class NasSyncServiceTest extends TestCase
             'name' => 'Baseline Pulled Lake',
         ]);
     }
+
+    #[Test]
+    public function it_marks_all_pending_models_as_synced()
+    {
+        $lake1 = Lake::create(['name' => 'Lake 1', 'latitude' => 45.0, 'longitude' => -78.0]);
+        $lake2 = Lake::create(['name' => 'Lake 2', 'latitude' => 45.1, 'longitude' => -78.1]);
+        $angler = \Fishinglog\Models\Angler::create(['firstName' => 'John', 'middleName' => '', 'lastName' => 'Doe']);
+
+        $this->assertEquals('pending_upstream', $lake1->fresh()->sync_status);
+        $this->assertEquals('pending_upstream', $lake2->fresh()->sync_status);
+        $this->assertEquals('pending_upstream', $angler->fresh()->sync_status);
+
+        $service = new NasSyncService('https://nas.example.com', 'test-token');
+        $count = $service->markAllSynced();
+
+        $this->assertEquals(3, $count);
+        $this->assertEquals('synced', $lake1->fresh()->sync_status);
+        $this->assertEquals('synced', $lake2->fresh()->sync_status);
+        $this->assertEquals('synced', $angler->fresh()->sync_status);
+        $this->assertEquals(0, $service->getPendingCount());
+    }
+
+    #[Test]
+    public function it_preserves_synced_status_and_timestamps_when_pulling_existing_records()
+    {
+        $lake = Lake::create(['name' => 'Existing Lake', 'latitude' => 45.0, 'longitude' => -78.0]);
+        $lake->timestamps = false;
+        $lake->updated_at = \Illuminate\Support\Carbon::parse('2026-08-16T08:00:00Z');
+        $lake->markSynced();
+        $this->assertEquals('synced', $lake->fresh()->sync_status);
+
+        $remoteUpdatedAt = '2026-08-16T10:00:00Z';
+
+        Http::fake([
+            'https://nas.example.com/api/v1/sync/push' => Http::response(['status' => 'success', 'synced_uuids' => []], 200),
+            'https://nas.example.com/api/v1/sync/pull*' => Http::response([
+                'lakes' => [
+                    [
+                        'id' => $lake->id,
+                        'name' => 'Existing Lake (Updated Name from NAS)',
+                        'latitude' => 45.0,
+                        'longitude' => -78.0,
+                        'updated_at' => $remoteUpdatedAt,
+                    ]
+                ],
+                'server_timestamp' => '2026-08-16T15:00:00Z',
+            ], 200),
+        ]);
+
+        $service = new NasSyncService('https://nas.example.com', 'test-token');
+        $result = $service->sync();
+
+        $this->assertEquals(1, $result['pulled']);
+        
+        $freshLake = $lake->fresh();
+        $this->assertEquals('Existing Lake (Updated Name from NAS)', $freshLake->name);
+        $this->assertEquals('synced', $freshLake->sync_status, 'Sync status must remain synced and not be flipped to pending_upstream by model event');
+        $this->assertEquals(0, $service->getPendingCount());
+    }
 }

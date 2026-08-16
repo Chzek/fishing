@@ -94,12 +94,25 @@ class SyncApiController extends Controller
                 $attributes['sync_status'] = 'synced';
                 $attributes['synced_at'] = now();
 
+                if (!empty($attributes['created_at'])) {
+                    $attributes['created_at'] = Carbon::parse($attributes['created_at']);
+                }
+                if (!empty($attributes['updated_at'])) {
+                    $attributes['updated_at'] = Carbon::parse($attributes['updated_at']);
+                }
+                if (!empty($attributes['deleted_at'])) {
+                    $attributes['deleted_at'] = Carbon::parse($attributes['deleted_at']);
+                }
+
                 $entity = $existing ?? new $modelClass();
                 $columns = \Illuminate\Support\Facades\Schema::getColumnListing($entity->getTable());
                 $filtered = array_intersect_key($attributes, array_flip($columns));
 
                 if (!$existing) {
-                    $entity->forceFill($filtered)->save();
+                    $entity->timestamps = false;
+                    $entity->forceFill($filtered);
+                    $entity->saveQuietly();
+                    $entity->timestamps = true;
                     $syncedUuids[] = $id;
                     $processedCount++;
                 } else {
@@ -107,12 +120,18 @@ class SyncApiController extends Controller
                     $localUpdated = $existing->updated_at ? Carbon::parse($existing->updated_at) : null;
 
                     if (!$localUpdated || ($incomingUpdated && $incomingUpdated->greaterThanOrEqualTo($localUpdated))) {
-                        $existing->forceFill($filtered)->save();
+                        $existing->timestamps = false;
+                        $existing->forceFill($filtered);
+                        $existing->saveQuietly();
+                        $existing->timestamps = true;
                     } else {
+                        $existing->timestamps = false;
                         $existing->forceFill([
                             'sync_status' => 'synced',
                             'synced_at' => now(),
-                        ])->save();
+                        ]);
+                        $existing->saveQuietly();
+                        $existing->timestamps = true;
                     }
 
                     $syncedUuids[] = $id;

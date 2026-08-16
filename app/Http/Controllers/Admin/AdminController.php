@@ -127,6 +127,16 @@ class AdminController extends Controller
         }
     }
 
+    public function markAllSynced(\Fishinglog\Services\NasSyncService $syncService)
+    {
+        try {
+            $count = $syncService->markAllSynced();
+            return redirect()->route('admin')->with('status', "Successfully marked {$count} local record(s) as synced.");
+        } catch (\Throwable $e) {
+            return redirect()->route('admin')->with('error', "Failed to mark records synced: {$e->getMessage()}");
+        }
+    }
+
     public function triggerWeatherSync()
     {
         try {

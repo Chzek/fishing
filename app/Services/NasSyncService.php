@@ -203,12 +203,25 @@ class NasSyncService
                 $attributes['sync_status'] = 'synced';
                 $attributes['synced_at'] = now();
 
+                if (!empty($attributes['created_at'])) {
+                    $attributes['created_at'] = Carbon::parse($attributes['created_at']);
+                }
+                if (!empty($attributes['updated_at'])) {
+                    $attributes['updated_at'] = Carbon::parse($attributes['updated_at']);
+                }
+                if (!empty($attributes['deleted_at'])) {
+                    $attributes['deleted_at'] = Carbon::parse($attributes['deleted_at']);
+                }
+
                 $entity = $existing ?? new $modelClass();
                 $columns = \Illuminate\Support\Facades\Schema::getColumnListing($entity->getTable());
                 $filtered = array_intersect_key($attributes, array_flip($columns));
 
                 if (!$existing) {
-                    $entity->forceFill($filtered)->save();
+                    $entity->timestamps = false;
+                    $entity->forceFill($filtered);
+                    $entity->saveQuietly();
+                    $entity->timestamps = true;
                     $pulledCount++;
                     $label = $this->modelLabels[$key] ?? ucfirst(str_replace('_', ' ', $key));
                     $pulledBreakdown[$label] = ($pulledBreakdown[$label] ?? 0) + 1;
@@ -217,15 +230,21 @@ class NasSyncService
                     $localUpdated = $existing->updated_at ? Carbon::parse($existing->updated_at) : null;
 
                     if ($forceBaseline || !$localUpdated || ($incomingUpdated && $incomingUpdated->greaterThanOrEqualTo($localUpdated))) {
-                        $existing->forceFill($filtered)->save();
+                        $existing->timestamps = false;
+                        $existing->forceFill($filtered);
+                        $existing->saveQuietly();
+                        $existing->timestamps = true;
                         $pulledCount++;
                         $label = $this->modelLabels[$key] ?? ucfirst(str_replace('_', ' ', $key));
                         $pulledBreakdown[$label] = ($pulledBreakdown[$label] ?? 0) + 1;
                     } else {
+                        $existing->timestamps = false;
                         $existing->forceFill([
                             'sync_status' => 'synced',
                             'synced_at' => now(),
-                        ])->save();
+                        ]);
+                        $existing->saveQuietly();
+                        $existing->timestamps = true;
                     }
                 }
             }
@@ -242,5 +261,21 @@ class NasSyncService
             'last_synced_at' => $nowTimestamp,
             'is_baseline' => $forceBaseline,
         ];
+    }
+
+    /**
+     * Mark all local records across all syncable models as synced.
+     */
+    public function markAllSynced(): int
+    {
+        $total = 0;
+        foreach ($this->modelMap as $modelClass) {
+            $total += $modelClass::where('sync_status', '!=', 'synced')
+                ->update([
+                    'sync_status' => 'synced',
+                    'synced_at' => now(),
+                ]);
+        }
+        return $total;
     }
 }

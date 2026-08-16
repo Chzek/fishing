@@ -12,7 +12,7 @@ class SyncWithNasCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'sync:nas {--url= : Override NAS URL} {--token= : Override NAS API Token} {--baseline : Force full baseline synchronization without timestamp filtering}';
+    protected $signature = 'sync:nas {--url= : Override NAS URL} {--token= : Override NAS API Token} {--baseline : Force full baseline synchronization without timestamp filtering} {--mark-synced : Mark all local records as synced without pushing/pulling}';
 
     /**
      * The console command description.
@@ -26,15 +26,22 @@ class SyncWithNasCommand extends Command
      */
     public function handle(NasSyncService $defaultSyncService): int
     {
-        $forceBaseline = (bool) $this->option('baseline');
-        $this->info($forceBaseline ? 'Starting Full Baseline Synology NAS Synchronization...' : 'Starting Synology NAS Two-Way Synchronization...');
-
         $nasUrl = $this->option('url');
         $token = $this->option('token');
 
         $syncService = ($nasUrl || $token) 
             ? new NasSyncService($nasUrl, $token) 
             : $defaultSyncService;
+
+        if ($this->option('mark-synced')) {
+            $this->info('Marking all local records across all models as synced...');
+            $count = $syncService->markAllSynced();
+            $this->info("Successfully marked {$count} local record(s) as synced.");
+            return Command::SUCCESS;
+        }
+
+        $forceBaseline = (bool) $this->option('baseline');
+        $this->info($forceBaseline ? 'Starting Full Baseline Synology NAS Synchronization...' : 'Starting Synology NAS Two-Way Synchronization...');
 
         try {
             $pendingCount = $syncService->getPendingCount();

@@ -78,4 +78,19 @@ class AdminNasSyncConsoleTest extends TestCase
         $response->assertRedirect(route('admin'));
         $response->assertSessionHas('status', 'Full Baseline NAS Sync completed! Pushed 0 items, pulled 34 items (34 Catches).');
     }
+
+    #[Test]
+    public function admin_trigger_mark_all_synced_redirects_with_status()
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+
+        $this->mock(NasSyncService::class, function ($mock) {
+            $mock->shouldReceive('markAllSynced')->once()->andReturn(12);
+        });
+
+        $response = $this->actingAs($admin)->post('/admin/sync/mark-synced');
+
+        $response->assertRedirect(route('admin'));
+        $response->assertSessionHas('status', 'Successfully marked 12 local record(s) as synced.');
+    }
 }

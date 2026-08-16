@@ -135,4 +135,38 @@ class NasSyncApiTest extends TestCase
         $this->assertNotEmpty($pulledPhotos);
         $this->assertEquals(base64_encode($imageContent), $pulledPhotos[0]['file_base64']);
     }
+
+    #[Test]
+    public function it_preserves_synced_status_and_timestamps_on_server_during_push()
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+        $lake = Lake::create([
+            'name' => 'Original Server Lake',
+            'latitude' => 45.0,
+            'longitude' => -78.0,
+        ]);
+        $lake->timestamps = false;
+        $lake->updated_at = \Illuminate\Support\Carbon::parse('2026-08-16T08:00:00Z');
+        $lake->markSynced();
+        $this->assertEquals('synced', $lake->fresh()->sync_status);
+
+        $payload = [
+            'lakes' => [
+                [
+                    'id' => $lake->id,
+                    'name' => 'Original Server Lake (Updated from Laptop)',
+                    'latitude' => 45.0,
+                    'longitude' => -78.0,
+                    'updated_at' => '2026-08-16T12:00:00Z',
+                ]
+            ]
+        ];
+
+        $response = $this->actingAs($admin)->postJson('/api/v1/sync/push', $payload);
+        $response->assertStatus(200);
+
+        $freshLake = $lake->fresh();
+        $this->assertEquals('Original Server Lake (Updated from Laptop)', $freshLake->name);
+        $this->assertEquals('synced', $freshLake->sync_status, 'Server must preserve sync_status as synced during push ingestion');
+    }
 }

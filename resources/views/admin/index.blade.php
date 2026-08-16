@@ -131,6 +131,13 @@
                         <span class="whitespace-nowrap">Baseline Pull</span>
                     </button>
                 </form>
+                <form action="{{ route('admin.sync.mark_synced') }}" method="POST" onsubmit="return confirm('Mark all local records as synced? Use this if your records are already identical on NAS and you wish to clear pending outbox status.');">
+                    @csrf
+                    <button type="submit" title="Mark all local records as synced without pushing/pulling" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-slate-800/60 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 font-semibold text-xs rounded-xl transition-all cursor-pointer shadow-sm">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+                        <span class="whitespace-nowrap">Mark All Synced</span>
+                    </button>
+                </form>
             </div>
         </div>
 
