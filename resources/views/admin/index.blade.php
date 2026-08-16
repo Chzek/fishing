@@ -38,6 +38,75 @@
         </div>
     @endif
 
+    <!-- Unread User Registration Notifications & Unlinked Accounts Banner -->
+    @if(!empty($unreadNotifications) && $unreadNotifications->count() > 0)
+        <div class="bg-gradient-to-r from-amber-950/80 via-slate-900 to-slate-900 border border-amber-500/40 rounded-2xl p-5 shadow-lg space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                        <i data-lucide="bell" class="w-5 h-5 animate-bounce"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                            <span>New User Registration Alert</span>
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">{{ $unreadNotifications->count() }} New</span>
+                        </h2>
+                        <p class="text-xs text-amber-200/90 mt-0.5">
+                            New user accounts have registered and are waiting to be paired with an Angler profile.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('admin.users') }}" class="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5">
+                        <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                        <span>Pair in User Accounts →</span>
+                    </a>
+                    <form action="{{ route('admin.notifications.mark_read') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold text-xs rounded-xl border border-slate-700 transition-colors">
+                            Dismiss All
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- List of Unread Notifications -->
+            <div class="divide-y divide-slate-800 border-t border-slate-800/80 pt-2 space-y-2">
+                @foreach($unreadNotifications as $notification)
+                    <div class="flex items-center justify-between text-xs text-slate-300 pt-2">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="user-plus" class="w-3.5 h-3.5 text-teal-400 shrink-0"></i>
+                            <span>{{ $notification->data['message'] ?? 'New user registered.' }}</span>
+                            <span class="text-[10px] text-slate-500 font-mono">({{ $notification->created_at->diffForHumans() }})</span>
+                        </div>
+                        <form action="{{ route('admin.notifications.mark_single_read', $notification->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="text-[11px] text-slate-400 hover:text-slate-200 hover:underline">
+                                Dismiss
+                            </button>
+                        </form>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @elseif(!empty($unlinkedUsersCount) && $unlinkedUsersCount > 0)
+        <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                    <i data-lucide="user-x" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-white">Unlinked Registered Accounts ({{ $unlinkedUsersCount }})</h3>
+                    <p class="text-[11px] text-amber-300/80">There are {{ $unlinkedUsersCount }} registered user account(s) not linked to an Angler profile.</p>
+                </div>
+            </div>
+            <a href="{{ route('admin.users') }}" class="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow transition-colors">
+                Manage Linkings →
+            </a>
+        </div>
+    @endif
+
     <!-- Synchronization Engine Consoles Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Two-Way Sync Console -->

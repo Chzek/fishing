@@ -92,7 +92,22 @@ class AdminController extends Controller
             'weatherCoverageRate' => $weatherCoverageRate,
             'pendingWeatherSyncCount' => $pendingWeatherSyncCount,
             'missingCoordsRecordsCount' => $missingCoordsRecordsCount,
+            'unreadNotifications' => auth()->user()->unreadNotifications,
+            'unlinkedUsersCount' => User::doesntHave('angler')->count(),
         ]);
+    }
+
+    public function markAllNotificationsRead()
+    {
+        auth()->user()->unreadNotifications->markAsRead();
+        return back()->with('status', 'All notifications marked as read.');
+    }
+
+    public function markNotificationRead($id)
+    {
+        $notification = auth()->user()->notifications()->findOrFail($id);
+        $notification->markAsRead();
+        return back()->with('status', 'Notification dismissed.');
     }
 
     public function triggerSync(\Fishinglog\Services\NasSyncService $syncService)
@@ -159,6 +174,7 @@ class AdminController extends Controller
         return view('admin.users.index', [
             'users' => $users,
             'anglers' => $anglers,
+            'unreadNotifications' => auth()->user()->unreadNotifications,
         ]);
     }
 
@@ -178,6 +194,13 @@ class AdminController extends Controller
             $angler = Angler::findOrFail($request->angler_id);
             $angler->user_id = $user->id;
             $angler->save();
+        }
+
+        // Auto-mark registration notifications for this user as read
+        foreach (auth()->user()->unreadNotifications as $notification) {
+            if (isset($notification->data['user_id']) && $notification->data['user_id'] == $user->id) {
+                $notification->markAsRead();
+            }
         }
 
         return redirect()->route('admin.users')->with('status', "Angler assignment updated for user {$user->name}.");

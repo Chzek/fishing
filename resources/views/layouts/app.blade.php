@@ -117,17 +117,37 @@
                     </a>
 
                     @if(Auth::user()->isAdmin())
-                        <div class="px-3 pt-4 pb-2 text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                            <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-400"></i>
-                            <span>Admin Console</span>
+                        @php
+                            $adminUnreadNotificationsCount = Auth::user()->unreadNotifications()->count();
+                            $unlinkedUsersCount = \Fishinglog\Models\User::doesntHave('angler')->count();
+                            $adminAlertCount = max($adminUnreadNotificationsCount, $unlinkedUsersCount);
+                        @endphp
+                        <div class="px-3 pt-4 pb-2 text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
+                            <span class="flex items-center gap-1.5">
+                                <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-400"></i>
+                                <span>Admin Console</span>
+                            </span>
+                            @if($adminAlertCount > 0)
+                                <span class="px-1.5 py-0.2 bg-amber-500 text-slate-950 font-black text-[10px] rounded-full animate-pulse">{{ $adminAlertCount }}</span>
+                            @endif
                         </div>
-                        <a href="{{ route('admin') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('admin') ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
-                            <span>Admin Overview</span>
+                        <a href="{{ route('admin') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('admin') ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+                                <span>Admin Overview</span>
+                            </div>
+                            @if($adminUnreadNotificationsCount > 0)
+                                <span class="px-1.5 py-0.2 bg-amber-400 text-slate-950 font-bold text-[10px] rounded-full">{{ $adminUnreadNotificationsCount }}</span>
+                            @endif
                         </a>
-                        <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('admin/users*') ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                            <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i>
-                            <span>User Accounts</span>
+                        <a href="{{ route('admin.users') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('admin/users*') ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i>
+                                <span>User Accounts</span>
+                            </div>
+                            @if($unlinkedUsersCount > 0)
+                                <span class="px-1.5 py-0.2 bg-amber-400 text-slate-950 font-bold text-[10px] rounded-full" title="{{ $unlinkedUsersCount }} unlinked user(s)">{{ $unlinkedUsersCount }}</span>
+                            @endif
                         </a>
                         <a href="{{ route('admin.trash') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('admin/trash*') ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
                             <i data-lucide="trash-2" class="w-4 h-4 text-amber-400"></i>
@@ -159,8 +179,11 @@
 
                         <div class="flex items-center gap-1">
                             @if(Auth()->user()->type === "admin")
-                                <a href="/admin" title="Admin Portal" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+                                <a href="/admin" title="Admin Portal" class="relative p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
                                     <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+                                    @if(Auth::user()->unreadNotifications()->count() > 0 || \Fishinglog\Models\User::doesntHave('angler')->count() > 0)
+                                        <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-slate-900 animate-pulse"></span>
+                                    @endif
                                 </a>
                             @endif
                             <a href="{{ route('logout') }}" title="Logout"
@@ -192,6 +215,14 @@
 
             <div class="flex items-center gap-2">
                 @auth
+                    @if(Auth::user()->isAdmin())
+                        <a href="{{ route('admin') }}" class="relative p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors" title="Admin Portal">
+                            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+                            @if(Auth::user()->unreadNotifications()->count() > 0 || \Fishinglog\Models\User::doesntHave('angler')->count() > 0)
+                                <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-slate-900 animate-pulse"></span>
+                            @endif
+                        </a>
+                    @endif
                     <a href="{{ route('search') }}" class="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors" title="Search">
                         <i data-lucide="search" class="w-4 h-4"></i>
                     </a>
@@ -248,14 +279,31 @@
 
                 @if(Auth::user()->isAdmin())
                     <div class="pt-3 border-t border-slate-800 space-y-1">
-                        <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider block px-3 flex items-center gap-1.5">
-                            <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-400"></i> Admin Console
-                        </span>
-                        <a href="{{ route('admin') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800">
-                            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i> Admin Overview
+                        <div class="px-3 flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-400"></i> Admin Console
+                            </span>
+                            @if(Auth::user()->unreadNotifications()->count() > 0 || \Fishinglog\Models\User::doesntHave('angler')->count() > 0)
+                                <span class="px-1.5 py-0.2 bg-amber-500 text-slate-950 font-black text-[10px] rounded-full">
+                                    {{ max(Auth::user()->unreadNotifications()->count(), \Fishinglog\Models\User::doesntHave('angler')->count()) }}
+                                </span>
+                            @endif
+                        </div>
+                        <a href="{{ route('admin') }}" class="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i> Admin Overview
+                            </div>
+                            @if(Auth::user()->unreadNotifications()->count() > 0)
+                                <span class="px-1.5 py-0.2 bg-amber-400 text-slate-950 font-bold text-[10px] rounded-full">{{ Auth::user()->unreadNotifications()->count() }}</span>
+                            @endif
                         </a>
-                        <a href="{{ route('admin.users') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800">
-                            <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i> User Accounts & Anglers
+                        <a href="{{ route('admin.users') }}" class="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i> User Accounts & Anglers
+                            </div>
+                            @if(\Fishinglog\Models\User::doesntHave('angler')->count() > 0)
+                                <span class="px-1.5 py-0.2 bg-amber-400 text-slate-950 font-bold text-[10px] rounded-full">{{ \Fishinglog\Models\User::doesntHave('angler')->count() }}</span>
+                            @endif
                         </a>
                         <a href="{{ route('admin.trash') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800">
                             <i data-lucide="trash-2" class="w-4 h-4 text-amber-400"></i> Trash Bin

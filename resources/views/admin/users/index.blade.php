@@ -98,6 +98,27 @@
         </div>
     @endif
 
+    <!-- Unlinked Accounts / Notifications Alert Banner -->
+    @if(!empty($unreadNotifications) && $unreadNotifications->count() > 0)
+        <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                    <i data-lucide="bell" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-white">{{ $unreadNotifications->count() }} New User Registration Notification(s)</h3>
+                    <p class="text-[11px] text-amber-300/80">Pair newly registered accounts with their corresponding Angler profile in the table below.</p>
+                </div>
+            </div>
+            <form action="{{ route('admin.notifications.mark_read') }}" method="POST">
+                @csrf
+                <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold text-xs rounded-xl border border-slate-700 transition-colors">
+                    Dismiss Notifications
+                </button>
+            </form>
+        </div>
+    @endif
+
     <!-- Invitation & Offline Quick-Add Action Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         <!-- Email Invitation Card -->
@@ -164,9 +185,16 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-700">
                     @foreach($users as $user)
-                        <tr class="hover:bg-slate-50/80 transition-colors">
+                        <tr class="hover:bg-slate-50/80 transition-colors {{ !$user->angler ? 'bg-amber-50/40' : '' }}">
                             <td class="py-4 px-4 font-bold text-slate-900">
-                                {{ $user->name }}
+                                <div class="flex items-center gap-2">
+                                    <span>{{ $user->name }}</span>
+                                    @if(!$user->angler)
+                                        <span class="text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300 px-1.5 py-0.2 rounded-md">
+                                            Unlinked
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="py-4 px-4">
                                 <div class="font-mono text-slate-800">{{ $user->email }}</div>
@@ -206,7 +234,9 @@
                                         </div>
                                     </div>
                                 @else
-                                    <span class="text-xs text-slate-400 italic">No Angler Profile Linked</span>
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">
+                                        <i data-lucide="alert-circle" class="w-3 h-3 text-amber-600"></i> Needs Angler Linking
+                                    </span>
                                 @endif
                             </td>
                             <td class="py-4 px-4 text-right">

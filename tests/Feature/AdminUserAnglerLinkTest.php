@@ -79,4 +79,47 @@ class AdminUserAnglerLinkTest extends TestCase
         $response->assertRedirect(route('admin.users'));
         $this->assertTrue($unverifiedUser->fresh()->isRegistered());
     }
+
+    public function test_admin_sees_notification_and_linking_marks_it_read()
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+        $user = User::factory()->create(['type' => User::DEFAULT_TYPE, 'name' => 'Stanley']);
+        $angler = Angler::factory()->create();
+
+        // Send registration notification to admin
+        $admin->notify(new \Fishinglog\Notifications\InvitedUserRegistered($user));
+
+        $this->assertEquals(1, $admin->fresh()->unreadNotifications->count());
+
+        // Admin views overview page and sees notification alert
+        $overviewResponse = $this->actingAs($admin)->get('/admin');
+        $overviewResponse->assertStatus(200);
+        $overviewResponse->assertSee('New User Registration Alert');
+        $overviewResponse->assertSee('Stanley');
+
+        // Admin links angler to user
+        $linkResponse = $this->actingAs($admin)->post('/admin/users/link', [
+            'user_id' => $user->id,
+            'angler_id' => $angler->id,
+        ]);
+
+        $linkResponse->assertRedirect(route('admin.users'));
+
+        // Notification should be automatically marked as read
+        $this->assertEquals(0, $admin->fresh()->unreadNotifications->count());
+    }
+
+    public function test_admin_can_dismiss_notifications()
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+        $user = User::factory()->create(['type' => User::DEFAULT_TYPE, 'name' => 'Stanley']);
+
+        $admin->notify(new \Fishinglog\Notifications\InvitedUserRegistered($user));
+        $this->assertEquals(1, $admin->fresh()->unreadNotifications->count());
+
+        $dismissResponse = $this->actingAs($admin)->post('/admin/notifications/mark-all-read');
+        $dismissResponse->assertRedirect();
+
+        $this->assertEquals(0, $admin->fresh()->unreadNotifications->count());
+    }
 }
