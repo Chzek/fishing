@@ -103,10 +103,24 @@ class SyncApiController extends Controller
                 if (!empty($attributes['deleted_at'])) {
                     $attributes['deleted_at'] = Carbon::parse($attributes['deleted_at']);
                 }
+                if (!empty($attributes['email_verified_at'])) {
+                    $attributes['email_verified_at'] = Carbon::parse($attributes['email_verified_at']);
+                }
+                if (!empty($attributes['caught'])) {
+                    $attributes['caught'] = Carbon::parse($attributes['caught']);
+                }
 
                 $entity = $existing ?? new $modelClass();
                 $columns = \Illuminate\Support\Facades\Schema::getColumnListing($entity->getTable());
                 $filtered = array_intersect_key($attributes, array_flip($columns));
+
+                if ($key === 'users') {
+                    if (!$existing && empty($filtered['password'])) {
+                        $filtered['password'] = \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(32));
+                    } elseif ($existing && empty($filtered['password'])) {
+                        unset($filtered['password']);
+                    }
+                }
 
                 if (!$existing) {
                     $entity->timestamps = false;
@@ -182,7 +196,9 @@ class SyncApiController extends Controller
             }
 
             $payload[$key] = $items->map(function ($item) use ($key) {
-                $data = $item->toArray();
+                $data = method_exists($item, 'makeVisible')
+                    ? $item->makeVisible(['password', 'remember_token'])->toArray()
+                    : $item->toArray();
                 if ($key === 'photos' && !empty($item->path) && \Illuminate\Support\Facades\Storage::disk('public')->exists($item->path)) {
                     $data['file_base64'] = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($item->path));
                 }

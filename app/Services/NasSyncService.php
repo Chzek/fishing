@@ -212,10 +212,24 @@ class NasSyncService
                 if (!empty($attributes['deleted_at'])) {
                     $attributes['deleted_at'] = Carbon::parse($attributes['deleted_at']);
                 }
+                if (!empty($attributes['email_verified_at'])) {
+                    $attributes['email_verified_at'] = Carbon::parse($attributes['email_verified_at']);
+                }
+                if (!empty($attributes['caught'])) {
+                    $attributes['caught'] = Carbon::parse($attributes['caught']);
+                }
 
                 $entity = $existing ?? new $modelClass();
                 $columns = \Illuminate\Support\Facades\Schema::getColumnListing($entity->getTable());
                 $filtered = array_intersect_key($attributes, array_flip($columns));
+
+                if ($key === 'users') {
+                    if (!$existing && empty($filtered['password'])) {
+                        $filtered['password'] = \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(32));
+                    } elseif ($existing && empty($filtered['password'])) {
+                        unset($filtered['password']);
+                    }
+                }
 
                 if (!$existing) {
                     $entity->timestamps = false;

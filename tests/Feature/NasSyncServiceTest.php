@@ -294,4 +294,40 @@ class NasSyncServiceTest extends TestCase
         $this->assertEquals('synced', $freshLake->sync_status, 'Sync status must remain synced and not be flipped to pending_upstream by model event');
         $this->assertEquals(0, $service->getPendingCount());
     }
+
+    #[Test]
+    public function it_syncs_users_without_failing_on_missing_password()
+    {
+        $remoteUserUuid = '01a00a92-16bb-7154-a4d4-91c26979dd6e';
+
+        Http::fake([
+            'https://nas.example.com/api/v1/sync/push' => Http::response(['status' => 'success', 'synced_uuids' => []], 200),
+            'https://nas.example.com/api/v1/sync/pull*' => Http::response([
+                'users' => [
+                    [
+                        'id' => $remoteUserUuid,
+                        'name' => 'Stanley Mroczek',
+                        'email' => 'spmroczek3@gmail.com',
+                        'email_verified_at' => '2026-08-16T12:35:41Z',
+                        'type' => 'default',
+                        'created_at' => '2026-08-16T12:35:41Z',
+                        'updated_at' => '2026-08-16T13:06:46Z',
+                    ]
+                ],
+                'server_timestamp' => '2026-08-16T15:00:00Z',
+            ], 200),
+        ]);
+
+        $service = new NasSyncService('https://nas.example.com', 'test-token');
+        $result = $service->sync();
+
+        $this->assertEquals(1, $result['pulled']);
+
+        $user = \Fishinglog\Models\User::find($remoteUserUuid);
+        $this->assertNotNull($user);
+        $this->assertEquals('Stanley Mroczek', $user->name);
+        $this->assertEquals('spmroczek3@gmail.com', $user->email);
+        $this->assertNotEmpty($user->password, 'A fallback secure hashed password must be populated when missing');
+        $this->assertEquals('synced', $user->sync_status);
+    }
 }

@@ -169,4 +169,48 @@ class NasSyncApiTest extends TestCase
         $this->assertEquals('Original Server Lake (Updated from Laptop)', $freshLake->name);
         $this->assertEquals('synced', $freshLake->sync_status, 'Server must preserve sync_status as synced during push ingestion');
     }
+
+    #[Test]
+    public function it_pulls_users_with_password_visible_and_pushes_users_safely()
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+        $user = User::factory()->create([
+            'name' => 'Stanley Mroczek',
+            'email' => 'spmroczek3@gmail.com',
+            'type' => User::DEFAULT_TYPE,
+        ]);
+        $user->touch();
+
+        // 1. Test Pull includes password in payload
+        $pullResponse = $this->actingAs($admin)->getJson('/api/v1/sync/pull?since=2026-01-01T00:00:00Z');
+        $pullResponse->assertStatus(200);
+
+        $pulledUsers = $pullResponse->json('users');
+        $this->assertNotEmpty($pulledUsers);
+        $pulledStanley = collect($pulledUsers)->firstWhere('email', 'spmroczek3@gmail.com');
+        $this->assertNotNull($pulledStanley);
+        $this->assertNotEmpty($pulledStanley['password'], 'Password must be made visible in pull payload');
+
+        // 2. Test Push without password uses fallback and does not error with 1364
+        $newUserUuid = '22222222-3333-4444-5555-666666666666';
+        $pushPayload = [
+            'users' => [
+                [
+                    'id' => $newUserUuid,
+                    'name' => 'New Push User',
+                    'email' => 'pushuser@example.com',
+                    'type' => 'default',
+                    'updated_at' => '2026-08-16T12:00:00Z',
+                ]
+            ]
+        ];
+
+        $pushResponse = $this->actingAs($admin)->postJson('/api/v1/sync/push', $pushPayload);
+        $pushResponse->assertStatus(200);
+
+        $pushedUser = User::find($newUserUuid);
+        $this->assertNotNull($pushedUser);
+        $this->assertEquals('pushuser@example.com', $pushedUser->email);
+        $this->assertNotEmpty($pushedUser->password);
+    }
 }
