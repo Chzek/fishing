@@ -13,9 +13,9 @@
 <div class="space-y-4" {{ $attributes }}>
     <!-- Table Interactive Toolbar -->
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-        <div class="flex flex-col gap-2 flex-1 min-w-[240px]">
+        <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
             <!-- Database Search Form -->
-            <form method="GET" action="{{ request()->url() }}" class="flex flex-wrap items-center gap-2.5">
+            <form method="GET" action="{{ request()->url() }}" class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
                 @if(request('sort_by'))
                     <input type="hidden" name="sort_by" value="{{ request('sort_by') }}" />
                 @endif
@@ -58,28 +58,8 @@
                     {{ $extraFilters }}
                 @endif
             </form>
-
-            <!-- Active Database Sort & Filter Badges Underneath Search Bar -->
-            @if(request('sort_by') || request('search') || request('length') || request('angler'))
-                <div class="flex items-center gap-2">
-                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-teal-50 border border-teal-200/80 rounded-lg text-xs font-semibold text-teal-800">
-                        <i data-lucide="filter" class="w-3.5 h-3.5 text-teal-600"></i>
-                        <span>
-                            @if(request('search')) Search: "{{ request('search') }}" @endif
-                            @if(request('length')) | Length {{ request('length_operator', '>') }} {{ request('length') }}" @endif
-                            @if(request('sort_by')) | Sorted by: {{ request('sort_by') }} ({{ request('sort_order', 'asc') }}) @endif
-                        </span>
-                        <a 
-                            href="{{ request()->url() }}" 
-                            class="ml-1 text-teal-600 hover:text-teal-900 font-bold underline text-[11px]"
-                            title="Reset search and sort filters"
-                        >
-                            Reset All
-                        </a>
-                    </div>
-                </div>
-            @endif
         </div>
+
 
 
         <!-- Controls: Column Visibility, Density -->
