@@ -13,9 +13,9 @@
 <div class="space-y-4" {{ $attributes }}>
     <!-- Table Interactive Toolbar -->
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-        <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
+        <div class="flex flex-col gap-2 flex-1 min-w-[240px]">
             <!-- Database Search Form -->
-            <form method="GET" action="{{ request()->url() }}" class="flex flex-wrap items-center gap-2 flex-1 min-w-[240px]">
+            <form method="GET" action="{{ request()->url() }}" class="flex flex-wrap items-center gap-2.5">
                 @if(request('sort_by'))
                     <input type="hidden" name="sort_by" value="{{ request('sort_by') }}" />
                 @endif
@@ -23,57 +23,64 @@
                     <input type="hidden" name="sort_order" value="{{ request('sort_order') }}" />
                 @endif
 
-                <div class="relative flex-1 min-w-[180px] max-w-md">
-                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                    <input 
-                        type="text" 
-                        name="search"
-                        value="{{ request('search') }}" 
-                        placeholder="{{ $searchPlaceholder }}"
-                        class="w-full h-8.5 pl-9 pr-8 text-xs rounded-lg border border-slate-200 bg-white font-medium text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
-                    />
-                    @if(request('search'))
-                        <a 
-                            href="{{ request()->fullUrlWithQuery(['search' => null, 'page' => 1]) }}" 
-                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
-                            title="Clear search"
-                        >
-                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                        </a>
-                    @endif
+                <!-- Combined Search Input + Right-End Search Submit Button -->
+                <div class="inline-flex items-center flex-1 min-w-[200px] max-w-md shadow-2xs rounded-lg">
+                    <div class="relative flex-1">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                        <input 
+                            type="text" 
+                            name="search"
+                            value="{{ request('search') }}" 
+                            placeholder="{{ $searchPlaceholder }}"
+                            class="w-full h-8.5 pl-9 pr-8 text-xs rounded-l-lg border border-r-0 border-slate-200 bg-white font-medium text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
+                        />
+                        @if(request('search'))
+                            <a 
+                                href="{{ request()->fullUrlWithQuery(['search' => null, 'page' => 1]) }}" 
+                                class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                                title="Clear search"
+                            >
+                                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                            </a>
+                        @endif
+                    </div>
+                    <button 
+                        type="submit" 
+                        class="h-8.5 px-3.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-r-lg border border-slate-900 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+                        title="Submit Search"
+                    >
+                        <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                        <span>Search</span>
+                    </button>
                 </div>
 
                 @if(isset($extraFilters))
                     {{ $extraFilters }}
-                @else
-                    <button type="submit" class="h-8.5 px-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer shrink-0" title="Submit Search">
-                        <i data-lucide="search" class="w-3.5 h-3.5"></i>
-                        <span>Search</span>
-                    </button>
                 @endif
             </form>
 
-
-            <!-- Active Database Sort & Filter Badges -->
+            <!-- Active Database Sort & Filter Badges Underneath Search Bar -->
             @if(request('sort_by') || request('search') || request('length') || request('angler'))
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-teal-50 border border-teal-200/80 rounded-lg text-xs font-semibold text-teal-800">
-                    <i data-lucide="filter" class="w-3.5 h-3.5 text-teal-600"></i>
-                    <span>
-                        @if(request('search')) Search: "{{ request('search') }}" @endif
-                        @if(request('length')) | Length {{ request('length_operator', '>') }} {{ request('length') }}" @endif
-                        @if(request('sort_by')) | Sorted by: {{ request('sort_by') }} ({{ request('sort_order', 'asc') }}) @endif
-                    </span>
-                    <a 
-                        href="{{ request()->url() }}" 
-                        class="ml-1 text-teal-600 hover:text-teal-900 font-bold underline text-[11px]"
-                        title="Reset search and sort filters"
-                    >
-                        Reset All
-                    </a>
+                <div class="flex items-center gap-2">
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-teal-50 border border-teal-200/80 rounded-lg text-xs font-semibold text-teal-800">
+                        <i data-lucide="filter" class="w-3.5 h-3.5 text-teal-600"></i>
+                        <span>
+                            @if(request('search')) Search: "{{ request('search') }}" @endif
+                            @if(request('length')) | Length {{ request('length_operator', '>') }} {{ request('length') }}" @endif
+                            @if(request('sort_by')) | Sorted by: {{ request('sort_by') }} ({{ request('sort_order', 'asc') }}) @endif
+                        </span>
+                        <a 
+                            href="{{ request()->url() }}" 
+                            class="ml-1 text-teal-600 hover:text-teal-900 font-bold underline text-[11px]"
+                            title="Reset search and sort filters"
+                        >
+                            Reset All
+                        </a>
+                    </div>
                 </div>
             @endif
-
         </div>
+
 
         <!-- Controls: Column Visibility, Density -->
         <div class="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 text-xs">
