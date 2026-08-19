@@ -24,65 +24,83 @@ class SortBy implements PipeContract
             return $next($query);
         }
 
-        $sortOrder = strtolower(request('sort_order', 'asc')) === 'desc' ? 'desc' : 'asc';
+        $sortCols = array_filter(explode(',', $sortBy));
+        $sortOrders = explode(',', request('sort_order', 'asc'));
+
+        if (empty($sortCols)) {
+            return $next($query);
+        }
+
         $model = method_exists($query, 'getModel') ? $query->getModel() : null;
         $table = $model ? $model->getTable() : null;
+        $joinedTables = [];
 
-        // Specialized sorting for Records (Catches) table
-        if ($table === 'records') {
-            switch ($sortBy) {
-                case 'angler':
-                    $query->select('records.*')
-                        ->join('anglers', 'records.anglers_id', '=', 'anglers.id')
-                        ->orderBy('anglers.firstName', $sortOrder)
-                        ->orderBy('anglers.lastName', $sortOrder);
-                    return $next($query);
+        foreach ($sortCols as $index => $col) {
+            $order = strtolower($sortOrders[$index] ?? 'asc') === 'desc' ? 'desc' : 'asc';
 
-                case 'lake':
-                    $query->select('records.*')
-                        ->join('lakes', 'records.lakes_id', '=', 'lakes.id')
-                        ->orderBy('lakes.name', $sortOrder);
-                    return $next($query);
+            if ($table === 'records') {
+                switch ($col) {
+                    case 'angler':
+                        if (!in_array('anglers', $joinedTables)) {
+                            $query->select('records.*')->join('anglers', 'records.anglers_id', '=', 'anglers.id');
+                            $joinedTables[] = 'anglers';
+                        }
+                        $query->orderBy('anglers.firstName', $order)->orderBy('anglers.lastName', $order);
+                        continue 2;
 
-                case 'species':
-                    $query->select('records.*')
-                        ->join('fish_breeds', 'records.fish_breeds_id', '=', 'fish_breeds.id')
-                        ->orderBy('fish_breeds.name', $sortOrder);
-                    return $next($query);
+                    case 'lake':
+                        if (!in_array('lakes', $joinedTables)) {
+                            $query->select('records.*')->join('lakes', 'records.lakes_id', '=', 'lakes.id');
+                            $joinedTables[] = 'lakes';
+                        }
+                        $query->orderBy('lakes.name', $order);
+                        continue 2;
 
-                case 'lure':
-                    $query->select('records.*')
-                        ->leftJoin('lures', 'records.lures_id', '=', 'lures.id')
-                        ->orderBy('lures.name', $sortOrder);
-                    return $next($query);
+                    case 'species':
+                        if (!in_array('fish_breeds', $joinedTables)) {
+                            $query->select('records.*')->join('fish_breeds', 'records.fish_breeds_id', '=', 'fish_breeds.id');
+                            $joinedTables[] = 'fish_breeds';
+                        }
+                        $query->orderBy('fish_breeds.name', $order);
+                        continue 2;
 
-                case 'date':
-                    $query->orderBy('records.caught', $sortOrder);
-                    return $next($query);
+                    case 'lure':
+                        if (!in_array('lures', $joinedTables)) {
+                            $query->select('records.*')->leftJoin('lures', 'records.lures_id', '=', 'lures.id');
+                            $joinedTables[] = 'lures';
+                        }
+                        $query->orderBy('lures.name', $order);
+                        continue 2;
 
-                case 'weight':
-                    $query->orderBy('records.weight', $sortOrder);
-                    return $next($query);
+                    case 'date':
+                        $query->orderBy('records.caught', $order);
+                        continue 2;
 
-                case 'length':
-                    $query->orderBy('records.length', $sortOrder);
-                    return $next($query);
+                    case 'weight':
+                        $query->orderBy('records.weight', $order);
+                        continue 2;
 
-                case 'status':
-                    $query->orderBy('records.released', $sortOrder);
-                    return $next($query);
+                    case 'length':
+                        $query->orderBy('records.length', $order);
+                        continue 2;
+
+                    case 'status':
+                        $query->orderBy('records.released', $order);
+                        continue 2;
+                }
             }
+
+            // Generic handling for other tables
+            $targetColumn = $this->columnMaps[$col] ?? $col;
+
+            if ($table && !str_contains($targetColumn, '.')) {
+                $targetColumn = "{$table}.{$targetColumn}";
+            }
+
+            $query->orderBy($targetColumn, $order);
         }
-
-        // Generic handling for other tables
-        $targetColumn = $this->columnMaps[$sortBy] ?? $sortBy;
-
-        if ($table && !str_contains($targetColumn, '.')) {
-            $targetColumn = "{$table}.{$targetColumn}";
-        }
-
-        $query->orderBy($targetColumn, $sortOrder);
 
         return $next($query);
     }
-}
+}
+

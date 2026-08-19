@@ -20,10 +20,18 @@
         'right' => 'text-right',
     ][$align] ?? 'text-left';
 
-    $isCurrentSort = request('sort_by') === $col;
-    $currentOrder = strtolower(request('sort_order', 'asc')) === 'desc' ? 'desc' : 'asc';
+    $currentSortByRaw = request('sort_by', '');
+    $currentSortOrderRaw = request('sort_order', '');
+
+    $sortCols = array_values(array_filter(explode(',', $currentSortByRaw)));
+    $sortOrders = explode(',', $currentSortOrderRaw);
+
+    $colIndex = array_search($col, $sortCols);
+    $isCurrentSort = $colIndex !== false;
+    $currentOrder = $isCurrentSort ? (strtolower($sortOrders[$colIndex] ?? 'asc') === 'desc' ? 'desc' : 'asc') : null;
     $nextOrder = ($isCurrentSort && $currentOrder === 'asc') ? 'desc' : 'asc';
-    $sortUrl = $col ? request()->fullUrlWithQuery(['sort_by' => $col, 'sort_order' => $nextOrder, 'page' => 1]) : '#';
+    $isMultiSort = count($sortCols) > 1;
+    $sortPriorityBadge = ($isMultiSort && $isCurrentSort) ? ($colIndex + 1) : '';
 @endphp
 
 <th 
@@ -39,9 +47,49 @@
 
     @if($sortable && $col)
         <a 
-            href="{{ $sortUrl }}" 
+            href="#" 
+            @click="
+                $event.preventDefault();
+                const urlParams = new URLSearchParams(window.location.search);
+                let cols = (urlParams.get('sort_by') || '').split(',').filter(Boolean);
+                let orders = (urlParams.get('sort_order') || '').split(',').filter(Boolean);
+                
+                if ($event.shiftKey) {
+                    const idx = cols.indexOf('{{ $col }}');
+                    if (idx !== -1) {
+                        const cur = (orders[idx] || 'asc').toLowerCase();
+                        if (cur === 'asc') {
+                            orders[idx] = 'desc';
+                        } else {
+                            cols.splice(idx, 1);
+                            orders.splice(idx, 1);
+                        }
+                    } else {
+                        cols.push('{{ $col }}');
+                        orders.push('asc');
+                    }
+                } else {
+                    if (cols.length === 1 && cols[0] === '{{ $col }}') {
+                        const cur = (orders[0] || 'asc').toLowerCase();
+                        orders[0] = cur === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        cols = ['{{ $col }}'];
+                        orders = ['asc'];
+                    }
+                }
+
+                if (cols.length) {
+                    urlParams.set('sort_by', cols.join(','));
+                    urlParams.set('sort_order', orders.join(','));
+                } else {
+                    urlParams.delete('sort_by');
+                    urlParams.delete('sort_order');
+                }
+                urlParams.set('page', '1');
+                window.location.search = urlParams.toString();
+            "
             class="group inline-flex items-center gap-1.5 hover:text-teal-600 focus:outline-none transition-colors cursor-pointer {{ $alignmentClasses }} w-full"
-            title="Sort database by {{ $label ?? $slot }}"
+            title="Sort database by {{ $label ?? $slot }} (Hold Shift for Multi-Sort)"
         >
             <span class="truncate">{{ $slot }}</span>
 
@@ -50,6 +98,9 @@
                 @if($isCurrentSort)
                     <span class="inline-flex items-center gap-0.5 text-teal-600 font-bold text-xs bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">
                         <span class="text-[10px]">{{ $currentOrder === 'asc' ? '▲' : '▼' }}</span>
+                        @if($isMultiSort)
+                            <span class="text-[9px] font-mono text-teal-700 font-bold ml-0.5">{{ $sortPriorityBadge }}</span>
+                        @endif
                     </span>
                 @else
                     <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">
@@ -64,4 +115,5 @@
         </div>
     @endif
 </th>
+
 
