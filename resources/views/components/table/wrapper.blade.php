@@ -45,8 +45,14 @@
 
                 @if(isset($extraFilters))
                     {{ $extraFilters }}
+                @else
+                    <button type="submit" class="h-8.5 px-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer shrink-0" title="Submit Search">
+                        <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                        <span>Search</span>
+                    </button>
                 @endif
             </form>
+
 
             <!-- Active Database Sort & Filter Badges -->
             @if(request('sort_by') || request('search') || request('length') || request('angler'))

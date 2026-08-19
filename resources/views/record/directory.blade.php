@@ -74,7 +74,12 @@
                     @if(Request::has('angler'))
                         <input type="hidden" name="angler" value="{{ Request::input('angler') }}">
                     @endif
+                    <button type="submit" class="h-8.5 px-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer shrink-0" title="Submit Search">
+                        <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                        <span>Search</span>
+                    </button>
                 </x-slot:extraFilters>
+
 
 
                 <table class="w-full text-left text-sm text-slate-700">
