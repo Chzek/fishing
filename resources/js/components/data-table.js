@@ -21,9 +21,11 @@ export default function dataTable(config = {}) {
                 }));
             }
 
+            const initial = {};
             this.columns.forEach(col => {
-                this.visibleColumns[col.key] = col.visible !== false;
+                initial[col.key] = col.visible !== false;
             });
+            this.visibleColumns = initial;
 
             this.$nextTick(() => {
                 this.applyColumnVisibility();
@@ -35,7 +37,10 @@ export default function dataTable(config = {}) {
         },
 
         toggleColumn(colKey) {
-            this.visibleColumns[colKey] = !this.visibleColumns[colKey];
+            this.visibleColumns = {
+                ...this.visibleColumns,
+                [colKey]: !this.isColumnVisible(colKey)
+            };
             this.applyColumnVisibility();
         },
 
@@ -44,14 +49,21 @@ export default function dataTable(config = {}) {
         },
 
         applyColumnVisibility() {
-            Object.keys(this.visibleColumns).forEach(colKey => {
-                const isVis = this.visibleColumns[colKey];
-                const cells = this.$el.querySelectorAll(`[data-col="${colKey}"]`);
-                cells.forEach(el => {
-                    el.style.display = isVis ? '' : 'none';
+            this.$nextTick(() => {
+                Object.keys(this.visibleColumns).forEach(colKey => {
+                    const isVis = this.isColumnVisible(colKey);
+                    const cells = this.$el.querySelectorAll(`[data-col="${colKey}"]`);
+                    cells.forEach(el => {
+                        if (isVis) {
+                            el.style.removeProperty('display');
+                        } else {
+                            el.style.setProperty('display', 'none', 'important');
+                        }
+                    });
                 });
             });
         }
     };
 }
+
 
