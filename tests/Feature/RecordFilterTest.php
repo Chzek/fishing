@@ -52,4 +52,38 @@ class RecordFilterTest extends TestCase
         $response->assertSee('Walleye');
         $response->assertDontSee('Northern Pike');
     }
+
+    public function test_can_multi_sort_records_by_lake_and_species()
+    {
+        $user = User::factory()->create();
+        $angler = Angler::factory()->create();
+        $lake = Lake::factory()->create(['name' => 'Davies Lake']);
+        $walleye = FishBreed::factory()->create(['name' => 'Walleye']);
+        $pike = FishBreed::factory()->create(['name' => 'Northern Pike']);
+
+        // Create records on Davies Lake with different species and catch dates
+        Record::create([
+            'anglers_id' => $angler->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $walleye->id,
+            'length' => 20.0,
+            'caught' => '2026-08-01',
+        ]);
+
+        Record::create([
+            'anglers_id' => $angler->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $pike->id,
+            'length' => 25.0,
+            'caught' => '2026-08-02',
+        ]);
+
+        // Multi-sort by lake asc, species asc
+        $response = $this->actingAs($user)->get('/record/directory?sort_by=lake,species&sort_order=asc,asc');
+        $response->assertStatus(200);
+
+        // Northern Pike ('N') must come before Walleye ('W') for Davies Lake
+        $response->assertSeeInOrder(['Northern Pike', 'Walleye']);
+    }
 }
+

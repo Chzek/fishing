@@ -31,9 +31,13 @@ class SortBy implements PipeContract
             return $next($query);
         }
 
+        // Clear default orderBy clauses set prior to pipeline execution
+        $query->reorder();
+
         $model = method_exists($query, 'getModel') ? $query->getModel() : null;
         $table = $model ? $model->getTable() : null;
         $joinedTables = [];
+
 
         foreach ($sortCols as $index => $col) {
             $order = strtolower($sortOrders[$index] ?? 'asc') === 'desc' ? 'desc' : 'asc';
