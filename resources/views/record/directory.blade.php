@@ -63,22 +63,19 @@
                 <x-slot:extraFilters>
                     <div class="flex items-center gap-1.5 shrink-0">
                         <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Length</span>
-                        <select name="length_operator" class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20">
+                        <select name="length_operator" onchange="this.form.submit()" class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
                             <option value=">" {{ Request::input('length_operator') === '>' ? 'selected' : '' }}>&gt;</option>
                             <option value="=" {{ Request::input('length_operator') === '=' ? 'selected' : '' }}>=</option>
                             <option value="<" {{ Request::input('length_operator') === '<' ? 'selected' : '' }}>&lt;</option>
                         </select>
-                        <input type="number" step="0.25" name="length" value="{{ Request::input('length') }}" placeholder="Inches..."
+                        <input type="number" step="0.25" name="length" value="{{ Request::input('length') }}" placeholder="Inches..." onchange="this.form.submit()"
                             class="h-8.5 px-2.5 w-20 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-800 focus:ring-2 focus:ring-teal-500/20">
                     </div>
                     @if(Request::has('angler'))
                         <input type="hidden" name="angler" value="{{ Request::input('angler') }}">
                     @endif
-                    <button type="submit" class="h-8.5 px-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-lg shadow transition-colors flex items-center gap-1 cursor-pointer shrink-0">
-                        <i data-lucide="filter" class="w-3.5 h-3.5"></i>
-                        <span>Filter</span>
-                    </button>
                 </x-slot:extraFilters>
+
 
                 <table class="w-full text-left text-sm text-slate-700">
 
