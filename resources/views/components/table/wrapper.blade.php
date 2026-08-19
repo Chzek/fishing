@@ -5,6 +5,7 @@
     'searchPlaceholder' => 'Search database...',
     'showDensity' => true,
     'showColumnPicker' => false,
+    'showCounter' => false,
     'totalCount' => null,
     'itemName' => 'rows',
 ])
@@ -68,9 +69,9 @@
 
         </div>
 
-        <!-- Controls: Match Counter, Column Visibility, Density -->
+        <!-- Controls: Column Visibility, Density -->
         <div class="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 text-xs">
-            @if($totalCount !== null)
+            @if($showCounter && $totalCount !== null)
                 <!-- Row Counter -->
                 <div class="flex items-center gap-1.5 text-slate-500 font-medium font-mono text-[11px] bg-white px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-2xs">
                     <span class="w-2 h-2 rounded-full {{ request('search') ? 'bg-amber-400' : 'bg-teal-500' }}"></span>
