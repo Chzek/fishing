@@ -1,8 +1,10 @@
 import './bootstrap';
 import './image-compressor';
+import dataTable from './components/data-table';
 import Alpine from 'alpinejs';
 import { createIcons, icons } from 'lucide';
 
+Alpine.data('dataTable', dataTable);
 window.Alpine = Alpine;
 Alpine.start();
 

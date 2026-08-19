@@ -31,7 +31,7 @@
         @endif
     </div>
 
-    <!-- Species Regulations & Limits Card -->
+    <!-- Species Regulations & Limits Card with Local Search & Multi-Sort -->
     @if(isset($fishingZone->rules) && count($fishingZone->rules) > 0)
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
@@ -44,56 +44,63 @@
                 </span>
             </div>
 
-            <div class="overflow-x-auto rounded-xl border border-slate-200/80">
-                <table class="w-full text-left text-xs text-slate-700">
-                    <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
-                        <tr>
-                            <th scope="col" class="py-3 px-4">Target Species</th>
-                            <th scope="col" class="py-3 px-4">Open Season</th>
-                            <th scope="col" class="py-3 px-4 text-center">Sport Limit (S)</th>
-                            <th scope="col" class="py-3 px-4 text-center">Conservation Limit (C)</th>
-                            <th scope="col" class="py-3 px-4">Size Restrictions & Slot Limits</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 bg-white">
-                        @foreach($fishingZone->rules as $rule)
-                            <tr class="hover:bg-slate-50/70 transition-colors {{ $rule->is_aggregate ? 'bg-indigo-50/40 border-l-4 border-l-indigo-500' : '' }}">
-                                <td class="py-3.5 px-4 font-bold text-slate-900">
-                                    <div class="flex items-center gap-2">
-                                        @if($rule->is_aggregate)
-                                            <i data-lucide="layers" class="w-4 h-4 text-indigo-600 shrink-0"></i>
-                                        @else
-                                            <i data-lucide="fish" class="w-4 h-4 text-teal-600 shrink-0"></i>
-                                        @endif
-                                        <div>
-                                            <span class="block leading-tight">{{ $rule->species_name }}</span>
-                                            @if($rule->is_aggregate)
-                                                <span class="inline-block mt-0.5 text-[9px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-800 px-1.5 py-0.5 rounded font-mono">
-                                                    📊 Aggregate Limit ({{ $rule->aggregate_group }})
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3.5 px-4 font-semibold text-slate-800">
-                                    {{ $rule->season }}
-                                </td>
-                                <td class="py-3.5 px-4 text-center font-mono font-black text-slate-900 {{ $rule->is_aggregate ? 'bg-indigo-100/50' : 'bg-slate-50/50' }}">
-                                    {{ $rule->sport_limit }}
-                                </td>
-                                <td class="py-3.5 px-4 text-center font-mono font-black text-teal-700 {{ $rule->is_aggregate ? 'bg-teal-100/50' : 'bg-teal-50/30' }}">
-                                    {{ $rule->conservation_limit }}
-                                </td>
-                                <td class="py-3.5 px-4 text-slate-700">
-                                    <span class="font-medium text-slate-900">{{ $rule->size_restriction }}</span>
-                                    @if($rule->notes)
-                                        <span class="text-[11px] text-slate-500 block mt-0.5 italic">{{ $rule->notes }}</span>
-                                    @endif
-                                </td>
+            <div x-data="dataTable({ defaultDensity: 'normal' })">
+                <x-table.wrapper 
+                    searchPlaceholder="Quick filter species regulations in this zone..." 
+                    itemName="regulations"
+                    :showColumnPicker="false"
+                    :showDensity="true"
+                >
+                    <table class="w-full text-left text-xs text-slate-700">
+                        <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
+                            <tr>
+                                <x-table.th col="species" type="text" label="Target Species">Target Species</x-table.th>
+                                <x-table.th col="season" type="text" label="Open Season">Open Season</x-table.th>
+                                <x-table.th col="sport" type="number" align="center" label="Sport Limit">Sport Limit (S)</x-table.th>
+                                <x-table.th col="conservation" type="number" align="center" label="Conservation Limit">Conservation Limit (C)</x-table.th>
+                                <x-table.th col="size" type="text" label="Size Restrictions">Size Restrictions & Slot Limits</x-table.th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
+                            @foreach($fishingZone->rules as $rule)
+                                <tr data-table-row class="hover:bg-slate-50/70 transition-colors {{ $rule->is_aggregate ? 'bg-indigo-50/40 border-l-4 border-l-indigo-500' : '' }}">
+                                    <td data-col="species" data-sort-val="{{ $rule->species_name }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-slate-900">
+                                        <div class="flex items-center gap-2">
+                                            @if($rule->is_aggregate)
+                                                <i data-lucide="layers" class="w-4 h-4 text-indigo-600 shrink-0"></i>
+                                            @else
+                                                <i data-lucide="fish" class="w-4 h-4 text-teal-600 shrink-0"></i>
+                                            @endif
+                                            <div>
+                                                <span class="block leading-tight">{{ $rule->species_name }}</span>
+                                                @if($rule->is_aggregate)
+                                                    <span class="inline-block mt-0.5 text-[9px] font-black uppercase tracking-wider bg-indigo-100 text-indigo-800 px-1.5 py-0.5 rounded font-mono">
+                                                        📊 Aggregate Limit ({{ $rule->aggregate_group }})
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-col="season" data-sort-val="{{ $rule->season }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-semibold text-slate-800">
+                                        {{ $rule->season }}
+                                    </td>
+                                    <td data-col="sport" data-sort-val="{{ $rule->sport_limit }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-black text-slate-900 {{ $rule->is_aggregate ? 'bg-indigo-100/50' : 'bg-slate-50/50' }}">
+                                        {{ $rule->sport_limit }}
+                                    </td>
+                                    <td data-col="conservation" data-sort-val="{{ $rule->conservation_limit }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-black text-teal-700 {{ $rule->is_aggregate ? 'bg-teal-100/50' : 'bg-teal-50/30' }}">
+                                        {{ $rule->conservation_limit }}
+                                    </td>
+                                    <td data-col="size" data-sort-val="{{ $rule->size_restriction }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-slate-700">
+                                        <span class="font-medium text-slate-900">{{ $rule->size_restriction }}</span>
+                                        @if($rule->notes)
+                                            <span class="text-[11px] text-slate-500 block mt-0.5 italic">{{ $rule->notes }}</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </x-table.wrapper>
             </div>
         </div>
     @endif
@@ -111,45 +118,52 @@
         </div>
 
         @if(count($fishingZone->lakes) > 0)
-            <div class="overflow-x-auto rounded-xl border border-slate-200/80">
-                <table class="w-full text-left text-sm text-slate-700">
-                    <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
-                        <tr>
-                            <th scope="col" class="py-3 px-4">Lake Name</th>
-                            <th scope="col" class="py-3 px-4 text-center">Coordinates</th>
-                            <th scope="col" class="py-3 px-4 text-center">Catches Logged</th>
-                            <th scope="col" class="py-3 px-4 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 bg-white">
-                        @foreach($fishingZone->lakes as $lake)
-                            <tr class="hover:bg-slate-50/70 transition-colors">
-                                <td class="py-3.5 px-4 font-bold text-slate-900">
-                                    <a href="{{ url('/lake/' . $lake->id) }}" class="hover:text-teal-600 hover:underline flex items-center gap-2">
-                                        <i data-lucide="waves" class="w-4 h-4 text-teal-600 shrink-0"></i>
-                                        <span>{{ $lake->name }}</span>
-                                    </a>
-                                </td>
-                                <td class="py-3.5 px-4 text-center text-xs font-mono text-slate-600">
-                                    @if($lake->latitude && $lake->longitude)
-                                        {{ number_format($lake->latitude, 3) }}°N, {{ number_format($lake->longitude, 3) }}°W
-                                    @else
-                                        —
-                                    @endif
-                                </td>
-                                <td class="py-3.5 px-4 text-center font-mono font-bold text-teal-700">
-                                    {{ $lake->records_count }}
-                                </td>
-                                <td class="py-3.5 px-4 text-right whitespace-nowrap">
-                                    <a href="{{ url('/lake/' . $lake->id) }}" class="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700">
-                                        <span>View Water</span>
-                                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                                    </a>
-                                </td>
+            <div x-data="dataTable({ defaultDensity: 'normal' })">
+                <x-table.wrapper 
+                    searchPlaceholder="Filter lakes in this zone..." 
+                    itemName="lakes"
+                    :showColumnPicker="false"
+                    :showDensity="true"
+                >
+                    <table class="w-full text-left text-sm text-slate-700">
+                        <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
+                            <tr>
+                                <x-table.th col="name" type="text" label="Lake Name">Lake Name</x-table.th>
+                                <x-table.th col="coords" type="text" align="center" label="Coordinates">Coordinates</x-table.th>
+                                <x-table.th col="catches" type="number" align="center" label="Catches Logged">Catches Logged</x-table.th>
+                                <th scope="col" class="py-3 px-4 text-right">Actions</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
+                            @foreach($fishingZone->lakes as $lake)
+                                <tr data-table-row class="hover:bg-slate-50/70 transition-colors">
+                                    <td data-col="name" data-sort-val="{{ $lake->name }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-slate-900">
+                                        <a href="{{ url('/lake/' . $lake->id) }}" class="hover:text-teal-600 hover:underline flex items-center gap-2">
+                                            <i data-lucide="waves" class="w-4 h-4 text-teal-600 shrink-0"></i>
+                                            <span>{{ $lake->name }}</span>
+                                        </a>
+                                    </td>
+                                    <td data-col="coords" data-sort-val="{{ $lake->latitude ?? 0 }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">
+                                        @if($lake->latitude && $lake->longitude)
+                                            {{ number_format($lake->latitude, 3) }}°N, {{ number_format($lake->longitude, 3) }}°W
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
+                                    <td data-col="catches" data-sort-val="{{ $lake->records_count }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">
+                                        {{ $lake->records_count }}
+                                    </td>
+                                    <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
+                                        <a href="{{ url('/lake/' . $lake->id) }}" class="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700">
+                                            <span>View Water</span>
+                                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </x-table.wrapper>
             </div>
         @else
             <div class="py-8 text-center text-slate-400 text-xs italic space-y-2">
