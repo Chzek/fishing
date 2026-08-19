@@ -22,8 +22,9 @@
 
     $currentSortByRaw = request('sort_by');
     $currentSortOrderRaw = request('sort_order');
+    $isExplicitSort = !empty($currentSortByRaw);
 
-    if (!$currentSortByRaw) {
+    if (!$isExplicitSort) {
         if (request()->is('record*')) {
             $sortCols = ['date'];
             $sortOrders = ['desc'];
@@ -42,11 +43,9 @@
     $colIndex = array_search($col, $sortCols);
     $isCurrentSort = $colIndex !== false;
     $currentOrder = $isCurrentSort ? (strtolower($sortOrders[$colIndex] ?? 'asc') === 'desc' ? 'desc' : 'asc') : null;
-    $nextOrder = ($isCurrentSort && $currentOrder === 'asc') ? 'desc' : 'asc';
     $isMultiSort = count($sortCols) > 1;
-    $sortPriorityBadge = ($isMultiSort && $isCurrentSort && $currentSortByRaw) ? ($colIndex + 1) : '';
+    $sortPriorityBadge = ($isMultiSort && $isCurrentSort && $isExplicitSort) ? ($colIndex + 1) : '';
 @endphp
-
 
 <th 
     scope="col" 
@@ -68,24 +67,33 @@
                 let cols = (urlParams.get('sort_by') || '').split(',').filter(Boolean);
                 let orders = (urlParams.get('sort_order') || '').split(',').filter(Boolean);
                 
+                const idx = cols.indexOf('{{ $col }}');
+
                 if ($event.shiftKey) {
-                    const idx = cols.indexOf('{{ $col }}');
-                    if (idx !== -1) {
-                        const cur = (orders[idx] || 'asc').toLowerCase();
-                        if (cur === 'asc') {
+                    // Multi-Sort Tri-State Cycle: None -> Asc -> Desc -> None
+                    if (idx === -1) {
+                        cols.push('{{ $col }}');
+                        orders.push('asc');
+                    } else {
+                        const curOrder = (orders[idx] || 'asc').toLowerCase();
+                        if (curOrder === 'asc') {
                             orders[idx] = 'desc';
                         } else {
                             cols.splice(idx, 1);
                             orders.splice(idx, 1);
                         }
-                    } else {
-                        cols.push('{{ $col }}');
-                        orders.push('asc');
                     }
                 } else {
+                    // Single-Sort Tri-State Cycle: None -> Asc -> Desc -> None (reset to default)
                     if (cols.length === 1 && cols[0] === '{{ $col }}') {
-                        const cur = (orders[0] || 'asc').toLowerCase();
-                        orders[0] = cur === 'asc' ? 'desc' : 'asc';
+                        const curOrder = (orders[0] || 'asc').toLowerCase();
+                        if (curOrder === 'asc') {
+                            cols = ['{{ $col }}'];
+                            orders = ['desc'];
+                        } else {
+                            cols = [];
+                            orders = [];
+                        }
                     } else {
                         cols = ['{{ $col }}'];
                         orders = ['asc'];
@@ -103,8 +111,9 @@
                 window.location.search = urlParams.toString();
             "
             class="group inline-flex items-center gap-1.5 hover:text-teal-600 focus:outline-none transition-colors cursor-pointer {{ $alignmentClasses }} w-full"
-            title="Sort database by {{ $label ?? $slot }} (Hold Shift for Multi-Sort)"
+            title="Tri-state sort: Asc -> Desc -> Reset (Hold Shift for Multi-Sort)"
         >
+
             <span class="truncate">{{ $slot }}</span>
 
             <!-- Active Database Sort State Badge -->
