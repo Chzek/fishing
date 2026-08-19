@@ -92,11 +92,12 @@
             </div>
         </form>
 
-        <!-- Records Data Table with Local Search, Multi-Sort, Density & Column Picker -->
+        <!-- Records Data Table with Server Search, Sorting, Density & Column Picker -->
         <div x-data="dataTable({ defaultDensity: 'normal' })">
             <x-table.wrapper 
-                searchPlaceholder="Instant filter on loaded catches..." 
+                searchPlaceholder="Search all catches in database..." 
                 itemName="catches"
+                :totalCount="$totalCount ?? $records->total()"
                 :showColumnPicker="true"
                 :showDensity="true"
             >
@@ -116,20 +117,20 @@
                     </thead>
                     <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
                         @forelse($records as $record)
-                            <tr data-table-row class="hover:bg-slate-50/70 transition-colors">
-                                <td data-col="date" data-sort-val="{{ $record->caught }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-medium text-slate-900 whitespace-nowrap font-mono text-xs">{{ $record->caught }}</td>
-                                <td data-col="angler" data-sort-val="{{ $record->angler->full_name }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-semibold text-slate-800 whitespace-nowrap">
+                            <tr class="hover:bg-slate-50/70 transition-colors">
+                                <td data-col="date" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-medium text-slate-900 whitespace-nowrap font-mono text-xs">{{ $record->caught }}</td>
+                                <td data-col="angler" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-semibold text-slate-800 whitespace-nowrap">
                                     <a href="{{ url('/angler/' . $record->angler->id . '/profile') }}" class="hover:text-teal-600 hover:underline">
                                         {{ $record->angler->full_name }}
                                     </a>
                                 </td>
-                                <td data-col="lake" data-sort-val="{{ $record->lake->name }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-slate-700 whitespace-nowrap">
+                                <td data-col="lake" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-slate-700 whitespace-nowrap">
                                     <a href="{{ url('/lake/' . $record->lake->id) }}" class="hover:text-teal-600 hover:underline">
                                         {{ $record->lake->name }}
                                     </a>
                                 </td>
-                                <td data-col="species" data-sort-val="{{ $record->fishBreed->name }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-teal-700 whitespace-nowrap">{{ $record->fishBreed->name }}</td>
-                                <td data-col="lure" data-sort-val="{{ $record->lure->name ?? '' }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-xs text-slate-600">
+                                <td data-col="species" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-teal-700 whitespace-nowrap">{{ $record->fishBreed->name }}</td>
+                                <td data-col="lure" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-xs text-slate-600">
                                     @if($record->lure)
                                         <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium border border-slate-200">
                                             {{ $record->lure->name }}
@@ -138,24 +139,27 @@
                                         <span class="text-slate-400">—</span>
                                     @endif
                                 </td>
-                                <td data-col="weight" data-sort-val="{{ $record->weight ?? 0 }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-900">{{ $record->weight ? $record->weight . ' lbs' : '—' }}</td>
-                                <td data-col="length" data-sort-val="{{ $record->length ?? 0 }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $record->length ? $record->length . '″' : '—' }}</td>
-                                <td data-col="status" data-sort-val="{{ $record->released ? 'Released' : 'Kept' }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center">
+                                <td data-col="weight" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800 whitespace-nowrap">
+                                    {{ $record->weight ? number_format($record->weight, 2) : '—' }}
+                                </td>
+                                <td data-col="length" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-900 whitespace-nowrap">
+                                    {{ $record->length ? number_format($record->length, 1) : '—' }}
+                                </td>
+                                <td data-col="status" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center whitespace-nowrap">
                                     @if($record->released)
-                                        <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold px-2 py-0.5 rounded-full font-mono">Released</span>
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Released
+                                        </span>
                                     @else
-                                        <span class="bg-slate-100 text-slate-600 border border-slate-200 text-[11px] font-medium px-2 py-0.5 rounded-full font-mono">Kept</span>
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                                            Kept
+                                        </span>
                                     @endif
                                 </td>
-                                <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right">
-                                    <div class="flex items-center justify-end gap-1.5">
-                                        <a href="{{ url('/record/' . $record->id) }}" class="p-1.5 hover:bg-slate-100 text-slate-600 hover:text-teal-600 rounded-lg transition-colors" title="View Details">
-                                            <i data-lucide="eye" class="w-4 h-4"></i>
-                                        </a>
-                                        <a href="{{ url('/record/' . $record->id . '/edit') }}" class="p-1.5 hover:bg-slate-100 text-slate-600 hover:text-amber-600 rounded-lg transition-colors" title="Edit Catch">
-                                            <i data-lucide="edit-3" class="w-4 h-4"></i>
-                                        </a>
-                                    </div>
+                                <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap font-medium text-xs">
+                                    <a href="{{ route('record.show', $record->id) }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
+                                        View Details →
+                                    </a>
                                 </td>
                             </tr>
                         @empty

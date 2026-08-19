@@ -2,8 +2,9 @@
 
 <div x-data="dataTable({ defaultDensity: 'normal' })" class="space-y-3">
     <x-table.wrapper 
-        searchPlaceholder="Quick filter catches..." 
+        searchPlaceholder="Search catches in database..." 
         itemName="catches"
+        :totalCount="method_exists($records, 'total') ? $records->total() : count($records)"
         :showColumnPicker="false"
         :showDensity="true"
     >
@@ -22,15 +23,15 @@
             </thead>
             <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
                 @forelse($records as $record)
-                    <tr data-table-row class="hover:bg-slate-50/70 transition-colors">
-                        <td data-col="date" data-sort-val="{{ $record->caught }}" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="font-mono text-slate-900 whitespace-nowrap">{{ $record->caught }}</td>
-                        <td data-col="angler" data-sort-val="{{ optional($record->angler)->fullName ?? '' }}" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="font-semibold text-slate-800">{{ optional($record->angler)->fullName ?? 'N/A' }}</td>
-                        <td data-col="lake" data-sort-val="{{ optional($record->lake)->name ?? '' }}" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="text-slate-700">{{ optional($record->lake)->name ?? 'N/A' }}</td>
-                        <td data-col="species" data-sort-val="{{ optional($record->fishBreed)->name ?? '' }}" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="font-bold text-teal-700">{{ optional($record->fishBreed)->name ?? 'N/A' }}</td>
-                        <td data-col="length" data-sort-val="{{ $record->length ?? 0 }}" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $record->length ? $record->length . '″' : '—' }}</td>
-                        <td data-col="weight" data-sort-val="{{ $record->weight ?? 0 }}" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="text-center font-mono font-bold text-slate-900">{{ $record->weight ? $record->weight . ' lbs' : '—' }}</td>
-                        <td data-col="lure" data-sort-val="{{ optional($record->lure)->displayName ?? '' }}" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="text-slate-600">{{ optional($record->lure)->displayName ?? '—' }}</td>
-                        <td data-col="status" data-sort-val="{{ $record->released ? 'Released' : 'Kept' }}" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="text-center">
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                        <td data-col="date" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="font-mono text-slate-900 whitespace-nowrap">{{ $record->caught }}</td>
+                        <td data-col="angler" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="font-semibold text-slate-800">{{ optional($record->angler)->fullName ?? 'N/A' }}</td>
+                        <td data-col="lake" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="text-slate-700">{{ optional($record->lake)->name ?? 'N/A' }}</td>
+                        <td data-col="species" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="font-bold text-teal-700">{{ optional($record->fishBreed)->name ?? 'N/A' }}</td>
+                        <td data-col="length" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $record->length ? $record->length . '″' : '—' }}</td>
+                        <td data-col="weight" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="text-center font-mono font-bold text-slate-900">{{ $record->weight ? $record->weight . ' lbs' : '—' }}</td>
+                        <td data-col="lure" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="text-slate-600">{{ optional($record->lure)->displayName ?? '—' }}</td>
+                        <td data-col="status" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="text-center">
                             @if($record->released)
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Released</span>
                             @else
@@ -49,3 +50,4 @@
         </table>
     </x-table.wrapper>
 </div>
+

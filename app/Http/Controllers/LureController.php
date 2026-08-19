@@ -14,14 +14,28 @@ class LureController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(\Illuminate\Pipeline\Pipeline $pipeline, Request $request)
     {
-        $lures = Lure::paginate();
+        $query = Lure::query();
+
+        if (!$request->has('sort_by')) {
+            $query->orderBy('name', 'asc');
+        }
+
+        $query = $pipeline->send($query)
+            ->through([
+                \Fishinglog\Pipes\Filters\SortBy::class,
+                \Fishinglog\Pipes\Filters\FilterBySearch::class,
+            ])
+            ->thenReturn();
+
+        $lures = $query->paginate()->withQueryString();
 
         return view('lure.index', [
             'lures' => $lures,
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.

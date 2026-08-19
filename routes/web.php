@@ -157,8 +157,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/quick', [RecordController::class, 'quick']);
         Route::get('/offline-review', [RecordController::class, 'offlineReview'])->name('record.offline-review');
         Route::get('/create', [RecordController::class, 'create']);
-        Route::get('/{record}', [RecordController::class, 'show']);
-        Route::get('/{record}/edit', [RecordController::class, 'edit']);
+        Route::get('/{record}', [RecordController::class, 'show'])->name('record.show');
+        Route::get('/{record}/edit', [RecordController::class, 'edit'])->name('record.edit');
+
         Route::post('/', [RecordController::class, 'store']);
         Route::put('/', [RecordController::class, 'update']);
         Route::delete('/{record}', [RecordController::class, 'destroy']);

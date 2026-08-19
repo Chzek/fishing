@@ -37,11 +37,12 @@ class LakeController extends Controller
                 SortBy::class,
                 FilterByName::class,
                 FilterByRecordsCount::class,
+                \Fishinglog\Pipes\Filters\FilterBySearch::class,
             ])
             ->thenReturn();
 
-        $lakes = $lakes->paginate(10);
-        $lakes->appends($request->query());
+        $lakes = $lakes->paginate(10)->withQueryString();
+
 
         return view('lake.index', [
             'lakes' => $lakes,

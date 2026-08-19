@@ -46,8 +46,9 @@
     @if(count($anglers) > 0)
         <div x-data="dataTable({ defaultDensity: 'normal' })">
             <x-table.wrapper 
-                searchPlaceholder="Quick filter loaded anglers..." 
+                searchPlaceholder="Search anglers in database..." 
                 itemName="anglers"
+                :totalCount="$anglers->total()"
                 :showColumnPicker="false"
                 :showDensity="true"
             >
@@ -62,8 +63,8 @@
                     </thead>
                     <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
                         @foreach($anglers as $angler)
-                            <tr data-table-row class="hover:bg-slate-50/70 transition-colors">
-                                <td data-col="name" data-sort-val="{{ $angler->lastName }} {{ $angler->firstName }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'">
+                            <tr class="hover:bg-slate-50/70 transition-colors">
+                                <td data-col="name" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'">
                                     <div class="flex items-center gap-3">
                                         <x-anglerAvatar :angler="$angler" size="sm" />
                                         <div>
@@ -72,8 +73,8 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td data-col="catches" data-sort-val="{{ $angler->records_count }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $angler->records_count }}</td>
-                                <td data-col="lakes" data-sort-val="{{ $angler->lakes_count }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800">{{ $angler->lakes_count }}</td>
+                                <td data-col="catches" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $angler->records_count }}</td>
+                                <td data-col="lakes" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800">{{ $angler->lakes_count }}</td>
                                 <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
                                     <a href="{{ url('/angler/' . $angler->id . '/profile') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-700 font-semibold text-xs rounded-xl border border-slate-200 hover:border-teal-200 transition-colors">
                                         <i data-lucide="user" class="w-3.5 h-3.5 text-teal-600"></i>
@@ -86,6 +87,7 @@
                 </table>
             </x-table.wrapper>
         </div>
+
 
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
             <span>Showing {{ $anglers->firstItem() }} to {{ $anglers->lastItem() }} of {{ $anglers->total() }} Anglers</span>

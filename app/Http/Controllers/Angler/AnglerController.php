@@ -20,21 +20,23 @@ class AnglerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(\Illuminate\Pipeline\Pipeline $pipeline, Request $request)
     {
         $query = Angler::withCount('records')
             ->withCount(['records as lakes_count' => function ($query) {
                 $query->select(DB::raw('count(distinct records.lakes_id)'));
-            }])
-            ->orderBy('records_count', 'desc');
+            }]);
 
-        if ($search = $request->input('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('firstName', 'like', "%{$search}%")
-                  ->orWhere('lastName', 'like', "%{$search}%")
-                  ->orWhere('middleName', 'like', "%{$search}%");
-            });
+        if (!$request->has('sort_by')) {
+            $query->orderBy('records_count', 'desc');
         }
+
+        $query = $pipeline->send($query)
+            ->through([
+                \Fishinglog\Pipes\Filters\SortBy::class,
+                \Fishinglog\Pipes\Filters\FilterBySearch::class,
+            ])
+            ->thenReturn();
 
         $anglers = $query->paginate(10)->withQueryString();
 
@@ -42,6 +44,7 @@ class AnglerController extends Controller
             'anglers' => $anglers,
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.

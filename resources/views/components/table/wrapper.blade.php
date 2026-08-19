@@ -2,7 +2,7 @@
     'title' => null,
     'subtitle' => null,
     'icon' => null,
-    'searchPlaceholder' => 'Quick filter loaded rows...',
+    'searchPlaceholder' => 'Search database...',
     'showDensity' => true,
     'showColumnPicker' => false,
     'totalCount' => null,
@@ -13,51 +13,63 @@
     <!-- Table Interactive Toolbar -->
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
         <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
-            <!-- Instant Search Input -->
-            <div class="relative flex-1 min-w-[180px] max-w-md">
+            <!-- Database Search Form -->
+            <form method="GET" action="{{ request()->url() }}" class="relative flex-1 min-w-[180px] max-w-md">
+                @if(request('sort_by'))
+                    <input type="hidden" name="sort_by" value="{{ request('sort_by') }}" />
+                @endif
+                @if(request('sort_order'))
+                    <input type="hidden" name="sort_order" value="{{ request('sort_order') }}" />
+                @endif
+
                 <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                 <input 
                     type="text" 
-                    x-model="search" 
+                    name="search"
+                    value="{{ request('search') }}" 
                     placeholder="{{ $searchPlaceholder }}"
                     class="w-full h-8.5 pl-9 pr-8 text-xs rounded-lg border border-slate-200 bg-white font-medium text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
                 />
-                <button 
-                    type="button" 
-                    x-show="search" 
-                    @click="clearSearch()" 
-                    class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
-                    title="Clear filter"
-                    style="display: none;"
-                >
-                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                </button>
-            </div>
-
-            <!-- Active Sort Badges & Reset -->
-            <template x-if="sortQueue.length > 0">
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-teal-50 border border-teal-200/80 rounded-lg text-xs font-semibold text-teal-800 animate-fadeIn">
-                    <i data-lucide="arrow-up-down" class="w-3.5 h-3.5 text-teal-600"></i>
-                    <span x-text="sortQueue.length === 1 ? 'Sorted: ' + sortQueue[0].col : sortQueue.length + ' Sort Rules'"></span>
-                    <button 
-                        type="button" 
-                        @click="clearSort()" 
-                        class="ml-1 text-teal-600 hover:text-teal-900 font-bold underline text-[11px]"
-                        title="Reset column sorting"
+                @if(request('search'))
+                    <a 
+                        href="{{ request()->fullUrlWithQuery(['search' => null, 'page' => 1]) }}" 
+                        class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                        title="Clear search"
                     >
-                        Reset
-                    </button>
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </a>
+                @endif
+            </form>
+
+            <!-- Active Database Sort Badges & Reset -->
+            @if(request('sort_by') || request('search'))
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-teal-50 border border-teal-200/80 rounded-lg text-xs font-semibold text-teal-800">
+                    <i data-lucide="filter" class="w-3.5 h-3.5 text-teal-600"></i>
+                    <span>
+                        @if(request('search')) Search: "{{ request('search') }}" @endif
+                        @if(request('search') && request('sort_by')) | @endif
+                        @if(request('sort_by')) Sorted by: {{ request('sort_by') }} ({{ request('sort_order', 'asc') }}) @endif
+                    </span>
+                    <a 
+                        href="{{ request()->url() }}" 
+                        class="ml-1 text-teal-600 hover:text-teal-900 font-bold underline text-[11px]"
+                        title="Reset search and sort filters"
+                    >
+                        Reset All
+                    </a>
                 </div>
-            </template>
+            @endif
         </div>
 
         <!-- Controls: Match Counter, Column Visibility, Density -->
         <div class="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 text-xs">
-            <!-- Row Counter -->
-            <div class="flex items-center gap-1.5 text-slate-500 font-medium font-mono text-[11px] bg-white px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-2xs">
-                <span class="w-2 h-2 rounded-full" :class="search ? 'bg-amber-400' : 'bg-teal-500'"></span>
-                <span x-text="visibleRowCount + (totalRows ? ' of ' + totalRows : '') + ' {{ $itemName }}'"></span>
-            </div>
+            @if($totalCount !== null)
+                <!-- Row Counter -->
+                <div class="flex items-center gap-1.5 text-slate-500 font-medium font-mono text-[11px] bg-white px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-2xs">
+                    <span class="w-2 h-2 rounded-full {{ request('search') ? 'bg-amber-400' : 'bg-teal-500' }}"></span>
+                    <span>{{ $totalCount }} {{ $itemName }}</span>
+                </div>
+            @endif
 
             <!-- Column Visibility Picker -->
             @if($showColumnPicker)
@@ -126,23 +138,6 @@
     <!-- Table Container -->
     <div class="overflow-x-auto rounded-xl border border-slate-200/80 shadow-2xs bg-white">
         {{ $slot }}
-
-        <!-- Dynamic Empty State when 0 rows match search -->
-        <div data-table-empty class="p-8 text-center bg-slate-50/50 border-t border-slate-100" style="display: none;">
-            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 text-slate-400 mb-3">
-                <i data-lucide="filter-x" class="w-6 h-6"></i>
-            </div>
-            <h4 class="text-sm font-bold text-slate-800">No matching records found</h4>
-            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                No rows match "<span class="font-semibold text-slate-700" x-text="search"></span>". Try adjusting your search term.
-            </p>
-            <button 
-                type="button" 
-                @click="clearSearch()" 
-                class="mt-3 px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs rounded-lg border border-slate-200 shadow-2xs transition-colors"
-            >
-                Clear Search Filter
-            </button>
-        </div>
     </div>
 </div>
+

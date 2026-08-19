@@ -40,11 +40,12 @@
             </button>
         </form>
 
-        <!-- Lakes Data Table with Local Search & Multi-Sort -->
+        <!-- Lakes Data Table with Server Search & Sorting -->
         <div x-data="dataTable({ defaultDensity: 'normal' })">
             <x-table.wrapper 
-                searchPlaceholder="Quick filter loaded lakes..." 
+                searchPlaceholder="Search lakes in database..." 
                 itemName="lakes"
+                :totalCount="$lakes->total()"
                 :showColumnPicker="true"
                 :showDensity="true"
             >
@@ -63,8 +64,8 @@
                     </thead>
                     <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
                         @foreach($lakes as $lake)
-                            <tr data-table-row class="hover:bg-slate-50/70 transition-colors">
-                                <td data-col="name" data-sort-val="{{ $lake->name }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-slate-900">
+                            <tr class="hover:bg-slate-50/70 transition-colors">
+                                <td data-col="name" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-slate-900">
                                     <div class="flex items-center gap-2">
                                         <i data-lucide="waves" class="w-4 h-4 text-teal-600 shrink-0"></i>
                                         <div>
@@ -77,14 +78,14 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td data-col="lat" data-sort-val="{{ $lake->latitude ?? 0 }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">{{ $lake->latitude ? number_format($lake->latitude, 4) : '—' }}</td>
-                                <td data-col="long" data-sort-val="{{ $lake->longitude ?? 0 }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">{{ $lake->longitude ? number_format($lake->longitude, 4) : '—' }}</td>
-                                <td data-col="catches" data-sort-val="{{ $lake->records_count }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $lake->records_count }}</td>
-                                <td data-col="visits" data-sort-val="{{ $lake->visits }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800">{{ $lake->visits }}</td>
-                                <td data-col="rate" data-sort-val="{{ $lake->visits > 0 ? round($lake->records_count/$lake->visits, 2) : 0 }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-medium text-emerald-700">
+                                <td data-col="lat" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">{{ $lake->latitude ? number_format($lake->latitude, 4) : '—' }}</td>
+                                <td data-col="long" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">{{ $lake->longitude ? number_format($lake->longitude, 4) : '—' }}</td>
+                                <td data-col="catches" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $lake->records_count }}</td>
+                                <td data-col="visits" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800">{{ $lake->visits }}</td>
+                                <td data-col="rate" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-medium text-emerald-700">
                                     @if($lake->visits > 0) {{ round($lake->records_count/$lake->visits, 2) }} @else — @endif
                                 </td>
-                                <td data-col="anglers" data-sort-val="{{ $lake->anglers_count }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-medium text-sky-700">{{ $lake->anglers_count }}</td>
+                                <td data-col="anglers" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-medium text-sky-700">{{ $lake->anglers_count }}</td>
                                 <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
                                     <x-tableOptions name='lake' identifier='{{ $lake->id }}' />
                                 </td>
@@ -94,6 +95,7 @@
                 </table>
             </x-table.wrapper>
         </div>
+
 
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
             <span>Showing {{ $lakes->firstItem() }} to {{ $lakes->lastItem() }} of {{ $lakes->total() }} Lakes</span>

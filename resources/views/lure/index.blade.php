@@ -7,8 +7,9 @@
 
         <div x-data="dataTable({ defaultDensity: 'normal' })">
             <x-table.wrapper 
-                searchPlaceholder="Quick filter lures by name, color, or size..." 
+                searchPlaceholder="Search lures in database..." 
                 itemName="lures"
+                :totalCount="$lures->total()"
                 :showColumnPicker="false"
                 :showDensity="true"
             >
@@ -24,14 +25,14 @@
                     </thead>
                     <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
                         @foreach($lures as $lure)
-                            <tr data-table-row class="hover:bg-slate-50/70 transition-colors">
-                                <td data-col="id" data-sort-val="{{ $lure->id }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-mono text-xs text-slate-400">#{{ $lure->id }}</td>
-                                <td data-col="name" data-sort-val="{{ $lure->name }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-slate-900 flex items-center gap-2">
+                            <tr class="hover:bg-slate-50/70 transition-colors">
+                                <td data-col="id" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-mono text-xs text-slate-400">#{{ $lure->id }}</td>
+                                <td data-col="name" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-slate-900 flex items-center gap-2">
                                     <i data-lucide="fishing-hook" class="w-4 h-4 text-teal-600 shrink-0"></i>
                                     <span>{{ $lure->name }}</span>
                                 </td>
-                                <td data-col="color" data-sort-val="{{ $lure->color }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-slate-700 font-medium">{{ $lure->color }}</td>
-                                <td data-col="size" data-sort-val="{{ $lure->size }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-slate-600 font-mono text-xs">{{ $lure->size }}</td>
+                                <td data-col="color" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-slate-700 font-medium">{{ $lure->color }}</td>
+                                <td data-col="size" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-slate-600 font-mono text-xs">{{ $lure->size }}</td>
                                 <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
                                     <x-tableOptions name='lure' identifier='{{ $lure->id }}' />
                                 </td>
@@ -41,6 +42,7 @@
                 </table>
             </x-table.wrapper>
         </div>
+
 
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
             <span>Showing {{ $lures->firstItem() }} to {{ $lures->lastItem() }} of {{ $lures->total() }} Lures</span>
