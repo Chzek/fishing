@@ -1,6 +1,6 @@
 /**
  * Lightweight Alpine.js Table UI Controller
- * Handles column visibility toggling and table density switcher.
+ * Handles column visibility toggling and table density switcher via reactive x-show directives.
  * Searching and sorting are processed on the database via Laravel Pipes.
  */
 export default function dataTable(config = {}) {
@@ -26,10 +26,6 @@ export default function dataTable(config = {}) {
                 initial[col.key] = col.visible !== false;
             });
             this.visibleColumns = initial;
-
-            this.$nextTick(() => {
-                this.applyColumnVisibility();
-            });
         },
 
         setDensity(newDensity) {
@@ -37,33 +33,15 @@ export default function dataTable(config = {}) {
         },
 
         toggleColumn(colKey) {
-            this.visibleColumns = {
-                ...this.visibleColumns,
-                [colKey]: !this.isColumnVisible(colKey)
-            };
-            this.applyColumnVisibility();
+            this.visibleColumns[colKey] = !this.isColumnVisible(colKey);
         },
 
         isColumnVisible(colKey) {
+            if (!colKey) return true;
             return this.visibleColumns[colKey] !== false;
-        },
-
-        applyColumnVisibility() {
-            this.$nextTick(() => {
-                Object.keys(this.visibleColumns).forEach(colKey => {
-                    const isVis = this.isColumnVisible(colKey);
-                    const cells = this.$el.querySelectorAll(`[data-col="${colKey}"]`);
-                    cells.forEach(el => {
-                        if (isVis) {
-                            el.style.removeProperty('display');
-                        } else {
-                            el.style.setProperty('display', 'none', 'important');
-                        }
-                    });
-                });
-            });
         }
     };
 }
+
 
 

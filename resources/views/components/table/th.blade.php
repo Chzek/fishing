@@ -32,9 +32,11 @@
         data-col="{{ $col }}" 
         data-col-label="{{ $label ?? $slot }}"
         data-col-visible="{{ $visible ? 'true' : 'false' }}"
+        x-show="isColumnVisible('{{ $col }}')"
     @endif
     {{ $attributes->merge(['class' => "py-3 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider select-none {$textAlignment}"]) }}
 >
+
     @if($sortable && $col)
         <a 
             href="{{ $sortUrl }}" 
