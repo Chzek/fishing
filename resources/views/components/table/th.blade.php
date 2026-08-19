@@ -20,19 +20,33 @@
         'right' => 'text-right',
     ][$align] ?? 'text-left';
 
-    $currentSortByRaw = request('sort_by', '');
-    $currentSortOrderRaw = request('sort_order', '');
+    $currentSortByRaw = request('sort_by');
+    $currentSortOrderRaw = request('sort_order');
 
-    $sortCols = array_values(array_filter(explode(',', $currentSortByRaw)));
-    $sortOrders = explode(',', $currentSortOrderRaw);
+    if (!$currentSortByRaw) {
+        if (request()->is('record*')) {
+            $sortCols = ['date'];
+            $sortOrders = ['desc'];
+        } elseif (request()->is('angler*')) {
+            $sortCols = ['angler', 'lastName'];
+            $sortOrders = ['asc', 'asc'];
+        } else {
+            $sortCols = ['name', 'species', 'lake', 'lure'];
+            $sortOrders = ['desc', 'desc', 'desc', 'desc'];
+        }
+    } else {
+        $sortCols = array_values(array_filter(explode(',', $currentSortByRaw)));
+        $sortOrders = explode(',', $currentSortOrderRaw ?? 'asc');
+    }
 
     $colIndex = array_search($col, $sortCols);
     $isCurrentSort = $colIndex !== false;
     $currentOrder = $isCurrentSort ? (strtolower($sortOrders[$colIndex] ?? 'asc') === 'desc' ? 'desc' : 'asc') : null;
     $nextOrder = ($isCurrentSort && $currentOrder === 'asc') ? 'desc' : 'asc';
     $isMultiSort = count($sortCols) > 1;
-    $sortPriorityBadge = ($isMultiSort && $isCurrentSort) ? ($colIndex + 1) : '';
+    $sortPriorityBadge = ($isMultiSort && $isCurrentSort && $currentSortByRaw) ? ($colIndex + 1) : '';
 @endphp
+
 
 <th 
     scope="col" 

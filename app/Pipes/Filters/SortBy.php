@@ -4,6 +4,7 @@ namespace Fishinglog\Pipes\Filters;
 
 use Closure;
 use Fishinglog\Pipes\PipeContract;
+use Illuminate\Support\Facades\Schema;
 
 class SortBy implements PipeContract
 {
@@ -19,8 +20,25 @@ class SortBy implements PipeContract
     public function handle($query, Closure $next)
     {
         $sortBy = request('sort_by');
+        $model = method_exists($query, 'getModel') ? $query->getModel() : null;
+        $table = $model ? $model->getTable() : null;
 
+        // Apply default table sorting if no explicit sort parameter is provided
         if (!$sortBy) {
+            $query->reorder();
+
+            if ($table === 'records') {
+                $query->orderBy('records.caught', 'desc');
+            } elseif ($table === 'anglers') {
+                $query->orderBy('anglers.lastName', 'asc')
+                      ->orderBy('anglers.firstName', 'asc')
+                      ->orderBy('anglers.middleName', 'asc');
+            } elseif ($table && Schema::hasColumn($table, 'name')) {
+                $query->orderBy("{$table}.name", 'desc');
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
             return $next($query);
         }
 
@@ -33,10 +51,8 @@ class SortBy implements PipeContract
 
         // Clear default orderBy clauses set prior to pipeline execution
         $query->reorder();
-
-        $model = method_exists($query, 'getModel') ? $query->getModel() : null;
-        $table = $model ? $model->getTable() : null;
         $joinedTables = [];
+
 
 
         foreach ($sortCols as $index => $col) {
