@@ -87,12 +87,13 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/', [AnglerController::class, 'index']);
         Route::get('/stats', [AnglerStatsController::class, 'index'])->name('angler.stats');
         Route::get('/create', [AnglerController::class, 'create']);
-        Route::get('/{angler}', [AnglerController::class, 'show']);
+        Route::get('/{angler}', [AnglerProfileController::class, 'show']);
         Route::get('/{angler}/edit', [AnglerController::class, 'edit']);
         Route::post('/', [AnglerController::class, 'store']);
         Route::put('/', [AnglerController::class, 'update']);
         Route::delete('/{angler}', [AnglerController::class, 'destroy']);
         Route::get('/{angler}/profile', [AnglerProfileController::class, 'show']);
+
         Route::post('/avatar', [AnglerController::class, 'updateAvatar'])->name('angler.avatar.update');
     });
 

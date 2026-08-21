@@ -414,11 +414,99 @@
                 </div>
             </div>
 
-            <a href="{{ url('/record/directory') }}?angler={{ $angler->id }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all shrink-0">
+            <a href="{{ url('/record/directory') }}?search={{ urlencode($angler->firstName . ' ' . $angler->lastName) }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all shrink-0">
                 <span>View Full Logbook</span>
                 <i data-lucide="arrow-right" class="w-4 h-4 text-teal-400"></i>
             </a>
         </div>
+
+        <!-- Interactive Catches Data Table with Multi-Sort & Column Visibility Controls -->
+        @if(isset($anglerRecords) && count($anglerRecords) > 0)
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-5 h-5 text-teal-600"></i>
+                        <span>Catches Logbook for {{ $angler->firstName }} {{ $angler->lastName }}</span>
+                    </h2>
+                    <span class="text-xs font-mono font-bold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
+                        Showing {{ $anglerRecords->firstItem() }} to {{ $anglerRecords->lastItem() }} of {{ $anglerRecords->total() }} Catches
+                    </span>
+                </div>
+
+                <div x-data="dataTable({ defaultDensity: 'normal' })">
+                    <x-table.wrapper 
+                        searchPlaceholder="Filter {{ $angler->firstName }}'s catches by species, lake, lure..." 
+                        itemName="catches"
+                        :totalCount="$anglerRecords->total()"
+                        :showColumnPicker="true"
+                        :showDensity="true"
+                    >
+                        <table class="w-full text-left text-sm text-slate-700">
+                            <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
+                                <tr>
+                                    <x-table.th col="date" type="date" label="Date">Date</x-table.th>
+                                    <x-table.th col="species" type="text" label="Species">Species</x-table.th>
+                                    <x-table.th col="lake" type="text" label="Waterbody">Waterbody</x-table.th>
+                                    <x-table.th col="length" type="number" align="center" label="Length">Length (in)</x-table.th>
+                                    <x-table.th col="weight" type="number" align="center" label="Weight">Weight (lbs)</x-table.th>
+                                    <x-table.th col="lure" type="text" label="Lure">Lure</x-table.th>
+                                    <x-table.th col="status" type="text" label="Status">Status</x-table.th>
+                                    <th scope="col" class="py-3 px-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
+                                @foreach($anglerRecords as $rec)
+                                    <tr class="hover:bg-slate-50/70 transition-colors">
+                                        <td data-col="date" x-show="isColumnVisible('date')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-mono text-xs text-slate-600 whitespace-nowrap">{{ $rec->caught }}</td>
+                                        <td data-col="species" x-show="isColumnVisible('species')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-teal-700">
+                                            <div class="flex items-center gap-2">
+                                                <i data-lucide="fish" class="w-4 h-4 text-teal-600 shrink-0"></i>
+                                                <span>{{ $rec->fishBreed->name ?? 'Fish' }}</span>
+                                            </div>
+                                        </td>
+                                        <td data-col="lake" x-show="isColumnVisible('lake')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-semibold text-slate-800">
+                                            @if($rec->lake)
+                                                <a href="{{ url('/lake/' . $rec->lake->id) }}" class="hover:text-teal-600 hover:underline flex items-center gap-1.5">
+                                                    <i data-lucide="waves" class="w-3.5 h-3.5 text-teal-500 shrink-0"></i>
+                                                    <span>{{ $rec->lake->name }}</span>
+                                                </a>
+                                            @else
+                                                <span class="text-slate-400">—</span>
+                                            @endif
+                                        </td>
+                                        <td data-col="length" x-show="isColumnVisible('length')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-900">{{ $rec->length ? number_format($rec->length, 1) : '—' }}</td>
+                                        <td data-col="weight" x-show="isColumnVisible('weight')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800">{{ $rec->weight ? number_format($rec->weight, 1) : '—' }}</td>
+                                        <td data-col="lure" x-show="isColumnVisible('lure')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-slate-600 text-xs">
+                                            @if($rec->lure)
+                                                <span title="{{ $rec->lure->displayName }}">{{ \Illuminate\Support\Str::limit($rec->lure->displayName, 22) }}</span>
+                                            @else
+                                                <span class="text-slate-400">—</span>
+                                            @endif
+                                        </td>
+                                        <td data-col="status" x-show="isColumnVisible('status')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'">
+                                            @if($rec->released == 1)
+                                                <span class="inline-flex items-center bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">Released</span>
+                                            @else
+                                                <span class="inline-flex items-center bg-sky-50 text-sky-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-sky-200">Kept</span>
+                                            @endif
+                                        </td>
+                                        <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
+                                            <x-tableOptions name='record' identifier='{{ $rec->id }}' />
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </x-table.wrapper>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
+                    <span>Showing {{ $anglerRecords->firstItem() }} to {{ $anglerRecords->lastItem() }} of {{ $anglerRecords->total() }} Catches</span>
+                    <div>{{ $anglerRecords->links() }}</div>
+                </div>
+            </div>
+        @endif
+
     @else
         <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-6 text-center space-y-3 shadow-sm">
             <i data-lucide="alert-triangle" class="w-8 h-8 text-amber-500 mx-auto"></i>
