@@ -58,6 +58,13 @@ class SortBy implements PipeContract
         foreach ($sortCols as $index => $col) {
             $order = strtolower($sortOrders[$index] ?? 'asc') === 'desc' ? 'desc' : 'asc';
 
+            if ($table === 'anglers' && in_array($col, ['name', 'angler', 'lastName', 'firstName'])) {
+                $query->orderBy('anglers.lastName', $order)
+                      ->orderBy('anglers.firstName', $order)
+                      ->orderBy('anglers.middleName', $order);
+                continue;
+            }
+
             if ($table === 'records') {
                 switch ($col) {
                     case 'angler':
@@ -65,8 +72,11 @@ class SortBy implements PipeContract
                             $query->select('records.*')->join('anglers', 'records.anglers_id', '=', 'anglers.id');
                             $joinedTables[] = 'anglers';
                         }
-                        $query->orderBy('anglers.firstName', $order)->orderBy('anglers.lastName', $order);
+                        $query->orderBy('anglers.lastName', $order)
+                              ->orderBy('anglers.firstName', $order)
+                              ->orderBy('anglers.middleName', $order);
                         continue 2;
+
 
                     case 'lake':
                         if (!in_array('lakes', $joinedTables)) {

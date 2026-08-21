@@ -34,7 +34,7 @@
                 <table class="w-full text-left text-sm text-slate-700">
                     <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
                         <tr>
-                            <x-table.th col="name" type="text" label="Angler">Angler</x-table.th>
+                            <x-table.th col="angler" type="text" label="Angler">Angler</x-table.th>
                             <x-table.th col="catches" type="number" align="center" label="Catches">Catches</x-table.th>
                             <x-table.th col="lakes" type="number" align="center" label="Lakes Visited">Lakes Visited</x-table.th>
                             <th scope="col" class="py-3 px-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
@@ -43,7 +43,8 @@
                     <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
                         @foreach($anglers as $angler)
                             <tr class="hover:bg-slate-50/70 transition-colors">
-                                <td data-col="name" x-show="isColumnVisible('name')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'">
+                                <td data-col="angler" x-show="isColumnVisible('angler')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'">
+
                                     <div class="flex items-center gap-3">
                                         <a href="{{ url('/angler/' . $angler->id . '/profile') }}" class="shrink-0">
                                             <x-anglerAvatar :angler="$angler" size="sm" />

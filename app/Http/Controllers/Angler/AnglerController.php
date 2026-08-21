@@ -27,16 +27,13 @@ class AnglerController extends Controller
                 $query->select(DB::raw('count(distinct records.lakes_id)'));
             }]);
 
-        if (!$request->has('sort_by')) {
-            $query->orderBy('records_count', 'desc');
-        }
-
         $query = $pipeline->send($query)
             ->through([
                 \Fishinglog\Pipes\Filters\SortBy::class,
                 \Fishinglog\Pipes\Filters\FilterBySearch::class,
             ])
             ->thenReturn();
+
 
         $anglers = $query->paginate(10)->withQueryString();
 
