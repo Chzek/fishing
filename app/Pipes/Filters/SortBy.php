@@ -58,14 +58,59 @@ class SortBy implements PipeContract
         foreach ($sortCols as $index => $col) {
             $order = strtolower($sortOrders[$index] ?? 'asc') === 'desc' ? 'desc' : 'asc';
 
-            if ($table === 'anglers' && in_array($col, ['name', 'angler', 'lastName', 'firstName'])) {
-                $query->orderBy('anglers.lastName', $order)
-                      ->orderBy('anglers.firstName', $order)
-                      ->orderBy('anglers.middleName', $order);
-                continue;
+            if ($table === 'anglers') {
+                switch ($col) {
+                    case 'name':
+                    case 'angler':
+                    case 'lastName':
+                    case 'firstName':
+                        $query->orderBy('anglers.lastName', $order)
+                              ->orderBy('anglers.firstName', $order)
+                              ->orderBy('anglers.middleName', $order);
+                        continue 2;
+
+                    case 'catches':
+                        $query->orderBy('records_count', $order);
+                        continue 2;
+
+                    case 'lakes':
+                        $query->orderBy('lakes_count', $order);
+                        continue 2;
+                }
+            }
+
+            if ($table === 'lakes') {
+                switch ($col) {
+                    case 'catches':
+                        $query->orderBy('records_count', $order);
+                        continue 2;
+
+                    case 'visits':
+                        $query->orderBy('visits', $order);
+                        continue 2;
+
+                    case 'anglers':
+                        $query->orderBy('anglers_count', $order);
+                        continue 2;
+
+                    case 'rate':
+                        $query->orderByRaw("(records_count / NULLIF(visits, 0)) {$order}");
+                        continue 2;
+
+                    case 'lat':
+                    case 'latitude':
+                        $query->orderBy('lakes.latitude', $order);
+                        continue 2;
+
+                    case 'long':
+                    case 'longitude':
+                        $query->orderBy('lakes.longitude', $order);
+                        continue 2;
+                }
             }
 
             if ($table === 'records') {
+
                 switch ($col) {
                     case 'angler':
                         if (!in_array('anglers', $joinedTables)) {

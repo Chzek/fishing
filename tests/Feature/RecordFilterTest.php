@@ -85,5 +85,26 @@ class RecordFilterTest extends TestCase
         // Northern Pike ('N') must come before Walleye ('W') for Davies Lake
         $response->assertSeeInOrder(['Northern Pike', 'Walleye']);
     }
+
+    public function test_can_sort_anglers_by_summary_columns_and_full_name()
+    {
+        $user = User::factory()->create();
+
+        $angler1 = Angler::factory()->create(['firstName' => 'John', 'lastName' => 'Smith', 'middleName' => 'A']);
+        $angler2 = Angler::factory()->create(['firstName' => 'Adam', 'lastName' => 'Brown', 'middleName' => 'B']);
+
+        $response = $this->actingAs($user)->get('/angler?sort_by=angler&sort_order=asc');
+        $response->assertStatus(200);
+
+        // Brown comes before Smith
+        $response->assertSeeInOrder(['Brown', 'Smith']);
+
+        $responseSummary = $this->actingAs($user)->get('/angler?sort_by=catches&sort_order=desc');
+        $responseSummary->assertStatus(200);
+
+        $responseLakes = $this->actingAs($user)->get('/angler?sort_by=lakes&sort_order=desc');
+        $responseLakes->assertStatus(200);
+    }
 }
+
 
