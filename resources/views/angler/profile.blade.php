@@ -399,29 +399,9 @@
             </div>
         </div>
 
-        <!-- Catches Logbook Quick Access Banner Card -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
-                    <i data-lucide="list" class="w-6 h-6"></i>
-                </div>
-                <div>
-                    <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
-                        <span>Angler Catches Logbook</span>
-                        <span class="bg-teal-50 text-teal-700 border border-teal-200 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono">{{ $record_count }} Catches</span>
-                    </h2>
-                    <p class="text-xs text-slate-500 mt-1">Explore this angler's complete catch logbook with weather telemetry, lake locations, lure history, and search filters.</p>
-                </div>
-            </div>
-
-            <a href="{{ url('/record/directory') }}?search={{ urlencode($angler->firstName . ' ' . $angler->lastName) }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all shrink-0">
-                <span>View Full Logbook</span>
-                <i data-lucide="arrow-right" class="w-4 h-4 text-teal-400"></i>
-            </a>
-        </div>
-
         <!-- Interactive Catches Data Table with Multi-Sort & Column Visibility Controls -->
         @if(isset($anglerRecords) && count($anglerRecords) > 0)
+
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
