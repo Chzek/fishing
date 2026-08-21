@@ -122,7 +122,7 @@
                 <x-table.wrapper 
                     searchPlaceholder="Filter lakes in this zone..." 
                     itemName="lakes"
-                    :showColumnPicker="false"
+                    :showColumnPicker="true"
                     :showDensity="true"
                 >
                     <table class="w-full text-left text-sm text-slate-700">
@@ -137,20 +137,20 @@
                         <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
                             @foreach($fishingZone->lakes as $lake)
                                 <tr data-table-row class="hover:bg-slate-50/70 transition-colors">
-                                    <td data-col="name" data-sort-val="{{ $lake->name }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-slate-900">
+                                    <td data-col="name" data-sort-val="{{ $lake->name }}" x-show="isColumnVisible('name')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-slate-900">
                                         <a href="{{ url('/lake/' . $lake->id) }}" class="hover:text-teal-600 hover:underline flex items-center gap-2">
                                             <i data-lucide="waves" class="w-4 h-4 text-teal-600 shrink-0"></i>
                                             <span>{{ $lake->name }}</span>
                                         </a>
                                     </td>
-                                    <td data-col="coords" data-sort-val="{{ $lake->latitude ?? 0 }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">
+                                    <td data-col="coords" data-sort-val="{{ $lake->latitude ?? 0 }}" x-show="isColumnVisible('coords')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">
                                         @if($lake->latitude && $lake->longitude)
                                             {{ number_format($lake->latitude, 3) }}°N, {{ number_format($lake->longitude, 3) }}°W
                                         @else
                                             —
                                         @endif
                                     </td>
-                                    <td data-col="catches" data-sort-val="{{ $lake->records_count }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">
+                                    <td data-col="catches" data-sort-val="{{ $lake->records_count }}" x-show="isColumnVisible('catches')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">
                                         {{ $lake->records_count }}
                                     </td>
                                     <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
@@ -165,6 +165,7 @@
                     </table>
                 </x-table.wrapper>
             </div>
+
         @else
             <div class="py-8 text-center text-slate-400 text-xs italic space-y-2">
                 <i data-lucide="info" class="w-8 h-8 text-slate-300 mx-auto"></i>

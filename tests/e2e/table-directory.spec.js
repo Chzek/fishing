@@ -2,15 +2,15 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Fishing Logbook - Data Table & Pipeline Features', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/login');
-        const loginForm = page.locator('form[action*="login"]');
-        if (await loginForm.isVisible()) {
-            await loginForm.locator('input#email').fill('lauralkm@gmail.com');
-            await loginForm.locator('input#password').fill('password');
-            await loginForm.locator('button[type="submit"]').click();
-            await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 10000 }).catch(() => {});
-        }
         await page.goto('/record/directory');
+        if (page.url().includes('/login')) {
+            await page.locator('input#email').fill('lauralkm@gmail.com');
+            await page.locator('input#password').fill('password');
+            await Promise.all([
+                page.waitForNavigation().catch(() => {}),
+                page.locator('form[action*="login"] button[type="submit"]').click()
+            ]);
+        }
     });
 
     test('unified search bar submits search queries and supports inline clear', async ({ page }) => {

@@ -5,50 +5,29 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-5">
         <x-pageNavigation name="lake" />
 
-        <!-- Server Filters form -->
-        <form class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-            <div class="flex items-center gap-3">
-                <input id="name" name="name" type="text"
-                    @if(Request::input('name', false))
-                        value='{{ Request::input('name') }}'
-                    @endif
-                    placeholder="Search Lake Name..."
-                    class="h-9 px-3.5 w-48 text-xs rounded-xl border border-slate-200 bg-white font-medium text-slate-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
-                />
-
-                <div class="flex items-center gap-1.5">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Fish Count</span>
-                    <input id="records_count" name="records_count" type="number"
-                        @if(Request::input('records_count', false))
-                            value='{{ Request::input('records_count') }}'
-                        @endif
-                        placeholder="Count..."
-                        class="h-9 px-3 w-24 text-xs rounded-xl border border-slate-200 bg-white font-mono text-slate-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
-                    />
-
-                    <select name="records_count_operator" class="h-9 px-3 text-xs rounded-xl border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
-                        <option value=">" {{ Request::input('records_count_operator') === ">" ? "selected" : ""}} >&gt;</option>
-                        <option value="=" {{ Request::input('records_count_operator') === "=" ? "selected" : ""}} >=</option>
-                        <option value="<" {{ Request::input('records_count_operator') === "<" ? "selected" : ""}} >&lt;</option>
-                    </select>
-                </div>
-            </div>
-
-            <button type="submit" class="h-9 px-4 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5">
-                <i data-lucide="filter" class="w-3.5 h-3.5"></i>
-                <span>Query Lakes</span>
-            </button>
-        </form>
-
-        <!-- Lakes Data Table with Server Search & Sorting -->
+        <!-- Lakes Data Table with Unified Server Search, Multi-Sort & Column Controls -->
         <div x-data="dataTable({ defaultDensity: 'normal' })">
             <x-table.wrapper 
-                searchPlaceholder="Search lakes in database..." 
+                searchPlaceholder="Search lakes by name..." 
                 itemName="lakes"
                 :totalCount="$lakes->total()"
                 :showColumnPicker="true"
                 :showDensity="true"
             >
+                <x-slot:extraFilters>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs font-semibold text-slate-500 whitespace-nowrap">Fish Count:</span>
+                        <div class="flex items-center">
+                            <select name="records_count_operator" onchange="this.form.submit()" class="h-8 pl-2.5 pr-6 text-xs rounded-l-lg border border-r-0 border-slate-200 bg-slate-50 font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                                <option value=">" {{ request('records_count_operator') === ">" ? "selected" : ""}}>&gt;</option>
+                                <option value="=" {{ request('records_count_operator') === "=" ? "selected" : ""}}>=</option>
+                                <option value="<" {{ request('records_count_operator') === "<" ? "selected" : ""}}>&lt;</option>
+                            </select>
+                            <input name="records_count" type="number" value="{{ request('records_count') }}" placeholder="Count..." onchange="this.form.submit()" class="h-8 px-2.5 w-20 text-xs rounded-r-lg border border-slate-200 bg-white font-mono text-slate-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500" />
+                        </div>
+                    </div>
+                </x-slot:extraFilters>
+
                 <table class="w-full text-left text-sm text-slate-700">
                     <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
                         <tr>
@@ -65,11 +44,13 @@
                     <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
                         @foreach($lakes as $lake)
                             <tr class="hover:bg-slate-50/70 transition-colors">
-                                <td data-col="name" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-slate-900">
+                                <td data-col="name" x-show="isColumnVisible('name')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-slate-900">
                                     <div class="flex items-center gap-2">
                                         <i data-lucide="waves" class="w-4 h-4 text-teal-600 shrink-0"></i>
                                         <div>
-                                            <span class="block leading-tight">{{ $lake->name }}</span>
+                                            <a href="{{ url('/lake/' . $lake->id) }}" class="hover:text-teal-600 hover:underline block leading-tight font-bold text-slate-900">
+                                                {{ $lake->name }}
+                                            </a>
                                             @if($lake->fishingZone)
                                                 <a href="{{ url('/fishing-zone/' . $lake->fishingZone->id) }}" class="text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100 hover:bg-indigo-100 inline-block mt-0.5">
                                                     {{ $lake->fishingZone->code }}
@@ -78,14 +59,14 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td data-col="lat" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">{{ $lake->latitude ? number_format($lake->latitude, 4) : '—' }}</td>
-                                <td data-col="long" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">{{ $lake->longitude ? number_format($lake->longitude, 4) : '—' }}</td>
-                                <td data-col="catches" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $lake->records_count }}</td>
-                                <td data-col="visits" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800">{{ $lake->visits }}</td>
-                                <td data-col="rate" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-medium text-emerald-700">
+                                <td data-col="lat" x-show="isColumnVisible('lat')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">{{ $lake->latitude ? number_format($lake->latitude, 4) : '—' }}</td>
+                                <td data-col="long" x-show="isColumnVisible('long')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">{{ $lake->longitude ? number_format($lake->longitude, 4) : '—' }}</td>
+                                <td data-col="catches" x-show="isColumnVisible('catches')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $lake->records_count }}</td>
+                                <td data-col="visits" x-show="isColumnVisible('visits')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800">{{ $lake->visits }}</td>
+                                <td data-col="rate" x-show="isColumnVisible('rate')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-medium text-emerald-700">
                                     @if($lake->visits > 0) {{ round($lake->records_count/$lake->visits, 2) }} @else — @endif
                                 </td>
-                                <td data-col="anglers" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-medium text-sky-700">{{ $lake->anglers_count }}</td>
+                                <td data-col="anglers" x-show="isColumnVisible('anglers')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-medium text-sky-700">{{ $lake->anglers_count }}</td>
                                 <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
                                     <x-tableOptions name='lake' identifier='{{ $lake->id }}' />
                                 </td>
@@ -95,7 +76,6 @@
                 </table>
             </x-table.wrapper>
         </div>
-
 
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
             <span>Showing {{ $lakes->firstItem() }} to {{ $lakes->lastItem() }} of {{ $lakes->total() }} Lakes</span>
