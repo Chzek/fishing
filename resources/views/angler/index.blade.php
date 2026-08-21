@@ -21,35 +21,14 @@
         </a>
     </div>
 
-    <!-- Search filter bar (Server query) -->
-    <form action="{{ url('/angler') }}" method="GET" class="flex items-center justify-between gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-        <div class="relative flex-1 flex items-center">
-            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none shrink-0"></i>
-            <input type="text" name="search" value="{{ Request::input('search') }}" placeholder="Search anglers by first or last name..."
-                class="w-full h-9.5 pl-10 pr-3 text-xs rounded-xl border border-slate-200 bg-white text-slate-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
-        </div>
-
-        <div class="flex items-center gap-2">
-            <button type="submit" class="h-9 px-4 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5">
-                <i data-lucide="filter" class="w-3.5 h-3.5"></i>
-                <span>Query</span>
-            </button>
-            @if(Request::has('search'))
-                <a href="{{ url('/angler') }}" class="h-9 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-xs rounded-xl transition-colors flex items-center gap-1">
-                    <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                    <span>Clear</span>
-                </a>
-            @endif
-        </div>
-    </form>
-
     @if(count($anglers) > 0)
+        <!-- Anglers Data Table with Unified Server Search, Multi-Sort & Column Controls -->
         <div x-data="dataTable({ defaultDensity: 'normal' })">
             <x-table.wrapper 
-                searchPlaceholder="Search anglers in database..." 
+                searchPlaceholder="Search anglers by first or last name..." 
                 itemName="anglers"
                 :totalCount="$anglers->total()"
-                :showColumnPicker="false"
+                :showColumnPicker="true"
                 :showDensity="true"
             >
                 <table class="w-full text-left text-sm text-slate-700">
@@ -64,17 +43,21 @@
                     <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
                         @foreach($anglers as $angler)
                             <tr class="hover:bg-slate-50/70 transition-colors">
-                                <td data-col="name" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'">
+                                <td data-col="name" x-show="isColumnVisible('name')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'">
                                     <div class="flex items-center gap-3">
-                                        <x-anglerAvatar :angler="$angler" size="sm" />
+                                        <a href="{{ url('/angler/' . $angler->id . '/profile') }}" class="shrink-0">
+                                            <x-anglerAvatar :angler="$angler" size="sm" />
+                                        </a>
                                         <div>
-                                            <span class="font-bold text-slate-900 block leading-tight">{{ $angler->lastName }}, {{ $angler->firstName }} {{ $angler->middleName ? substr($angler->middleName, 0, 1) . '.' : '' }}</span>
+                                            <a href="{{ url('/angler/' . $angler->id . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline block leading-tight">
+                                                {{ $angler->lastName }}, {{ $angler->firstName }} {{ $angler->middleName ? substr($angler->middleName, 0, 1) . '.' : '' }}
+                                            </a>
                                             <span class="text-[11px] text-slate-500 block">Crew Angler</span>
                                         </div>
                                     </div>
                                 </td>
-                                <td data-col="catches" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $angler->records_count }}</td>
-                                <td data-col="lakes" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800">{{ $angler->lakes_count }}</td>
+                                <td data-col="catches" x-show="isColumnVisible('catches')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $angler->records_count }}</td>
+                                <td data-col="lakes" x-show="isColumnVisible('lakes')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800">{{ $angler->lakes_count }}</td>
                                 <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
                                     <a href="{{ url('/angler/' . $angler->id . '/profile') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-700 font-semibold text-xs rounded-xl border border-slate-200 hover:border-teal-200 transition-colors">
                                         <i data-lucide="user" class="w-3.5 h-3.5 text-teal-600"></i>
@@ -87,7 +70,6 @@
                 </table>
             </x-table.wrapper>
         </div>
-
 
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
             <span>Showing {{ $anglers->firstItem() }} to {{ $anglers->lastItem() }} of {{ $anglers->total() }} Anglers</span>

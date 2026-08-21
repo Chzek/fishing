@@ -256,22 +256,26 @@
                         <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
                             @foreach($anglersList as $ang)
                                 <tr data-table-row class="hover:bg-slate-50/70 transition-colors">
-                                    <td data-col="angler" data-sort-val="{{ $ang->firstName }} {{ $ang->lastName }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-medium text-slate-900">
+                                    <td data-col="angler" data-sort-val="{{ $ang->firstName }} {{ $ang->lastName }}" x-show="isColumnVisible('angler')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-medium text-slate-900">
                                         <div class="flex items-center gap-3">
-                                            <x-anglerAvatar :angler="$ang" size="sm" />
+                                            <a href="{{ url('/angler/' . $ang->id . '/profile') }}" class="shrink-0">
+                                                <x-anglerAvatar :angler="$ang" size="sm" />
+                                            </a>
                                             <div>
-                                                <span class="font-bold text-slate-900 block text-xs leading-tight">{{ $ang->firstName }} {{ $ang->lastName }}</span>
+                                                <a href="{{ url('/angler/' . $ang->id . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline block text-xs leading-tight">
+                                                    {{ $ang->firstName }} {{ $ang->lastName }}
+                                                </a>
                                                 <span class="text-[10px] text-slate-400 block font-mono">Angler #{{ $ang->id }}</span>
                                             </div>
                                         </div>
                                     </td>
-                                    <td data-col="catches" data-sort-val="{{ $ang->records_count }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700 text-xs">{{ number_format($ang->records_count) }}</td>
-                                    <td data-col="lakes" data-sort-val="{{ $ang->unique_lakes_count }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800 text-xs">{{ $ang->unique_lakes_count }}</td>
-                                    <td data-col="expeditions" data-sort-val="{{ $ang->expeditions_count }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800 text-xs">{{ $ang->expeditions_count }}</td>
-                                    <td data-col="avg_length" data-sort-val="{{ $ang->avg_length ?? 0 }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono text-slate-700 text-xs">{{ $ang->avg_length ? $ang->avg_length . ' in.' : '—' }}</td>
-                                    <td data-col="avg_weight" data-sort-val="{{ $ang->avg_weight ?? 0 }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono text-slate-700 text-xs">{{ $ang->avg_weight ? $ang->avg_weight . ' lbs.' : '—' }}</td>
-                                    <td data-col="release_rate" data-sort-val="{{ $ang->release_rate }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-emerald-600 text-xs">{{ $ang->release_rate }}%</td>
-                                    <td data-col="target_species" data-sort-val="{{ $ang->top_species_name }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-semibold text-slate-800 text-xs">
+                                    <td data-col="catches" data-sort-val="{{ $ang->records_count }}" x-show="isColumnVisible('catches')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700 text-xs">{{ number_format($ang->records_count) }}</td>
+                                    <td data-col="lakes" data-sort-val="{{ $ang->unique_lakes_count }}" x-show="isColumnVisible('lakes')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800 text-xs">{{ $ang->unique_lakes_count }}</td>
+                                    <td data-col="expeditions" data-sort-val="{{ $ang->expeditions_count }}" x-show="isColumnVisible('expeditions')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800 text-xs">{{ $ang->expeditions_count }}</td>
+                                    <td data-col="avg_length" data-sort-val="{{ $ang->avg_length ?? 0 }}" x-show="isColumnVisible('avg_length')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono text-slate-700 text-xs">{{ $ang->avg_length ? $ang->avg_length . ' in.' : '—' }}</td>
+                                    <td data-col="avg_weight" data-sort-val="{{ $ang->avg_weight ?? 0 }}" x-show="isColumnVisible('avg_weight')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono text-slate-700 text-xs">{{ $ang->avg_weight ? $ang->avg_weight . ' lbs.' : '—' }}</td>
+                                    <td data-col="release_rate" data-sort-val="{{ $ang->release_rate }}" x-show="isColumnVisible('release_rate')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-emerald-600 text-xs">{{ $ang->release_rate }}%</td>
+                                    <td data-col="target_species" data-sort-val="{{ $ang->top_species_name }}" x-show="isColumnVisible('target_species')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-semibold text-slate-800 text-xs">
                                         <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded-md border border-slate-200">{{ $ang->top_species_name }}</span>
                                     </td>
                                     <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
