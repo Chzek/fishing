@@ -1,11 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-6 max-w-7xl mx-auto" x-data="{ 
-    allCategoriesOpen: true, 
-    openCategories: Object.fromEntries(@js($nestedTackle->keys()->toArray()).map(k => [k, true])), 
-    openModels: {} 
-}">
+<div class="space-y-6 max-w-7xl mx-auto" x-data="{ allCategoriesOpen: true }">
     <!-- Digital Tackle Box Header & Actions -->
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
@@ -62,10 +58,10 @@
                 <span class="text-xs text-slate-400 font-mono">({{ $nestedTackle->count() }} Categories / {{ $allLures->count() }} Variants)</span>
             </div>
 
-            <!-- Expand / Collapse All Category Trays Button -->
+            <!-- Expand / Collapse All Category Trays Button using Alpine Event Dispatch -->
             <button type="button" @click="
                 allCategoriesOpen = !allCategoriesOpen;
-                @js($nestedTackle->keys()->toArray()).forEach(k => openCategories[k] = allCategoriesOpen);
+                $dispatch('toggle-all-trays', allCategoriesOpen);
             " class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer">
                 <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5 text-teal-600"></i>
                 <span x-text="allCategoriesOpen ? 'Collapse All Trays' : 'Expand All Trays'"></span>
@@ -111,11 +107,11 @@
                 @endphp
 
                 <!-- TIER 1: CATEGORY TRAY CONTAINER -->
-                <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+                <div x-data="{ catOpen: true }" @toggle-all-trays.window="catOpen = $event.detail" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
                     <!-- Category Header Banner -->
                     <button 
                         type="button" 
-                        @click="openCategories['{{ $categoryName }}'] = !openCategories['{{ $categoryName }}']" 
+                        @click="catOpen = !catOpen" 
                         class="w-full px-6 py-4 bg-slate-900 text-white flex items-center justify-between text-left hover:bg-slate-800 transition-colors cursor-pointer"
                     >
                         <div class="flex items-center gap-3.5">
@@ -139,15 +135,15 @@
                         </div>
 
                         <div class="flex items-center gap-2 shrink-0">
-                            <span class="text-xs text-slate-400 font-medium hidden sm:inline" x-text="openCategories['{{ $categoryName }}'] ? 'Collapse Tray' : 'Open Tray'"></span>
-                            <div class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 transition-transform duration-200" :class="openCategories['{{ $categoryName }}'] ? 'rotate-180 bg-teal-500/20 text-teal-300 border-teal-500/40' : ''">
+                            <span class="text-xs text-slate-400 font-medium hidden sm:inline" x-text="catOpen ? 'Collapse Tray' : 'Open Tray'"></span>
+                            <div class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 transition-transform duration-200" :class="catOpen ? 'rotate-180 bg-teal-500/20 text-teal-300 border-teal-500/40' : ''">
                                 <i data-lucide="chevron-down" class="w-4 h-4"></i>
                             </div>
                         </div>
                     </button>
 
                     <!-- TIER 2: LURE MODELS LIST INSIDE CATEGORY TRAY -->
-                    <div x-show="openCategories['{{ $categoryName }}']" x-collapse class="divide-y divide-slate-100 bg-slate-50/30">
+                    <div x-show="catOpen" x-collapse class="divide-y divide-slate-100 bg-slate-50/30">
                         @foreach($modelsGroup as $modelName => $variants)
                             @php
                                 $firstVariant = $variants->first();
@@ -155,11 +151,11 @@
                                 $modelCatches = $variants->sum('records_count');
                             @endphp
 
-                            <div class="transition-colors">
+                            <div x-data="{ modelOpen: false }" class="transition-colors">
                                 <!-- Model Accordion Header -->
                                 <button 
                                     type="button" 
-                                    @click="openModels['{{ $modelName }}'] = !openModels['{{ $modelName }}']" 
+                                    @click="modelOpen = !modelOpen" 
                                     class="w-full px-6 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left hover:bg-slate-100/70 transition-colors cursor-pointer"
                                 >
                                     <div class="flex items-center gap-3 min-w-0">
@@ -184,15 +180,15 @@
                                     </div>
 
                                     <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
-                                        <span class="text-[11px] text-slate-400 font-medium" x-text="openModels['{{ $modelName }}'] ? 'Hide Colors' : 'Show Colors'"></span>
-                                        <div class="w-7 h-7 rounded-md bg-white border border-slate-200 flex items-center justify-center text-slate-600 transition-transform duration-200" :class="openModels['{{ $modelName }}'] ? 'rotate-180 bg-teal-50 border-teal-300 text-teal-700' : ''">
+                                        <span class="text-[11px] text-slate-400 font-medium" x-text="modelOpen ? 'Hide Colors' : 'Show Colors'"></span>
+                                        <div class="w-7 h-7 rounded-md bg-white border border-slate-200 flex items-center justify-center text-slate-600 transition-transform duration-200" :class="modelOpen ? 'rotate-180 bg-teal-50 border-teal-300 text-teal-700' : ''">
                                             <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                                         </div>
                                     </div>
                                 </button>
 
                                 <!-- TIER 3: COLOR PATTERNS & SPECS TABLE -->
-                                <div x-show="openModels['{{ $modelName }}']" x-collapse class="bg-white border-t border-slate-100 p-4">
+                                <div x-show="modelOpen" x-collapse class="bg-white border-t border-slate-100 p-4">
                                     <div class="overflow-x-auto rounded-xl border border-slate-200/80 shadow-2xs">
                                         <table class="w-full text-left text-xs text-slate-700">
                                             <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/80">
@@ -241,7 +237,7 @@
             @endforeach
         @else
             <x-emptyState icon="box" title="No Tackle Items Found" description="No lures match your active category filter. Add a new lure or import the Master Tackle Catalog." actionUrl="/lure/create" actionLabel="Add First Tackle Item" />
+        @endif
     </div>
 </div>
 @endsection
-
