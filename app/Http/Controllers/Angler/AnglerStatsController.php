@@ -5,136 +5,153 @@ namespace Fishinglog\Http\Controllers\Angler;
 use Fishinglog\Http\Controllers\Controller;
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\Record;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class AnglerStatsController extends Controller
 {
     public function index()
     {
-        $totalAnglers = Angler::count();
-        $totalRecords = Record::count();
+        $stats = Cache::remember('angler_stats_overview', 600, function () {
+            $totalAnglers = Angler::count();
+            $totalRecords = Record::count();
 
-        $avgCatchesPerAngler = $totalAnglers > 0 ? round($totalRecords / $totalAnglers, 1) : 0;
+            $avgCatchesPerAngler = $totalAnglers > 0 ? round($totalRecords / $totalAnglers, 1) : 0;
 
-        // Average unique lakes fished per angler
-        $lakesPerAnglerSubquery = DB::table('records')
-            ->whereNull('deleted_at')
-            ->select('anglers_id', DB::raw('COUNT(DISTINCT lakes_id) as lake_count'))
-            ->groupBy('anglers_id')
-            ->get();
+            // Average unique lakes fished per angler
+            $lakesPerAnglerSubquery = DB::table('records')
+                ->whereNull('deleted_at')
+                ->select('anglers_id', DB::raw('COUNT(DISTINCT lakes_id) as lake_count'))
+                ->groupBy('anglers_id')
+                ->get();
 
-        $avgLakesPerAngler = $totalAnglers > 0 && $lakesPerAnglerSubquery->count() > 0
-            ? round($lakesPerAnglerSubquery->avg('lake_count'), 1)
-            : 0;
+            $avgLakesPerAngler = $totalAnglers > 0 && $lakesPerAnglerSubquery->count() > 0
+                ? round($lakesPerAnglerSubquery->avg('lake_count'), 1)
+                : 0;
 
-        // Conservation release rate overall
-        $releasedCount = Record::where('released', 1)->count();
-        $overallReleaseRate = $totalRecords > 0 ? round(($releasedCount / $totalRecords) * 100, 1) : 0;
+            // Conservation release rate overall
+            $releasedCount = Record::where('released', 1)->count();
+            $overallReleaseRate = $totalRecords > 0 ? round(($releasedCount / $totalRecords) * 100, 1) : 0;
 
-        // Cumulative length landed
-        $totalInches = Record::whereNotNull('length')->sum('length');
-        $totalFeet = round($totalInches / 12, 1);
-        $avgLengthOverall = round(Record::whereNotNull('length')->avg('length'), 1);
-        $avgWeightOverall = round(Record::whereNotNull('weight')->avg('weight'), 1);
+            // Cumulative length landed
+            $totalInches = Record::whereNotNull('length')->sum('length');
+            $totalFeet = round($totalInches / 12, 1);
+            $avgLengthOverall = round(Record::whereNotNull('length')->avg('length'), 1);
+            $avgWeightOverall = round(Record::whereNotNull('weight')->avg('weight'), 1);
 
-        // Monthly catch activity distribution (1-12)
-        $records = Record::whereNotNull('caught')->get(['caught']);
-        $monthCounts = array_fill(1, 12, 0);
+            // Monthly catch activity distribution (1-12) via single SQL GROUP BY MONTH
+            $monthlyCountsQuery = DB::table('records')
+                ->whereNull('deleted_at')
+                ->whereNotNull('caught')
+                ->select(DB::raw('MONTH(caught) as m'), DB::raw('COUNT(*) as cnt'))
+                ->groupBy(DB::raw('MONTH(caught)'))
+                ->pluck('cnt', 'm');
 
-        foreach ($records as $rec) {
-            if ($rec->caught) {
-                $time = strtotime((string) $rec->caught);
-                if ($time !== false) {
-                    $m = (int) date('n', $time);
-                    if ($m >= 1 && $m <= 12) {
-                        $monthCounts[$m]++;
-                    }
+            $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            $monthlyDistribution = [];
+            $maxMonthlyCount = 1;
+            foreach (range(1, 12) as $m) {
+                $count = (int) ($monthlyCountsQuery[$m] ?? 0);
+                if ($count > $maxMonthlyCount) {
+                    $maxMonthlyCount = $count;
+                }
+                $monthlyDistribution[] = [
+                    'name' => $months[$m - 1],
+                    'count' => $count,
+                ];
+            }
+
+            // Angler Activity Tiering Distribution
+            $catchCountsPerAngler = DB::table('records')
+                ->whereNull('deleted_at')
+                ->select('anglers_id', DB::raw('COUNT(*) as total'))
+                ->groupBy('anglers_id')
+                ->pluck('total');
+
+            $activityTiers = [
+                'light' => 0,    // 1-10 catches
+                'moderate' => 0, // 11-50 catches
+                'avid' => 0,     // 51+ catches
+            ];
+
+            foreach ($catchCountsPerAngler as $cnt) {
+                if ($cnt <= 10) {
+                    $activityTiers['light']++;
+                } elseif ($cnt <= 50) {
+                    $activityTiers['moderate']++;
+                } else {
+                    $activityTiers['avid']++;
                 }
             }
-        }
 
-        $maxMonthlyCount = max(max($monthCounts), 1);
-        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        $monthlyDistribution = [];
-        foreach (range(1, 12) as $m) {
-            $monthlyDistribution[] = [
-                'name' => $months[$m - 1],
-                'count' => $monthCounts[$m],
-            ];
-        }
+            // Single query aggregations for all anglers (eliminates N+4 queries!)
+            $avgStatsPerAngler = DB::table('records')
+                ->whereNull('deleted_at')
+                ->select(
+                    'anglers_id',
+                    DB::raw('AVG(length) as avg_length'),
+                    DB::raw('AVG(weight) as avg_weight'),
+                    DB::raw('SUM(CASE WHEN released = 1 THEN 1 ELSE 0 END) as released_count')
+                )
+                ->groupBy('anglers_id')
+                ->get()
+                ->keyBy('anglers_id');
 
-        // Angler Activity Tiering Distribution
-        $catchCountsPerAngler = DB::table('records')
-            ->whereNull('deleted_at')
-            ->select('anglers_id', DB::raw('COUNT(*) as total'))
-            ->groupBy('anglers_id')
-            ->pluck('total');
-
-        $activityTiers = [
-            'light' => 0,    // 1-10 catches
-            'moderate' => 0, // 11-50 catches
-            'avid' => 0,     // 51+ catches
-        ];
-
-        foreach ($catchCountsPerAngler as $cnt) {
-            if ($cnt <= 10) {
-                $activityTiers['light']++;
-            } elseif ($cnt <= 50) {
-                $activityTiers['moderate']++;
-            } else {
-                $activityTiers['avid']++;
-            }
-        }
-
-        // Detailed Per-Angler Summary Table Data
-        $anglersList = Angler::withCount([
-            'records',
-            'records as unique_lakes_count' => function ($q) {
-                $q->select(DB::raw('count(distinct(lakes_id))'));
-            },
-            'crews as expeditions_count' => function ($q) {
-                $q->select(DB::raw('count(distinct(expeditions_id))'));
-            },
-        ])->get()->map(function ($angler) {
-            $totalCatches = $angler->records_count;
-
-            $avgLength = round(Record::where('anglers_id', $angler->id)->whereNotNull('length')->avg('length'), 1);
-            $avgWeight = round(Record::where('anglers_id', $angler->id)->whereNotNull('weight')->avg('weight'), 1);
-            $released = Record::where('anglers_id', $angler->id)->where('released', 1)->count();
-            $releaseRate = $totalCatches > 0 ? round(($released / $totalCatches) * 100, 1) : 0;
-
-            // Top species for this angler
-            $topSpecies = DB::table('records')
+            // Single query for top species per angler
+            $topSpeciesPerAngler = DB::table('records')
                 ->join('fish_breeds', 'records.fish_breeds_id', '=', 'fish_breeds.id')
-                ->where('records.anglers_id', $angler->id)
                 ->whereNull('records.deleted_at')
-                ->select('fish_breeds.name', DB::raw('COUNT(*) as cnt'))
-                ->groupBy('fish_breeds.name')
+                ->select('records.anglers_id', 'fish_breeds.name', DB::raw('COUNT(*) as cnt'))
+                ->groupBy('records.anglers_id', 'fish_breeds.name')
+                ->orderBy('records.anglers_id')
                 ->orderByDesc('cnt')
-                ->first();
+                ->get()
+                ->groupBy('anglers_id')
+                ->map(fn($group) => $group->first()->name ?? 'N/A');
 
-            $angler->avg_length = $avgLength > 0 ? $avgLength : null;
-            $angler->avg_weight = $avgWeight > 0 ? $avgWeight : null;
-            $angler->release_rate = $releaseRate;
-            $angler->top_species_name = $topSpecies ? $topSpecies->name : 'N/A';
+            // Detailed Per-Angler Summary Table Data
+            $anglersList = Angler::withCount([
+                'records',
+                'records as unique_lakes_count' => function ($q) {
+                    $q->select(DB::raw('count(distinct(lakes_id))'));
+                },
+                'crews as expeditions_count' => function ($q) {
+                    $q->select(DB::raw('count(distinct(expeditions_id))'));
+                },
+            ])->get()->map(function ($angler) use ($avgStatsPerAngler, $topSpeciesPerAngler) {
+                $totalCatches = $angler->records_count;
+                $anglerStats = $avgStatsPerAngler->get($angler->id);
 
-            return $angler;
-        })->sortByDesc('records_count');
+                $avgLength = $anglerStats && $anglerStats->avg_length ? round($anglerStats->avg_length, 1) : null;
+                $avgWeight = $anglerStats && $anglerStats->avg_weight ? round($anglerStats->avg_weight, 1) : null;
+                $released = $anglerStats ? (int) $anglerStats->released_count : 0;
+                $releaseRate = $totalCatches > 0 ? round(($released / $totalCatches) * 100, 1) : 0;
 
-        return view('angler.stats', [
-            'totalAnglers' => $totalAnglers,
-            'totalRecords' => $totalRecords,
-            'avgCatchesPerAngler' => $avgCatchesPerAngler,
-            'avgLakesPerAngler' => $avgLakesPerAngler,
-            'overallReleaseRate' => $overallReleaseRate,
-            'totalFeet' => $totalFeet,
-            'totalInches' => $totalInches,
-            'avgLengthOverall' => $avgLengthOverall,
-            'avgWeightOverall' => $avgWeightOverall,
-            'monthlyDistribution' => $monthlyDistribution,
-            'maxMonthlyCount' => $maxMonthlyCount,
-            'activityTiers' => $activityTiers,
-            'anglersList' => $anglersList,
-        ]);
+                $angler->avg_length = $avgLength;
+                $angler->avg_weight = $avgWeight;
+                $angler->release_rate = $releaseRate;
+                $angler->top_species_name = $topSpeciesPerAngler->get($angler->id, 'N/A');
+
+                return $angler;
+            })->sortByDesc('records_count');
+
+            return [
+                'totalAnglers' => $totalAnglers,
+                'totalRecords' => $totalRecords,
+                'avgCatchesPerAngler' => $avgCatchesPerAngler,
+                'avgLakesPerAngler' => $avgLakesPerAngler,
+                'overallReleaseRate' => $overallReleaseRate,
+                'totalFeet' => $totalFeet,
+                'totalInches' => $totalInches,
+                'avgLengthOverall' => $avgLengthOverall,
+                'avgWeightOverall' => $avgWeightOverall,
+                'monthlyDistribution' => $monthlyDistribution,
+                'maxMonthlyCount' => $maxMonthlyCount,
+                'activityTiers' => $activityTiers,
+                'anglersList' => $anglersList,
+            ];
+        });
+
+        return view('angler.stats', $stats);
     }
 }

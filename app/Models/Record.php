@@ -31,7 +31,19 @@ class Record extends Model
         'trip_id',
     ];
 
+    protected static function booted()
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('angler_stats_overview');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('angler_stats_overview');
+        });
+    }
+
     public function angler()
+
     {
         return $this->belongsTo(Angler::class, 'anglers_id', 'id');
     }
