@@ -32,10 +32,14 @@ class LureController extends Controller
 
         $allLures = $query->get();
 
-        // Group lures by Brand + Name (Lure Model)
-        $groupedLures = $allLures->groupBy(function ($item) {
-            $brandPrefix = $item->brand ? trim($item->brand) . ' ' : '';
-            return $brandPrefix . trim($item->name);
+        // 2-Tier Nesting: Category -> Lure Model (Brand + Name) -> Color Variants
+        $nestedTackle = $allLures->groupBy(function ($item) {
+            return $item->category ?: 'Other';
+        })->map(function ($categoryLures) {
+            return $categoryLures->groupBy(function ($item) {
+                $brandPrefix = $item->brand ? trim($item->brand) . ' ' : '';
+                return $brandPrefix . trim($item->name);
+            });
         });
 
         // Distinct category counts for Digital Tackle Box tabs
@@ -67,7 +71,7 @@ class LureController extends Controller
 
         return view('lure.index', [
             'allLures' => $allLures,
-            'groupedLures' => $groupedLures,
+            'nestedTackle' => $nestedTackle,
             'activeCategory' => $activeCategory,
             'categoriesList' => $categoriesList,
             'categoryCounts' => $categoryCounts,
@@ -75,6 +79,7 @@ class LureController extends Controller
             'totalCatchesOnTackle' => $totalCatchesOnTackle,
             'topCategoryName' => $topCategory?->category ?? 'Tackle Box',
         ]);
+
 
     }
 

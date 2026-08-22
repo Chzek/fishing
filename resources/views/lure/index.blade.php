@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-6 max-w-7xl mx-auto" x-data="{ viewMode: 'collapsible', openModels: {} }">
+<div class="space-y-6 max-w-7xl mx-auto" x-data="{ viewMode: 'nested', openCategories: {}, openModels: {} }">
     <!-- Digital Tackle Box Header & Actions -->
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
@@ -12,7 +12,7 @@
                 <h1 class="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
                     <span>Digital Tackle Box</span>
                 </h1>
-                <p class="text-xs text-slate-400 mt-0.5">Organized tackle inventory grouped by lure model and color patterns</p>
+                <p class="text-xs text-slate-400 mt-0.5">Nested tackle box hierarchy: Category Trays → Lure Models → Color Variants</p>
             </div>
         </div>
 
@@ -52,27 +52,27 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
             <div class="flex items-center gap-2">
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <i data-lucide="filter" class="w-3.5 h-3.5 text-teal-600"></i>
-                    <span>Category Filters</span>
+                    <i data-lucide="layers" class="w-3.5 h-3.5 text-teal-600"></i>
+                    <span>Tackle Hierarchy Navigation</span>
                 </span>
-                <span class="text-xs text-slate-400 font-mono">({{ $groupedLures->count() }} Models / {{ $allLures->count() }} Variants)</span>
+                <span class="text-xs text-slate-400 font-mono">({{ $nestedTackle->count() }} Categories / {{ $allLures->count() }} Variants)</span>
             </div>
 
             <!-- View Switcher & Expand All Controls -->
             <div class="flex items-center gap-2">
                 <button type="button" @click="
-                    const allKeys = @js($groupedLures->keys()->toArray());
-                    const areAllOpen = allKeys.every(k => openModels[k]);
-                    allKeys.forEach(k => openModels[k] = !areAllOpen);
+                    const allCatKeys = @js($nestedTackle->keys()->toArray());
+                    const areAllOpen = allCatKeys.every(k => openCategories[k]);
+                    allCatKeys.forEach(k => openCategories[k] = !areAllOpen);
                 " class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-colors flex items-center gap-1">
                     <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5 text-slate-500"></i>
-                    <span>Toggle All Rows</span>
+                    <span>Toggle Category Trays</span>
                 </button>
 
                 <div class="flex items-center p-0.5 bg-slate-100 rounded-xl border border-slate-200/80 text-xs font-bold">
-                    <button type="button" @click="viewMode = 'collapsible'" :class="viewMode === 'collapsible' ? 'bg-white text-teal-700 shadow-2xs' : 'text-slate-600 hover:text-slate-900'" class="px-3 py-1 rounded-lg transition-all flex items-center gap-1">
-                        <i data-lucide="list" class="w-3.5 h-3.5"></i>
-                        <span>Collapsible Table</span>
+                    <button type="button" @click="viewMode = 'nested'" :class="viewMode === 'nested' ? 'bg-white text-teal-700 shadow-2xs' : 'text-slate-600 hover:text-slate-900'" class="px-3 py-1 rounded-lg transition-all flex items-center gap-1">
+                        <i data-lucide="list-tree" class="w-3.5 h-3.5"></i>
+                        <span>Nested Trays</span>
                     </button>
                     <button type="button" @click="viewMode = 'grid'" :class="viewMode === 'grid' ? 'bg-white text-teal-700 shadow-2xs' : 'text-slate-600 hover:text-slate-900'" class="px-3 py-1 rounded-lg transition-all flex items-center gap-1">
                         <i data-lucide="grid" class="w-3.5 h-3.5"></i>
@@ -84,7 +84,7 @@
 
         <div class="flex flex-wrap items-center gap-1.5">
             <a href="/lure?category=all" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all {{ $activeCategory === 'all' ? 'bg-teal-600 text-white shadow-xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-700' }}">
-                All Tackle ({{ $totalTackleCount }})
+                All Categories ({{ $totalTackleCount }})
             </a>
 
             @foreach($categoriesList as $cat)
@@ -101,115 +101,154 @@
         </div>
     </div>
 
-    <!-- VIEW 1: Collapsible Grouped Lure Model Table (Default View) -->
-    <div x-show="viewMode === 'collapsible'" class="space-y-3">
-        @if($groupedLures->count() > 0)
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden divide-y divide-slate-200/80">
-                @foreach($groupedLures as $modelKey => $variants)
-                    @php
-                        $first = $variants->first();
-                        $modelCat = $first->category ?: 'Other';
-                        $modelBrand = $first->brand;
-                        $modelName = $first->name;
-                        $totalCatches = $variants->sum('records_count');
-                        
-                        $catIcon = match(strtolower((string) $modelCat)) {
-                            'crankbait', 'jerkbait' => 'target',
-                            'soft plastic', 'swimbait' => 'disc',
-                            'inline spinner', 'spinnerbait' => 'sun',
-                            'jig' => 'anchor',
-                            'spoon' => 'sparkles',
-                            'topwater' => 'cloud-sun',
-                            default => 'hook',
-                        };
-                    @endphp
+    <!-- VIEW 1: 2-Tier Nested Category Accordion Architecture (Default View) -->
+    <div x-show="viewMode === 'nested'" class="space-y-4">
+        @if($nestedTackle->count() > 0)
+            @foreach($nestedTackle as $categoryName => $modelsGroup)
+                @php
+                    $categoryTotalVariants = $modelsGroup->flatten(1)->count();
+                    $categoryTotalCatches = $modelsGroup->flatten(1)->sum('records_count');
 
-                    <div x-data="{ open: false }" class="transition-colors">
-                        <!-- Model Accordion Header -->
-                        <button 
-                            type="button" 
-                            @click="open = !open; openModels['{{ $modelKey }}'] = open" 
-                            class="w-full px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left hover:bg-slate-50/80 transition-colors cursor-pointer"
-                        >
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center shrink-0 shadow-2xs">
-                                    <i data-lucide="{{ $catIcon }}" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <h3 class="font-bold text-slate-900 text-base tracking-tight">{{ $modelName }}</h3>
-                                        @if($modelBrand)
-                                            <span class="px-2 py-0.5 bg-slate-100 text-slate-700 font-bold text-[10px] uppercase tracking-wider rounded-md border border-slate-200 font-mono">{{ $modelBrand }}</span>
-                                        @endif
-                                    </div>
-                                    <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500 font-medium mt-0.5">
-                                        <span class="text-teal-700 font-semibold">{{ $modelCat }}</span>
+                    $catIcon = match(strtolower((string) $categoryName)) {
+                        'crankbait', 'jerkbait' => 'target',
+                        'soft plastic', 'swimbait' => 'disc',
+                        'inline spinner', 'spinnerbait' => 'sun',
+                        'jig' => 'anchor',
+                        'spoon' => 'sparkles',
+                        'topwater' => 'cloud-sun',
+                        default => 'box',
+                    };
+                @endphp
+
+                <!-- TIER 1: CATEGORY TRAY CONTAINER -->
+                <div x-data="{ catOpen: true }" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+                    <!-- Category Header Banner -->
+                    <button 
+                        type="button" 
+                        @click="catOpen = !catOpen; openCategories['{{ $categoryName }}'] = catOpen" 
+                        class="w-full px-6 py-4 bg-slate-900 text-white flex items-center justify-between text-left hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-300 flex items-center justify-center shrink-0">
+                                <i data-lucide="{{ $catIcon }}" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-black text-white tracking-tight flex items-center gap-2.5">
+                                    <span>{{ $categoryName }} Tray</span>
+                                </h2>
+                                <div class="flex flex-wrap items-center gap-2 text-xs text-slate-400 font-mono mt-0.5">
+                                    <span>{{ $modelsGroup->count() }} Lure Model{{ $modelsGroup->count() === 1 ? '' : 's' }}</span>
+                                    <span>•</span>
+                                    <span class="text-teal-300 font-bold">{{ $categoryTotalVariants }} Total Variant{{ $categoryTotalVariants === 1 ? '' : 's' }}</span>
+                                    @if($categoryTotalCatches > 0)
                                         <span>•</span>
-                                        <span class="font-mono text-slate-700 font-bold">{{ $variants->count() }} Variant{{ $variants->count() === 1 ? '' : 's' }}</span>
-                                        @if($totalCatches > 0)
-                                            <span>•</span>
-                                            <span class="text-emerald-700 font-mono font-bold">{{ $totalCatches }} Catch{{ $totalCatches === 1 ? '' : 'es' }}</span>
-                                        @endif
-                                    </div>
+                                        <span class="text-amber-300 font-bold">{{ $categoryTotalCatches }} Catches Landed</span>
+                                    @endif
                                 </div>
-                            </div>
-
-                            <div class="flex items-center gap-3 shrink-0 self-end sm:self-auto">
-                                <span class="text-xs text-slate-400 font-medium">
-                                    <span x-text="open ? 'Collapse' : 'Expand'"></span>
-                                </span>
-                                <div class="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 transition-transform duration-200" :class="open ? 'rotate-180 bg-teal-50 border-teal-200 text-teal-700' : ''">
-                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                                </div>
-                            </div>
-                        </button>
-
-                        <!-- Nested Variants Collapsible Body Table -->
-                        <div x-show="open || openModels['{{ $modelKey }}']" x-collapse class="bg-slate-50/50 border-t border-slate-100 p-4">
-                            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-2xs">
-                                <table class="w-full text-left text-xs text-slate-700">
-                                    <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200">
-                                        <tr>
-                                            <th scope="col" class="py-3 px-4">Color Pattern</th>
-                                            <th scope="col" class="py-3 px-4">Size / Weight</th>
-                                            <th scope="col" class="py-3 px-4">Running Depth</th>
-                                            <th scope="col" class="py-3 px-4 text-center">Catches Logged</th>
-                                            <th scope="col" class="py-3 px-4 text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100">
-                                        @foreach($variants as $variant)
-                                            <tr class="hover:bg-slate-50 transition-colors">
-                                                <td class="py-3 px-4 font-bold text-slate-900 flex items-center gap-2">
-                                                    <div class="w-2.5 h-2.5 rounded-full bg-amber-400 border border-amber-500 shrink-0"></div>
-                                                    <span>{{ $variant->color ?: 'Standard Color' }}</span>
-                                                </td>
-                                                <td class="py-3 px-4 font-mono text-slate-700 font-semibold">
-                                                    {{ $variant->size ?: ($variant->weight ?: '—') }}
-                                                </td>
-                                                <td class="py-3 px-4 font-mono text-sky-700 font-semibold">
-                                                    {{ $variant->depth_range ?: '—' }}
-                                                </td>
-                                                <td class="py-3 px-4 text-center font-mono font-bold text-teal-700">
-                                                    {{ $variant->records_count }}
-                                                </td>
-                                                <td class="py-3 px-4 text-right">
-                                                    <div class="flex items-center justify-end gap-1.5">
-                                                        <a href="/lure/{{ $variant->id }}" class="px-2.5 py-1 bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-700 font-semibold text-[11px] rounded-lg border border-slate-200 transition-colors">
-                                                            Telemetry →
-                                                        </a>
-                                                        <x-tableOptions name="lure" identifier="{{ $variant->id }}" />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
+
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-xs text-slate-400 font-medium hidden sm:inline" x-text="catOpen ? 'Collapse Tray' : 'Open Tray'"></span>
+                            <div class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 transition-transform duration-200" :class="catOpen ? 'rotate-180 bg-teal-500/20 text-teal-300 border-teal-500/40' : ''">
+                                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                    </button>
+
+                    <!-- TIER 2: LURE MODELS LIST INSIDE CATEGORY TRAY -->
+                    <div x-show="catOpen || openCategories['{{ $categoryName }}']" x-collapse class="divide-y divide-slate-100 bg-slate-50/30">
+                        @foreach($modelsGroup as $modelName => $variants)
+                            @php
+                                $firstVariant = $variants->first();
+                                $modelBrand = $firstVariant->brand;
+                                $modelCatches = $variants->sum('records_count');
+                            @endphp
+
+                            <div x-data="{ modelOpen: false }" class="transition-colors">
+                                <!-- Model Accordion Header -->
+                                <button 
+                                    type="button" 
+                                    @click="modelOpen = !modelOpen; openModels['{{ $modelName }}'] = modelOpen" 
+                                    class="w-full px-6 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left hover:bg-slate-100/70 transition-colors cursor-pointer"
+                                >
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 text-teal-600 flex items-center justify-center shrink-0 shadow-2xs font-mono font-bold text-xs">
+                                            {{ $variants->count() }}
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <h3 class="font-bold text-slate-900 text-sm tracking-tight">{{ $modelName }}</h3>
+                                                @if($modelBrand)
+                                                    <span class="px-2 py-0.5 bg-slate-200/80 text-slate-700 font-bold text-[10px] uppercase tracking-wider rounded border border-slate-300 font-mono">{{ $modelBrand }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500 font-medium mt-0.5">
+                                                <span class="font-mono text-slate-700 font-bold">{{ $variants->count() }} Color Variant{{ $variants->count() === 1 ? '' : 's' }}</span>
+                                                @if($modelCatches > 0)
+                                                    <span>•</span>
+                                                    <span class="text-emerald-700 font-mono font-bold">{{ $modelCatches }} Verified Catch{{ $modelCatches === 1 ? '' : 'es' }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                                        <span class="text-[11px] text-slate-400 font-medium" x-text="modelOpen ? 'Hide Colors' : 'Show Colors'"></span>
+                                        <div class="w-7 h-7 rounded-md bg-white border border-slate-200 flex items-center justify-center text-slate-600 transition-transform duration-200" :class="modelOpen ? 'rotate-180 bg-teal-50 border-teal-300 text-teal-700' : ''">
+                                            <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                <!-- TIER 3: COLOR PATTERNS & SPECS TABLE -->
+                                <div x-show="modelOpen || openModels['{{ $modelName }}']" x-collapse class="bg-white border-t border-slate-100 p-4">
+                                    <div class="overflow-x-auto rounded-xl border border-slate-200/80 shadow-2xs">
+                                        <table class="w-full text-left text-xs text-slate-700">
+                                            <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/80">
+                                                <tr>
+                                                    <th scope="col" class="py-3 px-4">Color Pattern</th>
+                                                    <th scope="col" class="py-3 px-4">Size / Weight</th>
+                                                    <th scope="col" class="py-3 px-4">Running Depth</th>
+                                                    <th scope="col" class="py-3 px-4 text-center">Catches Logged</th>
+                                                    <th scope="col" class="py-3 px-4 text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-slate-100">
+                                                @foreach($variants as $variant)
+                                                    <tr class="hover:bg-slate-50 transition-colors">
+                                                        <td class="py-3 px-4 font-bold text-slate-900 flex items-center gap-2">
+                                                            <div class="w-2.5 h-2.5 rounded-full bg-amber-400 border border-amber-500 shrink-0"></div>
+                                                            <span>{{ $variant->color ?: 'Standard Color' }}</span>
+                                                        </td>
+                                                        <td class="py-3 px-4 font-mono text-slate-700 font-semibold">
+                                                            {{ $variant->size ?: ($variant->weight ?: '—') }}
+                                                        </td>
+                                                        <td class="py-3 px-4 font-mono text-sky-700 font-semibold">
+                                                            {{ $variant->depth_range ?: '—' }}
+                                                        </td>
+                                                        <td class="py-3 px-4 text-center font-mono font-bold text-teal-700">
+                                                            {{ $variant->records_count }}
+                                                        </td>
+                                                        <td class="py-3 px-4 text-right">
+                                                            <div class="flex items-center justify-end gap-1.5">
+                                                                <a href="/lure/{{ $variant->id }}" class="px-2.5 py-1 bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-700 font-semibold text-[11px] rounded-lg border border-slate-200 transition-colors">
+                                                                    Telemetry →
+                                                                </a>
+                                                                <x-tableOptions name="lure" identifier="{{ $variant->id }}" />
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
-                @endforeach
-            </div>
+                </div>
+            @endforeach
         @else
             <x-emptyState icon="box" title="No Tackle Items Found" description="No lures match your active category filter. Add a new lure or import the Master Tackle Catalog." actionUrl="/lure/create" actionLabel="Add First Tackle Item" />
         @endif
