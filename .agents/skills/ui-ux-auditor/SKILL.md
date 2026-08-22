@@ -100,6 +100,23 @@ When requested to run a UI/UX audit on a page or feature, follow these 4 steps:
 
 ---
 
+## 🧩 6. Standardized Reusable Blade Component System
+
+Prefer using the following established Blade components in `resources/views/components/` over duplicating raw HTML:
+
+| Component Tag | Props | Purpose & Usage |
+| :--- | :--- | :--- |
+| `<x-statusBadge>` | `:type`, `:label`, `:size` | Sync status (`synced`/`pending`), `admin`, `pb` (trophy), `released`/`kept`, `unlinked`. |
+| `<x-weatherBadge>` | `:weather`, `:size` | Formats air temp, pressure, and auto-resolved condition icon (`sun`, `cloud-rain`, etc.). |
+| `<x-card>` | `:title`, `:subtitle`, `:icon`, `:iconColor`, `:badge` | Dashboard card wrapper with title, icon, action controls slot, and footer slot. |
+| `<x-emptyState>` | `:icon`, `:title`, `:description`, `:actionUrl`, `:actionLabel` | Standard empty state card for empty lists/tables. |
+| `<x-catchCard>` | `:record`, `:showAngler`, `:showLake`, `:showSpeciesAvatar` | Catch record card with photo/avatar, length/weight font-mono pills, species icon, and lake link. |
+| `<x-lakeCard>` | `:lake`, `:catchesCount`, `:showCoordinates` | Waterbody card displaying lake name, total catches pill, fishing zone tag, and GPS badge. |
+| `<x-kpiMetric>` | `:label`, `:value`, `:icon`, `:color`, `:subtext`, `:subtextIcon`, `:actionUrl` | Telemetry stat counter box with big font-mono number, colored icon box, subtext, and action link. |
+
+---
+
 ## 📑 Detailed Route Checklist Reference
 
 For specific route audit requirements, consult [references/ui-checklist.md](file://./references/ui-checklist.md).
+
