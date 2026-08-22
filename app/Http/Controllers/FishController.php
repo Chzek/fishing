@@ -166,6 +166,17 @@ class FishController extends Controller
             ->limit(6)
             ->get();
 
+        // Water temperature & weather trigger telemetry
+        $weatherTelemetry = Record::where('fish_breeds_id', $fish->id)
+            ->whereNotNull('temperature')
+            ->select(
+                DB::raw('round(avg(temperature), 1) as avg_temp'),
+                DB::raw('round(min(temperature), 1) as min_temp'),
+                DB::raw('round(max(temperature), 1) as max_temp'),
+                DB::raw('count(*) as temp_count')
+            )
+            ->first();
+
         return view('fish.show', [
             'fish' => $fish,
             'longest' => $longest,
@@ -178,6 +189,8 @@ class FishController extends Controller
             'monthlyStats' => $monthlyStats,
             'lakes' => $lakes,
             'recentCatches' => $recentCatches,
+            'weatherTelemetry' => $weatherTelemetry,
         ]);
+
     }
 }
