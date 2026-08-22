@@ -339,8 +339,35 @@
             <div id="offline-sync-alert" class="hidden bg-emerald-600 text-white text-xs font-semibold px-4 py-2 text-center transition-all shadow-sm" role="alert"></div>
 
             <div class="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+                @if (session('trophy_celebration'))
+                    @php $tc = session('trophy_celebration'); @endphp
+                    <div class="mb-6 bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-slate-950 rounded-2xl p-5 shadow-xl border-2 border-amber-300 flex flex-col sm:flex-row items-center justify-between gap-4" role="alert">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-950/15 border border-slate-950/20 text-slate-950 flex items-center justify-center shrink-0 shadow-inner">
+                                <i data-lucide="trophy" class="w-7 h-7 text-slate-950 animate-bounce"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-extrabold tracking-tight text-slate-950 flex items-center gap-2">
+                                    <span>{{ $tc['title'] ?? '🏆 Trophy Catch Registered!' }}</span>
+                                </h3>
+                                <p class="text-xs font-semibold text-slate-900 mt-0.5">
+                                    Logged a {{ $tc['length'] ? $tc['length'] . '" ' : '' }}{{ $tc['species_name'] ?? 'Fish' }} at {{ $tc['lake_name'] ?? 'Waterbody' }}!
+                                    @if(!empty($tc['previous_length']))
+                                        (Beat previous Personal Best of {{ $tc['previous_length'] }}")
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+                        @if(!empty($tc['record_id']))
+                            <a href="{{ url('/record/' . $tc['record_id']) }}" class="px-4 py-2 bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow-lg transition-all shrink-0 flex items-center gap-1.5 cursor-pointer">
+                                <span>View Catch Dossier →</span>
+                            </a>
+                        @endif
+                    </div>
+                @endif
                 @yield('content')
             </div>
+
         </main>
 
         <!-- Mobile Bottom Floating Navigation Bar -->

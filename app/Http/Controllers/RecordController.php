@@ -370,6 +370,26 @@ class RecordController extends Controller
 
         $record->save();
 
+        // Check if this catch achieves a Personal Best or Trophy milestone
+        try {
+            $milestone = $record->checkTrophyMilestone();
+            if ($milestone) {
+                $recipient = auth()->user() ?? $record->angler?->user;
+                if ($recipient) {
+                    $recipient->notify(new \Fishinglog\Notifications\TrophyCatchLogged($record, $milestone));
+                }
+                session()->flash('trophy_celebration', array_merge($milestone, [
+                    'record_id' => $record->id,
+                    'species_name' => $record->fishBreed?->name ?? 'Fish',
+                    'length' => $record->length,
+                    'lake_name' => $record->lake?->name ?? 'Waterbody',
+                ]));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to evaluate trophy milestone: ' . $e->getMessage());
+        }
+
+
 
 
         // Handle optional uploaded photos

@@ -95,4 +95,45 @@ class Record extends Model
             ->where('date', $caughtDate)
             ->first();
     }
+
+    /**
+     * Determine if this catch record qualifies as a Personal Best or Trophy milestone.
+     */
+    public function checkTrophyMilestone(): ?array
+    {
+        if (!$this->anglers_id || !$this->fish_breeds_id || (empty($this->length) && empty($this->weight))) {
+            return null;
+        }
+
+        $this->loadMissing(['fishBreed', 'lake']);
+
+        // Check previous catches by this angler for this species (excluding current record)
+        $previousCatches = self::where('anglers_id', $this->anglers_id)
+            ->where('fish_breeds_id', $this->fish_breeds_id)
+            ->where('id', '!=', $this->id);
+
+        $previousCount = (clone $previousCatches)->count();
+        if ($previousCount === 0) {
+            return [
+                'type' => 'first_species_catch',
+                'title' => "🎉 First Logged " . ($this->fishBreed?->name ?? 'Species') . "!",
+                'previous_length' => null,
+                'previous_weight' => null,
+            ];
+        }
+
+        $previousMax = (clone $previousCatches)->max('length');
+
+        if ($this->length && $previousMax && (float) $this->length > (float) $previousMax) {
+            return [
+                'type' => 'species_pb',
+                'title' => "🏆 New Personal Best " . ($this->fishBreed?->name ?? 'Species') . "!",
+                'previous_length' => round((float) $previousMax, 2),
+                'previous_weight' => null,
+            ];
+        }
+
+        return null;
+    }
 }
+
