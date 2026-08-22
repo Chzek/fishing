@@ -83,4 +83,28 @@ class AnglerControllerTest extends TestCase
         $response->assertSeeText($this->angler->lastName);
         $response->assertSeeText('Angler Catches Logbook');
     }
+
+    #[Test]
+    public function it_can_create_an_angler_without_middle_name()
+    {
+        $this->be($this->user);
+
+        $data = [
+            'firstName' => 'Sammy',
+            'middleName' => null,
+            'lastName' => 'Smith',
+        ];
+
+        $response = $this->post('/angler', $data);
+
+        $response->assertStatus(302);
+        $this->assertDatabaseHas('anglers', [
+            'firstName' => 'Sammy',
+            'middleName' => null,
+            'lastName' => 'Smith',
+        ]);
+        $angler = Angler::where('firstName', 'Sammy')->first();
+        $this->assertEquals('Sammy Smith', $angler->fullName);
+    }
 }
+

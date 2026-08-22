@@ -23,7 +23,7 @@ class StoreAnglerRequest extends FormRequest
     {
         return [
             'firstName' => 'required|max:255',
-            'middleName' => 'required|max:255',
+            'middleName' => 'nullable|string|max:255',
             'lastName' => 'required|max:255',
             'user_id' => 'integer|nullable',
             'birthdate' => 'date|nullable',
