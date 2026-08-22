@@ -80,9 +80,20 @@ class SyncApiController extends Controller
                     continue;
                 }
 
-                // If receiving a photo with binary content, store to disk
+                // If receiving a photo or avatar with binary content, store to disk
                 if ($key === 'photos' && !empty($itemData['file_base64']) && !empty($itemData['path'])) {
                     \Illuminate\Support\Facades\Storage::disk('public')->put($itemData['path'], base64_decode($itemData['file_base64']));
+                }
+                if ($key === 'anglers' && !empty($itemData['avatar_base64']) && !empty($itemData['avatar'])) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->put('avatars/' . $itemData['avatar'], base64_decode($itemData['avatar_base64']));
+                }
+                if ($key === 'fish_breeds') {
+                    if (!empty($itemData['avatar_base64']) && !empty($itemData['avatar'])) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->put('fish/avatars/' . $itemData['avatar'], base64_decode($itemData['avatar_base64']));
+                    }
+                    if (!empty($itemData['image_base64']) && !empty($itemData['image'])) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->put('fish/' . $itemData['image'], base64_decode($itemData['image_base64']));
+                    }
                 }
 
                 $existing = $modelClass::find($id);
@@ -91,6 +102,9 @@ class SyncApiController extends Controller
                 $attributes['id'] = $id;
                 unset($attributes['uuid']);
                 unset($attributes['file_base64']);
+                unset($attributes['avatar_base64']);
+                unset($attributes['image_base64']);
+
                 $attributes['sync_status'] = 'synced';
                 $attributes['synced_at'] = now();
 
@@ -199,11 +213,25 @@ class SyncApiController extends Controller
                 $data = method_exists($item, 'makeVisible')
                     ? $item->makeVisible(['password', 'remember_token'])->toArray()
                     : $item->toArray();
+
                 if ($key === 'photos' && !empty($item->path) && \Illuminate\Support\Facades\Storage::disk('public')->exists($item->path)) {
                     $data['file_base64'] = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($item->path));
                 }
+                if ($key === 'anglers' && !empty($item->avatar) && \Illuminate\Support\Facades\Storage::disk('public')->exists('avatars/' . $item->avatar)) {
+                    $data['avatar_base64'] = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get('avatars/' . $item->avatar));
+                }
+                if ($key === 'fish_breeds') {
+                    if (!empty($item->avatar) && \Illuminate\Support\Facades\Storage::disk('public')->exists('fish/avatars/' . $item->avatar)) {
+                        $data['avatar_base64'] = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get('fish/avatars/' . $item->avatar));
+                    }
+                    if (!empty($item->image) && \Illuminate\Support\Facades\Storage::disk('public')->exists('fish/' . $item->image)) {
+                        $data['image_base64'] = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get('fish/' . $item->image));
+                    }
+                }
+
                 return $data;
             });
+
         }
 
         $payload['server_timestamp'] = now()->toIso8601String();

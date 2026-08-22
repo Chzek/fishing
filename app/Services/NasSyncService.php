@@ -133,9 +133,21 @@ class NasSyncService
                     if ($key === 'photos' && !empty($item->path) && Storage::disk('public')->exists($item->path)) {
                         $data['file_base64'] = base64_encode(Storage::disk('public')->get($item->path));
                     }
+                    if ($key === 'anglers' && !empty($item->avatar) && Storage::disk('public')->exists('avatars/' . $item->avatar)) {
+                        $data['avatar_base64'] = base64_encode(Storage::disk('public')->get('avatars/' . $item->avatar));
+                    }
+                    if ($key === 'fish_breeds') {
+                        if (!empty($item->avatar) && Storage::disk('public')->exists('fish/avatars/' . $item->avatar)) {
+                            $data['avatar_base64'] = base64_encode(Storage::disk('public')->get('fish/avatars/' . $item->avatar));
+                        }
+                        if (!empty($item->image) && Storage::disk('public')->exists('fish/' . $item->image)) {
+                            $data['image_base64'] = base64_encode(Storage::disk('public')->get('fish/' . $item->image));
+                        }
+                    }
 
                     return $data;
                 })->all();
+
 
                 $pushPayload = [$key => $itemsArray];
                 $localPendingByUuid = [];
@@ -189,9 +201,20 @@ class NasSyncService
                     continue;
                 }
 
-                // If remote photo includes binary file payload, write to local storage
+                // If remote photo or avatar includes binary file payload, write to local storage
                 if ($key === 'photos' && !empty($remoteItem['file_base64']) && !empty($remoteItem['path'])) {
                     Storage::disk('public')->put($remoteItem['path'], base64_decode($remoteItem['file_base64']));
+                }
+                if ($key === 'anglers' && !empty($remoteItem['avatar_base64']) && !empty($remoteItem['avatar'])) {
+                    Storage::disk('public')->put('avatars/' . $remoteItem['avatar'], base64_decode($remoteItem['avatar_base64']));
+                }
+                if ($key === 'fish_breeds') {
+                    if (!empty($remoteItem['avatar_base64']) && !empty($remoteItem['avatar'])) {
+                        Storage::disk('public')->put('fish/avatars/' . $remoteItem['avatar'], base64_decode($remoteItem['avatar_base64']));
+                    }
+                    if (!empty($remoteItem['image_base64']) && !empty($remoteItem['image'])) {
+                        Storage::disk('public')->put('fish/' . $remoteItem['image'], base64_decode($remoteItem['image_base64']));
+                    }
                 }
 
                 $existing = $modelClass::find($id);
@@ -200,6 +223,9 @@ class NasSyncService
                 $attributes['id'] = $id;
                 unset($attributes['uuid']);
                 unset($attributes['file_base64']);
+                unset($attributes['avatar_base64']);
+                unset($attributes['image_base64']);
+
                 $attributes['sync_status'] = 'synced';
                 $attributes['synced_at'] = now();
 
