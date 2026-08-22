@@ -27,7 +27,9 @@ class UpdateFishBreedRequest extends FormRequest
                 'required',
                 \Illuminate\Validation\Rule::unique('fish_breeds')->ignore($this->id),
             ],
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
         ];
+
     }
 }

@@ -42,13 +42,21 @@ class FishBreedController extends Controller
      */
     public function store(StoreFishBreedRequest $request)
     {
-        $imageName = 'avatar_' . time() . '.' . $request->image->getClientOriginalExtension();
-        $request->image->storeAs('fish', $imageName);
-
         $breed = new FishBreed;
         $breed->name = $request->name;
         $breed->fish_families_id = $request->fish_families_id;
-        $breed->image = $imageName;
+
+        if ($request->hasFile('avatar')) {
+            $avatarName = 'fish_avatar_' . time() . '.' . $request->avatar->getClientOriginalExtension();
+            $request->avatar->storeAs('fish/avatars', $avatarName);
+            $breed->avatar = $avatarName;
+        }
+
+        if ($request->hasFile('image')) {
+            $imageName = 'fish_img_' . time() . '.' . $request->image->getClientOriginalExtension();
+            $request->image->storeAs('fish', $imageName);
+            $breed->image = $imageName;
+        }
 
         $breed->save();
 
@@ -93,8 +101,14 @@ class FishBreedController extends Controller
         $breed->fish_families_id = $request->fish_families_id;
         $breed->name = $request->name;
 
+        if ($request->hasFile('avatar')) {
+            $avatarName = 'fish_avatar_' . time() . '.' . $request->avatar->getClientOriginalExtension();
+            $request->avatar->storeAs('fish/avatars', $avatarName);
+            $breed->avatar = $avatarName;
+        }
+
         if ($request->hasFile('image')) {
-            $imageName = 'avatar_' . time() . '.' . $request->image->getClientOriginalExtension();
+            $imageName = 'fish_img_' . time() . '.' . $request->image->getClientOriginalExtension();
             $request->image->storeAs('fish', $imageName);
             $breed->image = $imageName;
         }
@@ -103,6 +117,7 @@ class FishBreedController extends Controller
 
         return redirect('/fish/' . $breed->id);
     }
+
 
     /**
      * Remove the specified resource from storage.

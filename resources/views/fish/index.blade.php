@@ -267,13 +267,7 @@
                                 <tr data-table-row class="hover:bg-slate-50/70 transition-colors">
                                     <td data-col="species" data-sort-val="{{ $fish->name }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 p-0.5 shrink-0 flex items-center justify-center">
-                                                @if($fish->imageUrl)
-                                                    <img src="{{ $fish->imageUrl }}" alt="{{ $fish->name }}" class="w-full h-full object-contain">
-                                                @else
-                                                    <i data-lucide="fish" class="w-4 h-4 text-slate-400"></i>
-                                                @endif
-                                            </div>
+                                            <x-fishAvatar :fish="$fish" size="sm" />
                                             <div>
                                                 <a href="/fish/{{ $fish->id }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline text-xs sm:text-sm">
                                                     {{ $fish->name }}
@@ -281,6 +275,7 @@
                                             </div>
                                         </div>
                                     </td>
+
                                     <td data-col="family" data-sort-val="{{ $fish->family?->name ?? '' }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-semibold text-slate-600">
                                         <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
                                             {{ $fish->family?->name ?? 'N/A' }}

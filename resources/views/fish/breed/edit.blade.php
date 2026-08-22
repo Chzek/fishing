@@ -16,7 +16,7 @@
             <a href="/fish" class="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">Cancel</a>
         </div>
 
-        <form action="{{ url('fish/breed') }}" method="POST" class="space-y-4">
+        <form action="{{ url('fish/breed') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             @method('PUT')
             <input type="hidden" name="id" value="{{ $breed->id }}">
@@ -42,6 +42,23 @@
                         <option value="{{ $val }}" {{ old('fish_families_id', $breed->fish_families_id) == $val ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
+            </div>
+
+            <div class="space-y-2 pt-2 border-t border-slate-100">
+                <label for="avatar" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Species Icon / Avatar</label>
+                <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-200/60">
+                    <x-fishAvatar :fish="$breed" size="lg" />
+                    <div class="flex-1">
+                        <input type="file" id="avatar" name="avatar" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 transition-all cursor-pointer">
+                        <span class="text-[10px] text-slate-400 block mt-1">Square species avatar used in table rows & lists.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label for="image" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Full Feature Illustration</label>
+                <input type="file" id="image" name="image" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 transition-all cursor-pointer">
+                <span class="text-[10px] text-slate-400 block">Wide side-profile illustration used on species dossier page.</span>
             </div>
 
             <div class="pt-4 flex items-center gap-3">

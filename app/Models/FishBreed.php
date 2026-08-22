@@ -10,7 +10,7 @@ class FishBreed extends Model
     use HasFactory;
     use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
-    protected $fillable = ['id', 'sync_status', 'synced_at', 'name', 'fish_families_id', 'image'];
+    protected $fillable = ['id', 'sync_status', 'synced_at', 'name', 'fish_families_id', 'image', 'avatar'];
 
     public function family()
     {
@@ -20,6 +20,31 @@ class FishBreed extends Model
     public function records()
     {
         return $this->hasMany(Record::class, 'fish_breeds_id', 'id');
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (empty($this->avatar)) {
+            return null;
+        }
+
+        if (file_exists(public_path('images/fish/avatars/' . $this->avatar))) {
+            return asset('images/fish/avatars/' . $this->avatar);
+        }
+
+        if (file_exists(public_path('images/fish/' . $this->avatar))) {
+            return asset('images/fish/' . $this->avatar);
+        }
+
+        if (file_exists(storage_path('app/public/fish/avatars/' . $this->avatar))) {
+            return asset('storage/fish/avatars/' . $this->avatar);
+        }
+
+        if (file_exists(storage_path('app/public/fish/' . $this->avatar))) {
+            return asset('storage/fish/' . $this->avatar);
+        }
+
+        return null;
     }
 
     public function getImageUrlAttribute(): ?string
@@ -43,3 +68,4 @@ class FishBreed extends Model
         return null;
     }
 }
+
