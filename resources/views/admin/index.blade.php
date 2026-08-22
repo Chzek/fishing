@@ -108,7 +108,7 @@
     @endif
 
     <!-- Synchronization Engine Consoles Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Two-Way Sync Console -->
         <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col justify-between space-y-4">
             <div class="space-y-1">
@@ -247,6 +247,33 @@
                     <span>Issue Weather Sync Now</span>
                 </button>
             </form>
+        </div>
+
+        <!-- Laravel Pulse System Telemetry Card -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-purple-950 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="activity" class="w-5 h-5 text-purple-400"></i>
+                        <h2 class="text-base font-bold text-white">Laravel Pulse Telemetry</h2>
+                    </div>
+                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 font-mono">
+                        Admin Only
+                    </span>
+                </div>
+                <p class="text-xs text-slate-300">
+                    Real-time server performance telemetry, slow queries, job queues, outdated composer packages, and system resource monitors.
+                </p>
+                <div class="pt-1 flex items-center gap-2 text-xs text-purple-300/80 font-mono">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-purple-400"></i>
+                    <span>Restricted to Authorized Administrators</span>
+                </div>
+            </div>
+
+            <a href="{{ url('/pulse') }}" class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow-lg transition-all shrink-0 cursor-pointer">
+                <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                <span>Open Pulse Dashboard →</span>
+            </a>
         </div>
     </div>
 
