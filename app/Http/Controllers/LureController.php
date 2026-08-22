@@ -30,14 +30,13 @@ class LureController extends Controller
             $query->orderBy('name', 'asc');
         }
 
-        $query = $pipeline->send($query)
-            ->through([
-                \Fishinglog\Pipes\Filters\SortBy::class,
-                \Fishinglog\Pipes\Filters\FilterBySearch::class,
-            ])
-            ->thenReturn();
+        $allLures = $query->get();
 
-        $lures = $query->paginate(24)->withQueryString();
+        // Group lures by Brand + Name (Lure Model)
+        $groupedLures = $allLures->groupBy(function ($item) {
+            $brandPrefix = $item->brand ? trim($item->brand) . ' ' : '';
+            return $brandPrefix . trim($item->name);
+        });
 
         // Distinct category counts for Digital Tackle Box tabs
         $categoriesList = [
@@ -67,7 +66,8 @@ class LureController extends Controller
             ->first();
 
         return view('lure.index', [
-            'lures' => $lures,
+            'allLures' => $allLures,
+            'groupedLures' => $groupedLures,
             'activeCategory' => $activeCategory,
             'categoriesList' => $categoriesList,
             'categoryCounts' => $categoryCounts,
@@ -75,6 +75,7 @@ class LureController extends Controller
             'totalCatchesOnTackle' => $totalCatchesOnTackle,
             'topCategoryName' => $topCategory?->category ?? 'Tackle Box',
         ]);
+
     }
 
     /**
