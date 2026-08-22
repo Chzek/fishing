@@ -51,7 +51,7 @@ class AnglerController extends Controller
     public function create()
     {
         $angler = new Angler;
-        $users = \Fishinglog\Models\User::orderBy('name')->pluck('name', 'id');
+        $users = \Fishinglog\Models\User::select('id', 'name', 'email')->orderBy('name')->get();
 
         return view('angler.create', [
             'angler' => $angler,
@@ -118,13 +118,14 @@ class AnglerController extends Controller
      */
     public function edit(Angler $angler)
     {
-        $users = \Fishinglog\Models\User::orderBy('name')->pluck('name', 'id');
+        $users = \Fishinglog\Models\User::select('id', 'name', 'email')->orderBy('name')->get();
 
         return view('angler.edit', [
             'angler' => $angler,
             'users' => $users,
         ]);
     }
+
 
 
     /**

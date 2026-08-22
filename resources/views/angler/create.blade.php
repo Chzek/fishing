@@ -42,14 +42,17 @@
                         <label for="user_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">User Account Link (Admin Only)</label>
                         <select id="user_id" name="user_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                             <option value="">No linked user account...</option>
-                            @foreach($users as $val => $label)
-                                <option value="{{ $val }}" {{ (string)old('user_id') === (string)$val ? 'selected' : '' }}>{{ $label }}</option>
+                            @foreach($users as $u)
+                                <option value="{{ $u->id }}" {{ (string)old('user_id') === (string)$u->id ? 'selected' : '' }}>
+                                    {{ $u->name }} ({{ $u->email }})
+                                </option>
                             @endforeach
                         </select>
                     </div>
                 @else
                     <input type="hidden" name="user_id" value="{{ auth()->id() }}">
                 @endif
+
 
                 <div class="space-y-1.5">
 
