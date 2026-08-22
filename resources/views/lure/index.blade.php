@@ -134,8 +134,16 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-2 shrink-0">
-                            <span class="text-xs text-slate-400 font-medium hidden sm:inline" x-text="catOpen ? 'Collapse Tray' : 'Open Tray'"></span>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <a 
+                                href="/lure/category/{{ urlencode($categoryName) }}" 
+                                @click.stop 
+                                class="px-2.5 py-1 bg-slate-800 hover:bg-teal-600 hover:text-white text-teal-300 font-bold text-xs rounded-lg border border-slate-700 transition-colors flex items-center gap-1"
+                            >
+                                <span>Category Telemetry</span>
+                                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </a>
+                            <span class="text-xs text-slate-400 font-medium hidden sm:inline" x-text="catOpen ? 'Collapse' : 'Open'"></span>
                             <div class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 transition-transform duration-200" :class="catOpen ? 'rotate-180 bg-teal-500/20 text-teal-300 border-teal-500/40' : ''">
                                 <i data-lucide="chevron-down" class="w-4 h-4"></i>
                             </div>
@@ -179,13 +187,22 @@
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
-                                        <span class="text-[11px] text-slate-400 font-medium" x-text="modelOpen ? 'Hide Colors' : 'Show Colors'"></span>
+                                    <div class="flex items-center gap-2.5 shrink-0 self-end sm:self-auto">
+                                        <a 
+                                            href="/lure/model/{{ urlencode($modelName) }}" 
+                                            @click.stop 
+                                            class="px-2.5 py-1 bg-white hover:bg-teal-50 hover:text-teal-700 text-slate-700 font-bold text-[11px] rounded-lg border border-slate-200 transition-colors flex items-center gap-1 shadow-2xs"
+                                        >
+                                            <span>Model Telemetry</span>
+                                            <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                                        </a>
+                                        <span class="text-[11px] text-slate-400 font-medium" x-text="modelOpen ? 'Hide' : 'Show'"></span>
                                         <div class="w-7 h-7 rounded-md bg-white border border-slate-200 flex items-center justify-center text-slate-600 transition-transform duration-200" :class="modelOpen ? 'rotate-180 bg-teal-50 border-teal-300 text-teal-700' : ''">
                                             <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                                         </div>
                                     </div>
                                 </button>
+
 
                                 <!-- TIER 3: COLOR PATTERNS & SPECS TABLE -->
                                 <div x-show="modelOpen" x-collapse class="bg-white border-t border-slate-100 p-4">

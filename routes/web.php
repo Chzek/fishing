@@ -146,6 +146,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::prefix('lure')->group(function () {
         Route::get('/', [LureController::class, 'index']);
         Route::get('/create', [LureController::class, 'create']);
+        Route::get('/category/{category}', [LureController::class, 'categoryShow'])->name('lure.category');
+        Route::get('/model/{model}', [LureController::class, 'modelShow'])->name('lure.model');
         Route::get('/{lure}', [LureController::class, 'show']);
         Route::get('/{lure}/edit', [LureController::class, 'edit']);
         Route::post('/import-catalog', [LureController::class, 'importCatalog'])->name('lure.import-catalog');
@@ -155,6 +157,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::put('/', [LureController::class, 'update']);
         Route::delete('/{lure}', [LureController::class, 'destroy']);
     });
+
 
 
     // Record routes

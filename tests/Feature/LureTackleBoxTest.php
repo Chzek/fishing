@@ -162,4 +162,47 @@ class LureTackleBoxTest extends TestCase
         $response->assertSee('Walleye');
         $response->assertSee('Oneida Lake');
     }
+
+    #[Test]
+    public function user_can_view_category_telemetry_page()
+    {
+        $user = User::factory()->create();
+
+        Lure::create([
+            'brand' => 'Rapala',
+            'name' => 'Shad Rap',
+            'category' => 'Crankbait',
+            'color' => 'Firetiger',
+            'size' => '2"',
+        ]);
+
+        $response = $this->actingAs($user)->get('/lure/category/Crankbait');
+
+        $response->assertStatus(200);
+        $response->assertSee('Crankbait Tray');
+        $response->assertSee('Category Telemetry');
+        $response->assertSee('Shad Rap');
+    }
+
+    #[Test]
+    public function user_can_view_model_telemetry_page()
+    {
+        $user = User::factory()->create();
+
+        Lure::create([
+            'brand' => 'Acme',
+            'name' => 'Kastmaster Spoon',
+            'category' => 'Spoon',
+            'color' => 'Gold',
+            'size' => '1/4 oz.',
+        ]);
+
+        $response = $this->actingAs($user)->get('/lure/model/' . urlencode('Acme Kastmaster Spoon'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Kastmaster Spoon');
+        $response->assertSee('Color Variant Performance Breakdown');
+        $response->assertSee('Gold');
+    }
 }
+

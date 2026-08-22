@@ -296,4 +296,123 @@ class LureController extends Controller
 
         return redirect('/lure')->with('status', 'Lure removed from tackle box.');
     }
+
+    /**
+     * Display Category Telemetry Dossier.
+     */
+    public function categoryShow($category)
+    {
+        $lures = Lure::where('category', $category)->withCount('records')->get();
+        $lureIds = $lures->pluck('id');
+
+        $totalVariants = $lures->count();
+        $totalCatches = DB::table('records')
+            ->whereIn('lures_id', $lureIds)
+            ->whereNull('deleted_at')
+            ->count();
+
+        $topSpecies = DB::table('records')
+            ->join('fish_breeds', 'records.fish_breeds_id', '=', 'fish_breeds.id')
+            ->whereIn('records.lures_id', $lureIds)
+            ->whereNull('records.deleted_at')
+            ->select('fish_breeds.name', DB::raw('count(*) as count'))
+            ->groupBy('fish_breeds.name')
+            ->orderByDesc('count')
+            ->first();
+
+        $topLake = DB::table('records')
+            ->join('lakes', 'records.lakes_id', '=', 'lakes.id')
+            ->whereIn('records.lures_id', $lureIds)
+            ->whereNull('records.deleted_at')
+            ->whereNull('lakes.deleted_at')
+            ->select('lakes.name', DB::raw('count(*) as count'))
+            ->groupBy('lakes.name')
+            ->orderByDesc('count')
+            ->first();
+
+        $topColor = DB::table('lures')
+            ->join('records', 'records.lures_id', '=', 'lures.id')
+            ->where('lures.category', $category)
+            ->whereNotNull('lures.color')
+            ->whereNull('records.deleted_at')
+            ->select('lures.color', DB::raw('count(*) as count'))
+            ->groupBy('lures.color')
+            ->orderByDesc('count')
+            ->first();
+
+        $modelsGroup = $lures->groupBy(function ($item) {
+            $brandPrefix = $item->brand ? trim($item->brand) . ' ' : '';
+            return $brandPrefix . trim($item->name);
+        });
+
+        $catches = \Fishinglog\Models\Record::whereIn('lures_id', $lureIds)
+            ->with(['angler', 'lake', 'fishBreed'])
+            ->latest('caught')
+            ->paginate(15);
+
+        return view('lure.category', [
+            'category' => $category,
+            'totalVariants' => $totalVariants,
+            'totalCatches' => $totalCatches,
+            'topSpeciesName' => $topSpecies?->name ?? 'N/A',
+            'topLakeName' => $topLake?->name ?? 'N/A',
+            'topColorName' => $topColor?->color ?? 'N/A',
+            'modelsGroup' => $modelsGroup,
+            'catches' => $catches,
+        ]);
+    }
+
+    /**
+     * Display Brand / Model Telemetry Dossier.
+     */
+    public function modelShow($model)
+    {
+        $decodedModel = urldecode($model);
+
+        // Find variants matching brand+name combination or exact name
+        $variants = Lure::where(function ($query) use ($decodedModel) {
+            $query->where(DB::raw("CONCAT(COALESCE(brand, ''), ' ', name)"), 'like', "%{$decodedModel}%")
+                  ->orWhere('name', 'like', "%{$decodedModel}%");
+        })->withCount('records')->get();
+
+        if ($variants->isEmpty()) {
+            abort(404, "Lure model '{$decodedModel}' not found in tackle box.");
+        }
+
+        $first = $variants->first();
+        $modelBrand = $first->brand;
+        $modelName = $first->name;
+        $modelCategory = $first->category ?: 'Other';
+
+        $lureIds = $variants->pluck('id');
+        $totalCatches = $variants->sum('records_count');
+
+        $topSpecies = DB::table('records')
+            ->join('fish_breeds', 'records.fish_breeds_id', '=', 'fish_breeds.id')
+            ->whereIn('records.lures_id', $lureIds)
+            ->whereNull('records.deleted_at')
+            ->select('fish_breeds.name', DB::raw('count(*) as count'))
+            ->groupBy('fish_breeds.name')
+            ->orderByDesc('count')
+            ->first();
+
+        $topColorVariant = $variants->sortByDesc('records_count')->first();
+
+        $catches = \Fishinglog\Models\Record::whereIn('lures_id', $lureIds)
+            ->with(['angler', 'lake', 'fishBreed'])
+            ->latest('caught')
+            ->paginate(15);
+
+        return view('lure.model', [
+            'modelName' => $modelName,
+            'modelBrand' => $modelBrand,
+            'modelCategory' => $modelCategory,
+            'variants' => $variants,
+            'totalCatches' => $totalCatches,
+            'topSpeciesName' => $topSpecies?->name ?? 'N/A',
+            'topColorName' => $topColorVariant?->color ?? 'Standard',
+            'catches' => $catches,
+        ]);
+    }
 }
+
