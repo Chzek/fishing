@@ -124,12 +124,7 @@ class FishBreedController extends Controller
     private function optimizeAndSaveImage($file, string $relativeStoragePath, int $maxDimension = 1600): void
     {
         $extension = strtolower($file->getClientOriginalExtension());
-        $fullPath = storage_path('app/public/' . $relativeStoragePath);
-        
-        $dir = dirname($fullPath);
-        if (!file_exists($dir)) {
-            @mkdir($dir, 0755, true);
-        }
+        $disk = \Illuminate\Support\Facades\Storage::disk('public');
 
         if (in_array($extension, ['jpg', 'jpeg', 'png', 'webp']) && extension_loaded('gd')) {
             $srcImage = match ($extension) {
@@ -165,29 +160,36 @@ class FishBreedController extends Controller
 
                 imagecopyresampled($dstImage, $srcImage, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
 
+                ob_start();
                 match ($extension) {
-                    'jpg', 'jpeg' => imagejpeg($dstImage, $fullPath, 85),
-                    'png' => imagepng($dstImage, $fullPath, 8),
-                    'webp' => imagewebp($dstImage, $fullPath, 85),
+                    'jpg', 'jpeg' => imagejpeg($dstImage, null, 85),
+                    'png' => imagepng($dstImage, null, 8),
+                    'webp' => imagewebp($dstImage, null, 85),
                 };
+                $compressedData = ob_get_clean();
 
                 imagedestroy($srcImage);
                 imagedestroy($dstImage);
 
-                // Copy to public directory for legacy asset paths
-                $publicPath = public_path('images/' . ltrim(str_replace('fish/', '', $relativeStoragePath), '/'));
-                $publicDir = dirname($publicPath);
-                if (!file_exists($publicDir)) {
-                    @mkdir($publicDir, 0755, true);
+                if ($compressedData) {
+                    $disk->put($relativeStoragePath, $compressedData);
+
+                    // Copy to public directory for legacy asset paths if applicable
+                    $publicPath = public_path('images/' . ltrim(str_replace('fish/', '', $relativeStoragePath), '/'));
+                    $publicDir = dirname($publicPath);
+                    if (!file_exists($publicDir)) {
+                        @mkdir($publicDir, 0755, true);
+                    }
+                    @file_put_contents($publicPath, $compressedData);
+                    return;
                 }
-                @copy($fullPath, $publicPath);
-                return;
             }
         }
 
         // Fallback standard storage
         $file->storeAs(dirname($relativeStoragePath), basename($relativeStoragePath), 'public');
     }
+
 
 
 
