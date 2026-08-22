@@ -55,7 +55,9 @@ Route::post('/register/invited', [Fishinglog\Http\Controllers\Admin\AdminInviteC
 Route::prefix('profile')->group(function () {
     Route::get('/', [ProfileController::class, 'show'])->name('home');
     Route::get('/edit', [ProfileController::class, 'edit']);
+    Route::put('/', [ProfileController::class, 'update']);
 });
+
 
 Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');

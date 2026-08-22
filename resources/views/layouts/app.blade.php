@@ -167,17 +167,20 @@
 
                 @auth
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center text-slate-300">
-                                <i data-lucide="user" class="w-5 h-5"></i>
+                        <a href="{{ url('/profile/edit') }}" title="Account Preferences & Password" class="flex items-center gap-3 group min-w-0">
+                            <div class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center text-slate-300 group-hover:border-teal-500/50 group-hover:bg-slate-800/80 transition-colors shrink-0">
+                                <i data-lucide="user" class="w-5 h-5 text-teal-400"></i>
                             </div>
                             <div class="overflow-hidden">
-                                <span class="font-medium text-white text-sm block truncate">{{ Auth::user()->name }}</span>
-                                <span class="text-xs text-slate-400 capitalize block">{{ Auth::user()->type ?? 'Angler' }}</span>
+                                <span class="font-medium text-white text-sm block truncate group-hover:text-teal-300 transition-colors">{{ Auth::user()->name }}</span>
+                                <span class="text-xs text-slate-400 capitalize block flex items-center gap-1">
+                                    <span>{{ Auth::user()->type ?? 'Angler' }}</span>
+                                    <i data-lucide="settings" class="w-3 h-3 text-slate-500 group-hover:text-teal-400 transition-colors"></i>
+                                </span>
                             </div>
-                        </div>
+                        </a>
 
-                        <div class="flex items-center gap-1">
+                        <div class="flex items-center gap-1 shrink-0">
                             @if(Auth()->user()->type === "admin")
                                 <a href="/admin" title="Admin Portal" class="relative p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
                                     <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
@@ -186,6 +189,9 @@
                                     @endif
                                 </a>
                             @endif
+                            <a href="{{ url('/profile/edit') }}" title="User Account Settings" class="p-1.5 rounded-lg text-slate-400 hover:text-teal-300 hover:bg-slate-800 transition-colors">
+                                <i data-lucide="settings" class="w-4 h-4"></i>
+                            </a>
                             <a href="{{ route('logout') }}" title="Logout"
                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                                class="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors">
@@ -193,6 +199,7 @@
                             </a>
                         </div>
                     </div>
+
                 @else
                     <div class="flex flex-col gap-2">
                         <a href="{{ route('login') }}" class="w-full text-center py-2 px-3 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-medium text-xs transition-colors">Login</a>

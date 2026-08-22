@@ -20,8 +20,14 @@
                     </div>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-extrabold text-white tracking-tight">{{ $angler->firstName }} {{ $angler->lastName }}</h1>
+                    <h1 class="text-2xl font-extrabold text-white tracking-tight flex items-center justify-center md:justify-start gap-2">
+                        <span>{{ $angler->firstName }} {{ $angler->lastName }}</span>
+                        <a href="/angler/{{ $angler->id }}/edit" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit Angler Profile">
+                            <i data-lucide="edit-3" class="w-4 h-4 text-teal-400"></i>
+                        </a>
+                    </h1>
                     <p class="text-xs font-medium text-teal-400 mt-1 flex items-center justify-center md:justify-start gap-1.5">
+
                         <i data-lucide="anchor" class="w-3.5 h-3.5 text-teal-400"></i>
                         <span>Registered Angler Logbook & Telemetry</span>
                     </p>
