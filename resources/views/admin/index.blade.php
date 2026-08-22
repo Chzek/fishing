@@ -279,36 +279,13 @@
 
     <!-- System Telemetry Grid -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Registered Users</span>
-            <span class="text-2xl font-black text-slate-900 block">{{ number_format($users) }}</span>
-            <a href="{{ route('admin.users') }}" class="text-[11px] font-bold text-teal-600 hover:underline inline-block pt-1">Manage Users →</a>
-        </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Anglers</span>
-            <span class="text-2xl font-black text-slate-900 block">{{ number_format($anglers) }}</span>
-            <a href="/angler" class="text-[11px] font-bold text-teal-600 hover:underline inline-block pt-1">View Profiles →</a>
-        </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Catches Logged</span>
-            <span class="text-2xl font-black text-slate-900 block">{{ number_format($records) }}</span>
-            <span class="text-[11px] font-semibold text-slate-500 block">{{ number_format($records / $years, 1) }} / year</span>
-        </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Lakes & Waters</span>
-            <span class="text-2xl font-black text-slate-900 block">{{ number_format($lakes) }}</span>
-            <a href="/lake" class="text-[11px] font-bold text-teal-600 hover:underline inline-block pt-1">Waterbody Index →</a>
-        </div>
-
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-1">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Expeditions</span>
-            <span class="text-2xl font-black text-slate-900 block">{{ number_format($expeditions) }}</span>
-            <a href="/expedition" class="text-[11px] font-bold text-teal-600 hover:underline inline-block pt-1">Expedition Log →</a>
-        </div>
+        <x-kpiMetric label="Registered Users" :value="$users" icon="users" color="teal" actionUrl="{{ route('admin.users') }}" actionLabel="Manage Users →" />
+        <x-kpiMetric label="Anglers" :value="$anglers" icon="user-check" color="emerald" actionUrl="/angler" actionLabel="View Profiles →" />
+        <x-kpiMetric label="Catches Logged" :value="$records" icon="fish" color="sky" subtext="{{ number_format($records / $years, 1) }} / yr" />
+        <x-kpiMetric label="Lakes & Waters" :value="$lakes" icon="waves" color="amber" actionUrl="/lake" actionLabel="Waterbody Index →" />
+        <x-kpiMetric label="Expeditions" :value="$expeditions" icon="ship" color="purple" actionUrl="/expedition" actionLabel="Expedition Log →" />
     </div>
+
 
     <!-- Secondary Telemetry Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">

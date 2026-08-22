@@ -77,17 +77,8 @@
             <div>{{ $anglers->links() }}</div>
         </div>
     @else
-        <div class="text-center py-12 px-4 space-y-3">
-            <div class="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-600 border border-teal-500/20 flex items-center justify-center mx-auto">
-                <i data-lucide="users" class="w-6 h-6"></i>
-            </div>
-            <h3 class="text-base font-bold text-slate-900">No Anglers Registered Yet</h3>
-            <p class="text-xs text-slate-500 max-w-sm mx-auto">Add your fishing crew members to start tracking personal bests and expedition logs.</p>
-            <a href="/angler/create" class="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl shadow transition-colors">
-                <i data-lucide="plus" class="w-4 h-4"></i>
-                <span>Add First Angler</span>
-            </a>
-        </div>
+        <x-emptyState icon="users" title="No Anglers Registered Yet" description="Add your fishing crew members to start tracking personal bests and expedition logs." actionUrl="/angler/create" actionLabel="Add First Angler" />
     @endif
 </div>
 @endsection
+
