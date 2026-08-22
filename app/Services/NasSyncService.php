@@ -124,7 +124,9 @@ class NasSyncService
                 continue;
             }
 
-            foreach ($pending->chunk(50) as $chunk) {
+            $chunkSize = in_array($key, ['photos', 'fish_breeds', 'anglers']) ? 2 : 50;
+            foreach ($pending->chunk($chunkSize) as $chunk) {
+
                 $itemsArray = $chunk->map(function ($item) use ($key) {
                     $data = method_exists($item, 'makeVisible')
                         ? $item->makeVisible(['password', 'remember_token'])->toArray()
