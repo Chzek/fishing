@@ -15,11 +15,13 @@ return new class extends Migration
     public function up()
     {
         Schema::table('lures', function (Blueprint $table) {
+            $table->string('size')->nullable()->change();
             $table->string('category')->nullable()->after('name');
             $table->string('brand')->nullable()->after('category');
             $table->string('weight')->nullable()->after('size');
             $table->string('depth_range')->nullable()->after('weight');
         });
+
 
         // Auto-classify existing entries
         DB::table('lures')->get()->each(function ($lure) {

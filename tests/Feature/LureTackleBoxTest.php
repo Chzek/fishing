@@ -118,8 +118,8 @@ class LureTackleBoxTest extends TestCase
     {
         $user = User::factory()->create();
 
-        Lure::create(['name' => 'Shad Rap', 'category' => 'Crankbait', 'color' => 'Firetiger']);
-        Lure::create(['name' => 'Senko', 'category' => 'Soft Plastic', 'color' => 'Green Pumpkin']);
+        Lure::create(['name' => 'Shad Rap', 'category' => 'Crankbait', 'color' => 'Firetiger', 'size' => '2"']);
+        Lure::create(['name' => 'Senko', 'category' => 'Soft Plastic', 'color' => 'Green Pumpkin', 'size' => '5"']);
 
         $response = $this->actingAs($user)->get('/lure?category=Crankbait');
 
@@ -141,7 +141,9 @@ class LureTackleBoxTest extends TestCase
             'name' => 'Shad Rap',
             'category' => 'Crankbait',
             'color' => 'Firetiger',
+            'size' => '2"',
         ]);
+
 
         Record::create([
             'anglers_id' => $angler->id,
