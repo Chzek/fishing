@@ -51,9 +51,11 @@ class AnglerController extends Controller
     public function create()
     {
         $angler = new Angler;
+        $users = \Fishinglog\Models\User::orderBy('name')->pluck('name', 'id');
 
         return view('angler.create', [
             'angler' => $angler,
+            'users' => $users,
         ]);
     }
 
@@ -116,10 +118,14 @@ class AnglerController extends Controller
      */
     public function edit(Angler $angler)
     {
+        $users = \Fishinglog\Models\User::orderBy('name')->pluck('name', 'id');
+
         return view('angler.edit', [
             'angler' => $angler,
+            'users' => $users,
         ]);
     }
+
 
     /**
      * Update the specified resource in storage.

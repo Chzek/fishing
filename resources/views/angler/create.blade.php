@@ -37,17 +37,22 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="space-y-1.5">
-                    <label for="user_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">User Account</label>
-                    <select id="user_id" name="user_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
-                        <option value="">Select account link...</option>
-                        @foreach($users as $val => $label)
-                            <option value="{{ $val }}" {{ old('user_id') == $val ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                @if(auth()->user() && auth()->user()->isAdmin())
+                    <div class="space-y-1.5">
+                        <label for="user_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">User Account Link (Admin Only)</label>
+                        <select id="user_id" name="user_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                            <option value="">No linked user account...</option>
+                            @foreach($users as $val => $label)
+                                <option value="{{ $val }}" {{ (string)old('user_id') === (string)$val ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @else
+                    <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+                @endif
 
                 <div class="space-y-1.5">
+
                     <label for="birthdate" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Birthday</label>
                     <input type="date" id="birthdate" name="birthdate" value="{{ old('birthdate') }}" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                 </div>
