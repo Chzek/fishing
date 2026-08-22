@@ -79,17 +79,15 @@ class BladeComponentsTest extends TestCase
     {
         $lake = Lake::factory()->create([
             'name' => 'Mirror Lake',
-            'county' => 'Essex',
-            'state' => 'NY',
             'latitude' => 44.28,
             'longitude' => -73.98,
         ]);
 
         $view = $this->blade('<x-lakeCard :lake="$lake" :catchesCount="12" />', ['lake' => $lake]);
         $view->assertSee('Mirror Lake');
-        $view->assertSee('Essex, NY');
         $view->assertSee('12 catches');
     }
 }
+
 
 

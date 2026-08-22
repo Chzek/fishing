@@ -23,11 +23,12 @@
                             {{ $lake->name }}
                         </a>
                     </h3>
-                    @if($lake->county || $lake->state)
+                    @if($lake->fishingZone)
                         <span class="text-xs text-slate-500 font-medium block">
-                            {{ implode(', ', array_filter([$lake->county, $lake->state])) }}
+                            {{ $lake->fishingZone->name ?? $lake->fishingZone->code }}
                         </span>
                     @endif
+
                 </div>
             </div>
             <span class="px-2.5 py-1 bg-slate-100 font-mono font-bold text-xs text-slate-700 rounded-full border border-slate-200 shrink-0">
