@@ -189,29 +189,32 @@
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row items-stretch gap-2 pt-1">
-                <form action="{{ route('admin.sync.trigger') }}" method="POST" class="flex-1">
+            <div class="flex flex-col gap-2 pt-1">
+                <form action="{{ route('admin.sync.trigger') }}" method="POST" class="w-full">
                     @csrf
                     <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all cursor-pointer">
                         <i data-lucide="cloud-sync" class="w-4 h-4"></i>
                         <span>Sync Now with {{ $syncTargetName }}</span>
                     </button>
                 </form>
-                <form action="{{ route('admin.sync.baseline') }}" method="POST" onsubmit="return confirm('Perform a Full Baseline Pull from {{ $syncTargetName }}? This will pull and reconcile all records regardless of timestamps.');">
-                    @csrf
-                    <button type="submit" title="Pull and reconcile all records from {{ $syncTargetName }} from scratch" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 font-bold text-xs rounded-xl transition-all cursor-pointer shadow-sm">
-                        <i data-lucide="cloud-download" class="w-4 h-4 text-teal-400"></i>
-                        <span class="whitespace-nowrap">Baseline Pull</span>
-                    </button>
-                </form>
-                <form action="{{ route('admin.sync.mark_synced') }}" method="POST" onsubmit="return confirm('Mark all local records as synced? Use this if your records are already identical on {{ $syncTargetName }} and you wish to clear pending outbox status.');">
-                    @csrf
-                    <button type="submit" title="Mark all local records as synced without pushing/pulling" class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-slate-800/60 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 font-semibold text-xs rounded-xl transition-all cursor-pointer shadow-sm">
-                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
-                        <span class="whitespace-nowrap">Mark All Synced</span>
-                    </button>
-                </form>
+                <div class="grid grid-cols-2 gap-2">
+                    <form action="{{ route('admin.sync.baseline') }}" method="POST" onsubmit="return confirm('Perform a Full Baseline Pull from {{ $syncTargetName }}? This will pull and reconcile all records regardless of timestamps.');">
+                        @csrf
+                        <button type="submit" title="Pull and reconcile all records from {{ $syncTargetName }} from scratch" class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 font-bold text-[11px] rounded-xl transition-all cursor-pointer shadow-sm">
+                            <i data-lucide="cloud-download" class="w-3.5 h-3.5 text-teal-400"></i>
+                            <span>Baseline Pull</span>
+                        </button>
+                    </form>
+                    <form action="{{ route('admin.sync.mark_synced') }}" method="POST" onsubmit="return confirm('Mark all local records as synced? Use this if your records are already identical on {{ $syncTargetName }} and you wish to clear pending outbox status.');">
+                        @csrf
+                        <button type="submit" title="Mark all local records as synced without pushing/pulling" class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800/60 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 font-semibold text-[11px] rounded-xl transition-all cursor-pointer shadow-sm">
+                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+                            <span>Mark Synced</span>
+                        </button>
+                    </form>
+                </div>
             </div>
+
         </div>
 
         <!-- Weather Telemetry Sync Console -->
