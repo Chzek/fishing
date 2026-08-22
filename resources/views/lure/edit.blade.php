@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-md mx-auto space-y-6">
+<div class="max-w-xl mx-auto space-y-6">
     <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/80 space-y-6">
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
             <div class="flex items-center gap-3">
@@ -9,8 +9,8 @@
                     <i data-lucide="edit-3" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold text-slate-900 tracking-tight">Edit Lure</h1>
-                    <p class="text-xs text-slate-500">Lure #{{ $lure->id }}</p>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-tight">Edit Tackle Specs</h1>
+                    <p class="text-xs text-slate-500">Update specifications for {{ $lure->displayName }}</p>
                 </div>
             </div>
             <a href="/lure/{{ $lure->id }}" class="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">Cancel</a>
@@ -21,44 +21,48 @@
             @method('PUT')
             <input type="hidden" name="id" value="{{ $lure->id }}">
 
-            <div class="space-y-1.5">
-                <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lure Model / Name</label>
-                <input type="text" id="name" name="name" value="{{ old('name', $lure->name) }}" list="nameList" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label for="brand" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Brand / Manufacturer</label>
+                    <input type="text" id="brand" name="brand" value="{{ old('brand', $lure->brand) }}" placeholder="e.g. Rapala" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                </div>
 
-                <datalist id="nameList">
-                    @foreach($lureNames as $item)
-                        <option value="{{ $item->name }}">
-                    @endforeach
-                </datalist>
+                <div class="space-y-1.5">
+                    <label for="category" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Tackle Category</label>
+                    <select id="category" name="category" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                        @foreach($categoriesList as $cat)
+                            <option value="{{ $cat }}" {{ old('category', $lure->category) == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
 
             <div class="space-y-1.5">
-                <label for="color" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Color Pattern</label>
-                <input type="text" id="color" name="color" value="{{ old('color', $lure->color) }}" list="colorList" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
-
-                <datalist id="colorList">
-                    @foreach($lureColors as $item)
-                        <option value="{{ $item->color }}">
-                    @endforeach
-                </datalist>
+                <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lure Model Name *</label>
+                <input type="text" id="name" name="name" value="{{ old('name', $lure->name) }}" required class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
             </div>
 
-            <div class="space-y-1.5">
-                <label for="size" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Size / Weight</label>
-                <input type="text" id="size" name="size" value="{{ old('size', $lure->size) }}" list="sizeList" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="space-y-1.5">
+                    <label for="color" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Color Pattern</label>
+                    <input type="text" id="color" name="color" value="{{ old('color', $lure->color) }}" placeholder="e.g. Firetiger" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                </div>
 
-                <datalist id="sizeList">
-                    @foreach($lureSizes as $item)
-                        <option value="{{ $item->size }}">
-                    @endforeach
-                </datalist>
+                <div class="space-y-1.5">
+                    <label for="size" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Size / Weight</label>
+                    <input type="text" id="size" name="size" value="{{ old('size', $lure->size ?: $lure->weight) }}" placeholder="e.g. 5/16 oz" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="depth_range" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Running Depth</label>
+                    <input type="text" id="depth_range" name="depth_range" value="{{ old('depth_range', $lure->depth_range) }}" placeholder="e.g. 4-8 ft" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                </div>
             </div>
 
             <div class="pt-4 flex items-center gap-3">
                 <button type="submit" class="flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer">Save Changes</button>
                 <a href="/lure/{{ $lure->id }}" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl border border-slate-200 transition-colors">Cancel</a>
             </div>
-
         </form>
 
         @if (isset($errors) && $errors->any())

@@ -148,10 +148,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/create', [LureController::class, 'create']);
         Route::get('/{lure}', [LureController::class, 'show']);
         Route::get('/{lure}/edit', [LureController::class, 'edit']);
+        Route::post('/import-catalog', [LureController::class, 'importCatalog'])->name('lure.import-catalog');
+        Route::post('/batch', [LureController::class, 'storeBatch'])->name('lure.batch');
+        Route::post('/quick', [LureController::class, 'storeQuick'])->name('lure.quick');
         Route::post('/', [LureController::class, 'store']);
         Route::put('/', [LureController::class, 'update']);
         Route::delete('/{lure}', [LureController::class, 'destroy']);
     });
+
 
     // Record routes
     Route::prefix('record')->group(function () {

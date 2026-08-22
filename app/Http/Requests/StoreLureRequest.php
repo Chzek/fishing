@@ -23,13 +23,14 @@ class StoreLureRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => [
-                'required',
-                'string',
-                Rule::unique('lures'),
-            ],
+            'name' => 'required|string',
+            'brand' => 'nullable|string',
+            'category' => 'nullable|string',
             'color' => 'nullable|string',
             'size' => 'nullable|string',
+            'weight' => 'nullable|string',
+            'depth_range' => 'nullable|string',
         ];
     }
+
 }

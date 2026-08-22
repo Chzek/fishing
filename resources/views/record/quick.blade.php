@@ -79,11 +79,19 @@
                     <label for="lures_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lure / Bait (Optional)</label>
                     <select id="lures_id" name="lures_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-medium text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors">
                         <option value="">Select Lure...</option>
-                        @foreach($lures as $lure)
-                            <option value="{{ $lure->id }}">{{ $lure->displayName ?? $lure->name }}</option>
+                        @php
+                            $lureGroups = is_iterable($lures) ? collect($lures)->groupBy(fn($item) => $item->category ?: 'Other') : collect();
+                        @endphp
+                        @foreach($lureGroups as $categoryName => $groupedLures)
+                            <optgroup label="── {{ $categoryName }} ──">
+                                @foreach($groupedLures as $lure)
+                                    <option value="{{ $lure->id }}">{{ $lure->displayName ?? $lure->name }}</option>
+                                @endforeach
+                            </optgroup>
                         @endforeach
                     </select>
                 </div>
+
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
