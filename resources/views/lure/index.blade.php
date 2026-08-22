@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-6 max-w-7xl mx-auto" x-data="{ viewMode: 'nested', openCategories: {}, openModels: {} }">
+<div class="space-y-6 max-w-7xl mx-auto" x-data="{ openCategories: {}, openModels: {} }">
     <!-- Digital Tackle Box Header & Actions -->
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
@@ -47,7 +47,7 @@
         <x-kpiMetric label="Catches Landed on Tackle" :value="$totalCatchesOnTackle" icon="hook" color="sky" subtext="Verified Logbook Catches" />
     </div>
 
-    <!-- Category Filter & View Mode Controls -->
+    <!-- Category Filter & Master Controls Navigation Bar -->
     <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-3">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
             <div class="flex items-center gap-2">
@@ -58,28 +58,15 @@
                 <span class="text-xs text-slate-400 font-mono">({{ $nestedTackle->count() }} Categories / {{ $allLures->count() }} Variants)</span>
             </div>
 
-            <!-- View Switcher & Expand All Controls -->
-            <div class="flex items-center gap-2">
-                <button type="button" @click="
-                    const allCatKeys = @js($nestedTackle->keys()->toArray());
-                    const areAllOpen = allCatKeys.every(k => openCategories[k]);
-                    allCatKeys.forEach(k => openCategories[k] = !areAllOpen);
-                " class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-colors flex items-center gap-1">
-                    <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5 text-slate-500"></i>
-                    <span>Toggle Category Trays</span>
-                </button>
-
-                <div class="flex items-center p-0.5 bg-slate-100 rounded-xl border border-slate-200/80 text-xs font-bold">
-                    <button type="button" @click="viewMode = 'nested'" :class="viewMode === 'nested' ? 'bg-white text-teal-700 shadow-2xs' : 'text-slate-600 hover:text-slate-900'" class="px-3 py-1 rounded-lg transition-all flex items-center gap-1">
-                        <i data-lucide="list-tree" class="w-3.5 h-3.5"></i>
-                        <span>Nested Trays</span>
-                    </button>
-                    <button type="button" @click="viewMode = 'grid'" :class="viewMode === 'grid' ? 'bg-white text-teal-700 shadow-2xs' : 'text-slate-600 hover:text-slate-900'" class="px-3 py-1 rounded-lg transition-all flex items-center gap-1">
-                        <i data-lucide="grid" class="w-3.5 h-3.5"></i>
-                        <span>Variant Cards</span>
-                    </button>
-                </div>
-            </div>
+            <!-- Expand / Collapse All Category Trays Button -->
+            <button type="button" @click="
+                const allCatKeys = @js($nestedTackle->keys()->toArray());
+                const areAllOpen = allCatKeys.every(k => openCategories[k]);
+                allCatKeys.forEach(k => openCategories[k] = !areAllOpen);
+            " class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer">
+                <i data-lucide="chevrons-up-down" class="w-3.5 h-3.5 text-teal-600"></i>
+                <span>Toggle Category Trays</span>
+            </button>
         </div>
 
         <div class="flex flex-wrap items-center gap-1.5">
@@ -101,8 +88,8 @@
         </div>
     </div>
 
-    <!-- VIEW 1: 2-Tier Nested Category Accordion Architecture (Default View) -->
-    <div x-show="viewMode === 'nested'" class="space-y-4">
+    <!-- 2-Tier Nested Category Accordion Architecture -->
+    <div class="space-y-4">
         @if($nestedTackle->count() > 0)
             @foreach($nestedTackle as $categoryName => $modelsGroup)
                 @php
@@ -251,79 +238,6 @@
             @endforeach
         @else
             <x-emptyState icon="box" title="No Tackle Items Found" description="No lures match your active category filter. Add a new lure or import the Master Tackle Catalog." actionUrl="/lure/create" actionLabel="Add First Tackle Item" />
-        @endif
-    </div>
-
-    <!-- VIEW 2: Individual Variant Cards Grid -->
-    <div x-show="viewMode === 'grid'" class="space-y-4" x-cloak>
-        @if($allLures->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                @foreach($allLures as $lure)
-                    @php
-                        $catIcon = match(strtolower((string) $lure->category)) {
-                            'crankbait', 'jerkbait' => 'target',
-                            'soft plastic', 'swimbait' => 'disc',
-                            'inline spinner', 'spinnerbait' => 'sun',
-                            'jig' => 'anchor',
-                            'spoon' => 'sparkles',
-                            'topwater' => 'cloud-sun',
-                            default => 'hook',
-                        };
-                    @endphp
-                    <div class="group bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md hover:border-teal-300 transition-all duration-200 p-5 flex flex-col justify-between space-y-4">
-                        <div class="space-y-3">
-                            <div class="flex items-start justify-between gap-2">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <div class="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center shrink-0 group-hover:bg-teal-600 group-hover:text-white transition-colors duration-200 shadow-2xs">
-                                        <i data-lucide="{{ $catIcon }}" class="w-4 h-4"></i>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <h3 class="font-bold text-slate-900 text-sm tracking-tight group-hover:text-teal-600 transition-colors truncate">
-                                            <a href="/lure/{{ $lure->id }}">
-                                                {{ $lure->name }}
-                                            </a>
-                                        </h3>
-                                        @if($lure->brand)
-                                            <span class="text-[11px] font-bold text-teal-700 block truncate">{{ $lure->brand }}</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <x-tableOptions name="lure" identifier="{{ $lure->id }}" />
-                            </div>
-
-                            <div class="space-y-1.5 pt-1">
-                                <div class="flex flex-wrap items-center gap-1 text-[11px]">
-                                    @if($lure->category)
-                                        <span class="px-2 py-0.5 bg-slate-100 text-slate-700 font-semibold rounded-md border border-slate-200">{{ $lure->category }}</span>
-                                    @endif
-                                    @if($lure->color)
-                                        <span class="px-2 py-0.5 bg-amber-50 text-amber-800 font-bold rounded-md border border-amber-200">{{ $lure->color }}</span>
-                                    @endif
-                                </div>
-
-                                <div class="flex flex-wrap items-center gap-2 text-[11px] text-slate-500 font-mono">
-                                    @if($lure->size || $lure->weight)
-                                        <span>Weight: <strong class="text-slate-800">{{ $lure->size ?: $lure->weight }}</strong></span>
-                                    @endif
-                                    @if($lure->depth_range)
-                                        <span>•</span>
-                                        <span>Depth: <strong class="text-sky-700">{{ $lure->depth_range }}</strong></span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                            <span class="font-mono font-bold text-teal-700">
-                                {{ $lure->records_count }} catch{{ $lure->records_count === 1 ? '' : 'es' }}
-                            </span>
-                            <a href="/lure/{{ $lure->id }}" class="font-bold text-teal-600 hover:text-teal-700 hover:underline flex items-center gap-1">
-                                <span>Telemetry →</span>
-                            </a>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
         @endif
     </div>
 </div>
