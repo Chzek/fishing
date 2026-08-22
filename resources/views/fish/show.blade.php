@@ -4,21 +4,21 @@
 <div class="space-y-6 max-w-7xl mx-auto">
     <!-- Hero Showcase Section -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Left: Species Canvas Header -->
-        <div class="lg:col-span-5 bg-slate-900 rounded-2xl p-6 border border-slate-800 shadow-md flex flex-col items-center justify-center relative min-h-[240px] lg:min-h-[280px]">
+        <!-- Left: Species Illustration Canvas Header -->
+        <div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm flex flex-col items-center justify-center relative min-h-[240px] lg:min-h-[280px]">
             <div class="absolute top-3.5 left-3.5 flex items-center gap-2">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-800 border border-slate-700 text-teal-300 text-xs font-bold rounded-xl shadow-xs">
-                    <i data-lucide="layers" class="w-3.5 h-3.5 text-teal-400"></i>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 border border-slate-200 text-slate-800 text-xs font-bold rounded-xl shadow-xs">
+                    <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-500"></i>
                     <span>{{ $fish->family?->name ? $fish->family->name . ' Family' : 'Taxonomy' }}</span>
                 </span>
             </div>
 
             <div class="w-full h-full flex items-center justify-center p-2">
                 @if($fish->imageUrl)
-                    <img src="{{ $fish->imageUrl }}" alt="{{ $fish->name }}" class="max-h-56 w-auto object-contain hover:scale-105 transition-transform duration-300 drop-shadow-xl">
+                    <img src="{{ $fish->imageUrl }}" alt="{{ $fish->name }}" class="max-h-56 w-auto object-contain mix-blend-multiply hover:scale-105 transition-transform duration-300">
                 @else
                     <div class="text-center space-y-2 py-8">
-                        <div class="w-16 h-16 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center mx-auto">
+                        <div class="w-16 h-16 rounded-2xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center mx-auto">
                             <i data-lucide="fish" class="w-8 h-8"></i>
                         </div>
                         <span class="text-xs text-slate-400 font-medium block">No biological photo uploaded</span>
@@ -26,6 +26,7 @@
                 @endif
             </div>
         </div>
+
 
         <!-- Right: Species Dossier & Trophy Hero -->
         <div class="lg:col-span-7 bg-slate-900 text-white rounded-2xl p-6 sm:p-7 border border-slate-800 shadow-md flex flex-col justify-between space-y-6">
