@@ -16,11 +16,14 @@ use Fishinglog\Pipes\Filters\FilterByName;
 use Fishinglog\Pipes\Filters\FilterByRecordsCount;
 use Fishinglog\Pipes\Filters\FilterBySearch;
 use Fishinglog\Pipes\Filters\SortBy;
+use Fishinglog\Notifications\RecordCreated;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
+
 
 class RecordController extends Controller
 {
@@ -366,6 +369,17 @@ class RecordController extends Controller
         $record->caught = $request->caught;
 
         $record->save();
+
+        // Dispatch catch notification to users
+        try {
+            $usersToNotify = \Fishinglog\Models\User::get();
+            if ($usersToNotify->isNotEmpty()) {
+                Notification::send($usersToNotify, new RecordCreated($record->fresh(['fishBreed', 'lake'])));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to dispatch RecordCreated notification: ' . $e->getMessage());
+        }
+
 
         // Handle optional uploaded photos
         if ($request->hasFile('photos')) {
