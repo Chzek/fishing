@@ -125,15 +125,7 @@
                                     {{ $record->length ? number_format($record->length, 1) : '—' }}
                                 </td>
                                 <td data-col="status" x-show="isColumnVisible('status')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center whitespace-nowrap">
-                                    @if($record->released)
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Released
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
-                                            Kept
-                                        </span>
-                                    @endif
+                                    <x-statusBadge :type="$record->released ? 'released' : 'kept'" />
                                 </td>
                                 <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap font-medium text-xs">
                                     <a href="{{ route('record.show', $record->id) }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
@@ -144,11 +136,12 @@
 
                         @empty
                             <tr>
-                                <td colspan="9" class="py-8 text-center text-slate-400 italic text-xs">
-                                    No records found matching the filter criteria.
+                                <td colspan="9" class="py-8 px-4 text-center">
+                                    <x-emptyState icon="fish-off" title="No Catch Records Found" description="No catch entries match your current search and filter criteria." />
                                 </td>
                             </tr>
                         @endforelse
+
                     </tbody>
                     <!-- Dynamic Summary Footer for Visible Filtered Rows -->
                     @if($records->isNotEmpty())
