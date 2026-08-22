@@ -40,11 +40,12 @@
 @endphp
 
 @if($displayImage)
-    <div class="{{ $sizeClasses }} rounded-xl bg-slate-50 border border-slate-200/80 p-0.5 flex items-center justify-center shrink-0 shadow-sm overflow-hidden {{ $class }}">
+    <div class="{{ $sizeClasses }} rounded-xl bg-white border border-slate-200/80 p-1 flex items-center justify-center shrink-0 shadow-sm overflow-hidden group-hover:border-teal-500/40 transition-colors {{ $class }}">
         <img src="{{ $displayImage }}" 
              alt="{{ $fish->name ?? 'Fish' }}" 
              class="w-full h-full object-contain filter drop-shadow-sm">
     </div>
+
 @else
     <div class="{{ $sizeClasses }} rounded-xl {{ $color['bg'] }} border {{ $color['border'] }} {{ $color['text'] }} font-bold flex items-center justify-center shrink-0 shadow-sm {{ $class }}"
          title="{{ $fish->name ?? 'Fish' }}">
