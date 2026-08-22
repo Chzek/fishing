@@ -55,11 +55,26 @@
                 </div>
             </div>
 
-            <div class="space-y-1.5">
+            <div class="space-y-2">
                 <label for="image" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Full Feature Illustration</label>
-                <input type="file" id="image" name="image" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 transition-all cursor-pointer">
-                <span class="text-[10px] text-slate-400 block">Wide side-profile illustration used on species dossier page.</span>
+                <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-200/60">
+                    <div class="w-20 h-14 rounded-xl bg-white border border-slate-200 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                        @if($breed->imageUrl)
+                            <img src="{{ $breed->imageUrl }}" alt="{{ $breed->name }}" class="max-h-full max-w-full object-contain filter drop-shadow-sm">
+                        @else
+                            <div class="text-center text-slate-300">
+                                <i data-lucide="image" class="w-5 h-5 mx-auto stroke-[1.5]"></i>
+                                <span class="text-[9px] font-medium block">No Image</span>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="flex-1 w-full">
+                        <input type="file" id="image" name="image" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-200/70 file:text-slate-700 hover:file:bg-slate-300 transition-all cursor-pointer">
+                        <span class="text-[10px] text-slate-400 block mt-1">Wide side-profile illustration used on species dossier page.</span>
+                    </div>
+                </div>
             </div>
+
 
             <div class="pt-4 flex items-center gap-3">
                 <button type="submit" class="flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer">Save Changes</button>

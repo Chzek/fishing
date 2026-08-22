@@ -22,8 +22,8 @@
     ][$size] ?? 'w-5 h-5';
 
     $avatarUrl = $fish->avatarUrl ?? null;
-    $imageUrl = $fish->imageUrl ?? null;
-    $displayImage = $avatarUrl ?: $imageUrl;
+    $displayImage = $avatarUrl;
+
 
     // Palette selection based on fish family or species name hash
     $palettes = [
