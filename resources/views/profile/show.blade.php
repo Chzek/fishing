@@ -47,48 +47,11 @@
 
         <!-- Metrics Key Stats Row -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <!-- Lakes Visited -->
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
-                <div>
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Lakes Visited</span>
-                    <span class="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1 block">{{ $lake_count }}</span>
-                    <span class="text-[11px] text-teal-600 font-semibold mt-1 inline-flex items-center gap-1">
-                        <i data-lucide="map-pin" class="w-3 h-3"></i> Unique Waters
-                    </span>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
-                    <i data-lucide="waves" class="w-6 h-6"></i>
-                </div>
-            </div>
-
-            <!-- Fish Caught -->
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
-                <div>
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Fish Caught</span>
-                    <span class="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1 block">{{ $record_count }}</span>
-                    <span class="text-[11px] text-emerald-600 font-semibold mt-1 inline-flex items-center gap-1">
-                        <i data-lucide="trending-up" class="w-3 h-3"></i> Logbook Catches
-                    </span>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
-                    <i data-lucide="fish" class="w-6 h-6"></i>
-                </div>
-            </div>
-
-            <!-- Expeditions -->
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
-                <div>
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Expeditions</span>
-                    <span class="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1 block">{{ $crews }}</span>
-                    <span class="text-[11px] text-sky-600 font-semibold mt-1 inline-flex items-center gap-1">
-                        <i data-lucide="navigation" class="w-3 h-3"></i> Crew Trips
-                    </span>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center shrink-0">
-                    <i data-lucide="ship" class="w-6 h-6"></i>
-                </div>
-            </div>
+            <x-kpiMetric label="Lakes Visited" :value="$lake_count" icon="waves" color="teal" subtext="Unique Waters" subtextIcon="map-pin" />
+            <x-kpiMetric label="Fish Caught" :value="$record_count" icon="fish" color="emerald" subtext="Logbook Catches" subtextIcon="trending-up" />
+            <x-kpiMetric label="Expeditions" :value="$crews" icon="ship" color="sky" subtext="Crew Trips" subtextIcon="navigation" />
         </div>
+
 
         <!-- In-App Notifications Feed (For All Anglers/Users) -->
         @if(!empty($unreadNotifications) && $unreadNotifications->count() > 0)

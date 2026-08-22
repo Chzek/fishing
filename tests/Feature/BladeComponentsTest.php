@@ -64,5 +64,32 @@ class BladeComponentsTest extends TestCase
         $view->assertSee('14.5');
         $view->assertSee('Black Lake');
     }
+
+    #[Test]
+    public function kpi_metric_component_renders_correctly()
+    {
+        $view = $this->blade('<x-kpiMetric label="Unique Waters" value="18" icon="waves" color="teal" subtext="Visited Lakes" />');
+        $view->assertSee('Unique Waters');
+        $view->assertSee('18');
+        $view->assertSee('Visited Lakes');
+    }
+
+    #[Test]
+    public function lake_card_component_renders_correctly()
+    {
+        $lake = Lake::factory()->create([
+            'name' => 'Mirror Lake',
+            'county' => 'Essex',
+            'state' => 'NY',
+            'latitude' => 44.28,
+            'longitude' => -73.98,
+        ]);
+
+        $view = $this->blade('<x-lakeCard :lake="$lake" :catchesCount="12" />', ['lake' => $lake]);
+        $view->assertSee('Mirror Lake');
+        $view->assertSee('Essex, NY');
+        $view->assertSee('12 catches');
+    }
 }
+
 
