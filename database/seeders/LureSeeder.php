@@ -2,20 +2,24 @@
 
 namespace Database\Seeders;
 
+use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\Lure;
 use Illuminate\Database\Seeder;
 
 class LureSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run the database seeds tailored to species existing in the database.
      *
      * @return void
      */
     public function run()
     {
+        // Fetch existing species names in DB for intelligent targeted tackle seeding
+        $existingSpecies = FishBreed::pluck('name')->map(fn ($n) => strtolower((string) $n))->toArray();
+
         $catalog = [
-            // CRANKBAITS
+            // WALLEYE TARGETED TACKLE
             [
                 'brand' => 'Rapala',
                 'name' => 'Shad Rap',
@@ -44,34 +48,25 @@ class LureSeeder extends Seeder
                 'depth_range' => '7-11 ft',
             ],
             [
-                'brand' => 'Strike King',
-                'name' => 'KVD 1.5 Squarebill',
+                'brand' => 'Cotton Cordell',
+                'name' => 'Wally Diver',
                 'category' => 'Crankbait',
-                'color' => 'Sexy Shad',
-                'size' => '2.25"',
-                'weight' => '7/16 oz.',
-                'depth_range' => '3-6 ft',
-            ],
-            [
-                'brand' => 'Strike King',
-                'name' => 'KVD 1.5 Squarebill',
-                'category' => 'Crankbait',
-                'color' => 'Chartreuse Sexy Shad',
-                'size' => '2.25"',
-                'weight' => '7/16 oz.',
-                'depth_range' => '3-6 ft',
-            ],
-            [
-                'brand' => 'Bandit',
-                'name' => '200 Series Crankbait',
-                'category' => 'Crankbait',
-                'color' => 'Rootbeer',
-                'size' => '2"',
+                'color' => 'Gold / Black Back',
+                'size' => '2.5"',
                 'weight' => '1/4 oz.',
-                'depth_range' => '4-8 ft',
+                'depth_range' => '6-11 ft',
+            ],
+            [
+                'brand' => 'Berkley',
+                'name' => 'Flicker Shad',
+                'category' => 'Crankbait',
+                'color' => 'Slick Bluegill',
+                'size' => '2.75"',
+                'weight' => '5/16 oz.',
+                'depth_range' => '9-13 ft',
             ],
 
-            // SOFT PLASTICS & SWIMBAITS
+            // SMALLMOUTH & LARGEMOUTH BASS TACKLE
             [
                 'brand' => 'Gary Yamamoto',
                 'name' => '5" Senko Worm',
@@ -119,50 +114,86 @@ class LureSeeder extends Seeder
             ],
             [
                 'brand' => 'Z-Man',
-                'name' => 'MinnowZ Swimbait',
-                'category' => 'Swimbait',
-                'color' => 'Opening Night',
-                'size' => '3"',
-                'weight' => '1/4 oz.',
-                'depth_range' => 'Midwater',
+                'name' => 'TRD Finesse Ned Rig',
+                'category' => 'Soft Plastic',
+                'color' => 'Green Pumpkin',
+                'size' => '2.75"',
+                'weight' => '1/10 oz.',
+                'depth_range' => 'Bottom Finesse',
             ],
             [
-                'brand' => 'Berkley',
-                'name' => '7" Power Worm',
-                'category' => 'Soft Plastic',
-                'color' => 'Blue Fleck',
-                'size' => '7"',
+                'brand' => 'Strike King',
+                'name' => 'KVD 1.5 Squarebill',
+                'category' => 'Crankbait',
+                'color' => 'Sexy Shad',
+                'size' => '2.25"',
+                'weight' => '7/16 oz.',
+                'depth_range' => '3-6 ft',
+            ],
+            [
+                'brand' => 'Strike King',
+                'name' => 'KVD 1.5 Squarebill',
+                'category' => 'Crankbait',
+                'color' => 'Chartreuse Sexy Shad',
+                'size' => '2.25"',
+                'weight' => '7/16 oz.',
+                'depth_range' => '3-6 ft',
+            ],
+            [
+                'brand' => 'Bandit',
+                'name' => '200 Series Crankbait',
+                'category' => 'Crankbait',
+                'color' => 'Rootbeer',
+                'size' => '2"',
+                'weight' => '1/4 oz.',
+                'depth_range' => '4-8 ft',
+            ],
+            [
+                'brand' => 'Booyah',
+                'name' => 'Covert Spinnerbait',
+                'category' => 'Spinnerbait',
+                'color' => 'White / Chartreuse',
+                'size' => '3/8 oz.',
                 'weight' => '3/8 oz.',
-                'depth_range' => 'Bottom Cover',
+                'depth_range' => '2-6 ft',
             ],
 
-            // INLINE SPINNERS & SPINNERBAITS
+            // TROUT & SALMON TACKLE (Lake Trout, Steelhead, Brown, Brook, Coho, Chinook)
             [
-                'brand' => 'Mepps',
-                'name' => 'Aglia Inline Spinner',
-                'category' => 'Inline Spinner',
-                'color' => 'Gold',
-                'size' => '#3',
-                'weight' => '1/4 oz.',
-                'depth_range' => 'All Depths',
+                'brand' => 'Acme',
+                'name' => 'Little Cleo Spoon',
+                'category' => 'Spoon',
+                'color' => 'Nickel / Blue',
+                'size' => '1/3 oz.',
+                'weight' => '1/3 oz.',
+                'depth_range' => '3-10 ft',
             ],
             [
-                'brand' => 'Mepps',
-                'name' => 'Aglia Inline Spinner',
-                'category' => 'Inline Spinner',
-                'color' => 'Silver',
-                'size' => '#3',
-                'weight' => '1/4 oz.',
-                'depth_range' => 'All Depths',
+                'brand' => 'Acme',
+                'name' => 'Little Cleo Spoon',
+                'category' => 'Spoon',
+                'color' => 'Nickel / Red',
+                'size' => '2/5 oz.',
+                'weight' => '2/5 oz.',
+                'depth_range' => '5-15 ft',
             ],
             [
-                'brand' => 'Mepps',
-                'name' => 'Black Fury Spinner',
+                'brand' => 'Luhr Jensen',
+                'name' => 'Krocodile Spoon',
+                'category' => 'Spoon',
+                'color' => 'Chrome / Blue Prism',
+                'size' => '1/2 oz.',
+                'weight' => '1/2 oz.',
+                'depth_range' => 'Trolling / Deep',
+            ],
+            [
+                'brand' => 'Blue Fox',
+                'name' => 'Super Vibrax',
                 'category' => 'Inline Spinner',
-                'color' => 'Black / Yellow Dot',
+                'color' => 'Silver / Blue Bell',
                 'size' => '#3',
                 'weight' => '1/4 oz.',
-                'depth_range' => 'All Depths',
+                'depth_range' => 'Midwater',
             ],
             [
                 'brand' => 'Panther Martin',
@@ -171,39 +202,19 @@ class LureSeeder extends Seeder
                 'color' => 'Gold Blade / Black Body',
                 'size' => '1/4 oz.',
                 'weight' => '1/4 oz.',
-                'depth_range' => 'Midwater',
+                'depth_range' => 'Stream / River',
             ],
             [
-                'brand' => 'Terminator',
-                'name' => 'T1 Titanium Spinnerbait',
-                'category' => 'Spinnerbait',
-                'color' => 'White / Chartreuse',
-                'size' => '1/2 oz.',
-                'weight' => '1/2 oz.',
-                'depth_range' => '2-8 ft',
+                'brand' => 'Yo-Zuri',
+                'name' => "Pin's Minnow",
+                'category' => 'Jerkbait',
+                'color' => 'Rainbow Trout',
+                'size' => '2.75"',
+                'weight' => '1/8 oz.',
+                'depth_range' => '1-3 ft',
             ],
 
-            // JIGS & TERMINAL TACKLE
-            [
-                'brand' => 'Round Ball Jig',
-                'name' => 'Finesse Jig Head',
-                'category' => 'Jig',
-                'color' => 'Chartreuse',
-                'size' => '1/4 oz.',
-                'weight' => '1/4 oz.',
-                'depth_range' => 'Bottom',
-            ],
-            [
-                'brand' => 'Dirty Jigs',
-                'name' => "Pitchin' Jig",
-                'category' => 'Jig',
-                'color' => 'Black & Blue',
-                'size' => '3/8 oz.',
-                'weight' => '3/8 oz.',
-                'depth_range' => 'Heavy Cover',
-            ],
-
-            // SPOONS & TOPWATER
+            // NORTHERN PIKE & MUSKY TACKLE
             [
                 'brand' => 'Eppinger',
                 'name' => 'Dardevle Classic Spoon',
@@ -214,22 +225,51 @@ class LureSeeder extends Seeder
                 'depth_range' => 'Variable',
             ],
             [
-                'brand' => 'Acme',
-                'name' => 'Little Cleo',
-                'category' => 'Spoon',
-                'color' => 'Nickel / Blue',
-                'size' => '1/3 oz.',
-                'weight' => '1/3 oz.',
-                'depth_range' => '3-10 ft',
+                'brand' => 'Mepps',
+                'name' => 'Musky Killer',
+                'category' => 'Inline Spinner',
+                'color' => 'Black Bucktail / Gold Blade',
+                'size' => '#5',
+                'weight' => '3/4 oz.',
+                'depth_range' => 'Shallow / Weed Edges',
             ],
             [
-                'brand' => 'Heddon',
-                'name' => 'Super Spook Jr.',
-                'category' => 'Topwater',
-                'color' => 'Bone',
-                'size' => '3.5"',
-                'weight' => '1/2 oz.',
-                'depth_range' => 'Topwater',
+                'brand' => 'Rapala',
+                'name' => 'Super Shad Rap',
+                'category' => 'Crankbait',
+                'color' => 'Perch',
+                'size' => '5.5"',
+                'weight' => '1.6 oz.',
+                'depth_range' => '5-9 ft',
+            ],
+
+            // BLUEGILL & PANFISH / PERCH TACKLE
+            [
+                'brand' => 'Mepps',
+                'name' => 'Aglia Ultra Lite',
+                'category' => 'Inline Spinner',
+                'color' => 'Gold',
+                'size' => '#0',
+                'weight' => '1/12 oz.',
+                'depth_range' => 'Shallow',
+            ],
+            [
+                'brand' => 'Round Ball Jig',
+                'name' => 'Micro Finesse Jig Head',
+                'category' => 'Jig',
+                'color' => 'Chartreuse',
+                'size' => '1/16 oz.',
+                'weight' => '1/16 oz.',
+                'depth_range' => 'Panfish Cover',
+            ],
+            [
+                'brand' => 'Leland Lures',
+                'name' => 'Trout Magnet',
+                'category' => 'Soft Plastic',
+                'color' => 'Bison / Black',
+                'size' => '1/64 oz.',
+                'weight' => '1/64 oz.',
+                'depth_range' => 'Finesse Float',
             ],
         ];
 
