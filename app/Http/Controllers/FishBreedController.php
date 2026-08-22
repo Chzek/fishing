@@ -48,13 +48,13 @@ class FishBreedController extends Controller
 
         if ($request->hasFile('avatar')) {
             $avatarName = 'fish_avatar_' . time() . '.' . $request->avatar->getClientOriginalExtension();
-            $request->avatar->storeAs('fish/avatars', $avatarName);
+            $this->optimizeAndSaveImage($request->avatar, 'fish/avatars/' . $avatarName, 600);
             $breed->avatar = $avatarName;
         }
 
         if ($request->hasFile('image')) {
             $imageName = 'fish_img_' . time() . '.' . $request->image->getClientOriginalExtension();
-            $request->image->storeAs('fish', $imageName);
+            $this->optimizeAndSaveImage($request->image, 'fish/' . $imageName, 1600);
             $breed->image = $imageName;
         }
 
@@ -103,13 +103,13 @@ class FishBreedController extends Controller
 
         if ($request->hasFile('avatar')) {
             $avatarName = 'fish_avatar_' . time() . '.' . $request->avatar->getClientOriginalExtension();
-            $request->avatar->storeAs('fish/avatars', $avatarName);
+            $this->optimizeAndSaveImage($request->avatar, 'fish/avatars/' . $avatarName, 600);
             $breed->avatar = $avatarName;
         }
 
         if ($request->hasFile('image')) {
             $imageName = 'fish_img_' . time() . '.' . $request->image->getClientOriginalExtension();
-            $request->image->storeAs('fish', $imageName);
+            $this->optimizeAndSaveImage($request->image, 'fish/' . $imageName, 1600);
             $breed->image = $imageName;
         }
 
@@ -117,6 +117,78 @@ class FishBreedController extends Controller
 
         return redirect('/fish/' . $breed->id);
     }
+
+    /**
+     * Compress and resize an uploaded image to a maximum dimension and quality.
+     */
+    private function optimizeAndSaveImage($file, string $relativeStoragePath, int $maxDimension = 1600): void
+    {
+        $extension = strtolower($file->getClientOriginalExtension());
+        $fullPath = storage_path('app/public/' . $relativeStoragePath);
+        
+        $dir = dirname($fullPath);
+        if (!file_exists($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+
+        if (in_array($extension, ['jpg', 'jpeg', 'png', 'webp']) && extension_loaded('gd')) {
+            $srcImage = match ($extension) {
+                'jpg', 'jpeg' => @imagecreatefromjpeg($file->getRealPath()),
+                'png' => @imagecreatefrompng($file->getRealPath()),
+                'webp' => @imagecreatefromwebp($file->getRealPath()),
+                default => null,
+            };
+
+            if ($srcImage) {
+                $origWidth = imagesx($srcImage);
+                $origHeight = imagesy($srcImage);
+
+                if ($origWidth > $maxDimension || $origHeight > $maxDimension) {
+                    if ($origWidth >= $origHeight) {
+                        $newWidth = $maxDimension;
+                        $newHeight = (int) round(($origHeight / $origWidth) * $maxDimension);
+                    } else {
+                        $newHeight = $maxDimension;
+                        $newWidth = (int) round(($origWidth / $origHeight) * $maxDimension);
+                    }
+                } else {
+                    $newWidth = $origWidth;
+                    $newHeight = $origHeight;
+                }
+
+                $dstImage = imagecreatetruecolor($newWidth, $newHeight);
+                
+                if (in_array($extension, ['png', 'webp'])) {
+                    imagealphablending($dstImage, false);
+                    imagesavealpha($dstImage, true);
+                }
+
+                imagecopyresampled($dstImage, $srcImage, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
+
+                match ($extension) {
+                    'jpg', 'jpeg' => imagejpeg($dstImage, $fullPath, 85),
+                    'png' => imagepng($dstImage, $fullPath, 8),
+                    'webp' => imagewebp($dstImage, $fullPath, 85),
+                };
+
+                imagedestroy($srcImage);
+                imagedestroy($dstImage);
+
+                // Copy to public directory for legacy asset paths
+                $publicPath = public_path('images/' . ltrim(str_replace('fish/', '', $relativeStoragePath), '/'));
+                $publicDir = dirname($publicPath);
+                if (!file_exists($publicDir)) {
+                    @mkdir($publicDir, 0755, true);
+                }
+                @copy($fullPath, $publicPath);
+                return;
+            }
+        }
+
+        // Fallback standard storage
+        $file->storeAs(dirname($relativeStoragePath), basename($relativeStoragePath), 'public');
+    }
+
 
 
     /**

@@ -24,9 +24,10 @@ class StoreFishBreedRequest extends FormRequest
         return [
             'fish_families_id' => 'required|exists:fish_families,id',
             'name' => 'required|unique:fish_breeds,name|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:30720',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:30720',
         ];
+
 
     }
 }
