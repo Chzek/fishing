@@ -90,6 +90,59 @@
             </div>
         </div>
 
+        <!-- In-App Notifications Feed (For All Anglers/Users) -->
+        @if(!empty($unreadNotifications) && $unreadNotifications->count() > 0)
+            <div id="notifications" class="bg-amber-50/80 rounded-2xl p-5 border border-amber-200/80 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 flex items-center justify-center shrink-0">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                                <span>Unread Notifications & Trophy Alerts</span>
+                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-200/70 text-amber-900 border border-amber-300 font-mono">{{ $unreadNotifications->count() }} New</span>
+                            </h2>
+                            <p class="text-xs text-slate-600 mt-0.5">Personal logbook alerts and milestone notifications.</p>
+                        </div>
+                    </div>
+                    <form action="{{ route('admin.notifications.mark_read') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="px-3.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200/80 shadow-sm transition-colors cursor-pointer">
+                            Dismiss All
+                        </button>
+                    </form>
+                </div>
+
+                <div class="divide-y divide-amber-200/60 border-t border-amber-200/60 pt-2 space-y-2">
+                    @foreach($unreadNotifications as $notification)
+                        <div class="flex items-center justify-between text-xs text-slate-700 pt-2 gap-3">
+                            <div class="flex items-center gap-2.5">
+                                <i data-lucide="trophy" class="w-4 h-4 text-amber-500 shrink-0"></i>
+                                <div>
+                                    <div class="font-bold text-slate-900">{{ $notification->data['title'] ?? ($notification->data['type'] ?? 'Notification') }}</div>
+                                    <div class="text-slate-600 mt-0.5">{{ $notification->data['message'] ?? 'You have a new update.' }}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                @if(!empty($notification->data['action_url']))
+                                    <a href="{{ $notification->data['action_url'] }}" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[11px] rounded-lg transition-colors">
+                                        View →
+                                    </a>
+                                @endif
+                                <form action="{{ route('admin.notifications.mark_single_read', $notification->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="text-[11px] text-slate-500 hover:text-slate-800 hover:underline font-medium">
+                                        Dismiss
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         <!-- Personal Best Trophies Cards Section -->
         <div class="space-y-4">
             <div class="flex items-center justify-between">
@@ -142,9 +195,9 @@
                         <div class="space-y-1 pt-1">
                             <div class="flex items-baseline gap-1.5">
                                 <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($personalBest['byWeight']->weight, 1) }}</span>
-                                <span class="text-xs font-bold text-slate-500">lbs.</span>
+                                <span class="text-xs font-bold text-slate-500">lbs</span>
                             </div>
-                            <div class="text-xs font-bold text-teal-700">{{ $personalBest['byWeight']->fishBreed->name ?? 'Fish' }}</div>
+                            <div class="text-xs font-bold text-sky-700">{{ $personalBest['byWeight']->fishBreed->name ?? 'Fish' }}</div>
                             <div class="pt-2 border-t border-sky-100/80 flex items-center justify-between text-xs text-slate-600">
                                 <span class="flex items-center gap-1 truncate">
                                     <i data-lucide="map-pin" class="w-3 h-3 text-slate-400 shrink-0"></i>
@@ -160,13 +213,13 @@
                     @endif
                 </div>
 
-                <!-- 🌊 Trophy Top Hotspot Lake -->
+                <!-- 🗺️ Lake Legend -->
                 <div class="bg-gradient-to-br from-teal-500/10 via-teal-500/5 to-transparent bg-white p-5 rounded-2xl border border-teal-200 shadow-sm space-y-2">
                     <div class="flex items-center justify-between">
                         <span class="text-[10px] font-bold uppercase tracking-wider text-teal-800 flex items-center gap-1">
-                            🔥 Top Hotspot
+                            🗺️ Home Lake Hotspot
                         </span>
-                        <span class="text-xs font-black text-teal-600 bg-teal-100 px-2.5 py-0.5 rounded-full">Water</span>
+                        <span class="text-xs font-black text-teal-600 bg-teal-100 px-2.5 py-0.5 rounded-full">Hotspot</span>
                     </div>
                     @if(isset($personalBest['lakeWithMostCatches']) && $personalBest['lakeWithMostCatches'])
                         <div class="space-y-1 pt-1">
@@ -185,6 +238,44 @@
                 </div>
             </div>
         </div>
+
+        <!-- Species Personal Best Trophy Board -->
+        @if(!empty($speciesPbs) && $speciesPbs->count() > 0)
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0 border border-amber-500/20">
+                            <i data-lucide="award" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900 tracking-tight">Species Personal Bests (PB)</h3>
+                            <p class="text-xs text-slate-500">Your longest recorded catches per species</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                        {{ $speciesPbs->count() }} Species PB(s)
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    @foreach($speciesPbs as $pb)
+                        <a href="{{ url('/record/' . $pb->id) }}" class="group bg-slate-50 hover:bg-teal-50/60 p-3.5 rounded-xl border border-slate-200/80 hover:border-teal-300 transition-all flex items-center gap-3">
+                            <x-fishAvatar :fish="$pb->fishBreed" size="md" />
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center justify-between gap-1">
+                                    <span class="text-xs font-bold text-slate-900 truncate group-hover:text-teal-700 transition-colors">{{ $pb->fishBreed->name ?? 'Fish' }}</span>
+                                    <span class="text-xs font-black text-slate-900 font-mono bg-white px-1.5 py-0.5 rounded border border-slate-200 shadow-2xs">{{ number_format($pb->length, 1) }}"</span>
+                                </div>
+                                <div class="text-[11px] text-slate-500 truncate mt-0.5 flex items-center gap-1">
+                                    <i data-lucide="map-pin" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                                    <span class="truncate">{{ $pb->lake->name ?? 'Waterbody' }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        @endif
 
         <!-- 🎣 ANGLER PRODUCTION & GEAR TELEMETRY GRID -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

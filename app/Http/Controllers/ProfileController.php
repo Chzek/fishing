@@ -91,6 +91,24 @@ class ProfileController extends Controller
                 ->orderBy('count', 'desc')
                 ->with('fishBreed')
                 ->get();
+
+            // Calculate species personal bests for trophy board
+            $speciesPbs = Record::where('anglers_id', $angler->id)
+                ->whereNotNull('length')
+                ->select('fish_breeds_id', DB::raw('MAX(length) as max_length'))
+                ->groupBy('fish_breeds_id')
+                ->get()
+                ->map(function ($item) use ($angler) {
+                    return Record::where('anglers_id', $angler->id)
+                        ->where('fish_breeds_id', $item->fish_breeds_id)
+                        ->where('length', $item->max_length)
+                        ->with(['lake', 'fishBreed'])
+                        ->latest('caught')
+                        ->first();
+                })
+                ->filter()
+                ->sortByDesc('length')
+                ->values();
         } else {
             $records = [];
             $crews = 0;
@@ -106,7 +124,10 @@ class ProfileController extends Controller
             $peakMonthName = null;
             $topWaters = collect();
             $speciesDistribution = collect();
+            $speciesPbs = collect();
         }
+
+        $unreadNotifications = Auth::user() ? Auth::user()->unreadNotifications : collect();
 
         return view('profile.show', [
             'angler' => $angler,
@@ -124,7 +145,10 @@ class ProfileController extends Controller
             'peakMonthName' => $peakMonthName,
             'topWaters' => $topWaters,
             'speciesDistribution' => $speciesDistribution,
+            'speciesPbs' => $speciesPbs,
+            'unreadNotifications' => $unreadNotifications,
         ]);
+
     }
 
     /**
