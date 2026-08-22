@@ -51,8 +51,10 @@ class RecordController extends Controller
                 FilterBySearch::class,
                 FilterByLength::class,
                 FilterByAngler::class,
+                \Fishinglog\Pipes\Filters\FilterByLure::class,
             ])
             ->thenReturn();
+
 
         $records = (clone $filteredRecords)->paginate(10)->withQueryString();
 
