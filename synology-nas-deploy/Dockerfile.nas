@@ -11,7 +11,10 @@ RUN apk add --no-cache \
     libzip-dev \
     oniguruma-dev \
     git \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql bcmath gd zip opcache
+    && docker-php-ext-install pdo pdo_mysql bcmath gd zip opcache \
+    && echo "upload_max_filesize = 64M" > /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "post_max_size = 64M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/uploads.ini
 
 WORKDIR /var/www/html
+
