@@ -370,15 +370,6 @@ class RecordController extends Controller
 
         $record->save();
 
-        // Dispatch catch notification to users
-        try {
-            $usersToNotify = \Fishinglog\Models\User::get();
-            if ($usersToNotify->isNotEmpty()) {
-                Notification::send($usersToNotify, new RecordCreated($record->fresh(['fishBreed', 'lake'])));
-            }
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('Failed to dispatch RecordCreated notification: ' . $e->getMessage());
-        }
 
 
         // Handle optional uploaded photos
