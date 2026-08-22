@@ -2,7 +2,6 @@
 
 namespace Fishinglog\Http\View\Composers;
 
-use Fishinglog\Models\Angler;
 use Fishinglog\Models\User;
 use Illuminate\View\View;
 
@@ -16,11 +15,11 @@ class AnglerFormComposer
      */
     public function compose(View $view)
     {
-        $unassigned = Angler::select('id')->get();
-        $users = User::whereIn('id', $unassigned->toArray())->pluck('name', 'id');
+        $users = User::select('id', 'name', 'email')->orderBy('name')->get();
 
         $view->with([
             'users' => $users,
         ]);
     }
 }
+
