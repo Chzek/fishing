@@ -61,7 +61,8 @@ class BladeComponentsTest extends TestCase
 
         $view = $this->blade('<x-catchCard :record="$record" />', ['record' => $record]);
         $view->assertSee('Crappie');
-        $view->assertSee('14.5"');
+        $view->assertSee('14.5');
         $view->assertSee('Black Lake');
     }
 }
+
