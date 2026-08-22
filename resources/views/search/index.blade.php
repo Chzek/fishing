@@ -122,13 +122,14 @@
             </div>
         @endif
 
-        <!-- 🎣 5. Lures & Gear -->
+        <!-- 🎣 5. Tacklebox -->
         @if($lures->count() > 0)
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
                 <h2 class="font-bold text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <i data-lucide="fishing-hook" class="w-4 h-4 text-teal-600"></i>
-                    <span>Lures & Gear ({{ $lures->count() }})</span>
+                    <i data-lucide="box" class="w-4 h-4 text-teal-600"></i>
+                    <span>Tacklebox ({{ $lures->count() }})</span>
                 </h2>
+
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     @foreach($lures as $lure)

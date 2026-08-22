@@ -108,9 +108,10 @@
                         <span>License Zones (FMZs)</span>
                     </a>
                     <a href="{{ url('/lure') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('lure*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="fishing-hook" class="w-4 h-4"></i>
-                        <span>Lures & Gear</span>
+                        <i data-lucide="box" class="w-4 h-4 text-teal-400"></i>
+                        <span>Tacklebox</span>
                     </a>
+
                     <a href="{{ url('/angler') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('angler*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
                         <i data-lucide="users" class="w-4 h-4"></i>
                         <span>Anglers</span>
