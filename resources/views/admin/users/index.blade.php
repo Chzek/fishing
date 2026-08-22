@@ -94,24 +94,29 @@
 
     <!-- Unlinked Accounts / Notifications Alert Banner -->
     @if(!empty($unreadNotifications) && $unreadNotifications->count() > 0)
-        <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                    <i data-lucide="bell" class="w-4 h-4"></i>
+        <div class="bg-slate-900 border border-amber-500/40 rounded-2xl p-4 sm:p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
+            <div class="flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center shrink-0">
+                    <i data-lucide="bell" class="w-5 h-5 animate-pulse"></i>
                 </div>
                 <div>
-                    <h3 class="text-xs font-bold text-white">{{ $unreadNotifications->count() }} New User Registration Notification(s)</h3>
-                    <p class="text-[11px] text-amber-300/80">Pair newly registered accounts with their corresponding Angler profile in the table below.</p>
+                    <h3 class="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                        <span>{{ $unreadNotifications->count() }} New User Registration Notification(s)</span>
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">New</span>
+                    </h3>
+                    <p class="text-xs text-slate-300 mt-0.5">Pair newly registered accounts with their corresponding Angler profile in the table below.</p>
                 </div>
             </div>
-            <form action="{{ route('admin.notifications.mark_read') }}" method="POST">
+            <form action="{{ route('admin.notifications.mark_read') }}" method="POST" class="shrink-0">
                 @csrf
-                <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold text-xs rounded-xl border border-slate-700 transition-colors">
-                    Dismiss Notifications
+                <button type="submit" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold text-xs rounded-xl border border-slate-700 shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="check" class="w-3.5 h-3.5 text-teal-400"></i>
+                    <span>Dismiss Notifications</span>
                 </button>
             </form>
         </div>
     @endif
+
 
     <!-- Invitation & Offline Quick-Add Action Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
