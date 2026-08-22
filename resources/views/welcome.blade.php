@@ -49,21 +49,8 @@
             <p class="text-sm sm:text-base text-slate-400 max-w-lg mx-auto leading-relaxed">
                 Precision telemetry & catch logging for boat and shore field use.
             </p>
-
-            <div class="pt-3">
-                @auth
-                    <a href="{{ url('/profile') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-xs py-3 px-6 rounded-xl shadow-lg shadow-teal-950/50 transition-all transform active:scale-95">
-                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                        <span>Go to Angler Dashboard</span>
-                    </a>
-                @else
-                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-xs py-3 px-6 rounded-xl shadow-lg shadow-teal-950/50 transition-all transform active:scale-95">
-                        <i data-lucide="log-in" class="w-4 h-4"></i>
-                        <span>Sign In to Field Logger</span>
-                    </a>
-                @endauth
-            </div>
         </div>
+
 
         <!-- Featured Lake Image Card -->
         <div class="w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl border border-slate-800 relative bg-slate-900">
