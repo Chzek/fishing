@@ -14,7 +14,13 @@
     ][$size] ?? 'w-10 h-10 text-xs';
 
     $user = $angler->user ?? null;
-    $hasPhoto = $user && $user->avatar && file_exists(public_path('storage/avatars/' . $user->avatar));
+    
+    $avatarFile = null;
+    if ($angler && $angler->avatar && (file_exists(public_path('storage/avatars/' . $angler->avatar)) || \Illuminate\Support\Facades\Storage::disk('public')->exists('avatars/' . $angler->avatar))) {
+        $avatarFile = $angler->avatar;
+    } elseif ($user && $user->avatar && (file_exists(public_path('storage/avatars/' . $user->avatar)) || \Illuminate\Support\Facades\Storage::disk('public')->exists('avatars/' . $user->avatar))) {
+        $avatarFile = $user->avatar;
+    }
 
     $initials = '';
     if ($angler) {
@@ -44,10 +50,11 @@
     $color = $palettes[$hash % count($palettes)];
 @endphp
 
-@if($hasPhoto)
-    <img src="/storage/avatars/{{ $user->avatar }}" 
+@if($avatarFile)
+    <img src="/storage/avatars/{{ $avatarFile }}" 
          alt="{{ $angler->firstName ?? '' }} {{ $angler->lastName ?? '' }}" 
          class="{{ $sizeClasses }} rounded-full object-cover border border-slate-200/80 shrink-0 shadow-sm {{ $class }}">
+
 @else
     <div class="{{ $sizeClasses }} rounded-full {{ $color['bg'] }} border {{ $color['border'] }} {{ $color['text'] }} font-bold flex items-center justify-center tracking-wider uppercase shrink-0 shadow-sm {{ $class }}"
          title="{{ $angler->firstName ?? '' }} {{ $angler->lastName ?? '' }}">
