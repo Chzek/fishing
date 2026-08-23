@@ -49,6 +49,6 @@ class GlobalSearchTest extends TestCase
 
         $response = $this->actingAs($user)->get('/search?q=Geren');
         $response->assertStatus(200);
-        $response->assertSee('Mroczek, Geren');
+        $response->assertSee($angler->fullName);
     }
 }
