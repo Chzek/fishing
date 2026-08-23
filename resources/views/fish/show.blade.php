@@ -248,6 +248,38 @@
                     </div>
                 @endforeach
             </div>
+
+            <!-- Atmospheric Weather Conditions Bar Chart (9 Conditions) -->
+            @if(isset($weatherStats) && count($weatherStats) > 0)
+                <div class="pt-3 border-t border-slate-100 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="cloud-lightning" class="w-3.5 h-3.5 text-indigo-500"></i>
+                            <span>Weather Condition Triggers (9 Factors)</span>
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-mono font-semibold">Conditions</span>
+                    </div>
+
+                    <div class="grid grid-cols-9 gap-1 items-end h-24 pt-1">
+                        @foreach($weatherStats as $ws)
+                            <div class="flex flex-col items-center gap-1 h-full justify-end group relative" title="{{ $ws['key'] }}: {{ $ws['count'] }} catches">
+                                <span class="text-[10px] font-bold text-slate-600 font-mono {{ $ws['count'] > 0 ? 'text-indigo-600' : 'text-slate-300' }}">
+                                    {{ $ws['count'] }}
+                                </span>
+                                <div class="w-full bg-slate-100 rounded-t-md flex items-end h-14">
+                                    <div 
+                                        class="w-full rounded-t-md transition-all {{ $ws['count'] > 0 ? 'bg-indigo-500 group-hover:bg-indigo-400' : 'bg-slate-200' }}" 
+                                        style="height: {{ max($ws['percentage'], 6) }}%"
+                                    ></div>
+                                </div>
+                                <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter truncate w-full text-center">
+                                    {{ $ws['label'] }}
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 

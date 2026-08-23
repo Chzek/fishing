@@ -177,6 +177,50 @@ class FishController extends Controller
             )
             ->first();
 
+        // 9 Weather Condition Categories Telemetry
+        $weatherConditionCounts = DB::table('records')
+            ->join('lake_daily_weather', function ($join) {
+                $join->on('records.lakes_id', '=', 'lake_daily_weather.lakes_id')
+                     ->on(DB::raw('DATE(records.caught)'), '=', 'lake_daily_weather.date');
+            })
+            ->where('records.fish_breeds_id', $fish->id)
+            ->whereNull('records.deleted_at')
+            ->select('lake_daily_weather.weather_condition', DB::raw('count(*) as count'))
+            ->groupBy('lake_daily_weather.weather_condition')
+            ->pluck('count', 'weather_condition');
+
+        $weatherCategories = [
+            ['key' => 'Clear', 'label' => 'CLEAR', 'icon' => 'sun', 'pattern' => 'Clear sky'],
+            ['key' => 'Mainly Clear', 'label' => 'MAINLY', 'icon' => 'sun-medium', 'pattern' => 'Mainly clear'],
+            ['key' => 'Partly Cloudy', 'label' => 'PARTLY', 'icon' => 'cloud-sun', 'pattern' => 'Partly cloudy'],
+            ['key' => 'Overcast', 'label' => 'OVERCAST', 'icon' => 'cloud', 'pattern' => 'Overcast'],
+            ['key' => 'Fog', 'label' => 'FOG', 'icon' => 'cloud-fog', 'pattern' => 'Fog'],
+            ['key' => 'Drizzle', 'label' => 'DRIZZLE', 'icon' => 'cloud-drizzle', 'pattern' => 'drizzle'],
+            ['key' => 'Rain', 'label' => 'RAIN', 'icon' => 'cloud-rain', 'pattern' => 'rain'],
+            ['key' => 'Showers', 'label' => 'SHOWERS', 'icon' => 'cloud-rain-wind', 'pattern' => 'showers'],
+            ['key' => 'Storm', 'label' => 'STORM', 'icon' => 'cloud-lightning', 'pattern' => 'Thunderstorm'],
+        ];
+
+        $maxWeatherCatches = 1;
+        $weatherStats = [];
+
+        foreach ($weatherCategories as $cat) {
+            $c = 0;
+            foreach ($weatherConditionCounts as $condName => $cnt) {
+                if (stripos($condName, $cat['pattern']) !== false) {
+                    $c += (int) $cnt;
+                }
+            }
+            if ($c > $maxWeatherCatches) {
+                $maxWeatherCatches = $c;
+            }
+            $weatherStats[] = array_merge($cat, ['count' => $c]);
+        }
+
+        foreach ($weatherStats as &$ws) {
+            $ws['percentage'] = $maxWeatherCatches > 0 ? round(($ws['count'] / $maxWeatherCatches) * 100) : 0;
+        }
+
         return view('fish.show', [
             'fish' => $fish,
             'longest' => $longest,
@@ -190,6 +234,7 @@ class FishController extends Controller
             'lakes' => $lakes,
             'recentCatches' => $recentCatches,
             'weatherTelemetry' => $weatherTelemetry,
+            'weatherStats' => $weatherStats,
         ]);
 
     }
