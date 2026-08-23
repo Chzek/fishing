@@ -261,12 +261,9 @@
                                             <a href="{{ url('/angler/' . $ang->id . '/profile') }}" class="shrink-0">
                                                 <x-anglerAvatar :angler="$ang" size="sm" />
                                             </a>
-                                            <div>
                                                 <a href="{{ url('/angler/' . $ang->id . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline block text-xs leading-tight">
-                                                    {{ $ang->firstName }} {{ $ang->lastName }}
+                                                    {{ $ang->fullName }}
                                                 </a>
-                                                <span class="text-[10px] text-slate-400 block font-mono">Angler #{{ $ang->id }}</span>
-                                            </div>
                                         </div>
                                     </td>
                                     <td data-col="catches" data-sort-val="{{ $ang->records_count }}" x-show="isColumnVisible('catches')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700 text-xs">{{ number_format($ang->records_count) }}</td>
