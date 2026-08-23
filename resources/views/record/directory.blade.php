@@ -143,23 +143,6 @@
                         @endforelse
 
                     </tbody>
-                    <!-- Dynamic Summary Footer for Visible Filtered Rows -->
-                    @if($records->isNotEmpty())
-                        <tfoot class="bg-slate-50 text-xs font-semibold text-slate-600 border-t border-slate-200">
-                            <tr>
-                                <td colspan="5" class="py-2.5 px-4 font-bold text-slate-500 uppercase tracking-wider text-[11px]">
-                                    Live Visible Summary
-                                </td>
-                                <td data-col="weight" class="py-2.5 px-4 text-center font-mono font-bold text-slate-800">
-                                    Avg: <span data-aggregate-for="weight" data-aggregate-type="avg">—</span> lbs
-                                </td>
-                                <td data-col="length" class="py-2.5 px-4 text-center font-mono font-bold text-teal-700">
-                                    Avg: <span data-aggregate-for="length" data-aggregate-type="avg">—</span>″
-                                </td>
-                                <td colspan="2" class="py-2.5 px-4"></td>
-                            </tr>
-                        </tfoot>
-                    @endif
                 </table>
             </x-table.wrapper>
         </div>
