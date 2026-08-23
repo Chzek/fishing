@@ -148,7 +148,7 @@ class AnglerStatsController extends Controller
                 'monthlyDistribution' => $monthlyDistribution,
                 'maxMonthlyCount' => $maxMonthlyCount,
                 'activityTiers' => $activityTiers,
-                'anglersList' => $anglersListCollection,
+                'anglersList' => $anglersList,
             ];
         });
 
