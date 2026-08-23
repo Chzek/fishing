@@ -227,15 +227,16 @@
             </div>
 
             <span class="bg-teal-50 text-teal-700 border border-teal-200 text-xs font-semibold px-3 py-1 rounded-full font-mono">
-                {{ count($anglersList) }} Active Anglers
+                {{ $anglersList->total() }} Active Anglers
             </span>
         </div>
 
-        @if(count($anglersList) > 0)
+        @if($anglersList->total() > 0)
             <div x-data="dataTable({ defaultDensity: 'normal' })">
                 <x-table.wrapper 
                     searchPlaceholder="Filter angler telemetry..." 
                     itemName="anglers"
+                    :totalCount="$anglersList->total()"
                     :showColumnPicker="true"
                     :showDensity="true"
                 >
@@ -250,7 +251,6 @@
                                 <x-table.th col="avg_weight" type="number" align="center" label="Avg Weight">Avg. Weight</x-table.th>
                                 <x-table.th col="release_rate" type="number" align="center" label="C&R Rate">C&R Release %</x-table.th>
                                 <x-table.th col="target_species" type="text" label="Target Species">Target Species</x-table.th>
-                                <th scope="col" class="py-3 px-4 text-right text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
@@ -261,9 +261,9 @@
                                             <a href="{{ url('/angler/' . $ang->id . '/profile') }}" class="shrink-0">
                                                 <x-anglerAvatar :angler="$ang" size="sm" />
                                             </a>
-                                                <a href="{{ url('/angler/' . $ang->id . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline block text-xs leading-tight">
-                                                    {{ $ang->fullName }}
-                                                </a>
+                                            <a href="{{ url('/angler/' . $ang->id . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline block text-xs leading-tight">
+                                                {{ $ang->fullName }}
+                                            </a>
                                         </div>
                                     </td>
                                     <td data-col="catches" data-sort-val="{{ $ang->records_count }}" x-show="isColumnVisible('catches')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700 text-xs">{{ number_format($ang->records_count) }}</td>
@@ -275,35 +275,16 @@
                                     <td data-col="target_species" data-sort-val="{{ $ang->top_species_name }}" x-show="isColumnVisible('target_species')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-semibold text-slate-800 text-xs">
                                         <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded-md border border-slate-200">{{ $ang->top_species_name }}</span>
                                     </td>
-                                    <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
-                                        <a href="{{ url('/angler/' . $ang->id . '/profile') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-700 font-semibold text-xs rounded-xl border border-slate-200 hover:border-teal-200 transition-colors">
-                                            <i data-lucide="user" class="w-3.5 h-3.5 text-teal-600"></i>
-                                            <span>Profile</span>
-                                        </a>
-                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
-                        <tfoot class="bg-slate-50 text-xs font-semibold text-slate-600 border-t border-slate-200">
-                            <tr>
-                                <td class="py-2.5 px-4 font-bold text-slate-500 uppercase tracking-wider text-[11px]">
-                                    Live Summary
-                                </td>
-                                <td data-col="catches" class="py-2.5 px-4 text-center font-mono font-bold text-teal-700">
-                                    Total: <span data-aggregate-for="catches" data-aggregate-type="sum">—</span>
-                                </td>
-                                <td colspan="2"></td>
-                                <td data-col="avg_length" class="py-2.5 px-4 text-center font-mono font-bold text-slate-800">
-                                    Avg: <span data-aggregate-for="avg_length" data-aggregate-type="avg">—</span>″
-                                </td>
-                                <td data-col="avg_weight" class="py-2.5 px-4 text-center font-mono font-bold text-slate-800">
-                                    Avg: <span data-aggregate-for="avg_weight" data-aggregate-type="avg">—</span> lbs
-                                </td>
-                                <td colspan="3"></td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </x-table.wrapper>
+
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-4 border-t border-slate-100 mt-4">
+                    <span>Showing {{ $anglersList->firstItem() }} to {{ $anglersList->lastItem() }} of {{ $anglersList->total() }} Anglers</span>
+                    <div>{{ $anglersList->links() }}</div>
+                </div>
             </div>
         @else
             <div class="text-center py-12 px-4 space-y-3">

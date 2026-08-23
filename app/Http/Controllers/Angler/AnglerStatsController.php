@@ -133,7 +133,7 @@ class AnglerStatsController extends Controller
                 $angler->top_species_name = $topSpeciesPerAngler->get($angler->id, 'N/A');
 
                 return $angler;
-            })->sortByDesc('records_count');
+            })->sortByDesc('records_count')->values();
 
             return [
                 'totalAnglers' => $totalAnglers,
@@ -148,9 +148,23 @@ class AnglerStatsController extends Controller
                 'monthlyDistribution' => $monthlyDistribution,
                 'maxMonthlyCount' => $maxMonthlyCount,
                 'activityTiers' => $activityTiers,
-                'anglersList' => $anglersList,
+                'anglersList' => $anglersListCollection,
             ];
         });
+
+        $anglersCollection = $stats['anglersList'];
+        $page = (int) request()->get('page', 1);
+        $perPage = 15;
+        $total = $anglersCollection->count();
+        $sliced = $anglersCollection->slice(($page - 1) * $perPage, $perPage)->values();
+
+        $stats['anglersList'] = new \Illuminate\Pagination\LengthAwarePaginator(
+            $sliced,
+            $total,
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         return view('angler.stats', $stats);
     }
