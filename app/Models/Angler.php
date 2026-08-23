@@ -50,18 +50,20 @@ class Angler extends Model
 
     public function getFullNameAttribute()
     {
-        $middle = ($this->middleName && !in_array(trim($this->middleName), ['?', 'N/A', ''])) 
-            ? " {$this->middleName}" 
+        $trimmedMiddle = trim($this->middleName ?? '');
+        $middleInitial = ($trimmedMiddle !== '' && !in_array($trimmedMiddle, ['?', 'N/A'])) 
+            ? ' ' . strtoupper(mb_substr($trimmedMiddle, 0, 1)) . '.'
             : '';
-        return trim("{$this->firstName}{$middle} {$this->lastName}");
+        return trim("{$this->firstName}{$middleInitial} {$this->lastName}");
     }
 
     public function getFormalNameAttribute()
     {
-        $middle = ($this->middleName && !in_array(trim($this->middleName), ['?', 'N/A', ''])) 
-            ? " {$this->middleName}" 
+        $trimmedMiddle = trim($this->middleName ?? '');
+        $middleInitial = ($trimmedMiddle !== '' && !in_array($trimmedMiddle, ['?', 'N/A'])) 
+            ? ' ' . strtoupper(mb_substr($trimmedMiddle, 0, 1)) . '.'
             : '';
-        return trim("{$this->lastName}, {$this->firstName}{$middle}");
+        return trim("{$this->lastName}, {$this->firstName}{$middleInitial}");
     }
 
 

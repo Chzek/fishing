@@ -106,5 +106,17 @@ class AnglerControllerTest extends TestCase
         $angler = Angler::where('firstName', 'Sammy')->first();
         $this->assertEquals('Sammy Smith', $angler->fullName);
     }
+
+    public function test_full_name_renders_middle_initial()
+    {
+        $angler = Angler::factory()->create([
+            'firstName' => 'Geren',
+            'middleName' => 'Perry',
+            'lastName' => 'Mroczek',
+        ]);
+
+        $this->assertEquals('Geren P. Mroczek', $angler->fullName);
+        $this->assertEquals('Mroczek, Geren P.', $angler->formalName);
+    }
 }
 
