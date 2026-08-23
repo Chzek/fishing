@@ -136,13 +136,56 @@ class ExpeditionController extends Controller
             ->with('fishBreed')
             ->get();
 
-        $crewLeaderboard = Record::select('anglers_id', DB::raw('count(*) as total_catches'), DB::raw('round(sum(length), 2) as total_length'), DB::raw('max(length) as longest_fish'))
+        $registeredCrewAnglerIds = $expedition->crews()->pluck('anglers_id')->filter()->unique();
+
+        $catchingAnglerIds = Record::where('caught', '>=', $expedition->start)
+            ->where('caught', '<=', $expedition->finish)
+            ->whereNotNull('anglers_id')
+            ->pluck('anglers_id')
+            ->unique();
+
+        $allLeaderboardAnglerIds = $registeredCrewAnglerIds->concat($catchingAnglerIds)->unique();
+
+        $tripRecordMetrics = Record::select(
+                'anglers_id',
+                DB::raw('count(*) as total_catches'),
+                DB::raw('round(sum(length), 2) as total_length'),
+                DB::raw('max(length) as longest_fish')
+            )
             ->where('caught', '>=', $expedition->start)
-            ->where('caught', '<=',  $expedition->finish)
+            ->where('caught', '<=', $expedition->finish)
+            ->whereIn('anglers_id', $allLeaderboardAnglerIds)
             ->groupBy('anglers_id')
-            ->orderBy('total_catches', 'desc')
-            ->with('angler')
-            ->get();
+            ->get()
+            ->keyBy('anglers_id');
+
+        $anglers = \Fishinglog\Models\Angler::whereIn('id', $allLeaderboardAnglerIds)->get()->keyBy('id');
+
+        $crewLeaderboard = $allLeaderboardAnglerIds->map(function ($anglerId) use ($anglers, $tripRecordMetrics) {
+            $angler = $anglers->get($anglerId);
+            if (!$angler) {
+                return null;
+            }
+
+            $metrics = $tripRecordMetrics->get($anglerId);
+
+            $obj = new \stdClass();
+            $obj->anglers_id = $anglerId;
+            $obj->angler = $angler;
+            $obj->total_catches = $metrics ? (int) $metrics->total_catches : 0;
+            $obj->total_length = $metrics ? (float) $metrics->total_length : 0.0;
+            $obj->longest_fish = $metrics ? (float) $metrics->longest_fish : 0.0;
+
+            return $obj;
+        })->filter()->sort(function ($a, $b) {
+            if ($a->total_catches !== $b->total_catches) {
+                return $b->total_catches <=> $a->total_catches;
+            }
+            if ($a->total_length !== $b->total_length) {
+                return $b->total_length <=> $a->total_length;
+            }
+            return strcmp($a->angler->fullName, $b->angler->fullName);
+        })->values();
 
         $recordsWithGps = Record::with(['angler', 'fishBreed'])
             ->where('caught', '>=', $expedition->start)

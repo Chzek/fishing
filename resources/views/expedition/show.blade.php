@@ -329,13 +329,13 @@
                                     <x-anglerAvatar :angler="$cl->angler" size="xs" />
                                     <div class="min-w-0">
                                         <strong class="font-bold text-slate-900 block truncate leading-tight">{{ $cl->angler->fullName }}</strong>
-                                        <span class="text-[10px] text-slate-400 font-mono">PB: {{ $cl->longest_fish }} in.</span>
+                                        <span class="text-[10px] text-slate-400 font-mono">{{ $cl->longest_fish > 0 ? 'PB: ' . number_format($cl->longest_fish, 1) . ' in.' : 'No catches' }}</span>
                                     </div>
                                 @endif
                             </div>
                             <div class="text-right font-mono shrink-0 pl-1">
                                 <strong class="text-sm font-black text-slate-900 block">{{ $cl->total_catches }}</strong>
-                                <span class="text-[10px] text-slate-400 block">{{ $cl->total_length }} in.</span>
+                                <span class="text-[10px] text-slate-400 block">{{ $cl->total_length > 0 ? number_format($cl->total_length, 1) . ' in.' : '—' }}</span>
                             </div>
                         </div>
                     @empty
