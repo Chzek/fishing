@@ -206,80 +206,98 @@
             @endif
         </div>
 
-        <!-- Module 3: Seasonal & Thermal Triggers -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
+        <!-- Module 3: Seasonal & Weather Triggers -->
+        <div x-data="{ triggerTab: 'seasonal' }" class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
                     <i data-lucide="thermometer-sun" class="w-4 h-4 text-sky-600"></i>
-                    <span>Seasonal & Thermal Triggers</span>
+                    <span>Triggers & Conditions</span>
                 </h3>
-                <span class="text-[10px] font-semibold text-slate-400 font-mono">Telemetry</span>
-            </div>
-
-            <!-- Thermal Water Temp Telemetry Badge -->
-            @if(isset($weatherTelemetry) && $weatherTelemetry->avg_temp)
-                <div class="bg-sky-50 border border-sky-100 rounded-xl p-2.5 text-xs flex items-center justify-between">
-                    <span class="text-[11px] font-bold text-sky-900 flex items-center gap-1.5">
-                        <i data-lucide="thermometer" class="w-3.5 h-3.5 text-sky-600"></i>
-                        <span>Productive Water Temp Range</span>
-                    </span>
-                    <span class="font-mono font-bold text-sky-900">
-                        {{ round($weatherTelemetry->min_temp) }}° &mdash; {{ round($weatherTelemetry->max_temp) }}°F
-                    </span>
+                <div class="inline-flex rounded-lg border border-slate-200/80 bg-slate-100 p-0.5 text-[10px] font-bold">
+                    <button 
+                        type="button" 
+                        @click="triggerTab = 'seasonal'" 
+                        :class="triggerTab === 'seasonal' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'"
+                        class="px-2 py-0.5 rounded-md transition-all cursor-pointer"
+                    >
+                        Seasonal
+                    </button>
+                    <button 
+                        type="button" 
+                        @click="triggerTab = 'weather'" 
+                        :class="triggerTab === 'weather' ? 'bg-white text-indigo-700 shadow-2xs' : 'text-slate-500 hover:text-slate-800'"
+                        class="px-2 py-0.5 rounded-md transition-all cursor-pointer"
+                    >
+                        Weather (9)
+                    </button>
                 </div>
-            @endif
-
-            <!-- Monthly Activity Bar Chart -->
-            <div class="grid grid-cols-8 gap-1.5 items-end h-24 pt-2">
-                @foreach($monthlyStats as $ms)
-                    <div class="flex flex-col items-center gap-1.5 h-full justify-end">
-                        <span class="text-[10px] font-bold text-slate-600 font-mono {{ $ms['count'] > 0 ? 'text-teal-700' : 'text-slate-300' }}">
-                            {{ $ms['count'] }}
-                        </span>
-                        <div class="w-full bg-slate-100 rounded-t-md flex items-end h-14">
-                            <div 
-                                class="w-full rounded-t-md transition-all {{ $ms['count'] > 0 ? 'bg-teal-500' : 'bg-slate-200' }}" 
-                                style="height: {{ max($ms['percentage'], 6) }}%"
-                            ></div>
-                        </div>
-                        <span class="text-[9px] font-semibold text-slate-400 uppercase tracking-tighter">
-                            {{ $ms['month'] }}
-                        </span>
-                    </div>
-                @endforeach
             </div>
 
-            <!-- Atmospheric Weather Conditions Bar Chart (9 Conditions) -->
-            @if(isset($weatherStats) && count($weatherStats) > 0)
-                <div class="pt-3 border-t border-slate-100 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                            <i data-lucide="cloud-lightning" class="w-3.5 h-3.5 text-indigo-500"></i>
-                            <span>Weather Condition Triggers (9 Factors)</span>
+            <!-- Tab 1: Seasonal & Thermal Water Temp -->
+            <div x-show="triggerTab === 'seasonal'" class="space-y-3">
+                @if(isset($weatherTelemetry) && $weatherTelemetry->avg_temp)
+                    <div class="bg-sky-50 border border-sky-100 rounded-xl p-2 text-xs flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-sky-900 flex items-center gap-1.5">
+                            <i data-lucide="thermometer" class="w-3.5 h-3.5 text-sky-600"></i>
+                            <span>Water Temp Range</span>
                         </span>
-                        <span class="text-[10px] text-slate-400 font-mono font-semibold">Conditions</span>
+                        <span class="font-mono font-bold text-sky-900 text-xs">
+                            {{ round($weatherTelemetry->min_temp) }}° &mdash; {{ round($weatherTelemetry->max_temp) }}°F
+                        </span>
                     </div>
+                @endif
 
-                    <div class="grid grid-cols-9 gap-1 items-end h-24 pt-1">
-                        @foreach($weatherStats as $ws)
-                            <div class="flex flex-col items-center gap-1 h-full justify-end group relative" title="{{ $ws['key'] }}: {{ $ws['count'] }} catches">
-                                <span class="text-[10px] font-bold text-slate-600 font-mono {{ $ws['count'] > 0 ? 'text-indigo-600' : 'text-slate-300' }}">
-                                    {{ $ws['count'] }}
-                                </span>
-                                <div class="w-full bg-slate-100 rounded-t-md flex items-end h-14">
-                                    <div 
-                                        class="w-full rounded-t-md transition-all {{ $ws['count'] > 0 ? 'bg-indigo-500 group-hover:bg-indigo-400' : 'bg-slate-200' }}" 
-                                        style="height: {{ max($ws['percentage'], 6) }}%"
-                                    ></div>
-                                </div>
-                                <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter truncate w-full text-center">
-                                    {{ $ws['label'] }}
-                                </span>
+                <div class="grid grid-cols-8 gap-1.5 items-end h-28 pt-1">
+                    @foreach($monthlyStats as $ms)
+                        <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                            <span class="text-[10px] font-bold font-mono {{ $ms['count'] > 0 ? 'text-teal-700' : 'text-slate-300' }}">
+                                {{ $ms['count'] }}
+                            </span>
+                            <div class="w-full bg-slate-100 rounded-t-md flex items-end h-16">
+                                <div 
+                                    class="w-full rounded-t-md transition-all {{ $ms['count'] > 0 ? 'bg-teal-500' : 'bg-slate-200' }}" 
+                                    style="height: {{ max($ms['percentage'], 6) }}%"
+                                ></div>
                             </div>
-                        @endforeach
-                    </div>
+                            <span class="text-[9px] font-semibold text-slate-400 uppercase tracking-tighter">
+                                {{ $ms['month'] }}
+                            </span>
+                        </div>
+                    @endforeach
                 </div>
-            @endif
+            </div>
+
+            <!-- Tab 2: Atmospheric Weather Conditions (9 Factors) -->
+            <div x-show="triggerTab === 'weather'" class="space-y-3" style="display: none;">
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-2 text-xs flex items-center justify-between">
+                    <span class="text-[11px] font-bold text-indigo-900 flex items-center gap-1.5">
+                        <i data-lucide="cloud-lightning" class="w-3.5 h-3.5 text-indigo-600"></i>
+                        <span>Weather Triggers</span>
+                    </span>
+                    <span class="font-mono font-semibold text-indigo-700 text-[10px]">
+                        9 Conditions
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-9 gap-1 items-end h-28 pt-1">
+                    @foreach($weatherStats as $ws)
+                        <div class="flex flex-col items-center gap-1 h-full justify-end group relative" title="{{ $ws['key'] }}: {{ $ws['count'] }} catches">
+                            <span class="text-[10px] font-bold font-mono {{ $ws['count'] > 0 ? 'text-indigo-600' : 'text-slate-300' }}">
+                                {{ $ws['count'] }}
+                            </span>
+                            <div class="w-full bg-slate-100 rounded-t-md flex items-end h-16">
+                                <div 
+                                    class="w-full rounded-t-md transition-all {{ $ws['count'] > 0 ? 'bg-indigo-500 group-hover:bg-indigo-400' : 'bg-slate-200' }}" 
+                                    style="height: {{ max($ws['percentage'], 6) }}%"
+                                ></div>
+                            </div>
+                            <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter truncate w-full text-center">
+                                {{ $ws['label'] }}
+                            </span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
         </div>
     </div>
 
