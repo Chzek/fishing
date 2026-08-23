@@ -24,7 +24,7 @@
                 @endif
 
                 <!-- Combined Search Input + Right-End Search Submit Button -->
-                <div class="inline-flex items-center flex-1 min-w-[200px] max-w-md shadow-2xs rounded-lg">
+                <div class="inline-flex items-center flex-1 min-w-[200px] shadow-2xs rounded-lg">
                     <div class="relative flex-1">
                         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                         <input 
