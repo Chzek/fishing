@@ -32,8 +32,7 @@
                     <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
                         <tr>
                             <x-table.th col="name" type="text" label="Lake Name">Lake Name</x-table.th>
-                            <x-table.th col="lat" type="number" align="center" label="Latitude">Latitude (°N)</x-table.th>
-                            <x-table.th col="long" type="number" align="center" label="Longitude">Longitude (°W)</x-table.th>
+                            <x-table.th col="gps" align="center" label="GPS Location">GPS</x-table.th>
                             <x-table.th col="catches" type="number" align="center" label="Catches">Catches</x-table.th>
                             <x-table.th col="visits" type="number" align="center" label="Visits">Visits</x-table.th>
                             <x-table.th col="rate" type="number" align="center" label="Catches/Visit">Catches/Visit</x-table.th>
@@ -59,8 +58,22 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td data-col="lat" x-show="isColumnVisible('lat')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">{{ $lake->latitude ? number_format($lake->latitude, 4) : '—' }}</td>
-                                <td data-col="long" x-show="isColumnVisible('long')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center text-xs font-mono text-slate-600">{{ $lake->longitude ? number_format($lake->longitude, 4) : '—' }}</td>
+                                <td data-col="gps" x-show="isColumnVisible('gps')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center">
+                                    @if($lake->latitude && $lake->longitude)
+                                        <a href="{{ url('/lake/' . $lake->id) }}" 
+                                           title="GPS Coordinates Mapped: {{ number_format($lake->latitude, 4) }}°N, {{ number_format($lake->longitude, 4) }}°W" 
+                                           class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 transition-colors border border-emerald-200/80 shadow-2xs">
+                                            <i data-lucide="map-pin" class="w-4 h-4"></i>
+                                        </a>
+                                    @else
+                                        <a href="{{ url('/lake/' . $lake->id) }}" 
+                                           title="GPS Unmapped — Click to view lake details" 
+                                           class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-colors border border-slate-200/70">
+                                            <i data-lucide="map-pin-off" class="w-4 h-4"></i>
+                                        </a>
+                                    @endif
+                                </td>
+
                                 <td data-col="catches" x-show="isColumnVisible('catches')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $lake->records_count }}</td>
                                 <td data-col="visits" x-show="isColumnVisible('visits')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800">{{ $lake->visits }}</td>
                                 <td data-col="rate" x-show="isColumnVisible('rate')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-medium text-emerald-700">
