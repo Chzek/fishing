@@ -3,7 +3,7 @@
 @section('content')
 <div class="space-y-6">
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-5">
-        <x-pageNavigation name="lake" />
+        <x-pageNavigation name="lake" :showReturn="false" />
 
         <!-- Lakes Data Table with Unified Server Search, Multi-Sort & Column Controls -->
         <div x-data="dataTable({ defaultDensity: 'normal' })">
@@ -32,12 +32,12 @@
                     <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
                         <tr>
                             <x-table.th col="name" type="text" label="Lake Name">Lake Name</x-table.th>
+                            <x-table.th col="fmz" align="center" label="FMZ">FMZ</x-table.th>
                             <x-table.th col="gps" align="center" label="GPS Location">GPS</x-table.th>
                             <x-table.th col="catches" type="number" align="center" label="Catches">Catches</x-table.th>
                             <x-table.th col="visits" type="number" align="center" label="Visits">Visits</x-table.th>
                             <x-table.th col="rate" type="number" align="center" label="Catches/Visit">Catches/Visit</x-table.th>
                             <x-table.th col="anglers" type="number" align="center" label="Anglers">Anglers</x-table.th>
-                            <th scope="col" class="py-3 px-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
@@ -46,17 +46,19 @@
                                 <td data-col="name" x-show="isColumnVisible('name')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-slate-900">
                                     <div class="flex items-center gap-2">
                                         <i data-lucide="waves" class="w-4 h-4 text-teal-600 shrink-0"></i>
-                                        <div>
-                                            <a href="{{ url('/lake/' . $lake->id) }}" class="hover:text-teal-600 hover:underline block leading-tight font-bold text-slate-900">
-                                                {{ $lake->name }}
-                                            </a>
-                                            @if($lake->fishingZone)
-                                                <a href="{{ url('/fishing-zone/' . $lake->fishingZone->id) }}" class="text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100 hover:bg-indigo-100 inline-block mt-0.5">
-                                                    {{ $lake->fishingZone->code }}
-                                                </a>
-                                            @endif
-                                        </div>
+                                        <a href="{{ url('/lake/' . $lake->id) }}" class="hover:text-teal-600 hover:underline leading-tight font-bold text-slate-900">
+                                            {{ $lake->name }}
+                                        </a>
                                     </div>
+                                </td>
+                                <td data-col="fmz" x-show="isColumnVisible('fmz')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center whitespace-nowrap">
+                                    @if($lake->fishingZone)
+                                        <a href="{{ url('/fishing-zone/' . $lake->fishingZone->id) }}" class="text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 hover:bg-indigo-100 transition-colors inline-block">
+                                            {{ $lake->fishingZone->code }}
+                                        </a>
+                                    @else
+                                        <span class="text-xs text-slate-300 font-mono">—</span>
+                                    @endif
                                 </td>
                                 <td data-col="gps" x-show="isColumnVisible('gps')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center">
                                     @if($lake->latitude && $lake->longitude)
@@ -73,16 +75,12 @@
                                         </a>
                                     @endif
                                 </td>
-
                                 <td data-col="catches" x-show="isColumnVisible('catches')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $lake->records_count }}</td>
                                 <td data-col="visits" x-show="isColumnVisible('visits')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800">{{ $lake->visits }}</td>
                                 <td data-col="rate" x-show="isColumnVisible('rate')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-medium text-emerald-700">
                                     @if($lake->visits > 0) {{ round($lake->records_count/$lake->visits, 2) }} @else — @endif
                                 </td>
                                 <td data-col="anglers" x-show="isColumnVisible('anglers')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-medium text-sky-700">{{ $lake->anglers_count }}</td>
-                                <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
-                                    <x-tableOptions name='lake' identifier='{{ $lake->id }}' />
-                                </td>
                             </tr>
                         @endforeach
                     </tbody>
