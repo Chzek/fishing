@@ -20,12 +20,12 @@
             </div>
             <div class="shrink-0">
                 @if($record->released)
-                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200">
-                        <i data-lucide="heart" class="w-3.5 h-3.5 text-emerald-500"></i> Released
+                    <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 text-xs font-bold px-3 py-1 rounded-full border border-amber-200">
+                        <i data-lucide="waves" class="w-3.5 h-3.5 text-amber-500"></i> Released
                     </span>
                 @else
-                    <span class="inline-flex items-center gap-1 bg-sky-50 text-sky-700 text-xs font-bold px-3 py-1 rounded-full border border-sky-200">
-                        <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-sky-500"></i> Kept
+                    <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200">
+                        <i data-lucide="utensils" class="w-3.5 h-3.5 text-emerald-500"></i> Kept
                     </span>
                 @endif
             </div>

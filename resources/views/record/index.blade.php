@@ -91,8 +91,8 @@
                     <span class="text-xs font-bold text-slate-500">release rate</span>
                 </div>
                 <div class="text-xs text-slate-500 flex items-center justify-between pt-1.5 border-t border-slate-100 font-mono">
-                    <span>Released: <strong class="text-emerald-700">{{ number_format($releasedCount) }}</strong></span>
-                    <span>Kept: <strong class="text-slate-700">{{ number_format($totalCatches - $releasedCount) }}</strong></span>
+                    <span>Released: <strong class="text-amber-700">{{ number_format($releasedCount) }}</strong></span>
+                    <span>Kept: <strong class="text-emerald-700">{{ number_format($totalCatches - $releasedCount) }}</strong></span>
                 </div>
             </div>
         </div>

@@ -33,9 +33,9 @@
                         <td data-col="lure" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="text-slate-600">{{ optional($record->lure)->displayName ?? '—' }}</td>
                         <td data-col="status" :class="density === 'compact' ? 'py-2 px-3' : 'py-3 px-4'" class="text-center">
                             @if($record->released)
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Released</span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Released</span>
                             @else
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">Kept</span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Kept</span>
                             @endif
                         </td>
                     </tr>

@@ -56,9 +56,9 @@
                                         <td class="py-2.5 px-3 text-center font-mono text-slate-600">{{ $record->temperature ? $record->temperature . '°F' : '—' }}</td>
                                         <td class="py-2.5 px-3">
                                             @if($record->released == 1)
-                                                <span class="inline-flex items-center bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">Released</span>
+                                                <span class="inline-flex items-center bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-200">Released</span>
                                             @else
-                                                <span class="inline-flex items-center bg-sky-50 text-sky-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-sky-200">Kept</span>
+                                                <span class="inline-flex items-center bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">Kept</span>
                                             @endif
                                         </td>
                                         <td class="py-2.5 px-3 text-right whitespace-nowrap">

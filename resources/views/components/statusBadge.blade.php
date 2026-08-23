@@ -12,8 +12,8 @@
         'pending', 'pending_upstream' => 'bg-amber-500/15 text-amber-700 border-amber-500/30 dark:text-amber-300',
         'admin' => 'bg-purple-500/15 text-purple-700 border-purple-500/30 dark:text-purple-300',
         'pb', 'trophy' => 'bg-amber-500/20 text-amber-900 border-amber-400 font-bold',
-        'released' => 'bg-teal-500/15 text-teal-700 border-teal-500/30',
-        'kept' => 'bg-rose-500/15 text-rose-700 border-rose-500/30',
+        'kept' => 'bg-emerald-500/15 text-emerald-700 border-emerald-500/30 dark:text-emerald-300',
+        'released' => 'bg-amber-500/15 text-amber-700 border-amber-500/30 dark:text-amber-300',
         'unlinked', 'warning' => 'bg-amber-500/15 text-amber-800 border-amber-500/30',
         default => 'bg-slate-100 text-slate-700 border-slate-200',
     };

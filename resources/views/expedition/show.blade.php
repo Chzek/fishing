@@ -540,9 +540,9 @@
                                 <td class="py-3 px-4 text-center font-mono font-medium">{{ $record->length ? number_format($record->length, 2) . ' in' : '—' }}</td>
                                 <td class="py-3 px-4">
                                     @if($record->released == 1)
-                                        <span class="inline-flex items-center bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">Released</span>
+                                        <span class="inline-flex items-center bg-amber-50 text-amber-700 text-[11px] font-bold px-2 py-0.5 rounded-full border border-amber-200">Released</span>
                                     @else
-                                        <span class="inline-flex items-center bg-sky-50 text-sky-700 text-[11px] font-bold px-2 py-0.5 rounded-full border border-sky-200">Kept</span>
+                                        <span class="inline-flex items-center bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">Kept</span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4 text-right">
