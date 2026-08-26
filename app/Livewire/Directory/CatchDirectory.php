@@ -34,10 +34,10 @@ class CatchDirectory extends Component
     #[Url(history: true)]
     public string $length = '';
 
-    #[Url(history: true)]
-    public string $sortBy = 'caught';
+    #[Url(history: true, as: 'sort_by')]
+    public string $sortBy = 'date';
 
-    #[Url(history: true)]
+    #[Url(history: true, as: 'sort_order')]
     public string $sortOrder = 'desc';
 
     public function mount(): void
@@ -66,6 +66,24 @@ class CatchDirectory extends Component
         if (request()->has('length_operator') && !empty(request('length_operator'))) {
             $this->lengthOperator = (string) request('length_operator');
         }
+        if (request()->has('sort_by') && !empty(request('sort_by'))) {
+            $this->sortBy = (string) request('sort_by');
+        }
+        if (request()->has('sort_order') && !empty(request('sort_order'))) {
+            $this->sortOrder = (string) request('sort_order');
+        }
+    }
+
+    public function sortByColumn(string $column): void
+    {
+        if ($this->sortBy === $column) {
+            $this->sortOrder = $this->sortOrder === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortOrder = 'asc';
+        }
+
+        $this->resetPage();
     }
 
     public function updatedSearch(): void
@@ -157,20 +175,44 @@ class CatchDirectory extends Component
             $query->where('length', $op, (float) $this->length);
         }
 
-        if ($this->sortBy === 'species') {
-            $query->join('fish_breeds', 'records.fish_breeds_id', '=', 'fish_breeds.id')
-                  ->orderBy('fish_breeds.name', $this->sortOrder)
-                  ->select('records.*');
-        } elseif ($this->sortBy === 'lake') {
-            $query->join('lakes', 'records.lakes_id', '=', 'lakes.id')
-                  ->orderBy('lakes.name', $this->sortOrder)
-                  ->select('records.*');
-        } elseif ($this->sortBy === 'angler') {
-            $query->join('anglers', 'records.anglers_id', '=', 'anglers.id')
-                  ->orderBy('anglers.lastName', $this->sortOrder)
-                  ->select('records.*');
-        } else {
-            $query->orderBy('caught', $this->sortOrder);
+        $order = in_array(strtolower($this->sortOrder), ['asc', 'desc']) ? strtolower($this->sortOrder) : 'desc';
+
+        switch ($this->sortBy) {
+            case 'species':
+                $query->leftJoin('fish_breeds', 'records.fish_breeds_id', '=', 'fish_breeds.id')
+                      ->orderBy('fish_breeds.name', $order)
+                      ->select('records.*');
+                break;
+            case 'lake':
+                $query->leftJoin('lakes', 'records.lakes_id', '=', 'lakes.id')
+                      ->orderBy('lakes.name', $order)
+                      ->select('records.*');
+                break;
+            case 'angler':
+                $query->leftJoin('anglers', 'records.anglers_id', '=', 'anglers.id')
+                      ->orderBy('anglers.lastName', $order)
+                      ->orderBy('anglers.firstName', $order)
+                      ->select('records.*');
+                break;
+            case 'lure':
+                $query->leftJoin('lures', 'records.lures_id', '=', 'lures.id')
+                      ->orderBy('lures.name', $order)
+                      ->select('records.*');
+                break;
+            case 'weight':
+                $query->orderBy('weight', $order);
+                break;
+            case 'length':
+                $query->orderBy('length', $order);
+                break;
+            case 'status':
+                $query->orderBy('released', $order);
+                break;
+            case 'date':
+            case 'caught':
+            default:
+                $query->orderBy('caught', $order);
+                break;
         }
 
         $records = $query->paginate(15);

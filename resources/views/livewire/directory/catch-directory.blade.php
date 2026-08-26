@@ -142,14 +142,86 @@
         <table class="w-full text-left text-sm text-slate-700">
             <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
                 <tr>
-                    <x-table.th col="date" type="date" label="Date">Date</x-table.th>
-                    <x-table.th col="angler" type="text" label="Angler">Angler</x-table.th>
-                    <x-table.th col="lake" type="text" label="Lake">Lake / Water</x-table.th>
-                    <x-table.th col="species" type="text" label="Species">Fish Species</x-table.th>
-                    <x-table.th col="lure" type="text" label="Lure">Lure / Bait</x-table.th>
-                    <x-table.th col="weight" type="number" align="center" label="Weight">Weight (lbs)</x-table.th>
-                    <x-table.th col="length" type="number" align="center" label="Length">Length (in)</x-table.th>
-                    <x-table.th col="status" type="text" align="center" label="Status">Status</x-table.th>
+                    <th scope="col" data-col="date" data-col-label="Date" x-show="isColumnVisible('date')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('date')">
+                        <div class="inline-flex items-center gap-1.5 hover:text-teal-600">
+                            <span>Date</span>
+                            @if($sortBy === 'date' || $sortBy === 'caught')
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
+                            @endif
+                        </div>
+                    </th>
+                    <th scope="col" data-col="angler" data-col-label="Angler" x-show="isColumnVisible('angler')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('angler')">
+                        <div class="inline-flex items-center gap-1.5 hover:text-teal-600">
+                            <span>Angler</span>
+                            @if($sortBy === 'angler')
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
+                            @endif
+                        </div>
+                    </th>
+                    <th scope="col" data-col="lake" data-col-label="Lake / Water" x-show="isColumnVisible('lake')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('lake')">
+                        <div class="inline-flex items-center gap-1.5 hover:text-teal-600">
+                            <span>Lake / Water</span>
+                            @if($sortBy === 'lake')
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
+                            @endif
+                        </div>
+                    </th>
+                    <th scope="col" data-col="species" data-col-label="Fish Species" x-show="isColumnVisible('species')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('species')">
+                        <div class="inline-flex items-center gap-1.5 hover:text-teal-600">
+                            <span>Fish Species</span>
+                            @if($sortBy === 'species')
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
+                            @endif
+                        </div>
+                    </th>
+                    <th scope="col" data-col="lure" data-col-label="Lure / Bait" x-show="isColumnVisible('lure')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('lure')">
+                        <div class="inline-flex items-center gap-1.5 hover:text-teal-600">
+                            <span>Lure / Bait</span>
+                            @if($sortBy === 'lure')
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
+                            @endif
+                        </div>
+                    </th>
+                    <th scope="col" data-col="weight" data-col-label="Weight" x-show="isColumnVisible('weight')" class="py-3 px-4 text-center select-none cursor-pointer group" wire:click="sortByColumn('weight')">
+                        <div class="inline-flex items-center justify-center gap-1.5 hover:text-teal-600">
+                            <span>Weight (lbs)</span>
+                            @if($sortBy === 'weight')
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
+                            @endif
+                        </div>
+                    </th>
+                    <th scope="col" data-col="length" data-col-label="Length" x-show="isColumnVisible('length')" class="py-3 px-4 text-center select-none cursor-pointer group" wire:click="sortByColumn('length')">
+                        <div class="inline-flex items-center justify-center gap-1.5 hover:text-teal-600">
+                            <span>Length (in)</span>
+                            @if($sortBy === 'length')
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
+                            @endif
+                        </div>
+                    </th>
+                    <th scope="col" data-col="status" data-col-label="Status" x-show="isColumnVisible('status')" class="py-3 px-4 text-center select-none cursor-pointer group" wire:click="sortByColumn('status')">
+                        <div class="inline-flex items-center justify-center gap-1.5 hover:text-teal-600">
+                            <span>Status</span>
+                            @if($sortBy === 'status')
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @else
+                                <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
+                            @endif
+                        </div>
+                    </th>
                     <th scope="col" class="py-3 px-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>

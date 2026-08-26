@@ -132,4 +132,49 @@ class CatchDirectoryLivewireTest extends TestCase
                 return $records->count() === 1 && (float)$records->first()->length === 32.0;
             });
     }
+
+    #[Test]
+    public function column_click_sorting_sorts_records_dynamically()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $pike = FishBreed::factory()->create(['name' => 'Northern Pike']);
+        $lake = Lake::factory()->create();
+        $angler = Angler::factory()->create();
+
+        Record::factory()->create([
+            'fish_breeds_id' => $pike->id,
+            'lakes_id' => $lake->id,
+            'anglers_id' => $angler->id,
+            'length' => 10.0,
+        ]);
+
+        Record::factory()->create([
+            'fish_breeds_id' => $pike->id,
+            'lakes_id' => $lake->id,
+            'anglers_id' => $angler->id,
+            'length' => 40.0,
+        ]);
+
+        // 1. Sort by length asc
+        Livewire::test(CatchDirectory::class)
+            ->call('sortByColumn', 'length')
+            ->assertSet('sortBy', 'length')
+            ->assertSet('sortOrder', 'asc')
+            ->assertViewHas('records', function ($records) {
+                return (float)$records->first()->length === 10.0;
+            });
+
+        // 2. Click same column again to toggle to desc
+        Livewire::test(CatchDirectory::class)
+            ->set('sortBy', 'length')
+            ->set('sortOrder', 'asc')
+            ->call('sortByColumn', 'length')
+            ->assertSet('sortBy', 'length')
+            ->assertSet('sortOrder', 'desc')
+            ->assertViewHas('records', function ($records) {
+                return (float)$records->first()->length === 40.0;
+            });
+    }
 }
