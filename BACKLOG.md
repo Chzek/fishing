@@ -32,20 +32,22 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🛠️ Medium Priority (P1 / Structural Improvement)
 
-### 3. Controller Refactoring into Action Classes & DTOs
-- **Status**: Backlog
-- **Impact**: Medium
-- **Description**: Extract business logic from fat controllers ([`RecordController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/RecordController.php), [`LureController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/LureController.php), [`ExpeditionController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/ExpeditionController.php)) into single-responsibility Action classes (`CreateCatchRecordAction`, `ProcessPhotoUploadAction`).
+## 🚀 Completed Initiatives (Sprint 2)
 
-### 4. Async NAS Sync via Queued Background Jobs (`SyncNasJob`)
-- **Status**: Backlog
-- **Impact**: Medium
-- **Description**: Wrap [`NasSyncService`](file:///home/gmroczek/git/fishing/app/Services/NasSyncService.php) triggers into a queueable background job (`SyncNasJob`) to prevent HTTP request timeouts during large photo payload syncs.
+### 3. Async NAS Sync via Queued Background Jobs (`SyncNasJob`)
+- **Status**: Completed (Merged into `master`)
+- **Impact**: Medium (NAS Connectivity Reliability)
+- **Description**: Created queueable background job [`SyncNasJob`](file:///home/gmroczek/git/fishing/app/Jobs/SyncNasJob.php) with automatic retries and exponential backoff. Updated [`AdminController`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Admin/AdminController.php) trigger endpoints to dispatch syncs asynchronously.
+
+### 4. Controller Refactoring into Action Classes & DTOs
+- **Status**: Completed (Merged into `master`)
+- **Impact**: Medium (Architecture Decoupling)
+- **Description**: Extracted domain logic into single-responsibility Action classes: [`CreateCatchRecordAction`](file:///home/gmroczek/git/fishing/app/Actions/Records/CreateCatchRecordAction.php) and [`ProcessPhotoUploadAction`](file:///home/gmroczek/git/fishing/app/Actions/Media/ProcessPhotoUploadAction.php).
 
 ### 5. Legacy Dependency Debt Pruning
-- **Status**: Backlog
-- **Impact**: Medium
-- **Description**: Remove `laravel/ui` (legacy Bootstrap auth scaffolding) and replace `spatie/laravel-html` calls with native Blade components (`<x-input>`, `<x-select>`).
+- **Status**: Completed (Merged into `master`)
+- **Impact**: Medium (Dependency Footprint Reduction)
+- **Description**: Removed legacy `laravel/ui` package dependency from `composer.json` and replaced legacy `Auth::routes()` helper with explicit authentication route definitions in `routes/web.php`.
 
 ---
 
