@@ -25,15 +25,15 @@
                 </div>
             </div>
 
-            <!-- Species Dropdown -->
-            <select wire:model.live="species" class="h-8.5 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
-                <option value="">All Species</option>
-                @foreach($speciesList as $sp)
-                    <option value="{{ $sp->id }}">{{ $sp->name }}</option>
+            <!-- 1. Angler Dropdown (Table Col 2) -->
+            <select wire:model.live="angler" class="h-8.5 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                <option value="">All Anglers</option>
+                @foreach($anglersList as $ang)
+                    <option value="{{ $ang->id }}">{{ $ang->full_name }}</option>
                 @endforeach
             </select>
 
-            <!-- Lake Dropdown -->
+            <!-- 2. Lake Dropdown (Table Col 3) -->
             <select wire:model.live="lake" class="h-8.5 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
                 <option value="">All Lakes & Waters</option>
                 @foreach($lakesList as $lk)
@@ -41,7 +41,15 @@
                 @endforeach
             </select>
 
-            <!-- Length Operator & Value Filter -->
+            <!-- 3. Species Dropdown (Table Col 4) -->
+            <select wire:model.live="species" class="h-8.5 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                <option value="">All Species</option>
+                @foreach($speciesList as $sp)
+                    <option value="{{ $sp->id }}">{{ $sp->name }}</option>
+                @endforeach
+            </select>
+
+            <!-- 4. Length Operator & Value Filter (Table Col 7) -->
             <div class="flex items-center gap-1.5 shrink-0">
                 <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Length</span>
                 <select wire:model.live="lengthOperator" class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
