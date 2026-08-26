@@ -112,28 +112,6 @@
                     </template>
                 </div>
             </div>
-
-            <!-- Density Toggle -->
-            <div class="inline-flex rounded-lg border border-slate-200/80 bg-white p-0.5 shadow-2xs">
-                <button 
-                    type="button" 
-                    @click="setDensity('compact')" 
-                    :class="density === 'compact' ? 'bg-slate-900 text-white font-bold' : 'text-slate-500 hover:text-slate-800'" 
-                    class="px-2 py-1 rounded text-[11px] font-medium transition-colors cursor-pointer"
-                    title="Compact density"
-                >
-                    Compact
-                </button>
-                <button 
-                    type="button" 
-                    @click="setDensity('normal')" 
-                    :class="density === 'normal' ? 'bg-slate-900 text-white font-bold' : 'text-slate-500 hover:text-slate-800'" 
-                    class="px-2 py-1 rounded text-[11px] font-medium transition-colors cursor-pointer"
-                    title="Comfortable density"
-                >
-                    Comfortable
-                </button>
-            </div>
         </div>
     </div>
 
@@ -283,9 +261,34 @@
         </table>
     </div>
 
-    @if($records->hasPages())
-        <div class="pt-2">
+    <!-- Bottom Toolbar Container matching top search container -->
+    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+        <div class="flex-1">
             {{ $records->links('livewire.pagination.tailwind') }}
         </div>
-    @endif
+
+        <!-- Relocated Density Toggle (Compact vs Comfortable) -->
+        <div class="flex items-center justify-end shrink-0">
+            <div class="inline-flex rounded-lg border border-slate-200/80 bg-white p-0.5 shadow-2xs">
+                <button 
+                    type="button" 
+                    @click="setDensity('compact')" 
+                    :class="density === 'compact' ? 'bg-slate-900 text-white font-bold' : 'text-slate-500 hover:text-slate-800'" 
+                    class="px-2.5 py-1 rounded text-[11px] font-medium transition-colors cursor-pointer"
+                    title="Compact density"
+                >
+                    Compact
+                </button>
+                <button 
+                    type="button" 
+                    @click="setDensity('normal')" 
+                    :class="density === 'normal' ? 'bg-slate-900 text-white font-bold' : 'text-slate-500 hover:text-slate-800'" 
+                    class="px-2.5 py-1 rounded text-[11px] font-medium transition-colors cursor-pointer"
+                    title="Comfortable density"
+                >
+                    Comfortable
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

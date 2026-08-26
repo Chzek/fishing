@@ -1,11 +1,11 @@
 @if ($paginator->hasPages())
-    <nav role="navigation" aria-label="Pagination Navigation" class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3.5 pb-1 px-1">
+    <nav role="navigation" aria-label="Pagination Navigation" class="flex flex-col sm:flex-row items-center justify-between gap-4">
         <!-- Results Counter Text -->
-        <div class="text-xs text-slate-500 font-medium">
+        <div class="text-xs text-slate-500 font-medium whitespace-nowrap">
             Showing <span class="font-bold text-slate-800 font-mono">{{ $paginator->firstItem() }}</span> to <span class="font-bold text-slate-800 font-mono">{{ $paginator->lastItem() }}</span> of <span class="font-bold text-slate-900 font-mono">{{ number_format($paginator->total()) }}</span> results
         </div>
 
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5 flex-wrap justify-center sm:justify-end">
             {{-- Previous Page Link --}}
             @if ($paginator->onFirstPage())
                 <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-slate-300 bg-slate-100/70 border border-slate-200/80 rounded-lg cursor-not-allowed select-none">
