@@ -60,4 +60,44 @@ class CatchDirectoryLivewireTest extends TestCase
                 return $records->count() === 1 && $records->first()->fish_breeds_id === $walleye->id;
             });
     }
+
+    #[Test]
+    public function species_dropdown_filters_records_by_uuid_or_name()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $pike = FishBreed::factory()->create(['name' => 'Northern Pike']);
+        $walleye = FishBreed::factory()->create(['name' => 'Walleye']);
+        $lake = Lake::factory()->create();
+        $angler = Angler::factory()->create();
+
+        $recordPike = Record::factory()->create([
+            'fish_breeds_id' => $pike->id,
+            'lakes_id' => $lake->id,
+            'anglers_id' => $angler->id,
+            'length' => 28.0,
+        ]);
+
+        $recordWalleye = Record::factory()->create([
+            'fish_breeds_id' => $walleye->id,
+            'lakes_id' => $lake->id,
+            'anglers_id' => $angler->id,
+            'length' => 18.0,
+        ]);
+
+        // 1. Filter by species UUID
+        Livewire::test(CatchDirectory::class)
+            ->set('speciesId', $pike->id)
+            ->assertViewHas('records', function ($records) use ($pike) {
+                return $records->count() === 1 && $records->first()->fish_breeds_id === $pike->id;
+            });
+
+        // 2. Filter by species name string
+        Livewire::test(CatchDirectory::class)
+            ->set('speciesId', 'Northern Pike')
+            ->assertViewHas('records', function ($records) use ($pike) {
+                return $records->count() === 1 && $records->first()->fish_breeds_id === $pike->id;
+            });
+    }
 }
