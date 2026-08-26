@@ -285,7 +285,7 @@
 
     @if($records->hasPages())
         <div class="pt-2">
-            {{ $records->links() }}
+            {{ $records->links('livewire.pagination.tailwind') }}
         </div>
     @endif
 </div>

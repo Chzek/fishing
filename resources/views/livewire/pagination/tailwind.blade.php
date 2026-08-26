@@ -1,5 +1,5 @@
 @if ($paginator->hasPages())
-    <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}" class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3.5 pb-1 px-1">
+    <nav role="navigation" aria-label="Pagination Navigation" class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3.5 pb-1 px-1">
         <!-- Results Counter Text -->
         <div class="text-xs text-slate-500 font-medium">
             Showing <span class="font-bold text-slate-800 font-mono">{{ $paginator->firstItem() }}</span> to <span class="font-bold text-slate-800 font-mono">{{ $paginator->lastItem() }}</span> of <span class="font-bold text-slate-900 font-mono">{{ number_format($paginator->total()) }}</span> results
@@ -12,9 +12,9 @@
                     ← Prev
                 </span>
             @else
-                <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-lg transition-all shadow-2xs hover:border-teal-500/50 cursor-pointer">
+                <button type="button" wire:click="previousPage" wire:loading.attr="disabled" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-lg transition-all shadow-2xs hover:border-teal-500/50 cursor-pointer">
                     ← Prev
-                </a>
+                </button>
             @endif
 
             {{-- Pagination Elements --}}
@@ -31,9 +31,9 @@
                                     {{ $page }}
                                 </span>
                             @else
-                                <a href="{{ $url }}" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-teal-700 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-lg transition-all hover:border-teal-500/40 shadow-2xs font-mono cursor-pointer">
+                                <button type="button" wire:click="gotoPage({{ $page }})" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-teal-700 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-lg transition-all hover:border-teal-500/40 shadow-2xs font-mono cursor-pointer">
                                     {{ $page }}
-                                </a>
+                                </button>
                             @endif
                         @endforeach
                     @endif
@@ -42,9 +42,9 @@
 
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
-                <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-lg transition-all shadow-2xs hover:border-teal-500/50 cursor-pointer">
+                <button type="button" wire:click="nextPage" wire:loading.attr="disabled" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-lg transition-all shadow-2xs hover:border-teal-500/50 cursor-pointer">
                     Next →
-                </a>
+                </button>
             @else
                 <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-slate-300 bg-slate-100/70 border border-slate-200/80 rounded-lg cursor-not-allowed select-none">
                     Next →
