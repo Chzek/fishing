@@ -26,6 +26,9 @@
             L.Icon.Default.imagePath = '/css/images/';
         }
     </script>
+
+    <!-- Livewire 3 Styles -->
+    @livewireStyles
 </head>
 <body class="h-full bg-slate-100 font-sans antialiased text-slate-900" x-data="{ mobileMenuOpen: false }">
     <div id="app" class="flex min-h-screen flex-col lg:flex-row bg-slate-100">
@@ -408,5 +411,7 @@
         }
     </script>
     @yield('scripts')
+    <!-- Livewire 3 Scripts -->
+    @livewireScripts
 </body>
 </html>
