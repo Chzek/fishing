@@ -1,26 +1,4 @@
 <div class="space-y-6">
-    <!-- Live Telemetry KPI Bar -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl">
-            <span class="text-xs font-semibold uppercase tracking-wider text-teal-400">Total Catches</span>
-            <div class="text-3xl font-black text-white font-mono mt-1">{{ number_format($stats->total_catches ?? 0) }}</div>
-        </div>
-        <div class="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl">
-            <span class="text-xs font-semibold uppercase tracking-wider text-cyan-400">Total Length</span>
-            <div class="text-3xl font-black text-white font-mono mt-1">{{ round(($stats->total_inches ?? 0) / 12, 1) }} <span class="text-sm font-normal text-slate-400">ft.</span></div>
-        </div>
-        <div class="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl">
-            <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Avg. Length</span>
-            <div class="text-3xl font-black text-white font-mono mt-1">{{ round($stats->avg_length ?? 0, 1) }} <span class="text-sm font-normal text-slate-400">in.</span></div>
-        </div>
-        <div class="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl">
-            <span class="text-xs font-semibold uppercase tracking-wider text-amber-400">Released Rate</span>
-            <div class="text-3xl font-black text-white font-mono mt-1">
-                {{ ($stats->total_catches ?? 0) > 0 ? round((($stats->released_count ?? 0) / $stats->total_catches) * 100) : 0 }}%
-            </div>
-        </div>
-    </div>
-
     <!-- Filter Control Console -->
     <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">

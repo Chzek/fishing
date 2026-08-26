@@ -108,19 +108,10 @@ class CatchDirectory extends Component
                 break;
         }
 
-        // Aggregate statistics using single selectRaw query
-        $stats = (clone $query)->reorder()->selectRaw('
-            COUNT(*) as total_catches,
-            COALESCE(SUM(length), 0) as total_inches,
-            COALESCE(AVG(length), 0) as avg_length,
-            COALESCE(SUM(CASE WHEN released = 1 THEN 1 ELSE 0 END), 0) as released_count
-        ')->first();
-
         $records = $query->paginate(12);
 
         return view('livewire.directory.catch-directory', [
             'records' => $records,
-            'stats' => $stats,
             'speciesList' => FishBreed::orderBy('name')->get(['id', 'name']),
             'anglersList' => Angler::orderBy('lastName')->get(['id', 'firstName', 'lastName']),
             'lakesList' => Lake::orderBy('name')->get(['id', 'name']),

@@ -25,7 +25,6 @@ class CatchDirectoryLivewireTest extends TestCase
 
         Livewire::test(CatchDirectory::class)
             ->assertStatus(200)
-            ->assertSee('Total Catches')
             ->assertSee('All Species');
     }
 
