@@ -39,46 +39,31 @@ class AdminNasSyncConsoleTest extends TestCase
     #[Test]
     public function admin_trigger_sync_redirects_with_detailed_breakdown_status()
     {
+        \Illuminate\Support\Facades\Queue::fake();
         $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
-
-        $this->mock(NasSyncService::class, function ($mock) {
-            $mock->shouldReceive('sync')->once()->andReturn([
-                'pushed' => 2,
-                'pulled' => 1,
-                'pushed_breakdown' => ['Catches' => 2],
-                'pulled_breakdown' => ['Lakes & Waters' => 1],
-                'last_synced_at' => now()->toIso8601String(),
-            ]);
-            $mock->shouldReceive('getTargetName')->andReturn('NAS');
-        });
 
         $response = $this->actingAs($admin)->post('/admin/sync/trigger');
 
         $response->assertRedirect(route('admin'));
-        $response->assertSessionHas('status', 'NAS Sync completed! Pushed 2 items (2 Catches), pulled 1 items (1 Lakes & Waters).');
+        $response->assertSessionHas('status');
+        \Illuminate\Support\Facades\Queue::assertPushed(\Fishinglog\Jobs\SyncNasJob::class, function ($job) {
+            return $job->forceBaseline === false;
+        });
     }
 
     #[Test]
     public function admin_trigger_baseline_sync_redirects_with_baseline_status()
     {
+        \Illuminate\Support\Facades\Queue::fake();
         $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
-
-        $this->mock(NasSyncService::class, function ($mock) {
-            $mock->shouldReceive('sync')->once()->with(true)->andReturn([
-                'pushed' => 0,
-                'pulled' => 34,
-                'pushed_breakdown' => [],
-                'pulled_breakdown' => ['Catches' => 34],
-                'last_synced_at' => now()->toIso8601String(),
-                'is_baseline' => true,
-            ]);
-            $mock->shouldReceive('getTargetName')->andReturn('NAS');
-        });
 
         $response = $this->actingAs($admin)->post('/admin/sync/baseline');
 
         $response->assertRedirect(route('admin'));
-        $response->assertSessionHas('status', 'Full Baseline NAS Sync completed! Pushed 0 items, pulled 34 items (34 Catches).');
+        $response->assertSessionHas('status');
+        \Illuminate\Support\Facades\Queue::assertPushed(\Fishinglog\Jobs\SyncNasJob::class, function ($job) {
+            return $job->forceBaseline === true;
+        });
     }
 
     #[Test]

@@ -113,36 +113,22 @@ class AdminController extends Controller
     public function triggerSync(\Fishinglog\Services\NasSyncService $syncService)
     {
         try {
-            $result = $syncService->sync();
+            \Fishinglog\Jobs\SyncNasJob::dispatch(false);
             $targetName = $syncService->getTargetName();
-            $pushedDetails = !empty($result['pushed_breakdown'])
-                ? ' (' . collect($result['pushed_breakdown'])->map(fn($c, $k) => "$c $k")->join(', ') . ')'
-                : '';
-            $pulledDetails = !empty($result['pulled_breakdown'])
-                ? ' (' . collect($result['pulled_breakdown'])->map(fn($c, $k) => "$c $k")->join(', ') . ')'
-                : '';
-
-            return redirect()->route('admin')->with('status', "{$targetName} Sync completed! Pushed {$result['pushed']} items{$pushedDetails}, pulled {$result['pulled']} items{$pulledDetails}.");
+            return redirect()->route('admin')->with('status', "{$targetName} Sync job queued for background execution! Synchronization will process photo payloads asynchronously.");
         } catch (\Throwable $e) {
-            return redirect()->route('admin')->with('error', "Sync failed: {$e->getMessage()}");
+            return redirect()->route('admin')->with('error', "Failed to dispatch sync job: {$e->getMessage()}");
         }
     }
 
     public function triggerBaselineSync(\Fishinglog\Services\NasSyncService $syncService)
     {
         try {
-            $result = $syncService->sync(forceBaseline: true);
+            \Fishinglog\Jobs\SyncNasJob::dispatch(true);
             $targetName = $syncService->getTargetName();
-            $pushedDetails = !empty($result['pushed_breakdown'])
-                ? ' (' . collect($result['pushed_breakdown'])->map(fn($c, $k) => "$c $k")->join(', ') . ')'
-                : '';
-            $pulledDetails = !empty($result['pulled_breakdown'])
-                ? ' (' . collect($result['pulled_breakdown'])->map(fn($c, $k) => "$c $k")->join(', ') . ')'
-                : '';
-
-            return redirect()->route('admin')->with('status', "Full Baseline {$targetName} Sync completed! Pushed {$result['pushed']} items{$pushedDetails}, pulled {$result['pulled']} items{$pulledDetails}.");
+            return redirect()->route('admin')->with('status', "Full Baseline {$targetName} Sync job queued for background execution! Processing all models asynchronously.");
         } catch (\Throwable $e) {
-            return redirect()->route('admin')->with('error', "Baseline Sync failed: {$e->getMessage()}");
+            return redirect()->route('admin')->with('error', "Failed to dispatch baseline sync job: {$e->getMessage()}");
         }
     }
 

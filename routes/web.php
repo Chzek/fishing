@@ -39,7 +39,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes(['register' => false]);
+Route::get('login', [Fishinglog\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [Fishinglog\Http\Controllers\Auth\LoginController::class, 'login']);
+Route::post('logout', [Fishinglog\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 // Fallback direct storage delivery for uploaded media (ensures photos display across all platforms)
 Route::get('/storage/{path}', function ($path) {
