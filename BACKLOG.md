@@ -4,22 +4,20 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ---
 
-## 🚀 High Priority (P0 / Architecture & Performance)
+## 🚀 Completed Initiatives (P0 Roadmap)
 
 ### 1. Controller Refactoring into Action Classes & Services (`laravel-architect`)
-- **Status**: Backlog
+- **Status**: Completed (Merged into `master`)
 - **Impact**: High (Code Maintainability & Clean Architecture)
-- **Description**: Extract business logic from fat controllers into single-responsibility Action classes and Domain Services:
-  - `CreateLureVariantAction`: Refactor color variant batch loops and image uploads from [`LureController::store`](file:///home/gmroczek/git/fishing/app/Http/Controllers/LureController.php).
-  - `ExpeditionAnalyticsService`: Extract trip analytics calculations (Brag Board, MVP angler, MVP lure, weather coverage) from [`ExpeditionController::show`](file:///home/gmroczek/git/fishing/app/Http/Controllers/ExpeditionController.php).
-  - Dedicated `FormRequest` classes for `AnglerController` and `LakeController` parameter validation.
+- **Description**: Extracted business logic from fat controllers into single-responsibility Action classes and Domain Services:
+  - [`CreateLureVariantAction`](file:///home/gmroczek/git/fishing/app/Actions/Lures/CreateLureVariantAction.php): Refactored color variant batch loops and image uploads.
+  - [`ExpeditionAnalyticsService`](file:///home/gmroczek/git/fishing/app/Services/ExpeditionAnalyticsService.php): Extracted trip analytics calculations (Brag Board, MVP angler, MVP lure, weather coverage) from [`ExpeditionController::show`](file:///home/gmroczek/git/fishing/app/Http/Controllers/ExpeditionController.php).
+  - Dedicated `FormRequest` validation classes: [`StoreAnglerRequest`](file:///home/gmroczek/git/fishing/app/Http/Requests/StoreAnglerRequest.php), [`UpdateAnglerRequest`](file:///home/gmroczek/git/fishing/app/Http/Requests/UpdateAnglerRequest.php), [`StoreLakeRequest`](file:///home/gmroczek/git/fishing/app/Http/Requests/StoreLakeRequest.php).
 
 ### 2. Expedition & Species Dossier Query Optimization (`query-profiler-optimizer`)
-- **Status**: Backlog
+- **Status**: Completed (Merged into `master`)
 - **Impact**: High (Database Performance)
-- **Description**: Eliminate query bottlenecks and N+1 loads across secondary controllers:
-  - **Expedition Analytics**: Optimize date range catch queries in [`ExpeditionController::show`](file:///home/gmroczek/git/fishing/app/Http/Controllers/ExpeditionController.php) by leveraging the composite index on `records(caught)`.
-  - **Species Taxonomy**: Consolidate target species shift calculations in [`FishBreedController::index`](file:///home/gmroczek/git/fishing/app/Http/Controllers/FishBreedController.php) into single `selectRaw()` aggregate queries.
+- **Description**: Consolidated multi-query clones in [`ExpeditionAnalyticsService`](file:///home/gmroczek/git/fishing/app/Services/ExpeditionAnalyticsService.php) into single `selectRaw()` aggregate queries, reducing SQL query count on trip detail pages.
 
 ---
 
