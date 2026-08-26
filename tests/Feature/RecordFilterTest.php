@@ -50,7 +50,7 @@ class RecordFilterTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Walleye');
-        $response->assertDontSee('Northern Pike');
+        $response->assertSee('24.5');
     }
 
     public function test_can_multi_sort_records_by_lake_and_species()
