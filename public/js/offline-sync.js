@@ -16,7 +16,7 @@ class OfflineSyncManager {
   }
 
   getApiEndpoint() {
-    return localStorage.getItem('fishinglog_api_endpoint') || 'http://fishing.local/api/v1';
+    return localStorage.getItem('fishinglog_api_endpoint') || (window.location.origin + '/api/v1');
   }
 
   setApiEndpoint(url) {

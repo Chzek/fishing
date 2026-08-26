@@ -35,21 +35,8 @@
         </div>
     </div>
 
-    <!-- 2. Logbook Catches Directory & Filters -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-5">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-            <div>
-                <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                    <i data-lucide="list" class="w-4 h-4 text-teal-600"></i>
-                    <span>Catch Records Directory</span>
-                </h2>
-                <p class="text-xs text-slate-500 mt-0.5">Search and filter individual catch records with instant multi-sort and local filtering</p>
-            </div>
-
-            <span class="text-xs font-mono font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
-                Showing {{ $records->firstItem() ?? 0 }}–{{ $records->lastItem() ?? 0 }} of {{ $records->total() }} Records
-            </span>
-        </div>
+    <!-- 2. Livewire Catches Directory & Filter Component -->
+    @livewire('directory.catch-directory')
 
         <!-- Records Data Table with Server Search, Sorting, Density & Column Picker -->
         <div x-data="dataTable({ defaultDensity: 'normal' })">
