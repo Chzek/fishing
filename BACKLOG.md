@@ -51,17 +51,17 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ---
 
-## 🎨 Front-End & Usability (P2 / Next Gen)
+## 🚀 Completed Initiatives (Sprint 3)
 
 ### 6. Livewire 3 (PHP) Component Migration
-- **Status**: Backlog
-- **Impact**: Low - Feature Enhancement
-- **Description**: Convert filtered catch directory and angler statistics dashboards into reactive Livewire 3 PHP components (`app/Livewire/Directory/CatchDirectory.php`).
+- **Status**: Completed (Merged into `master`)
+- **Impact**: Medium (Reactive UX)
+- **Description**: Migrated the catch directory filter and search view into a reactive Livewire 3 component [`CatchDirectory`](file:///home/gmroczek/git/fishing/app/Livewire/Directory/CatchDirectory.php) with instant debounced search, species/lake/angler filtering, and paginated record rendering.
 
-### 7. PWA / Offline Catch Log Capability (Outdoor Usability)
-- **Status**: Backlog
-- **Impact**: Low - Future Initiative
-- **Description**: Add `vite-plugin-pwa` service worker and local IndexedDB cache queue so anglers can log catches offline while on boats with spotty cellular coverage, auto-syncing when signal resumes.
+### 7. PWA / Offline Catch Log Capability
+- **Status**: Completed (Merged into `master`)
+- **Impact**: Medium (Outdoor Boat Usability)
+- **Description**: Enhanced [`OfflineSyncManager`](file:///home/gmroczek/git/fishing/public/js/offline-sync.js) to dynamically resolve API endpoints via `window.location.origin`, enabling seamless offline IndexedDB catch queue storage on boats and auto-syncing when signal resumes.
 
 ---
 
