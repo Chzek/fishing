@@ -88,16 +88,48 @@ class CatchDirectoryLivewireTest extends TestCase
 
         // 1. Filter by species UUID
         Livewire::test(CatchDirectory::class)
-            ->set('speciesId', $pike->id)
+            ->set('species', $pike->id)
             ->assertViewHas('records', function ($records) use ($pike) {
                 return $records->count() === 1 && $records->first()->fish_breeds_id === $pike->id;
             });
 
         // 2. Filter by species name string
         Livewire::test(CatchDirectory::class)
-            ->set('speciesId', 'Northern Pike')
+            ->set('species', 'Northern Pike')
             ->assertViewHas('records', function ($records) use ($pike) {
                 return $records->count() === 1 && $records->first()->fish_breeds_id === $pike->id;
+            });
+    }
+
+    #[Test]
+    public function length_and_operator_filters_records_dynamically()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $pike = FishBreed::factory()->create(['name' => 'Northern Pike']);
+        $lake = Lake::factory()->create();
+        $angler = Angler::factory()->create();
+
+        Record::factory()->create([
+            'fish_breeds_id' => $pike->id,
+            'lakes_id' => $lake->id,
+            'anglers_id' => $angler->id,
+            'length' => 32.0,
+        ]);
+
+        Record::factory()->create([
+            'fish_breeds_id' => $pike->id,
+            'lakes_id' => $lake->id,
+            'anglers_id' => $angler->id,
+            'length' => 14.0,
+        ]);
+
+        Livewire::test(CatchDirectory::class)
+            ->set('lengthOperator', '>')
+            ->set('length', '20')
+            ->assertViewHas('records', function ($records) {
+                return $records->count() === 1 && (float)$records->first()->length === 32.0;
             });
     }
 }

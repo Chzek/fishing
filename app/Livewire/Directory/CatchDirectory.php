@@ -14,43 +14,57 @@ class CatchDirectory extends Component
 {
     use WithPagination;
 
+    protected string $paginationTheme = 'tailwind';
+
     #[Url(history: true)]
     public string $search = '';
 
-    #[Url(history: true, as: 'species')]
-    public string $speciesId = '';
+    #[Url(history: true)]
+    public string $species = '';
 
-    #[Url(history: true, as: 'angler')]
-    public string $anglerId = '';
+    #[Url(history: true)]
+    public string $lake = '';
 
-    #[Url(history: true, as: 'lake')]
-    public string $lakeId = '';
+    #[Url(history: true)]
+    public string $angler = '';
 
-    #[Url(history: true, as: 'sort')]
-    public string $sortBy = 'caught_desc';
+    #[Url(history: true)]
+    public string $lengthOperator = '>';
 
-    #[Url(history: true, as: 'released')]
-    public bool $releasedOnly = false;
+    #[Url(history: true)]
+    public string $length = '';
+
+    #[Url(history: true)]
+    public string $sortBy = 'caught';
+
+    #[Url(history: true)]
+    public string $sortOrder = 'desc';
 
     public function mount(): void
     {
-        if (request()->has('species') && empty($this->speciesId)) {
-            $this->speciesId = (string) request('species');
+        if (request()->has('search') && empty($this->search)) {
+            $this->search = (string) request('search');
         }
-        if (request()->has('species_id') && empty($this->speciesId)) {
-            $this->speciesId = (string) request('species_id');
+        if (request()->has('species') && empty($this->species)) {
+            $this->species = (string) request('species');
         }
-        if (request()->has('lake') && empty($this->lakeId)) {
-            $this->lakeId = (string) request('lake');
+        if (request()->has('species_id') && empty($this->species)) {
+            $this->species = (string) request('species_id');
         }
-        if (request()->has('lake_id') && empty($this->lakeId)) {
-            $this->lakeId = (string) request('lake_id');
+        if (request()->has('lake') && empty($this->lake)) {
+            $this->lake = (string) request('lake');
         }
-        if (request()->has('angler') && empty($this->anglerId)) {
-            $this->anglerId = (string) request('angler');
+        if (request()->has('lake_id') && empty($this->lake)) {
+            $this->lake = (string) request('lake_id');
         }
-        if (request()->has('angler_id') && empty($this->anglerId)) {
-            $this->anglerId = (string) request('angler_id');
+        if (request()->has('angler') && empty($this->angler)) {
+            $this->angler = (string) request('angler');
+        }
+        if (request()->has('length') && empty($this->length)) {
+            $this->length = (string) request('length');
+        }
+        if (request()->has('length_operator') && !empty(request('length_operator'))) {
+            $this->lengthOperator = (string) request('length_operator');
         }
     }
 
@@ -59,17 +73,27 @@ class CatchDirectory extends Component
         $this->resetPage();
     }
 
-    public function updatedSpeciesId(): void
+    public function updatedSpecies(): void
     {
         $this->resetPage();
     }
 
-    public function updatedAnglerId(): void
+    public function updatedLake(): void
     {
         $this->resetPage();
     }
 
-    public function updatedLakeId(): void
+    public function updatedAngler(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedLengthOperator(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedLength(): void
     {
         $this->resetPage();
     }
@@ -79,81 +103,85 @@ class CatchDirectory extends Component
         $this->resetPage();
     }
 
-    public function updatedReleasedOnly(): void
+    public function updatedSortOrder(): void
     {
         $this->resetPage();
     }
 
     public function resetFilters(): void
     {
-        $this->reset(['search', 'speciesId', 'anglerId', 'lakeId', 'sortBy', 'releasedOnly']);
+        $this->reset(['search', 'species', 'lake', 'angler', 'length', 'lengthOperator', 'sortBy', 'sortOrder']);
         $this->resetPage();
     }
 
     public function render()
     {
-        $query = Record::query()->with(['angler', 'lake', 'fishBreed', 'lure']);
+        $query = Record::with(['angler', 'lake.dailyWeather', 'fishBreed', 'lure']);
 
         if (!empty($this->search)) {
             $term = '%' . $this->search . '%';
             $query->where(function ($q) use ($term) {
                 $q->whereHas('fishBreed', fn($b) => $b->where('name', 'like', $term))
                   ->orWhereHas('lake', fn($l) => $l->where('name', 'like', $term))
-                  ->orWhereHas('angler', fn($a) => $a->where('firstName', 'like', $term)->orWhere('lastName', 'like', $term));
+                  ->orWhereHas('angler', fn($a) => $a->where('firstName', 'like', $term)->orWhere('lastName', 'like', $term))
+                  ->orWhereHas('lure', fn($lu) => $lu->where('name', 'like', $term));
             });
         }
 
-        if (!empty($this->speciesId)) {
-            $speciesVal = $this->speciesId;
-            $query->where(function ($q) use ($speciesVal) {
-                $q->where('fish_breeds_id', $speciesVal)
-                  ->orWhereHas('fishBreed', fn($b) => $b->where('name', $speciesVal));
+        if (!empty($this->species)) {
+            $spVal = $this->species;
+            $query->where(function ($q) use ($spVal) {
+                $q->where('fish_breeds_id', $spVal)
+                  ->orWhereHas('fishBreed', fn($b) => $b->where('name', $spVal));
             });
         }
 
-        if (!empty($this->anglerId)) {
-            $anglerVal = $this->anglerId;
-            $query->where(function ($q) use ($anglerVal) {
-                $q->where('anglers_id', $anglerVal)
-                  ->orWhereHas('angler', fn($a) => $a->where('firstName', $anglerVal)->orWhere('lastName', $anglerVal));
+        if (!empty($this->lake)) {
+            $lkVal = $this->lake;
+            $query->where(function ($q) use ($lkVal) {
+                $q->where('lakes_id', $lkVal)
+                  ->orWhereHas('lake', fn($l) => $l->where('name', $lkVal));
             });
         }
 
-        if (!empty($this->lakeId)) {
-            $lakeVal = $this->lakeId;
-            $query->where(function ($q) use ($lakeVal) {
-                $q->where('lakes_id', $lakeVal)
-                  ->orWhereHas('lake', fn($l) => $l->where('name', $lakeVal));
+        if (!empty($this->angler)) {
+            $angVal = $this->angler;
+            $query->where(function ($q) use ($angVal) {
+                $q->where('anglers_id', $angVal)
+                  ->orWhereHas('angler', fn($a) => $a->where('firstName', $angVal)->orWhere('lastName', $angVal));
             });
         }
 
-        if ($this->releasedOnly) {
-            $query->where('released', 1);
+        if ($this->length !== '' && $this->length !== null) {
+            $op = in_array($this->lengthOperator, ['>', '=', '<']) ? $this->lengthOperator : '>';
+            $query->where('length', $op, (float) $this->length);
         }
 
-        switch ($this->sortBy) {
-            case 'length_desc':
-                $query->orderBy('length', 'desc');
-                break;
-            case 'weight_desc':
-                $query->orderBy('weight', 'desc');
-                break;
-            case 'caught_asc':
-                $query->orderBy('caught', 'asc');
-                break;
-            case 'caught_desc':
-            default:
-                $query->orderBy('caught', 'desc');
-                break;
+        if ($this->sortBy === 'species') {
+            $query->join('fish_breeds', 'records.fish_breeds_id', '=', 'fish_breeds.id')
+                  ->orderBy('fish_breeds.name', $this->sortOrder)
+                  ->select('records.*');
+        } elseif ($this->sortBy === 'lake') {
+            $query->join('lakes', 'records.lakes_id', '=', 'lakes.id')
+                  ->orderBy('lakes.name', $this->sortOrder)
+                  ->select('records.*');
+        } elseif ($this->sortBy === 'angler') {
+            $query->join('anglers', 'records.anglers_id', '=', 'anglers.id')
+                  ->orderBy('anglers.lastName', $this->sortOrder)
+                  ->select('records.*');
+        } else {
+            $query->orderBy('caught', $this->sortOrder);
         }
 
-        $records = $query->paginate(12);
+        $records = $query->paginate(15);
+        $totalCount = $records->total();
 
         return view('livewire.directory.catch-directory', [
             'records' => $records,
+            'totalCount' => $totalCount,
             'speciesList' => FishBreed::orderBy('name')->get(['id', 'name']),
-            'anglersList' => Angler::orderBy('lastName')->get(['id', 'firstName', 'lastName']),
             'lakesList' => Lake::orderBy('name')->get(['id', 'name']),
+            'anglersList' => Angler::orderBy('lastName')->get(['id', 'firstName', 'lastName']),
         ]);
     }
 }
