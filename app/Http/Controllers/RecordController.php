@@ -294,6 +294,9 @@ class RecordController extends Controller
                 FilterBySearch::class,
                 FilterByLength::class,
                 FilterByAngler::class,
+                \Fishinglog\Pipes\Filters\FilterBySpecies::class,
+                \Fishinglog\Pipes\Filters\FilterByLake::class,
+                \Fishinglog\Pipes\Filters\FilterByLure::class,
             ])
             ->thenReturn();
 
@@ -303,6 +306,9 @@ class RecordController extends Controller
         return view('record.directory', [
             'records' => $records,
             'totalCount' => $totalCount,
+            'speciesList' => FishBreed::orderBy('name')->get(['id', 'name']),
+            'lakesList' => Lake::orderBy('name')->get(['id', 'name']),
+            'anglersList' => Angler::orderBy('lastName')->get(['id', 'firstName', 'lastName']),
         ]);
     }
 

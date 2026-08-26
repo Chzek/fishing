@@ -53,6 +53,43 @@ class RecordFilterTest extends TestCase
         $response->assertSee('24.5');
     }
 
+    public function test_can_filter_directory_by_species_id_and_species_name()
+    {
+        $user = User::factory()->create();
+        $angler = Angler::factory()->create();
+        $lake = Lake::factory()->create(['name' => 'Davies Lake']);
+        $walleye = FishBreed::factory()->create(['name' => 'Walleye']);
+        $pike = FishBreed::factory()->create(['name' => 'Northern Pike']);
+
+        Record::create([
+            'anglers_id' => $angler->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $walleye->id,
+            'length' => 19.5,
+            'caught' => '2026-08-01',
+        ]);
+
+        Record::create([
+            'anglers_id' => $angler->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $pike->id,
+            'length' => 27.0,
+            'caught' => '2026-08-02',
+        ]);
+
+        // Filter by species ID
+        $responseById = $this->actingAs($user)->get('/record/directory?species=' . $pike->id);
+        $responseById->assertStatus(200);
+        $responseById->assertSee('27.0');
+        $responseById->assertDontSee('19.5');
+
+        // Filter by species name
+        $responseByName = $this->actingAs($user)->get('/record/directory?species=Northern Pike');
+        $responseByName->assertStatus(200);
+        $responseByName->assertSee('27.0');
+        $responseByName->assertDontSee('19.5');
+    }
+
     public function test_can_multi_sort_records_by_lake_and_species()
     {
         $user = User::factory()->create();
@@ -106,5 +143,3 @@ class RecordFilterTest extends TestCase
         $responseLakes->assertStatus(200);
     }
 }
-
-

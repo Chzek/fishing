@@ -35,7 +35,115 @@
         </div>
     </div>
 
-    <!-- 2. Livewire Catches Directory & Filter Component -->
-    @livewire('directory.catch-directory')
+    <!-- 2. Records Data Table with Alpine.js x-table.wrapper & Controller Filters -->
+    <div x-data="dataTable({ defaultDensity: 'normal' })">
+        <x-table.wrapper 
+            searchPlaceholder="Search species, lake, angler, lure..." 
+            itemName="catches"
+            :totalCount="$totalCount"
+            :showColumnPicker="true"
+            :showDensity="true"
+            :showCounter="true"
+        >
+            <x-slot:extraFilters>
+                <!-- Species Filter -->
+                <select name="species" onchange="this.form.submit()" class="h-8.5 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                    <option value="">All Species</option>
+                    @foreach($speciesList as $sp)
+                        <option value="{{ $sp->id }}" {{ Request::input('species') == $sp->id || Request::input('species_id') == $sp->id || Request::input('species') == $sp->name ? 'selected' : '' }}>{{ $sp->name }}</option>
+                    @endforeach
+                </select>
+
+                <!-- Lake Filter -->
+                <select name="lake" onchange="this.form.submit()" class="h-8.5 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                    <option value="">All Lakes & Waters</option>
+                    @foreach($lakesList as $lk)
+                        <option value="{{ $lk->id }}" {{ Request::input('lake') == $lk->id || Request::input('lake_id') == $lk->id || Request::input('lake') == $lk->name ? 'selected' : '' }}>{{ $lk->name }}</option>
+                    @endforeach
+                </select>
+
+                <!-- Length Filter -->
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Length</span>
+                    <select name="length_operator" onchange="this.form.submit()" class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                        <option value=">" {{ Request::input('length_operator') === '>' ? 'selected' : '' }}>&gt;</option>
+                        <option value="=" {{ Request::input('length_operator') === '=' ? 'selected' : '' }}>=</option>
+                        <option value="<" {{ Request::input('length_operator') === '<' ? 'selected' : '' }}>&lt;</option>
+                    </select>
+                    <input type="number" step="0.25" name="length" value="{{ Request::input('length') }}" placeholder="Inches..." onchange="this.form.submit()"
+                        class="h-8.5 px-2.5 w-20 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-800 focus:ring-2 focus:ring-teal-500/20">
+                </div>
+            </x-slot:extraFilters>
+
+            <table class="w-full text-left text-sm text-slate-700">
+                <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
+                    <tr>
+                        <x-table.th col="date" type="date" label="Date">Date</x-table.th>
+                        <x-table.th col="angler" type="text" label="Angler">Angler</x-table.th>
+                        <x-table.th col="lake" type="text" label="Lake">Lake / Water</x-table.th>
+                        <x-table.th col="species" type="text" label="Species">Fish Species</x-table.th>
+                        <x-table.th col="lure" type="text" label="Lure">Lure / Bait</x-table.th>
+                        <x-table.th col="weight" type="number" align="center" label="Weight">Weight (lbs)</x-table.th>
+                        <x-table.th col="length" type="number" align="center" label="Length">Length (in)</x-table.th>
+                        <x-table.th col="status" type="text" align="center" label="Status">Status</x-table.th>
+                        <th scope="col" class="py-3 px-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
+                    @forelse($records as $record)
+                        <tr class="hover:bg-slate-50/70 transition-colors">
+                            <td data-col="date" x-show="isColumnVisible('date')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-medium text-slate-900 whitespace-nowrap font-mono text-xs">{{ $record->caught }}</td>
+                            <td data-col="angler" x-show="isColumnVisible('angler')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-semibold text-slate-800 whitespace-nowrap">
+                                <a href="{{ url('/angler/' . $record->angler->id . '/profile') }}" class="hover:text-teal-600 hover:underline">
+                                    {{ $record->angler->full_name }}
+                                </a>
+                            </td>
+                            <td data-col="lake" x-show="isColumnVisible('lake')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-slate-700 whitespace-nowrap">
+                                <a href="{{ url('/lake/' . $record->lake->id) }}" class="hover:text-teal-600 hover:underline">
+                                    {{ $record->lake->name }}
+                                </a>
+                            </td>
+                            <td data-col="species" x-show="isColumnVisible('species')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-teal-700 whitespace-nowrap">{{ $record->fishBreed->name }}</td>
+                            <td data-col="lure" x-show="isColumnVisible('lure')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-xs text-slate-600">
+                                @if($record->lure)
+                                    <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium border border-slate-200">
+                                        {{ $record->lure->name }}
+                                    </span>
+                                @else
+                                    <span class="text-slate-400">—</span>
+                                @endif
+                            </td>
+                            <td data-col="weight" x-show="isColumnVisible('weight')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800 whitespace-nowrap">
+                                {{ $record->weight ? number_format($record->weight, 2) : '—' }}
+                            </td>
+                            <td data-col="length" x-show="isColumnVisible('length')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-900 whitespace-nowrap">
+                                {{ $record->length ? number_format($record->length, 1) : '—' }}
+                            </td>
+                            <td data-col="status" x-show="isColumnVisible('status')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center whitespace-nowrap">
+                                <x-statusBadge :type="$record->released ? 'released' : 'kept'" />
+                            </td>
+                            <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap font-medium text-xs">
+                                <a href="{{ route('record.show', $record->id) }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
+                                    View Details →
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="9" class="py-8 px-4 text-center">
+                                <x-emptyState icon="fish-off" title="No Catch Records Found" description="No catch entries match your current search and filter criteria." />
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </x-table.wrapper>
+
+        @if($records->hasPages())
+            <div class="pt-2">
+                {{ $records->links() }}
+            </div>
+        @endif
+    </div>
 </div>
 @endsection
