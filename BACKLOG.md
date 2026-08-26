@@ -17,7 +17,10 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 ### 2. Expedition & Species Dossier Query Optimization (`query-profiler-optimizer`)
 - **Status**: Completed (Merged into `master`)
 - **Impact**: High (Database Performance)
-- **Description**: Consolidated multi-query clones in [`ExpeditionAnalyticsService`](file:///home/gmroczek/git/fishing/app/Services/ExpeditionAnalyticsService.php) into single `selectRaw()` aggregate queries, reducing SQL query count on trip detail pages.
+### 2.5 Reactive Livewire 3 Catch Directory Component Migration (`laravel-architect`)
+- **Status**: Completed (Merged into `master`)
+- **Impact**: High (Interactive UX & Sub-second Live Filtering)
+- **Description**: Migrated the Catches Logbook Directory into a reactive Livewire 3 component ([`CatchDirectory.php`](file:///home/gmroczek/git/fishing/app/Livewire/Directory/CatchDirectory.php)) styled with the application's `<x-table.wrapper>` design system. Form controls (Search, Species, Lake, Length Operator & Inches) update the dataset dynamically without page reloads.
 
 ---
 
