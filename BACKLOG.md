@@ -1,6 +1,6 @@
 # Application Backlog & Modernization Roadmap
 
-This backlog tracks technical debt resolution, architecture refactoring, and feature initiatives for the **Fishing Logbook** application, compiled from our specialized agent team audit (`laravel-architect`, `query-profiler-optimizer`, `nas-sync-architect`, `phpunit-test-architect`, `playwright-e2e-tester`, `seasoned-angler-advisor`, `ui-ux-auditor`).
+This backlog tracks technical debt resolution, architecture refactoring, and feature initiatives for the **Fishing Logbook** application, compiled from our specialized agent team audit (`laravel-architect`, `livewire-architect`, `query-profiler-optimizer`, `nas-sync-architect`, `phpunit-test-architect`, `playwright-e2e-tester`, `seasoned-angler-advisor`, `ui-ux-auditor`).
 
 ---
 
