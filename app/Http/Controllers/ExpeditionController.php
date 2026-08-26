@@ -68,7 +68,7 @@ class ExpeditionController extends Controller
      * @param  \Fishinglog\Models\Expedition  $expedition
      * @return \Illuminate\Http\Response
      */
-    public function show(Expedition $expedition)
+    public function show(Expedition $expedition, \Fishinglog\Services\ExpeditionAnalyticsService $analyticsService)
     {
         $expedition->load('photos');
 
@@ -78,63 +78,8 @@ class ExpeditionController extends Controller
             ->orderBy('caught', 'desc')
             ->paginate(15);
 
-        $totalRecords = Record::where('caught', '>=', $expedition->start)
-            ->where('caught', '<=',  $expedition->finish)
-            ->count();
-
-        $releasedCount = Record::where('caught', '>=', $expedition->start)
-            ->where('caught', '<=',  $expedition->finish)
-            ->where('released', 1)
-            ->count();
-
-        $releaseRate = $totalRecords > 0 ? round(($releasedCount / $totalRecords) * 100) : 0;
-
-        // Trip Accolades & Brags
-        $lunker = Record::where('caught', '>=', $expedition->start)
-            ->where('caught', '<=',  $expedition->finish)
-            ->with(['angler', 'lake', 'fishBreed', 'lure'])
-            ->orderBy('length', 'desc')
-            ->first();
-
-        $heavyweight = Record::where('caught', '>=', $expedition->start)
-            ->where('caught', '<=',  $expedition->finish)
-            ->whereNotNull('weight')
-            ->with(['angler', 'lake', 'fishBreed'])
-            ->orderBy('weight', 'desc')
-            ->first();
-
-        $topRod = Record::select('anglers_id', DB::raw('count(*) as catch_count'), DB::raw('sum(length) as total_length'))
-            ->where('caught', '>=', $expedition->start)
-            ->where('caught', '<=',  $expedition->finish)
-            ->groupBy('anglers_id')
-            ->orderBy('catch_count', 'desc')
-            ->with('angler')
-            ->first();
-
-        $hotLure = Record::select('lures_id', DB::raw('count(*) as catch_count'))
-            ->where('caught', '>=', $expedition->start)
-            ->where('caught', '<=',  $expedition->finish)
-            ->whereNotNull('lures_id')
-            ->groupBy('lures_id')
-            ->orderBy('catch_count', 'desc')
-            ->with('lure')
-            ->first();
-
-        // Analytics & Visualizations
-        $dailyCadence = Record::select('caught', DB::raw('count(*) as count'))
-            ->where('caught', '>=', $expedition->start)
-            ->where('caught', '<=',  $expedition->finish)
-            ->groupBy('caught')
-            ->orderBy('caught', 'asc')
-            ->get();
-
-        $speciesDistribution = Record::select('fish_breeds_id', DB::raw('count(*) as count'))
-            ->where('caught', '>=', $expedition->start)
-            ->where('caught', '<=',  $expedition->finish)
-            ->groupBy('fish_breeds_id')
-            ->orderBy('count', 'desc')
-            ->with('fishBreed')
-            ->get();
+        $analytics = $analyticsService->getAnalytics($expedition);
+        extract($analytics);
 
         $registeredCrewAnglerIds = $expedition->crews()->pluck('anglers_id')->filter()->unique();
 
