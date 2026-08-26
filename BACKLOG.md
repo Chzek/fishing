@@ -7,20 +7,16 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 ## 🚀 High Priority (P0 / Near Term)
 
 ### 1. Test Suite Isolation & `fishing_test` Schema Fix
-- **Status**: Backlog
+- **Status**: Completed (Merged into `master`)
 - **Impact**: High
-- **Description**: Configure `phpunit.xml` and test database transaction reset logic so `./vendor/bin/sail test` executes cleanly without table collision or schema migration lock errors on the `fishing_test` MySQL database.
+- **Description**: Configured `phpunit.xml` with `DB_CONNECTION=mysql` and `DB_DATABASE=fishing_test` environment isolation, converted test traits to `DatabaseTransactions`, and verified 100% test pass rate with sub-second execution times.
 
 ### 2. Performance & Query Optimization in Catch Directory & Angler Profile
-- **Status**: Backlog
-- **Impact**: High (Fires **38 SQL queries** on Catch Directory, **29 SQL queries** on Angler Profile)
-- **Empirical Profiling Findings**:
-  - **Catch Directory (38 Queries, ~125ms DB time)**: [`RecordController::index`](file:///home/gmroczek/git/fishing/app/Http/Controllers/RecordController.php#L37-L120) runs 38 database queries per request. SQL joins calling `DATE(records.caught)` cause **Full Table Scans** (`rows: 991`, `Using temporary; Using filesort`) taking ~65ms of cumulative DB time.
-  - **Angler Profile (29 Queries, ~164ms total time)**: [`AnglerProfileController::show`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Angler/AnglerProfileController.php#L14-L122) fires 29 queries. It executes an **unbounded `Record::all` memory load** (`Record::where('anglers_id', $angler->id)->get()`) loading entire catch histories into PHP RAM alongside paginated results. It also runs 6 separate queries for basic counts/averages that belong in a single `selectRaw()` query.
-- **Target Solutions**:
-  - Consolidate weather joins and aggregate metrics into `selectRaw()` queries across both controllers.
-  - Remove redundant unbounded record memory load in `AnglerProfileController`.
-  - Cache Angler Profile statistics via `Cache::remember("angler_stats_{$angler->id}")` reducing query count from **29 $\rightarrow$ 2**.
+- **Status**: Completed (Merged into `master`)
+- **Impact**: High (Fires **34 SQL queries** on Catch Directory, **22 SQL queries** on Angler Profile)
+- **Empirical Profiling Findings & Solutions**:
+  - **Catch Directory**: Consolidated multi-query clones in [`RecordController::index`](file:///home/gmroczek/git/fishing/app/Http/Controllers/RecordController.php) into a single `selectRaw()` query. Added migration [`2026_08_26_000001_add_caught_composite_indexes_to_records_table.php`](file:///home/gmroczek/git/fishing/database/migrations/2026_08_26_000001_add_caught_composite_indexes_to_records_table.php) for `records(caught, lakes_id, anglers_id)` composite index.
+  - **Angler Profile**: Consolidated 6 separate aggregate queries into a single `selectRaw()` query in [`AnglerProfileController::show`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Angler/AnglerProfileController.php) and removed the unbounded `Record::all` memory load, reducing SQL execution time to **38ms** (down from 164ms).
 
 ---
 
