@@ -4,12 +4,12 @@ namespace Tests\Unit;
 use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Angler;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class AnglerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     protected $angler;
 

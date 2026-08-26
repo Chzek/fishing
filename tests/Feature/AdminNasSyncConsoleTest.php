@@ -7,13 +7,13 @@ use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
 use Fishinglog\Services\NasSyncService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AdminNasSyncConsoleTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function admin_can_view_nas_sync_console_with_per_model_breakdown()

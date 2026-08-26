@@ -5,12 +5,12 @@ use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\FishFamily;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class FishFamilyTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function a_fish_family_has_many_breeds()

@@ -4,14 +4,14 @@ namespace Tests\Feature;
 
 use Fishinglog\Models\Lake;
 use Fishinglog\Services\NasSyncService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class NasSyncServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function it_orchestrates_two_way_sync_with_mocked_nas()

@@ -4,12 +4,12 @@ namespace Tests\Feature;
 
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class AdminUserAnglerLinkTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_admin_can_view_users_list_and_link_angler()
     {

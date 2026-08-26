@@ -7,13 +7,13 @@ use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class BladeComponentsTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function status_badge_component_renders_correctly()

@@ -9,13 +9,13 @@ use Fishinglog\Models\Lake;
 use Fishinglog\Models\Lure;
 use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class LureTackleBoxTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function authenticated_user_can_view_tackle_box_index()

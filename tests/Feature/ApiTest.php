@@ -6,12 +6,12 @@ use PHPUnit\Framework\Attributes\Test;
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class ApiTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function it_can_fetch_records_api_index()

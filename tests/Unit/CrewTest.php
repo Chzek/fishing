@@ -4,12 +4,12 @@ namespace Tests\Unit;
 use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Crew;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class CrewTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function crew_has_an_expedition_relationship_defined()

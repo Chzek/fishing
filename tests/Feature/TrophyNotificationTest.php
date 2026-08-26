@@ -7,14 +7,14 @@ use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
 use Fishinglog\Notifications\TrophyCatchLogged;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Notification;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class TrophyNotificationTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function standard_catch_without_record_does_not_trigger_trophy_notification()

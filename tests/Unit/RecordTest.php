@@ -4,12 +4,12 @@ namespace Tests\Unit;
 use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Record;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class RecordTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function it_does_not_have_an_expedition_method()

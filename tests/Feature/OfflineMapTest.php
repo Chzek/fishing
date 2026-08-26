@@ -5,12 +5,12 @@ use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class OfflineMapTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_authenticated_user_can_access_offline_map_downloader_page(): void
     {

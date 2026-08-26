@@ -10,12 +10,12 @@ use Fishinglog\Models\Lake;
 use Fishinglog\Models\Lure;
 use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class MapExplorerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_authenticated_user_can_access_map_explorer_page(): void
     {

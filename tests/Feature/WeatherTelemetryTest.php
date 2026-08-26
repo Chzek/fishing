@@ -7,13 +7,13 @@ use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
 
 use Fishinglog\Services\WeatherTelemetryService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class WeatherTelemetryTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function it_fetches_and_caches_daily_weather_for_a_lake()

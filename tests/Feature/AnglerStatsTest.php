@@ -7,12 +7,12 @@ use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class AnglerStatsTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_authenticated_user_can_view_angler_stats_page()
     {

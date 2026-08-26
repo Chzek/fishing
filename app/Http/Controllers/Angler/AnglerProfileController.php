@@ -46,22 +46,24 @@ class AnglerProfileController extends Controller
 
         $anglerRecords = $catchesQuery->paginate(15)->withQueryString();
 
-        $recordsGrouped = Record::where('anglers_id', $angler->id)
-            ->orderBy('caught', 'desc')
-            ->with(['fishBreed', 'lake', 'lure'])
-            ->get()
-            ->groupBy('caught');
+        $stats = Record::where('anglers_id', $angler->id)
+            ->selectRaw('
+                COUNT(*) as record_count,
+                COUNT(DISTINCT lakes_id) as lake_count,
+                COALESCE(SUM(length), 0) as total_inches,
+                COALESCE(AVG(length), 0) as avg_length,
+                COALESCE(AVG(weight), 0) as avg_weight,
+                COALESCE(SUM(CASE WHEN released = 1 THEN 1 ELSE 0 END), 0) as released_count
+            ')
+            ->first();
 
-        $record_count = Record::where('anglers_id', $angler->id)->count();
-        $lake_count = Record::where('anglers_id', $angler->id)
-            ->distinct('lakes_id')
-            ->count('lakes_id');
-
-        $totalInches = round(Record::where('anglers_id', $angler->id)->sum('length'), 1);
+        $record_count = (int) ($stats->record_count ?? 0);
+        $lake_count = (int) ($stats->lake_count ?? 0);
+        $totalInches = round((float) ($stats->total_inches ?? 0), 1);
         $totalFeet = round($totalInches / 12, 1);
-        $avgLength = round(Record::where('anglers_id', $angler->id)->whereNotNull('length')->avg('length'), 1);
-        $avgWeight = round(Record::where('anglers_id', $angler->id)->whereNotNull('weight')->avg('weight'), 1);
-        $releasedCount = Record::where('anglers_id', $angler->id)->where('released', 1)->count();
+        $avgLength = round((float) ($stats->avg_length ?? 0), 1);
+        $avgWeight = round((float) ($stats->avg_weight ?? 0), 1);
+        $releasedCount = (int) ($stats->released_count ?? 0);
         $releaseRate = $record_count > 0 ? round(($releasedCount / $record_count) * 100) : 0;
 
         $mvpLure = Record::select('lures_id', DB::raw('count(*) as catches'), DB::raw('max(length) as longest'))
@@ -100,7 +102,7 @@ class AnglerProfileController extends Controller
 
         return view('angler.profile', [
             'angler' => $angler,
-            'records' => $recordsGrouped,
+            'records' => collect([]),
             'anglerRecords' => $anglerRecords,
             'longest' => $longest,
             'fattest' => $fattest,

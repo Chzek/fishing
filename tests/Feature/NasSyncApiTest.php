@@ -6,13 +6,13 @@ use Fishinglog\Models\Angler;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class NasSyncApiTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function non_admin_cannot_access_sync_api()

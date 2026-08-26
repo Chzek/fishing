@@ -5,12 +5,12 @@ use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class FishBreedControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     #[Test]
     public function it_can_view_fish_taxonomy_index_with_telemetry()

@@ -59,13 +59,24 @@ class RecordController extends Controller
         $records = (clone $filteredRecords)->paginate(10)->withQueryString();
 
         // High-level telemetry stats based on active filter query
-        $totalCatches = (clone $filteredRecords)->count();
-        $totalInches = round((clone $filteredRecords)->sum('length'), 1);
-        $totalFeet = round($totalInches / 12, 1);
-        $avgLength = round((clone $filteredRecords)->whereNotNull('length')->avg('length') ?? 0, 1);
+        $stats = (clone $filteredRecords)
+            ->reorder()
+            ->selectRaw('
+                COUNT(*) as total_catches,
+                COALESCE(SUM(length), 0) as total_inches,
+                COALESCE(AVG(length), 0) as avg_length,
+                COALESCE(SUM(CASE WHEN released = 1 THEN 1 ELSE 0 END), 0) as released_count,
+                COALESCE(AVG(temperature), 0) as avg_water_temp
+            ')
+            ->first();
 
-        $releasedCount = (clone $filteredRecords)->where('released', 1)->count();
+        $totalCatches = (int) ($stats->total_catches ?? 0);
+        $totalInches = round((float) ($stats->total_inches ?? 0), 1);
+        $totalFeet = round($totalInches / 12, 1);
+        $avgLength = round((float) ($stats->avg_length ?? 0), 1);
+        $releasedCount = (int) ($stats->released_count ?? 0);
         $releaseRate = $totalCatches > 0 ? round(($releasedCount / $totalCatches) * 100) : 0;
+        $avgWaterTemp = round((float) ($stats->avg_water_temp ?? 0), 1);
 
         $longestCatch = (clone $filteredRecords)->whereNotNull('length')
             ->reorder()
@@ -78,8 +89,6 @@ class RecordController extends Controller
             ->orderBy('weight', 'desc')
             ->with(['angler', 'lake', 'fishBreed'])
             ->first();
-
-        $avgWaterTemp = round((clone $filteredRecords)->whereNotNull('temperature')->avg('temperature') ?? 0, 1);
 
         // Top 5 Anglers by production & longest fish
         $topAnglers = (clone $filteredRecords)->select('anglers_id', DB::raw('count(*) as catches_count'), DB::raw('max(length) as max_length'))
