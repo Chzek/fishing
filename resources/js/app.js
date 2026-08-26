@@ -1,12 +1,27 @@
 import './bootstrap';
 import './image-compressor';
 import dataTable from './components/data-table';
-import Alpine from 'alpinejs';
 import { createIcons, icons } from 'lucide';
 
-Alpine.data('dataTable', dataTable);
-window.Alpine = Alpine;
-Alpine.start();
+// Register custom Alpine components with Livewire 3's bundled Alpine
+document.addEventListener('livewire:init', () => {
+    if (window.Alpine) {
+        window.Alpine.data('dataTable', dataTable);
+    }
+});
+
+// Fallback for non-Livewire pages
+if (window.Alpine) {
+    window.Alpine.data('dataTable', dataTable);
+} else if (typeof window.Livewire === 'undefined') {
+    import('alpinejs').then(({ default: Alpine }) => {
+        if (!window.Alpine) {
+            window.Alpine = Alpine;
+            Alpine.data('dataTable', dataTable);
+            Alpine.start();
+        }
+    });
+}
 
 // Initialize Lucide icons on page load and dynamically after DOM updates
 window.initLucideIcons = () => {
@@ -14,6 +29,14 @@ window.initLucideIcons = () => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    window.initLucideIcons();
+});
+
+// Re-initialize icons after Livewire DOM morph updates
+document.addEventListener('livewire:initialized', () => {
+    window.initLucideIcons();
+});
+document.addEventListener('livewire:navigated', () => {
     window.initLucideIcons();
 });
 
