@@ -73,21 +73,27 @@ class GenericDataTable extends Component
         if (request()->has('search') && empty($this->search)) {
             $this->search = (string) request('search');
         }
+
         if (request()->has('sort_by') && !empty(request('sort_by'))) {
             $this->sortBy = (string) request('sort_by');
-        }
-        if (request()->has('sort_order') && !empty(request('sort_order'))) {
-            $this->sortOrder = (string) request('sort_order');
+            $this->sortOrder = (string) request('sort_order', 'asc');
+
+            $cols = explode(',', $this->sortBy);
+            $dirs = explode(',', $this->sortOrder);
+            $this->sorts = [];
+            foreach ($cols as $idx => $col) {
+                $dir = $dirs[$idx] ?? $dirs[0] ?? 'asc';
+                $this->sorts[] = ['column' => trim($col), 'direction' => trim($dir)];
+            }
         }
 
-        if (empty($this->sortBy)) {
+        if (empty($this->sorts)) {
             $this->sortBy = $this->defaultSortBy;
             $this->sortOrder = $this->defaultSortOrder;
+            $this->sorts = [
+                ['column' => $this->defaultSortBy, 'direction' => $this->defaultSortOrder]
+            ];
         }
-
-        $this->sorts = [
-            ['column' => $this->sortBy, 'direction' => $this->sortOrder]
-        ];
     }
 
     /**
@@ -130,25 +136,46 @@ class GenericDataTable extends Component
             }
         }
 
-        if (!empty($this->sorts)) {
-            $this->sortBy = $this->sorts[0]['column'];
-            $this->sortOrder = $this->sorts[0]['direction'];
-        } else {
-            $this->sortBy = $this->defaultSortBy;
-            $this->sortOrder = $this->defaultSortOrder;
-        }
-
+        $this->syncSortProperties();
         $this->resetPage();
     }
 
     public function updatedSortBy(): void
     {
-        $this->sorts = [['column' => $this->sortBy, 'direction' => $this->sortOrder ?: 'asc']];
+        $cols = explode(',', $this->sortBy);
+        $dirs = explode(',', $this->sortOrder ?: 'asc');
+        $this->sorts = [];
+        foreach ($cols as $idx => $col) {
+            if (empty(trim($col))) continue;
+            $dir = $dirs[$idx] ?? $dirs[0] ?? 'asc';
+            $this->sorts[] = ['column' => trim($col), 'direction' => trim($dir)];
+        }
     }
 
     public function updatedSortOrder(): void
     {
-        $this->sorts = [['column' => $this->sortBy ?: $this->defaultSortBy, 'direction' => $this->sortOrder]];
+        $cols = explode(',', $this->sortBy ?: $this->defaultSortBy);
+        $dirs = explode(',', $this->sortOrder);
+        $this->sorts = [];
+        foreach ($cols as $idx => $col) {
+            if (empty(trim($col))) continue;
+            $dir = $dirs[$idx] ?? $dirs[0] ?? 'asc';
+            $this->sorts[] = ['column' => trim($col), 'direction' => trim($dir)];
+        }
+    }
+
+    protected function syncSortProperties(): void
+    {
+        if (!empty($this->sorts)) {
+            $this->sortBy = implode(',', array_column($this->sorts, 'column'));
+            $this->sortOrder = implode(',', array_column($this->sorts, 'direction'));
+        } else {
+            $this->sortBy = $this->defaultSortBy;
+            $this->sortOrder = $this->defaultSortOrder;
+            $this->sorts = [
+                ['column' => $this->defaultSortBy, 'direction' => $this->defaultSortOrder]
+            ];
+        }
     }
 
     public function getSortDirection(string $column): ?string

@@ -112,27 +112,48 @@ class CatchDirectory extends Component
             }
         }
 
-        if (!empty($this->sorts)) {
-            $this->sortBy = $this->sorts[0]['column'];
-            $this->sortOrder = $this->sorts[0]['direction'];
-        } else {
-            $this->sortBy = 'date';
-            $this->sortOrder = 'desc';
-        }
-
+        $this->syncSortProperties();
         $this->resetPage();
     }
 
     public function updatedSortBy(): void
     {
-        $this->sorts = [['column' => $this->sortBy, 'direction' => $this->sortOrder ?: 'desc']];
+        $cols = explode(',', $this->sortBy);
+        $dirs = explode(',', $this->sortOrder ?: 'desc');
+        $this->sorts = [];
+        foreach ($cols as $idx => $col) {
+            if (empty(trim($col))) continue;
+            $dir = $dirs[$idx] ?? $dirs[0] ?? 'desc';
+            $this->sorts[] = ['column' => trim($col), 'direction' => trim($dir)];
+        }
         $this->resetPage();
     }
 
     public function updatedSortOrder(): void
     {
-        $this->sorts = [['column' => $this->sortBy ?: 'date', 'direction' => $this->sortOrder]];
+        $cols = explode(',', $this->sortBy ?: 'date');
+        $dirs = explode(',', $this->sortOrder);
+        $this->sorts = [];
+        foreach ($cols as $idx => $col) {
+            if (empty(trim($col))) continue;
+            $dir = $dirs[$idx] ?? $dirs[0] ?? 'desc';
+            $this->sorts[] = ['column' => trim($col), 'direction' => trim($dir)];
+        }
         $this->resetPage();
+    }
+
+    protected function syncSortProperties(): void
+    {
+        if (!empty($this->sorts)) {
+            $this->sortBy = implode(',', array_column($this->sorts, 'column'));
+            $this->sortOrder = implode(',', array_column($this->sorts, 'direction'));
+        } else {
+            $this->sortBy = 'date';
+            $this->sortOrder = 'desc';
+            $this->sorts = [
+                ['column' => 'date', 'direction' => 'desc']
+            ];
+        }
     }
 
     public function getSortDirection(string $column): ?string
