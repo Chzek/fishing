@@ -241,76 +241,23 @@
         @endif
     </div>
 
-    <!-- Content Area: Compact Taxonomy Table View with Local Search & Multi-Sort -->
+    <!-- Content Area: Compact Taxonomy Table View with Livewire Search & Multi-Sort -->
     <div x-show="viewMode === 'table'" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-        @if($fishes->count() > 0)
-            <div x-data="dataTable({ defaultDensity: 'normal' })">
-                <x-table.wrapper 
-                    searchPlaceholder="Quick filter species list..." 
-                    itemName="species"
-                    :showColumnPicker="true"
-                    :showDensity="true"
-                >
-                    <table class="w-full text-left text-xs text-slate-700">
-                        <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/80">
-                            <tr>
-                                <x-table.th col="species" type="text" label="Species">Species & Taxonomy</x-table.th>
-                                <x-table.th col="family" type="text" label="Family">Family</x-table.th>
-                                <x-table.th col="catches" type="number" align="center" label="Total Logged">Total Logged</x-table.th>
-                                <x-table.th col="longest" type="number" align="center" label="Longest Record">Longest Record</x-table.th>
-                                <x-table.th col="heaviest" type="number" align="center" label="Heaviest Record">Heaviest Record</x-table.th>
-                                <th scope="col" class="py-3 px-4 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
-                            @foreach($fishes as $fish)
-                                <tr data-table-row class="hover:bg-slate-50/70 transition-colors">
-                                    <td data-col="species" data-sort-val="{{ $fish->name }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'">
-                                        <div class="flex items-center gap-3">
-                                            <x-fishAvatar :fish="$fish" size="sm" />
-                                            <div>
-                                                <a href="/fish/{{ $fish->id }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline text-xs sm:text-sm">
-                                                    {{ $fish->name }}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    <td data-col="family" data-sort-val="{{ $fish->family?->name ?? '' }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-semibold text-slate-600">
-                                        <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
-                                            {{ $fish->family?->name ?? 'N/A' }}
-                                        </span>
-                                    </td>
-                                    <td data-col="catches" data-sort-val="{{ $fish->records_count }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">
-                                        {{ $fish->records_count }}
-                                    </td>
-                                    <td data-col="longest" data-sort-val="{{ $fish->longest_record ?? 0 }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono text-slate-700 font-semibold">
-                                        {{ $fish->longest_record ? $fish->longest_record . ' in.' : '—' }}
-                                    </td>
-                                    <td data-col="heaviest" data-sort-val="{{ $fish->heaviest_record ?? 0 }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono text-slate-700 font-semibold">
-                                        {{ $fish->heaviest_record ? $fish->heaviest_record . ' lbs.' : '—' }}
-                                    </td>
-                                    <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
-                                        <div class="flex items-center justify-end gap-1.5">
-                                            <a href="/fish/{{ $fish->id }}" class="p-1.5 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="View Dossier">
-                                                <i data-lucide="eye" class="w-4 h-4"></i>
-                                            </a>
-                                            <a href="/fish/breed/{{ $fish->id }}/edit" class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors" title="Edit Species">
-                                                <i data-lucide="edit-3" class="w-4 h-4"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </x-table.wrapper>
-            </div>
-        @else
-            <div class="py-8 text-center text-slate-500 text-xs">
-                No fish species matching query.
-            </div>
-        @endif
+        @livewire('components.generic-data-table', [
+            'modelClass' => \Fishinglog\Models\FishBreed::class,
+            'columns' => [
+                ['key' => 'name', 'label' => 'Species & Taxonomy', 'type' => 'species_avatar', 'sortable' => true, 'searchable' => true],
+                ['key' => 'family.name', 'label' => 'Family', 'type' => 'family_badge', 'sortable' => true, 'sortKey' => 'family'],
+                ['key' => 'records_count', 'label' => 'Total Logged', 'type' => 'count', 'align' => 'center', 'sortable' => true, 'sortKey' => 'records_count'],
+                ['key' => 'longest_record', 'label' => 'Longest Record', 'type' => 'lunker_record', 'align' => 'center', 'sortable' => true, 'sortKey' => 'longest_record'],
+                ['key' => 'heaviest_record', 'label' => 'Heaviest Record', 'type' => 'heavy_record', 'align' => 'center', 'sortable' => true, 'sortKey' => 'heaviest_record'],
+            ],
+            'searchPlaceholder' => 'Quick filter species by name or family...',
+            'itemName' => 'species',
+            'perPage' => 15,
+            'defaultSortBy' => 'name',
+            'defaultSortOrder' => 'asc',
+        ])
     </div>
 
     <!-- Pagination -->

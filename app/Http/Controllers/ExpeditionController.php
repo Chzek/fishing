@@ -18,17 +18,7 @@ class ExpeditionController extends Controller
      */
     public function index()
     {
-        $expeditions = Expedition::withCount('posts', 'crews')
-            ->addSelect(['records_count' => Record::selectRaw('count(*)')
-                ->whereColumn('caught', '>=', 'expeditions.start')
-                ->whereColumn('caught', '<=', 'expeditions.finish')
-            ])
-            ->orderBy('start', 'desc')
-            ->get();
-
-        return view('expedition.index', [
-            'expeditions' => $expeditions,
-        ]);
+        return view('expedition.index');
     }
 
     /**

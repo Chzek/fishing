@@ -176,4 +176,46 @@ class GenericDataTableLivewireTest extends TestCase
         ->assertStatus(200)
         ->assertSee('Walker');
     }
+
+    #[Test]
+    public function generic_data_table_renders_successfully_for_expeditions()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $expedition = \Fishinglog\Models\Expedition::create([
+            'description' => 'Wilderness Fly Fishing Trip 2026',
+            'start' => '2026-06-01',
+            'finish' => '2026-06-07',
+        ]);
+
+        Livewire::test(GenericDataTable::class, [
+            'modelClass' => \Fishinglog\Models\Expedition::class,
+            'columns' => [
+                ['key' => 'description', 'label' => 'Trip Description', 'searchable' => true],
+            ],
+            'itemName' => 'expeditions',
+        ])
+        ->assertStatus(200)
+        ->assertSee('Wilderness Fly Fishing Trip 2026');
+    }
+
+    #[Test]
+    public function generic_data_table_supports_family_prefilter_for_species()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $family1 = \Fishinglog\Models\FishFamily::factory()->create(['name' => 'Salmonidae']);
+        $family2 = \Fishinglog\Models\FishFamily::factory()->create(['name' => 'Centrarchidae']);
+
+        $fish1 = \Fishinglog\Models\FishBreed::create(['name' => 'Brook Trout', 'fish_families_id' => $family1->id]);
+        $fish2 = \Fishinglog\Models\FishBreed::create(['name' => 'Smallmouth Bass', 'fish_families_id' => $family2->id]);
+
+        $response = $this->get('/fish?family=' . $family1->id);
+
+        $response->assertStatus(200);
+        $response->assertSee('Brook Trout');
+        $response->assertDontSee('Smallmouth Bass');
+    }
 }

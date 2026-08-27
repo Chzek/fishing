@@ -3,7 +3,11 @@
 namespace Fishinglog\Livewire\Components;
 
 use Fishinglog\Models\Angler;
+use Fishinglog\Models\Expedition;
+use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\Lake;
+use Fishinglog\Models\Record;
+use Fishinglog\Models\User;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -36,6 +40,21 @@ class GenericDataTable extends Component
     #[Url(history: true)]
     public string $search = '';
 
+    #[Url(history: true)]
+    public string $family = '';
+
+    #[Url(history: true)]
+    public string $species = '';
+
+    #[Url(history: true)]
+    public string $lake = '';
+
+    #[Url(history: true)]
+    public string $angler = '';
+
+    #[Url(history: true)]
+    public string $lure = '';
+
     #[Url(history: true, as: 'sort_by')]
     public string $sortBy = '';
 
@@ -44,7 +63,6 @@ class GenericDataTable extends Component
 
     /**
      * Active sort criteria stack supporting multi-column sorting.
-     * Example: [['column' => 'lake', 'direction' => 'asc'], ['column' => 'species', 'direction' => 'desc']]
      */
     public array $sorts = [];
 
@@ -57,7 +75,12 @@ class GenericDataTable extends Component
         string $itemName = 'items',
         int $perPage = 15,
         string $defaultSortBy = '',
-        string $defaultSortOrder = 'asc'
+        string $defaultSortOrder = 'asc',
+        string $family = '',
+        string $species = '',
+        string $lake = '',
+        string $angler = '',
+        string $lure = ''
     ): void {
         $this->modelClass = $modelClass;
         $this->columns = $columns;
@@ -72,6 +95,37 @@ class GenericDataTable extends Component
 
         if (request()->has('search') && empty($this->search)) {
             $this->search = (string) request('search');
+        }
+
+        // Support URL pre-filters from external incoming links or component params
+        if (!empty($family)) {
+            $this->family = $family;
+        } elseif (request()->has('family') && empty($this->family)) {
+            $this->family = (string) request('family');
+        }
+
+        if (!empty($species)) {
+            $this->species = $species;
+        } elseif (request()->has('species') && empty($this->species)) {
+            $this->species = (string) request('species');
+        }
+
+        if (!empty($lake)) {
+            $this->lake = $lake;
+        } elseif (request()->has('lake') && empty($this->lake)) {
+            $this->lake = (string) request('lake');
+        }
+
+        if (!empty($angler)) {
+            $this->angler = $angler;
+        } elseif (request()->has('angler') && empty($this->angler)) {
+            $this->angler = (string) request('angler');
+        }
+
+        if (!empty($lure)) {
+            $this->lure = $lure;
+        } elseif (request()->has('lure') && empty($this->lure)) {
+            $this->lure = (string) request('lure');
         }
 
         if (request()->has('sort_by') && !empty(request('sort_by'))) {
@@ -96,11 +150,6 @@ class GenericDataTable extends Component
         }
     }
 
-    /**
-     * Tri-State Multi-Column Sorting Cycle:
-     * - Regular Click: Reset multi-sort and cycle single column (Asc -> Desc -> Reset to default).
-     * - Shift + Click: Add/toggle column in multi-sort stack without clearing existing columns.
-     */
     public function sortByColumn(string $column, bool $isShift = false): void
     {
         if ($isShift) {
@@ -116,19 +165,16 @@ class GenericDataTable extends Component
                 if ($this->sorts[$existingIndex]['direction'] === 'asc') {
                     $this->sorts[$existingIndex]['direction'] = 'desc';
                 } else {
-                    // Tri-State remove column from multi-sort stack
                     array_splice($this->sorts, $existingIndex, 1);
                 }
             } else {
                 $this->sorts[] = ['column' => $column, 'direction' => 'asc'];
             }
         } else {
-            // Single Click: Reset multi-sort stack and cycle target column
             if (count($this->sorts) === 1 && $this->sorts[0]['column'] === $column) {
                 if ($this->sorts[0]['direction'] === 'asc') {
                     $this->sorts = [['column' => $column, 'direction' => 'desc']];
                 } else {
-                    // Reset to empty / default sort
                     $this->sorts = [];
                 }
             } else {
@@ -206,9 +252,14 @@ class GenericDataTable extends Component
         $this->resetPage();
     }
 
+    public function updatedFamily(): void
+    {
+        $this->resetPage();
+    }
+
     public function resetFilters(): void
     {
-        $this->reset(['search']);
+        $this->reset(['search', 'family', 'species', 'lake', 'angler', 'lure']);
         $this->sortBy = $this->defaultSortBy;
         $this->sortOrder = $this->defaultSortOrder;
         $this->sorts = [
@@ -230,7 +281,7 @@ class GenericDataTable extends Component
             $query->with($this->with);
         }
 
-        // Apply Model-specific relation counts safely inside render
+        // Apply Model-specific relation counts & computed aggregates safely
         if ($this->modelClass === Lake::class) {
             $query->withCount('records')
                   ->withCount(['records as visits' => function ($q) {
@@ -244,10 +295,37 @@ class GenericDataTable extends Component
                   ->withCount(['records as lakes_count' => function ($q) {
                       $q->select(DB::raw('count(distinct records.lakes_id)'));
                   }]);
+        } elseif ($this->modelClass === Expedition::class) {
+            $query->withCount('posts', 'crews')
+                  ->addSelect(['records_count' => Record::selectRaw('count(*)')
+                      ->whereColumn('caught', '>=', 'expeditions.start')
+                      ->whereColumn('caught', '<=', 'expeditions.finish')
+                  ]);
+        } elseif ($this->modelClass === FishBreed::class) {
+            $query->with(['family'])
+                  ->withCount('records')
+                  ->addSelect(['longest_record' => Record::selectRaw('max(length)')
+                      ->whereColumn('fish_breeds_id', 'fish_breeds.id')
+                  ])
+                  ->addSelect(['heaviest_record' => Record::selectRaw('max(weight)')
+                      ->whereColumn('fish_breeds_id', 'fish_breeds.id')
+                  ]);
         } else {
             if (!empty($this->withCount)) {
                 $query->withCount($this->withCount);
             }
+        }
+
+        // Apply Pre-filters from URL (family, species, lake, angler, etc.)
+        if (!empty($this->family) && $this->modelClass === FishBreed::class) {
+            $famVal = $this->family;
+            $query->where(function ($q) use ($famVal) {
+                if (is_numeric($famVal)) {
+                    $q->where('fish_breeds.fish_families_id', (int) $famVal);
+                } else {
+                    $q->whereHas('family', fn($f) => $f->where('name', $famVal));
+                }
+            });
         }
 
         // Apply Search Filter
@@ -262,7 +340,7 @@ class GenericDataTable extends Component
                 }
 
                 if (empty($searchableCols)) {
-                    $searchableCols = ['name', 'title', 'firstName', 'lastName'];
+                    $searchableCols = ['name', 'title', 'firstName', 'lastName', 'email', 'description'];
                 }
 
                 $first = true;
@@ -307,9 +385,18 @@ class GenericDataTable extends Component
                 $sortColKey = 'records_count';
             } elseif ($sortColKey === 'lakes') {
                 $sortColKey = 'lakes_count';
+            } elseif ($sortColKey === 'crew') {
+                $sortColKey = 'crews_count';
+            } elseif ($sortColKey === 'posts') {
+                $sortColKey = 'posts_count';
+            } elseif ($sortColKey === 'family' || $sortColKey === 'family.name') {
+                $query->leftJoin('fish_families', 'fish_breeds.fish_families_id', '=', 'fish_families.id')
+                      ->select('fish_breeds.*')
+                      ->orderBy('fish_families.name', $order);
+                continue;
             }
 
-            if (in_array($sortColKey, ['records_count', 'visits', 'anglers_count', 'lakes_count'])) {
+            if (in_array($sortColKey, ['records_count', 'visits', 'anglers_count', 'lakes_count', 'crews_count', 'posts_count', 'longest_record', 'heaviest_record'])) {
                 $query->orderByRaw("`{$sortColKey}` {$order}");
             } elseif (in_array($sortColKey, ['full_name', 'angler', 'lastName']) || (str_contains($this->modelClass, 'Angler') && in_array($sortColKey, ['name', 'angler']))) {
                 $query->orderBy('lastName', $order)->orderBy('firstName', $order);

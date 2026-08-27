@@ -163,7 +163,7 @@
         </div>
     </div>
 
-    <!-- Users Table with Local Filter & Multi-Sort -->
+    <!-- Users Table with Livewire Filter & Multi-Sort -->
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
@@ -172,124 +172,21 @@
             <span class="text-xs text-slate-500 font-mono">{{ count($users) }} Account(s)</span>
         </div>
 
-        <div x-data="dataTable({ defaultDensity: 'normal' })">
-            <x-table.wrapper 
-                searchPlaceholder="Quick filter users by name, email, or role..." 
-                itemName="users"
-                :showColumnPicker="false"
-                :showDensity="true"
-            >
-                <table class="w-full text-left text-xs text-slate-700">
-                    <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
-                        <tr>
-                            <x-table.th col="account" type="text" label="User Account">User Account</x-table.th>
-                            <x-table.th col="email" type="text" label="Email">Email / Verification</x-table.th>
-                            <x-table.th col="role" type="text" label="Role">Role Privileges</x-table.th>
-                            <x-table.th col="angler" type="text" label="Angler Profile">Associated Angler Profile</x-table.th>
-                            <th scope="col" class="py-3 px-4 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody x-ref="tbody" class="divide-y divide-slate-100 text-slate-700 bg-white">
-                        @foreach($users as $user)
-                            <tr data-table-row class="hover:bg-slate-50/80 transition-colors {{ !$user->angler ? 'bg-amber-50/40' : '' }}">
-                                <td data-col="account" data-sort-val="{{ $user->name }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-4 px-4'" class="font-bold text-slate-900">
-                                    <div class="flex items-center gap-2">
-                                        <span>{{ $user->name }}</span>
-                                        @if(!$user->angler)
-                                            <span class="text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300 px-1.5 py-0.2 rounded-md">
-                                                Unlinked
-                                            </span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td data-col="email" data-sort-val="{{ $user->email }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-4 px-4'">
-                                    <div class="font-mono text-slate-800">{{ $user->email }}</div>
-                                    <div class="mt-1 flex items-center gap-2">
-                                        @if($user->isRegistered())
-                                            <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Verified</span>
-                                        @else
-                                            <span class="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Pending Verification</span>
-                                            <form action="{{ route('admin.users.verify', $user) }}" method="POST" class="inline" onsubmit="return confirm('Manually verify email address for {{ $user->name }}?')">
-                                                @csrf
-                                                <button type="submit" class="text-[10px] font-bold text-teal-800 hover:text-teal-900 bg-teal-50 hover:bg-teal-100 px-2 py-0.5 rounded border border-teal-300 shadow-sm transition-colors cursor-pointer" title="Manually mark user email as verified">
-                                                    ✓ Verify Now
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td data-col="role" data-sort-val="{{ $user->isAdmin() ? 'Admin' : 'Standard' }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-4 px-4'">
-                                    @if($user->isAdmin())
-                                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-teal-800 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200">
-                                            <i data-lucide="shield" class="w-3.5 h-3.5 text-teal-600"></i> Administrator
-                                        </span>
-                                    @else
-                                        <span class="text-[11px] font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
-                                            Standard User
-                                        </span>
-                                    @endif
-                                </td>
-                                <td data-col="angler" data-sort-val="{{ $user->angler ? $user->angler->fullName : 'Unlinked' }}" :class="density === 'compact' ? 'py-2 px-4' : 'py-4 px-4'">
-                                    @if($user->angler)
-                                        <div class="flex items-center gap-2">
-                                            <x-anglerAvatar :angler="$user->angler" size="w-7 h-7 text-xs" />
-                                            <div>
-                                                <a href="/angler/{{ $user->angler->id }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline">
-                                                    {{ $user->angler->fullName }}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    @else
-                                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">
-                                            <i data-lucide="alert-circle" class="w-3 h-3 text-amber-600"></i> Needs Angler Linking
-                                        </span>
-                                    @endif
-                                </td>
-                                <td :class="density === 'compact' ? 'py-2 px-4' : 'py-4 px-4'" class="text-right">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <!-- Link Angler Form Modal Trigger / Dropdown -->
-                                        <form action="{{ route('admin.users.link') }}" method="POST" class="flex items-center gap-1">
-                                            @csrf
-                                            <input type="hidden" name="user_id" value="{{ $user->id }}">
-                                            <select name="angler_id" class="h-8 px-2 rounded-lg border border-slate-200 text-xs bg-slate-50 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
-                                                <option value="">Unlink Angler...</option>
-                                                @foreach($anglers as $ang)
-                                                    <option value="{{ $ang->id }}" {{ $user->angler && $user->angler->id == $ang->id ? 'selected' : '' }}>
-                                                        {{ $ang->fullName }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <button type="submit" class="h-8 px-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-lg shadow transition-colors">
-                                                Assign
-                                            </button>
-                                        </form>
-
-                                        <!-- Toggle Admin Privileges -->
-                                        @if(auth()->id() !== $user->id)
-                                            <form action="{{ route('admin.users.toggle-admin', $user) }}" method="POST" onsubmit="return confirm('Change admin privileges for {{ $user->name }}?')">
-                                                @csrf
-                                                <button type="submit" class="h-8 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg border border-slate-200 transition-colors">
-                                                    {{ $user->isAdmin() ? 'Demote' : 'Make Admin' }}
-                                                </button>
-                                            </form>
-
-                                            <!-- Delete User Account -->
-                                            <form action="{{ route('admin.users.delete', $user) }}" method="POST" onsubmit="return confirm('Are you sure you want to PERMANENTLY remove user account {{ $user->name }}?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="h-8 px-2.5 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 font-bold text-xs rounded-lg transition-colors cursor-pointer" title="Delete User">
-                                                    Delete
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </x-table.wrapper>
-        </div>
+        @livewire('components.generic-data-table', [
+            'modelClass' => \Fishinglog\Models\User::class,
+            'with' => ['angler'],
+            'columns' => [
+                ['key' => 'name', 'label' => 'User Account', 'type' => 'user_account', 'sortable' => true, 'searchable' => true],
+                ['key' => 'email', 'label' => 'Email / Verification', 'type' => 'user_email', 'sortable' => true, 'searchable' => true],
+                ['key' => 'type', 'label' => 'Role Privileges', 'type' => 'user_role', 'sortable' => true],
+                ['key' => 'angler.lastName', 'label' => 'Associated Angler Profile', 'type' => 'link', 'urlPrefix' => 'angler', 'urlParam' => 'angler.id', 'sortable' => true, 'sortKey' => 'angler'],
+            ],
+            'searchPlaceholder' => 'Quick filter users by name, email, or role...',
+            'itemName' => 'users',
+            'perPage' => 15,
+            'defaultSortBy' => 'name',
+            'defaultSortOrder' => 'asc',
+        ])
     </div>
 </div>
 @endsection

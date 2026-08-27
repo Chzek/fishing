@@ -25,13 +25,13 @@
                 </div>
             </div>
 
-            @if($search)
+            @if($search || $family || $species || $lake || $angler)
                 <button 
                     wire:click="resetFilters" 
                     type="button" 
                     class="text-xs text-slate-500 hover:text-slate-800 font-medium transition-colors underline cursor-pointer"
                 >
-                    Reset Search
+                    Reset Filters
                 </button>
             @endif
         </div>
@@ -40,7 +40,7 @@
         <div class="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 text-xs">
             <!-- Row Counter -->
             <div class="flex items-center gap-1.5 text-slate-500 font-medium font-mono text-[11px] bg-white px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-2xs">
-                <span class="w-2 h-2 rounded-full {{ $search ? 'bg-amber-400' : 'bg-teal-500' }}"></span>
+                <span class="w-2 h-2 rounded-full {{ ($search || $family) ? 'bg-amber-400' : 'bg-teal-500' }}"></span>
                 <span>{{ number_format($totalCount) }} {{ $itemName }}</span>
             </div>
 
@@ -141,7 +141,63 @@
                                 :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" 
                                 class="{{ $alignClass }} whitespace-nowrap text-xs"
                             >
-                                @if($type === 'link')
+                                @if($type === 'expedition_desc')
+                                    <div class="flex items-center gap-2 font-bold text-slate-900">
+                                        <i data-lucide="ship" class="w-4 h-4 text-teal-600 shrink-0"></i>
+                                        <a href="{{ url('/expedition/' . $record->id) }}" class="hover:text-teal-600 hover:underline">
+                                            {{ $val ?? '—' }}
+                                        </a>
+                                    </div>
+                                @elseif($type === 'species_avatar')
+                                    <div class="flex items-center gap-3">
+                                        <x-fishAvatar :fish="$record" size="sm" />
+                                        <a href="{{ url('/fish/' . $record->id) }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline text-xs sm:text-sm">
+                                            {{ $val ?? '—' }}
+                                        </a>
+                                    </div>
+                                @elseif($type === 'family_badge')
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
+                                        {{ $record->family?->name ?? 'N/A' }}
+                                    </span>
+                                @elseif($type === 'lunker_record')
+                                    <span class="font-mono text-slate-700 font-semibold">
+                                        {{ $val ? $val . ' in.' : '—' }}
+                                    </span>
+                                @elseif($type === 'heavy_record')
+                                    <span class="font-mono text-slate-700 font-semibold">
+                                        {{ $val ? $val . ' lbs.' : '—' }}
+                                    </span>
+                                @elseif($type === 'user_account')
+                                    <div class="flex items-center gap-2 font-bold text-slate-900">
+                                        <span>{{ $val }}</span>
+                                        @if(!$record->angler)
+                                            <span class="text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300 px-1.5 py-0.2 rounded-md">
+                                                Unlinked
+                                            </span>
+                                        @endif
+                                    </div>
+                                @elseif($type === 'user_email')
+                                    <div>
+                                        <div class="font-mono text-slate-800">{{ $val }}</div>
+                                        <div class="mt-0.5 flex items-center gap-2">
+                                            @if($record->isRegistered())
+                                                <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Verified</span>
+                                            @else
+                                                <span class="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Pending Verification</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @elseif($type === 'user_role')
+                                    @if($record->isAdmin())
+                                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-teal-800 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200">
+                                            <i data-lucide="shield" class="w-3.5 h-3.5 text-teal-600"></i> Administrator
+                                        </span>
+                                    @else
+                                        <span class="text-[11px] font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+                                            Standard User
+                                        </span>
+                                    @endif
+                                @elseif($type === 'link')
                                     @php
                                         $urlPath = isset($col['urlPrefix']) ? $col['urlPrefix'] . '/' . data_get($record, $col['urlParam'] ?? 'id') : '#';
                                     @endphp
@@ -171,11 +227,40 @@
                             @if(method_exists($record, 'getTable'))
                                 @php
                                     $tbl = $record->getTable();
-                                    $detailUrl = $tbl === 'lakes' ? url('/lake/' . $record->id) : ($tbl === 'anglers' ? url('/angler/' . $record->id . '/profile') : url('#'));
                                 @endphp
-                                <a href="{{ $detailUrl }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
-                                    View Details →
-                                </a>
+                                @if($tbl === 'lakes')
+                                    <a href="{{ url('/lake/' . $record->id) }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
+                                        View Details →
+                                    </a>
+                                @elseif($tbl === 'anglers')
+                                    <a href="{{ url('/angler/' . $record->id . '/profile') }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
+                                        View Profile →
+                                    </a>
+                                @elseif($tbl === 'expeditions')
+                                    <x-tableOptions name='expedition' identifier='{{ $record->id }}' />
+                                @elseif($tbl === 'fish_breeds')
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <a href="{{ url('/fish/' . $record->id) }}" class="p-1.5 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="View Dossier">
+                                            <i data-lucide="eye" class="w-4 h-4"></i>
+                                        </a>
+                                        <a href="{{ url('/fish/breed/' . $record->id . '/edit') }}" class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors" title="Edit Species">
+                                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                        </a>
+                                    </div>
+                                @elseif($tbl === 'users')
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <form action="{{ route('admin.users.toggle-admin', $record) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="text-[10px] font-bold px-2 py-0.5 rounded border transition-colors cursor-pointer {{ $record->isAdmin() ? 'text-amber-800 bg-amber-50 hover:bg-amber-100 border-amber-200' : 'text-teal-800 bg-teal-50 hover:bg-teal-100 border-teal-200' }}">
+                                                {{ $record->isAdmin() ? 'Demote' : 'Make Admin' }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <a href="{{ url('/' . $tbl . '/' . $record->id) }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
+                                        View →
+                                    </a>
+                                @endif
                             @endif
                         </td>
                     </tr>
