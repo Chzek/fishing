@@ -20,26 +20,9 @@ class AnglerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(\Illuminate\Pipeline\Pipeline $pipeline, Request $request)
+    public function index()
     {
-        $query = Angler::withCount('records')
-            ->withCount(['records as lakes_count' => function ($query) {
-                $query->select(DB::raw('count(distinct records.lakes_id)'));
-            }]);
-
-        $query = $pipeline->send($query)
-            ->through([
-                \Fishinglog\Pipes\Filters\SortBy::class,
-                \Fishinglog\Pipes\Filters\FilterBySearch::class,
-            ])
-            ->thenReturn();
-
-
-        $anglers = $query->paginate(10)->withQueryString();
-
-        return view('angler.index', [
-            'anglers' => $anglers,
-        ]);
+        return view('angler.index');
     }
 
 

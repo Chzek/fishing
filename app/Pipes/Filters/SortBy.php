@@ -81,16 +81,18 @@ class SortBy implements PipeContract
 
             if ($table === 'lakes') {
                 switch ($col) {
+                    case 'records_count':
                     case 'catches':
-                        $query->orderBy('records_count', $order);
+                        $query->orderByRaw("`records_count` {$order}");
                         continue 2;
 
                     case 'visits':
-                        $query->orderBy('visits', $order);
+                        $query->orderByRaw("`visits` {$order}");
                         continue 2;
 
+                    case 'anglers_count':
                     case 'anglers':
-                        $query->orderBy('anglers_count', $order);
+                        $query->orderByRaw("`anglers_count` {$order}");
                         continue 2;
 
                     case 'rate':

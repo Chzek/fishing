@@ -21,32 +21,9 @@ class LakeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Pipeline $pipeline, Request $request)
+    public function index()
     {
-        $lakes = Lake::with('fishingZone')
-            ->withCount('records')
-            ->withCount(['records as visits' => function ($query) {
-                $query->select(DB::raw('count(distinct records.caught)'));
-            }])
-            ->withCount(['anglers as anglers_count' => function ($query) {
-                $query->select(DB::raw('count(distinct anglers.id)'));
-            }]);
-
-        $lakes = $pipeline->send($lakes)
-            ->through([
-                SortBy::class,
-                FilterByName::class,
-                FilterByRecordsCount::class,
-                \Fishinglog\Pipes\Filters\FilterBySearch::class,
-            ])
-            ->thenReturn();
-
-        $lakes = $lakes->paginate(10)->withQueryString();
-
-
-        return view('lake.index', [
-            'lakes' => $lakes,
-        ]);
+        return view('lake.index');
     }
 
     /**
