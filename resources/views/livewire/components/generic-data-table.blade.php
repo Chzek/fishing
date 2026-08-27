@@ -93,6 +93,8 @@
                             $alignClass = $align === 'center' ? 'text-center' : ($align === 'right' ? 'text-right' : 'text-left');
                             $isSortable = $col['sortable'] ?? true;
                             $colKey = $col['key'];
+                            $sortDir = $this->getSortDirection($colKey);
+                            $sortIdx = $this->getSortOrderIndex($colKey);
                         @endphp
                         <th 
                             scope="col" 
@@ -100,13 +102,18 @@
                             data-col-label="{{ $col['label'] }}" 
                             x-show="isColumnVisible('{{ $colKey }}')" 
                             class="py-3 px-4 {{ $alignClass }} {{ $isSortable ? 'select-none cursor-pointer group' : '' }}"
-                            @if($isSortable) wire:click="sortByColumn('{{ $colKey }}')" @endif
+                            @if($isSortable) wire:click="sortByColumn('{{ $colKey }}', $event.shiftKey)" @endif
                         >
                             <div class="inline-flex items-center gap-1.5 {{ $align === 'center' ? 'justify-center' : ($align === 'right' ? 'justify-end' : 'justify-start') }} hover:text-teal-600">
                                 <span>{{ $col['label'] }}</span>
                                 @if($isSortable)
-                                    @if($sortBy === $colKey)
-                                        <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                                    @if($sortDir)
+                                        <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
+                                            @if($sortIdx)
+                                                <span class="text-[9px] text-teal-800 font-mono font-bold">{{ $sortIdx }}</span>
+                                            @endif
+                                            <span>{{ strtolower($sortDir) === 'asc' ? '▲' : '▼' }}</span>
+                                        </span>
                                     @else
                                         <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
                                     @endif

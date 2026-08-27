@@ -128,81 +128,113 @@
         <table class="w-full text-left text-sm text-slate-700">
             <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
                 <tr>
-                    <th scope="col" data-col="date" data-col-label="Date" x-show="isColumnVisible('date')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('date')">
+                    <th scope="col" data-col="date" data-col-label="Date" x-show="isColumnVisible('date')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('date', $event.shiftKey)">
                         <div class="inline-flex items-center gap-1.5 hover:text-teal-600">
                             <span>Date</span>
-                            @if($sortBy === 'date' || $sortBy === 'caught')
-                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @php $dir = $this->getSortDirection('date'); $idx = $this->getSortOrderIndex('date'); @endphp
+                            @if($dir)
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
+                                    @if($idx)<span class="text-[9px] text-teal-800 font-mono font-bold">{{ $idx }}</span>@endif
+                                    <span>{{ strtolower($dir) === 'asc' ? '▲' : '▼' }}</span>
+                                </span>
                             @else
                                 <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
                             @endif
                         </div>
                     </th>
-                    <th scope="col" data-col="angler" data-col-label="Angler" x-show="isColumnVisible('angler')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('angler')">
+                    <th scope="col" data-col="angler" data-col-label="Angler" x-show="isColumnVisible('angler')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('angler', $event.shiftKey)">
                         <div class="inline-flex items-center gap-1.5 hover:text-teal-600">
                             <span>Angler</span>
-                            @if($sortBy === 'angler')
-                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @php $dir = $this->getSortDirection('angler'); $idx = $this->getSortOrderIndex('angler'); @endphp
+                            @if($dir)
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
+                                    @if($idx)<span class="text-[9px] text-teal-800 font-mono font-bold">{{ $idx }}</span>@endif
+                                    <span>{{ strtolower($dir) === 'asc' ? '▲' : '▼' }}</span>
+                                </span>
                             @else
                                 <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
                             @endif
                         </div>
                     </th>
-                    <th scope="col" data-col="lake" data-col-label="Lake / Water" x-show="isColumnVisible('lake')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('lake')">
+                    <th scope="col" data-col="lake" data-col-label="Lake / Water" x-show="isColumnVisible('lake')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('lake', $event.shiftKey)">
                         <div class="inline-flex items-center gap-1.5 hover:text-teal-600">
                             <span>Lake / Water</span>
-                            @if($sortBy === 'lake')
-                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @php $dir = $this->getSortDirection('lake'); $idx = $this->getSortOrderIndex('lake'); @endphp
+                            @if($dir)
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
+                                    @if($idx)<span class="text-[9px] text-teal-800 font-mono font-bold">{{ $idx }}</span>@endif
+                                    <span>{{ strtolower($dir) === 'asc' ? '▲' : '▼' }}</span>
+                                </span>
                             @else
                                 <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
                             @endif
                         </div>
                     </th>
-                    <th scope="col" data-col="species" data-col-label="Fish Species" x-show="isColumnVisible('species')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('species')">
+                    <th scope="col" data-col="species" data-col-label="Fish Species" x-show="isColumnVisible('species')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('species', $event.shiftKey)">
                         <div class="inline-flex items-center gap-1.5 hover:text-teal-600">
                             <span>Fish Species</span>
-                            @if($sortBy === 'species')
-                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @php $dir = $this->getSortDirection('species'); $idx = $this->getSortOrderIndex('species'); @endphp
+                            @if($dir)
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
+                                    @if($idx)<span class="text-[9px] text-teal-800 font-mono font-bold">{{ $idx }}</span>@endif
+                                    <span>{{ strtolower($dir) === 'asc' ? '▲' : '▼' }}</span>
+                                </span>
                             @else
                                 <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
                             @endif
                         </div>
                     </th>
-                    <th scope="col" data-col="lure" data-col-label="Lure / Bait" x-show="isColumnVisible('lure')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('lure')">
+                    <th scope="col" data-col="lure" data-col-label="Lure / Bait" x-show="isColumnVisible('lure')" class="py-3 px-4 text-left select-none cursor-pointer group" wire:click="sortByColumn('lure', $event.shiftKey)">
                         <div class="inline-flex items-center gap-1.5 hover:text-teal-600">
                             <span>Lure / Bait</span>
-                            @if($sortBy === 'lure')
-                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @php $dir = $this->getSortDirection('lure'); $idx = $this->getSortOrderIndex('lure'); @endphp
+                            @if($dir)
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
+                                    @if($idx)<span class="text-[9px] text-teal-800 font-mono font-bold">{{ $idx }}</span>@endif
+                                    <span>{{ strtolower($dir) === 'asc' ? '▲' : '▼' }}</span>
+                                </span>
                             @else
                                 <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
                             @endif
                         </div>
                     </th>
-                    <th scope="col" data-col="weight" data-col-label="Weight" x-show="isColumnVisible('weight')" class="py-3 px-4 text-center select-none cursor-pointer group" wire:click="sortByColumn('weight')">
+                    <th scope="col" data-col="weight" data-col-label="Weight" x-show="isColumnVisible('weight')" class="py-3 px-4 text-center select-none cursor-pointer group" wire:click="sortByColumn('weight', $event.shiftKey)">
                         <div class="inline-flex items-center justify-center gap-1.5 hover:text-teal-600">
                             <span>Weight (lbs)</span>
-                            @if($sortBy === 'weight')
-                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @php $dir = $this->getSortDirection('weight'); $idx = $this->getSortOrderIndex('weight'); @endphp
+                            @if($dir)
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
+                                    @if($idx)<span class="text-[9px] text-teal-800 font-mono font-bold">{{ $idx }}</span>@endif
+                                    <span>{{ strtolower($dir) === 'asc' ? '▲' : '▼' }}</span>
+                                </span>
                             @else
                                 <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
                             @endif
                         </div>
                     </th>
-                    <th scope="col" data-col="length" data-col-label="Length" x-show="isColumnVisible('length')" class="py-3 px-4 text-center select-none cursor-pointer group" wire:click="sortByColumn('length')">
+                    <th scope="col" data-col="length" data-col-label="Length" x-show="isColumnVisible('length')" class="py-3 px-4 text-center select-none cursor-pointer group" wire:click="sortByColumn('length', $event.shiftKey)">
                         <div class="inline-flex items-center justify-center gap-1.5 hover:text-teal-600">
                             <span>Length (in)</span>
-                            @if($sortBy === 'length')
-                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @php $dir = $this->getSortDirection('length'); $idx = $this->getSortOrderIndex('length'); @endphp
+                            @if($dir)
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
+                                    @if($idx)<span class="text-[9px] text-teal-800 font-mono font-bold">{{ $idx }}</span>@endif
+                                    <span>{{ strtolower($dir) === 'asc' ? '▲' : '▼' }}</span>
+                                </span>
                             @else
                                 <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
                             @endif
                         </div>
                     </th>
-                    <th scope="col" data-col="status" data-col-label="Status" x-show="isColumnVisible('status')" class="py-3 px-4 text-center select-none cursor-pointer group" wire:click="sortByColumn('status')">
+                    <th scope="col" data-col="status" data-col-label="Status" x-show="isColumnVisible('status')" class="py-3 px-4 text-center select-none cursor-pointer group" wire:click="sortByColumn('status', $event.shiftKey)">
                         <div class="inline-flex items-center justify-center gap-1.5 hover:text-teal-600">
                             <span>Status</span>
-                            @if($sortBy === 'status')
-                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60">{{ strtolower($sortOrder) === 'asc' ? '▲' : '▼' }}</span>
+                            @php $dir = $this->getSortDirection('status'); $idx = $this->getSortOrderIndex('status'); @endphp
+                            @if($dir)
+                                <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
+                                    @if($idx)<span class="text-[9px] text-teal-800 font-mono font-bold">{{ $idx }}</span>@endif
+                                    <span>{{ strtolower($dir) === 'asc' ? '▲' : '▼' }}</span>
+                                </span>
                             @else
                                 <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
                             @endif

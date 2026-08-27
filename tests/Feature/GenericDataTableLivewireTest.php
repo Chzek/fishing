@@ -79,19 +79,57 @@ class GenericDataTableLivewireTest extends TestCase
         // 1. Initial State: Default sort (id asc)
         ->assertSet('sortBy', 'id')
         // 2. First Click on 'name': Ascending
-        ->call('sortByColumn', 'name')
+        ->call('sortByColumn', 'name', false)
         ->assertSet('sortBy', 'name')
         ->assertSet('sortOrder', 'asc')
         ->assertSeeInOrder(['Alpha Lake', 'Zeta Lake'])
         // 3. Second Click on 'name': Descending
-        ->call('sortByColumn', 'name')
+        ->call('sortByColumn', 'name', false)
         ->assertSet('sortBy', 'name')
         ->assertSet('sortOrder', 'desc')
         ->assertSeeInOrder(['Zeta Lake', 'Alpha Lake'])
         // 4. Third Click on 'name': Tri-State Reset to Default (id asc)
-        ->call('sortByColumn', 'name')
+        ->call('sortByColumn', 'name', false)
         ->assertSet('sortBy', 'id')
         ->assertSet('sortOrder', 'asc');
+    }
+
+    #[Test]
+    public function generic_data_table_supports_shift_click_multi_column_sorting()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        Livewire::test(GenericDataTable::class, [
+            'modelClass' => Lake::class,
+            'columns' => [
+                ['key' => 'name', 'label' => 'Lake Name', 'sortable' => true],
+                ['key' => 'records_count', 'label' => 'Total Catches', 'type' => 'count', 'sortable' => true],
+            ],
+            'itemName' => 'lakes',
+            'defaultSortBy' => 'id',
+            'defaultSortOrder' => 'asc',
+        ])
+        // Single Click on 'name'
+        ->call('sortByColumn', 'name', false)
+        ->assertSet('sorts', [['column' => 'name', 'direction' => 'asc']])
+        // Shift + Click on 'records_count'
+        ->call('sortByColumn', 'records_count', true)
+        ->assertSet('sorts', [
+            ['column' => 'name', 'direction' => 'asc'],
+            ['column' => 'records_count', 'direction' => 'asc']
+        ])
+        // Shift + Click again on 'records_count' toggles to desc
+        ->call('sortByColumn', 'records_count', true)
+        ->assertSet('sorts', [
+            ['column' => 'name', 'direction' => 'asc'],
+            ['column' => 'records_count', 'direction' => 'desc']
+        ])
+        // Single Click on 'records_count' without Shift resets stack to single sort
+        ->call('sortByColumn', 'records_count', false)
+        ->assertSet('sorts', [
+            ['column' => 'records_count', 'direction' => 'asc']
+        ]);
     }
 
     #[Test]

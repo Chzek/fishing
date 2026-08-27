@@ -42,6 +42,12 @@ class GenericDataTable extends Component
     #[Url(history: true, as: 'sort_order')]
     public string $sortOrder = 'asc';
 
+    /**
+     * Active sort criteria stack supporting multi-column sorting.
+     * Example: [['column' => 'lake', 'direction' => 'asc'], ['column' => 'species', 'direction' => 'desc']]
+     */
+    public array $sorts = [];
+
     public function mount(
         string $modelClass,
         array $columns,
@@ -64,11 +70,6 @@ class GenericDataTable extends Component
         $this->defaultSortBy = !empty($defaultSortBy) ? $defaultSortBy : ($columns[0]['key'] ?? 'id');
         $this->defaultSortOrder = $defaultSortOrder;
 
-        if (empty($this->sortBy)) {
-            $this->sortBy = $this->defaultSortBy;
-            $this->sortOrder = $this->defaultSortOrder;
-        }
-
         if (request()->has('search') && empty($this->search)) {
             $this->search = (string) request('search');
         }
@@ -78,28 +79,99 @@ class GenericDataTable extends Component
         if (request()->has('sort_order') && !empty(request('sort_order'))) {
             $this->sortOrder = (string) request('sort_order');
         }
+
+        if (empty($this->sortBy)) {
+            $this->sortBy = $this->defaultSortBy;
+            $this->sortOrder = $this->defaultSortOrder;
+        }
+
+        $this->sorts = [
+            ['column' => $this->sortBy, 'direction' => $this->sortOrder]
+        ];
     }
 
     /**
-     * Tri-State Column Sorting Cycle:
-     * Unsorted (None) -> Ascending (Asc) -> Descending (Desc) -> Unsorted (Reset to default)
+     * Tri-State Multi-Column Sorting Cycle:
+     * - Regular Click: Reset multi-sort and cycle single column (Asc -> Desc -> Reset to default).
+     * - Shift + Click: Add/toggle column in multi-sort stack without clearing existing columns.
      */
-    public function sortByColumn(string $column): void
+    public function sortByColumn(string $column, bool $isShift = false): void
     {
-        if ($this->sortBy === $column) {
-            if ($this->sortOrder === 'asc') {
-                $this->sortOrder = 'desc';
+        if ($isShift) {
+            $existingIndex = null;
+            foreach ($this->sorts as $index => $sort) {
+                if ($sort['column'] === $column) {
+                    $existingIndex = $index;
+                    break;
+                }
+            }
+
+            if ($existingIndex !== null) {
+                if ($this->sorts[$existingIndex]['direction'] === 'asc') {
+                    $this->sorts[$existingIndex]['direction'] = 'desc';
+                } else {
+                    // Tri-State remove column from multi-sort stack
+                    array_splice($this->sorts, $existingIndex, 1);
+                }
             } else {
-                // Tri-state reset to default sort
-                $this->sortBy = $this->defaultSortBy;
-                $this->sortOrder = $this->defaultSortOrder;
+                $this->sorts[] = ['column' => $column, 'direction' => 'asc'];
             }
         } else {
-            $this->sortBy = $column;
-            $this->sortOrder = 'asc';
+            // Single Click: Reset multi-sort stack and cycle target column
+            if (count($this->sorts) === 1 && $this->sorts[0]['column'] === $column) {
+                if ($this->sorts[0]['direction'] === 'asc') {
+                    $this->sorts = [['column' => $column, 'direction' => 'desc']];
+                } else {
+                    // Reset to empty / default sort
+                    $this->sorts = [];
+                }
+            } else {
+                $this->sorts = [['column' => $column, 'direction' => 'asc']];
+            }
+        }
+
+        if (!empty($this->sorts)) {
+            $this->sortBy = $this->sorts[0]['column'];
+            $this->sortOrder = $this->sorts[0]['direction'];
+        } else {
+            $this->sortBy = $this->defaultSortBy;
+            $this->sortOrder = $this->defaultSortOrder;
         }
 
         $this->resetPage();
+    }
+
+    public function updatedSortBy(): void
+    {
+        $this->sorts = [['column' => $this->sortBy, 'direction' => $this->sortOrder ?: 'asc']];
+    }
+
+    public function updatedSortOrder(): void
+    {
+        $this->sorts = [['column' => $this->sortBy ?: $this->defaultSortBy, 'direction' => $this->sortOrder]];
+    }
+
+    public function getSortDirection(string $column): ?string
+    {
+        foreach ($this->sorts as $sort) {
+            if ($sort['column'] === $column) {
+                return $sort['direction'];
+            }
+        }
+        return null;
+    }
+
+    public function getSortOrderIndex(string $column): ?int
+    {
+        if (count($this->sorts) <= 1) {
+            return null;
+        }
+        foreach ($this->sorts as $index => $sort) {
+            if ($sort['column'] === $column) {
+                return $index + 1;
+            }
+        }
+        return null;
     }
 
     public function updatedSearch(): void
@@ -112,6 +184,9 @@ class GenericDataTable extends Component
         $this->reset(['search']);
         $this->sortBy = $this->defaultSortBy;
         $this->sortOrder = $this->defaultSortOrder;
+        $this->sorts = [
+            ['column' => $this->defaultSortBy, 'direction' => $this->defaultSortOrder]
+        ];
         $this->resetPage();
     }
 
@@ -185,13 +260,17 @@ class GenericDataTable extends Component
             });
         }
 
-        // Apply Sorting
-        $order = in_array(strtolower($this->sortOrder), ['asc', 'desc']) ? strtolower($this->sortOrder) : 'asc';
-        
-        if (!empty($this->sortBy)) {
-            $sortColKey = $this->sortBy;
+        // Apply Multi-Column Sorting
+        $activeSorts = !empty($this->sorts) ? $this->sorts : [
+            ['column' => $this->defaultSortBy, 'direction' => $this->defaultSortOrder]
+        ];
+
+        foreach ($activeSorts as $sort) {
+            $sortColKey = $sort['column'];
+            $order = in_array(strtolower($sort['direction']), ['asc', 'desc']) ? strtolower($sort['direction']) : 'asc';
+
             foreach ($this->columns as $colDef) {
-                if ($colDef['key'] === $this->sortBy && !empty($colDef['sortKey'])) {
+                if ($colDef['key'] === $sortColKey && !empty($colDef['sortKey'])) {
                     $sortColKey = $colDef['sortKey'];
                     break;
                 }
