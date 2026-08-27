@@ -64,10 +64,10 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 - **Impact**: High (Boat Usability & Quick Catch UX)
 - **Description**: Build a reusable Livewire autocomplete selector with lure thumbnails, manufacturer badges, 2-tier category grouping (*Crankbaits $\rightarrow$ Rapala Shad Rap*), and instant search for Quick Catch (`/record/quick`) and Standard Logger (`/record/create`).
 
-### 8. Generic Livewire Data Table Component (`@livewire('components.data-table')`)
-- **Status**: Backlog (P1 Recommended)
+### 8. Generic Livewire Data Table Component (`@livewire('components.generic-data-table')`)
+- **Status**: Completed (Merged into `master`)
 - **Impact**: High (App-Wide Code & UX Unification)
-- **Description**: Extract a single generic Livewire data table component (`@livewire('components.data-table')`) to replace duplicate pipeline queries across Lakes Index (`/lake`), Anglers Roster (`/angler`), Tacklebox Catalog (`/lure`), and Expedition Catch Logs (`/expedition/{id}`).
+- **Description**: Extracted a generic Livewire 3 data table component ([`GenericDataTable.php`](file:///home/gmroczek/git/fishing/app/Livewire/Components/GenericDataTable.php)) with dynamic column rendering, real-time search, 1-click header sorting, and custom pagination. Migrated Lakes Roster ([`/lake`](file:///home/gmroczek/git/fishing/resources/views/lake/index.blade.php)) and Anglers Roster ([`/angler`](file:///home/gmroczek/git/fishing/resources/views/angler/index.blade.php)).
 
 ### 9. Global Quick Catch Slide-Over Drawer Modal (`@livewire('modals.quick-catch-modal')`)
 - **Status**: Backlog (P2 Recommended)
