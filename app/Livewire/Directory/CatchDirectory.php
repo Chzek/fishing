@@ -224,7 +224,10 @@ class CatchDirectory extends Component
             $query->where(function ($q) use ($term) {
                 $q->whereHas('fishBreed', fn($b) => $b->where('name', 'like', $term))
                   ->orWhereHas('lake', fn($l) => $l->where('name', 'like', $term))
-                  ->orWhereHas('angler', fn($a) => $a->where('firstName', 'like', $term)->orWhere('lastName', 'like', $term))
+                  ->orWhereHas('angler', fn($a) => $a->where('firstName', 'like', $term)
+                      ->orWhere('lastName', 'like', $term)
+                      ->orWhere(\Illuminate\Support\Facades\DB::raw("CONCAT(firstName, ' ', lastName)"), 'like', $term)
+                  )
                   ->orWhereHas('lure', fn($lu) => $lu->where('name', 'like', $term));
             });
         }
@@ -249,7 +252,10 @@ class CatchDirectory extends Component
             $angVal = $this->angler;
             $query->where(function ($q) use ($angVal) {
                 $q->where('anglers_id', $angVal)
-                  ->orWhereHas('angler', fn($a) => $a->where('firstName', $angVal)->orWhere('lastName', $angVal));
+                  ->orWhereHas('angler', fn($a) => $a->where('firstName', $angVal)
+                      ->orWhere('lastName', $angVal)
+                      ->orWhere(\Illuminate\Support\Facades\DB::raw("CONCAT(firstName, ' ', lastName)"), $angVal)
+                  );
             });
         }
 

@@ -236,7 +236,7 @@
             </div>
         </div>
 
-        <a href="{{ url('/record/directory') }}?search={{ urlencode($lake->name) }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all shrink-0">
+        <a href="{{ url('/record/directory') }}?lake={{ $lake->id }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all shrink-0">
             <span>View Lake Catches</span>
             <i data-lucide="arrow-right" class="w-4 h-4 text-teal-400"></i>
         </a>
