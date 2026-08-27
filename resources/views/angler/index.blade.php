@@ -21,64 +21,19 @@
         </a>
     </div>
 
-    @if(count($anglers) > 0)
-        <!-- Anglers Data Table with Unified Server Search, Multi-Sort & Column Controls -->
-        <div x-data="dataTable({ defaultDensity: 'normal' })">
-            <x-table.wrapper 
-                searchPlaceholder="Search anglers by first or last name..." 
-                itemName="anglers"
-                :totalCount="$anglers->total()"
-                :showColumnPicker="true"
-                :showDensity="true"
-            >
-                <table class="w-full text-left text-sm text-slate-700">
-                    <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
-                        <tr>
-                            <x-table.th col="angler" type="text" label="Angler">Angler</x-table.th>
-                            <x-table.th col="catches" type="number" align="center" label="Catches">Catches</x-table.th>
-                            <x-table.th col="lakes" type="number" align="center" label="Lakes Visited">Lakes Visited</x-table.th>
-                            <th scope="col" class="py-3 px-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
-                        @foreach($anglers as $angler)
-                            <tr class="hover:bg-slate-50/70 transition-colors">
-                                <td data-col="angler" x-show="isColumnVisible('angler')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'">
-
-                                    <div class="flex items-center gap-3">
-                                        <a href="{{ url('/angler/' . $angler->id . '/profile') }}" class="shrink-0">
-                                            <x-anglerAvatar :angler="$angler" size="sm" />
-                                        </a>
-                                        <div>
-                                            <a href="{{ url('/angler/' . $angler->id . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline block leading-tight">
-                                                {{ $angler->lastName }}, {{ $angler->firstName }} {{ $angler->middleName ? substr($angler->middleName, 0, 1) . '.' : '' }}
-                                            </a>
-                                            <span class="text-[11px] text-slate-500 block">Crew Angler</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td data-col="catches" x-show="isColumnVisible('catches')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700">{{ $angler->records_count }}</td>
-                                <td data-col="lakes" x-show="isColumnVisible('lakes')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800">{{ $angler->lakes_count }}</td>
-                                <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap">
-                                    <a href="{{ url('/angler/' . $angler->id . '/profile') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-teal-700 font-semibold text-xs rounded-xl border border-slate-200 hover:border-teal-200 transition-colors">
-                                        <i data-lucide="user" class="w-3.5 h-3.5 text-teal-600"></i>
-                                        <span>Profile</span>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </x-table.wrapper>
-        </div>
-
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
-            <span>Showing {{ $anglers->firstItem() }} to {{ $anglers->lastItem() }} of {{ $anglers->total() }} Anglers</span>
-            <div>{{ $anglers->links() }}</div>
-        </div>
-    @else
-        <x-emptyState icon="users" title="No Anglers Registered Yet" description="Add your fishing crew members to start tracking personal bests and expedition logs." actionUrl="/angler/create" actionLabel="Add First Angler" />
-    @endif
+    <!-- Anglers Generic Livewire Data Table -->
+    @livewire('components.generic-data-table', [
+        'modelClass' => \Fishinglog\Models\Angler::class,
+        'columns' => [
+            ['key' => 'full_name', 'label' => 'Angler Name', 'type' => 'link', 'urlPrefix' => 'angler', 'urlParam' => 'id', 'sortable' => true, 'sortKey' => 'lastName', 'searchable' => true],
+            ['key' => 'records_count', 'label' => 'Total Catches', 'type' => 'count', 'align' => 'center', 'sortable' => true, 'sortKey' => 'records_count'],
+            ['key' => 'lakes_count', 'label' => 'Lakes Visited', 'type' => 'count', 'align' => 'center', 'sortable' => true, 'sortKey' => 'lakes_count'],
+        ],
+        'searchPlaceholder' => 'Search anglers by first or last name...',
+        'itemName' => 'anglers',
+        'perPage' => 10,
+        'defaultSortBy' => 'lastName',
+        'defaultSortOrder' => 'asc',
+    ])
 </div>
 @endsection
-
