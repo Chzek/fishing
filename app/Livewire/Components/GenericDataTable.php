@@ -178,7 +178,9 @@ class GenericDataTable extends Component
                 }
             }
 
-            if ($sortColKey === 'full_name' || ($sortColKey === 'name' && str_contains($this->modelClass, 'Angler'))) {
+            if (in_array($sortColKey, ['records_count', 'visits', 'anglers_count', 'lakes_count'])) {
+                $query->orderBy(DB::raw($sortColKey), $order);
+            } elseif (in_array($sortColKey, ['full_name', 'angler', 'lastName']) || (str_contains($this->modelClass, 'Angler') && in_array($sortColKey, ['name', 'angler']))) {
                 $query->orderBy('lastName', $order)->orderBy('firstName', $order);
             } else {
                 $query->orderBy($sortColKey, $order);

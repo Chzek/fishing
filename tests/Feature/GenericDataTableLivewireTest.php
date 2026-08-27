@@ -83,6 +83,32 @@ class GenericDataTableLivewireTest extends TestCase
     }
 
     #[Test]
+    public function generic_data_table_sorts_by_calculated_relation_counts()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $lake1 = Lake::factory()->create(['name' => 'Empty Waters']);
+        $lake2 = Lake::factory()->create(['name' => 'Heavy Catches Lake']);
+
+        Record::factory()->create(['lakes_id' => $lake2->id]);
+        Record::factory()->create(['lakes_id' => $lake2->id]);
+
+        Livewire::test(GenericDataTable::class, [
+            'modelClass' => Lake::class,
+            'columns' => [
+                ['key' => 'name', 'label' => 'Lake Name', 'sortable' => true],
+                ['key' => 'records_count', 'label' => 'Total Catches', 'type' => 'count', 'sortable' => true],
+            ],
+            'itemName' => 'lakes',
+        ])
+        ->set('sortBy', 'records_count')
+        ->set('sortOrder', 'desc')
+        ->assertStatus(200)
+        ->assertSeeInOrder(['Heavy Catches Lake', 'Empty Waters']);
+    }
+
+    #[Test]
     public function generic_data_table_renders_successfully_for_anglers()
     {
         $user = User::factory()->create();
