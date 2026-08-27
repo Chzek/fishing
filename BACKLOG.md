@@ -54,3 +54,33 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 - **Status**: Backlog
 - **Impact**: Low - Regulatory Usability
 - **Description**: Provide a simple manual review UI for anglers to inspect and verify specific lake exceptions and sanctuary rules directly against official MNR regulation guides when reviewing individual waterbody pages.
+
+---
+
+## 🧩 Reusable Livewire 3 Component Architecture Roadmap (`livewire-architect` & `laravel-architect`)
+
+### 7. Searchable Autocomplete Lure & Tackle Selector (`@livewire('ui.lure-selector')`)
+- **Status**: Backlog (P1 Recommended)
+- **Impact**: High (Boat Usability & Quick Catch UX)
+- **Description**: Build a reusable Livewire autocomplete selector with lure thumbnails, manufacturer badges, 2-tier category grouping (*Crankbaits $\rightarrow$ Rapala Shad Rap*), and instant search for Quick Catch (`/record/quick`) and Standard Logger (`/record/create`).
+
+### 8. Generic Livewire Data Table Component (`@livewire('components.data-table')`)
+- **Status**: Backlog (P1 Recommended)
+- **Impact**: High (App-Wide Code & UX Unification)
+- **Description**: Extract a single generic Livewire data table component (`@livewire('components.data-table')`) to replace duplicate pipeline queries across Lakes Index (`/lake`), Anglers Roster (`/angler`), Tacklebox Catalog (`/lure`), and Expedition Catch Logs (`/expedition/{id}`).
+
+### 9. Global Quick Catch Slide-Over Drawer Modal (`@livewire('modals.quick-catch-modal')`)
+- **Status**: Backlog (P2 Recommended)
+- **Impact**: High (1-Tap Catch Logging Anywhere)
+- **Description**: Extract a slide-over modal component triggered from any page (Top Nav, Map Explorer `/map`, or Expedition Trip view) via `$dispatch('open-quick-catch')`.
+
+### 10. Interactive Tacklebox Category Trays & Color Variant Grid (`@livewire('tacklebox.lure-catalog')`)
+- **Status**: Backlog (P2 Recommended)
+- **Impact**: High (Sub-second Tray Expansion)
+- **Description**: Reusable Livewire catalog components for 2-Tier Category Trays, expanding lure model accordions, and inline color variant management.
+
+### 11. Live Weather & Telemetry Barometer Widget (`@livewire('widgets.weather-telemetry')`)
+- **Status**: Backlog (P3 Recommended)
+- **Impact**: Medium (Real-Time Weather Signals)
+- **Description**: Reactive weather widget that auto-fetches or updates live barometric pressure trends, wind velocity/direction, and surface water temp when selecting lakes during catch logging.
+
