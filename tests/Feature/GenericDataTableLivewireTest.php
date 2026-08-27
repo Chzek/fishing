@@ -59,7 +59,7 @@ class GenericDataTableLivewireTest extends TestCase
     }
 
     #[Test]
-    public function generic_data_table_header_click_sorts_records_dynamically()
+    public function generic_data_table_header_click_sorts_records_dynamically_in_tristate_cycle()
     {
         $user = User::factory()->create();
         $this->be($user);
@@ -73,13 +73,25 @@ class GenericDataTableLivewireTest extends TestCase
                 ['key' => 'name', 'label' => 'Lake Name', 'sortable' => true],
             ],
             'itemName' => 'lakes',
+            'defaultSortBy' => 'id',
+            'defaultSortOrder' => 'asc',
         ])
-        ->set('sortBy', 'name')
-        ->set('sortOrder', 'asc')
-        ->assertSeeInOrder(['Alpha Lake', 'Zeta Lake'])
+        // 1. Initial State: Default sort (id asc)
+        ->assertSet('sortBy', 'id')
+        // 2. First Click on 'name': Ascending
         ->call('sortByColumn', 'name')
+        ->assertSet('sortBy', 'name')
+        ->assertSet('sortOrder', 'asc')
+        ->assertSeeInOrder(['Alpha Lake', 'Zeta Lake'])
+        // 3. Second Click on 'name': Descending
+        ->call('sortByColumn', 'name')
+        ->assertSet('sortBy', 'name')
         ->assertSet('sortOrder', 'desc')
-        ->assertSeeInOrder(['Zeta Lake', 'Alpha Lake']);
+        ->assertSeeInOrder(['Zeta Lake', 'Alpha Lake'])
+        // 4. Third Click on 'name': Tri-State Reset to Default (id asc)
+        ->call('sortByColumn', 'name')
+        ->assertSet('sortBy', 'id')
+        ->assertSet('sortOrder', 'asc');
     }
 
     #[Test]

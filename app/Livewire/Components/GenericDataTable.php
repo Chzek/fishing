@@ -29,6 +29,10 @@ class GenericDataTable extends Component
 
     public int $perPage = 15;
 
+    public string $defaultSortBy = 'id';
+
+    public string $defaultSortOrder = 'asc';
+
     #[Url(history: true)]
     public string $search = '';
 
@@ -57,9 +61,12 @@ class GenericDataTable extends Component
         $this->itemName = $itemName;
         $this->perPage = $perPage;
 
+        $this->defaultSortBy = !empty($defaultSortBy) ? $defaultSortBy : ($columns[0]['key'] ?? 'id');
+        $this->defaultSortOrder = $defaultSortOrder;
+
         if (empty($this->sortBy)) {
-            $this->sortBy = !empty($defaultSortBy) ? $defaultSortBy : ($columns[0]['key'] ?? 'id');
-            $this->sortOrder = $defaultSortOrder;
+            $this->sortBy = $this->defaultSortBy;
+            $this->sortOrder = $this->defaultSortOrder;
         }
 
         if (request()->has('search') && empty($this->search)) {
@@ -73,10 +80,20 @@ class GenericDataTable extends Component
         }
     }
 
+    /**
+     * Tri-State Column Sorting Cycle:
+     * Unsorted (None) -> Ascending (Asc) -> Descending (Desc) -> Unsorted (Reset to default)
+     */
     public function sortByColumn(string $column): void
     {
         if ($this->sortBy === $column) {
-            $this->sortOrder = $this->sortOrder === 'asc' ? 'desc' : 'asc';
+            if ($this->sortOrder === 'asc') {
+                $this->sortOrder = 'desc';
+            } else {
+                // Tri-state reset to default sort
+                $this->sortBy = $this->defaultSortBy;
+                $this->sortOrder = $this->defaultSortOrder;
+            }
         } else {
             $this->sortBy = $column;
             $this->sortOrder = 'asc';
@@ -93,6 +110,8 @@ class GenericDataTable extends Component
     public function resetFilters(): void
     {
         $this->reset(['search']);
+        $this->sortBy = $this->defaultSortBy;
+        $this->sortOrder = $this->defaultSortOrder;
         $this->resetPage();
     }
 

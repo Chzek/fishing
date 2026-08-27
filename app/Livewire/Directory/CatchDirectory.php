@@ -77,7 +77,13 @@ class CatchDirectory extends Component
     public function sortByColumn(string $column): void
     {
         if ($this->sortBy === $column) {
-            $this->sortOrder = $this->sortOrder === 'asc' ? 'desc' : 'asc';
+            if ($this->sortOrder === 'asc') {
+                $this->sortOrder = 'desc';
+            } else {
+                // Tri-State reset to default sort (date desc)
+                $this->sortBy = 'date';
+                $this->sortOrder = 'desc';
+            }
         } else {
             $this->sortBy = $column;
             $this->sortOrder = 'asc';
