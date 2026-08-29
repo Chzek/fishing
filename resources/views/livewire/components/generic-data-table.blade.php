@@ -83,7 +83,7 @@
     </div>
 
     <!-- Data Table Container -->
-    <div class="overflow-x-auto rounded-xl border border-slate-200/80 shadow-2xs bg-white">
+    <div wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-150" class="overflow-x-auto rounded-xl border border-slate-200/80 shadow-2xs bg-white">
         <table class="w-full text-left text-sm text-slate-700">
             <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
                 <tr>
@@ -97,6 +97,7 @@
                             $sortIdx = $this->getSortOrderIndex($colKey);
                         @endphp
                         <th 
+                            wire:key="th-{{ $colKey }}"
                             scope="col" 
                             data-col="{{ $colKey }}" 
                             data-col-label="{{ $col['label'] }}" 
@@ -126,7 +127,7 @@
             </thead>
             <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
                 @forelse($records as $record)
-                    <tr class="hover:bg-slate-50/70 transition-colors">
+                    <tr wire:key="row-{{ $record->id ?? $loop->index }}" class="hover:bg-slate-50/70 transition-colors">
                         @foreach($columns as $col)
                             @php
                                 $colKey = $col['key'];
@@ -138,8 +139,8 @@
                             <td 
                                 data-col="{{ $colKey }}" 
                                 x-show="isColumnVisible('{{ $colKey }}')" 
-                                :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" 
-                                class="{{ $alignClass }} whitespace-nowrap text-xs"
+                                :class="{ 'py-2 px-4': density === 'compact', 'py-3.5 px-4': density !== 'compact' }" 
+                                class="py-3.5 px-4 {{ $alignClass }} whitespace-nowrap text-xs"
                             >
                                 @if($type === 'expedition_desc')
                                     <div class="flex items-center gap-2 font-bold text-slate-900">
