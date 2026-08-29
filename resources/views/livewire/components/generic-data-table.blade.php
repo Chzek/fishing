@@ -60,24 +60,38 @@
                         </div>
                     @elseif($fType === 'date_range')
                         @php
+                            $pKey = $flt['presetKey'] ?? ($fKey . 'Preset');
                             $sKey = $flt['startKey'] ?? ($fKey . 'Start');
                             $eKey = $flt['endKey'] ?? ($fKey . 'End');
+                            $activePreset = $filterState[$pKey] ?? '';
                         @endphp
                         <div class="flex items-center gap-1.5 shrink-0">
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">{{ $flt['label'] ?? 'Dates' }}</span>
-                            <input 
-                                type="date" 
-                                wire:model.live="filterState.{{ $sKey }}" 
-                                class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
-                                title="Start Date"
-                            />
-                            <span class="text-slate-400 text-xs">–</span>
-                            <input 
-                                type="date" 
-                                wire:model.live="filterState.{{ $eKey }}" 
-                                class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
-                                title="End Date"
-                            />
+                            <select wire:model.live="filterState.{{ $pKey }}" class="h-8.5 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                                <option value="">📅 All Dates</option>
+                                <option value="today">Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="this_week">Last 7 Days</option>
+                                <option value="this_month">This Month (30 Days)</option>
+                                <option value="this_season">This Season ({{ date('Y') }})</option>
+                                <option value="last_season">Last Season ({{ date('Y') - 1 }})</option>
+                                <option value="custom">Custom Range...</option>
+                            </select>
+
+                            @if($activePreset === 'custom')
+                                <input 
+                                    type="date" 
+                                    wire:model.live="filterState.{{ $sKey }}" 
+                                    class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
+                                    title="Start Date"
+                                />
+                                <span class="text-slate-400 text-xs">–</span>
+                                <input 
+                                    type="date" 
+                                    wire:model.live="filterState.{{ $eKey }}" 
+                                    class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
+                                    title="End Date"
+                                />
+                            @endif
                         </div>
                     @elseif($fType === 'text')
                         <input 

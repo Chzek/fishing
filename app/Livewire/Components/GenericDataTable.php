@@ -145,8 +145,12 @@ class GenericDataTable extends Component
                     $this->filterState[$fKey] = (string) request($fKey, '');
                 }
             } elseif ($fType === 'date_range') {
+                $pKey = $flt['presetKey'] ?? ($fKey . 'Preset');
                 $sKey = $flt['startKey'] ?? ($fKey . 'Start');
                 $eKey = $flt['endKey'] ?? ($fKey . 'End');
+                if (!isset($this->filterState[$pKey])) {
+                    $this->filterState[$pKey] = (string) request($pKey, '');
+                }
                 if (!isset($this->filterState[$sKey])) {
                     $this->filterState[$sKey] = (string) request($sKey, '');
                 }
@@ -446,16 +450,33 @@ class GenericDataTable extends Component
                     $query->where($col, $operator, (float) $val);
                 }
             } elseif ($fType === 'date_range') {
+                $pKey = $flt['presetKey'] ?? ($fKey . 'Preset');
                 $sKey = $flt['startKey'] ?? ($fKey . 'Start');
                 $eKey = $flt['endKey'] ?? ($fKey . 'End');
-                $start = $this->filterState[$sKey] ?? null;
-                $end = $this->filterState[$eKey] ?? null;
-                if ($start && $end) {
-                    $query->whereBetween($col, [$start, $end]);
-                } elseif ($start) {
-                    $query->where($col, '>=', $start);
-                } elseif ($end) {
-                    $query->where($col, '<=', $end);
+                $preset = $this->filterState[$pKey] ?? null;
+
+                if ($preset === 'today') {
+                    $query->whereDate($col, now()->today());
+                } elseif ($preset === 'yesterday') {
+                    $query->whereDate($col, now()->yesterday());
+                } elseif ($preset === 'this_week') {
+                    $query->where($col, '>=', now()->subDays(7)->toDateString());
+                } elseif ($preset === 'this_month') {
+                    $query->where($col, '>=', now()->subDays(30)->toDateString());
+                } elseif ($preset === 'this_season') {
+                    $query->whereYear($col, now()->year);
+                } elseif ($preset === 'last_season') {
+                    $query->whereYear($col, now()->year - 1);
+                } elseif ($preset === 'custom') {
+                    $start = $this->filterState[$sKey] ?? null;
+                    $end = $this->filterState[$eKey] ?? null;
+                    if ($start && $end) {
+                        $query->whereBetween($col, [$start, $end]);
+                    } elseif ($start) {
+                        $query->where($col, '>=', $start);
+                    } elseif ($end) {
+                        $query->where($col, '<=', $end);
+                    }
                 }
             } elseif ($fType === 'text') {
                 $val = $this->filterState[$fKey] ?? null;

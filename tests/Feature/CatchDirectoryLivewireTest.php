@@ -195,10 +195,44 @@ class CatchDirectoryLivewireTest extends TestCase
         ]);
 
         Livewire::test(GenericDataTable::class, $this->getDirectoryConfig())
+            ->set('filterState.caughtPreset', 'custom')
             ->set('filterState.startDate', '2026-05-01')
             ->set('filterState.endDate', '2026-06-01')
             ->assertViewHas('records', function ($records) {
                 return $records->count() === 1 && (float)$records->first()->length === 22.0;
+            });
+    }
+
+    #[Test]
+    public function date_preset_filter_filters_records_by_preset_timeframes()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $lake = Lake::factory()->create();
+        $angler = Angler::factory()->create();
+        $breed = FishBreed::factory()->create();
+
+        Record::factory()->create([
+            'fish_breeds_id' => $breed->id,
+            'lakes_id' => $lake->id,
+            'anglers_id' => $angler->id,
+            'caught' => now()->today()->toDateString(),
+            'length' => 25.0,
+        ]);
+
+        Record::factory()->create([
+            'fish_breeds_id' => $breed->id,
+            'lakes_id' => $lake->id,
+            'anglers_id' => $angler->id,
+            'caught' => '2020-01-01',
+            'length' => 12.0,
+        ]);
+
+        Livewire::test(GenericDataTable::class, $this->getDirectoryConfig())
+            ->set('filterState.caughtPreset', 'today')
+            ->assertViewHas('records', function ($records) {
+                return $records->count() === 1 && (float)$records->first()->length === 25.0;
             });
     }
 
