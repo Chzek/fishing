@@ -25,7 +25,81 @@
                 </div>
             </div>
 
-            @if($search || $family || $species || $lake || $angler)
+            <!-- Pluggable Dynamic Filters Toolbar -->
+            @foreach($filters as $flt)
+                @php
+                    $fKey = $flt['key'] ?? null;
+                    $fType = $flt['type'] ?? 'select';
+                @endphp
+                @if($fKey)
+                    @if($fType === 'select')
+                        <select wire:model.live="filterState.{{ $fKey }}" class="h-8.5 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                            <option value="">{{ $flt['label'] ?? 'All ' . ucfirst($fKey) }}</option>
+                            @foreach(($flt['options'] ?? []) as $optVal => $optLabel)
+                                <option value="{{ $optVal }}">{{ $optLabel }}</option>
+                            @endforeach
+                        </select>
+                    @elseif($fType === 'operator_number')
+                        @php
+                            $opKey = $flt['operatorKey'] ?? ($fKey . 'Operator');
+                        @endphp
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">{{ $flt['label'] ?? ucfirst($fKey) }}</span>
+                            <select wire:model.live="filterState.{{ $opKey }}" class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                                <option value=">">&gt;</option>
+                                <option value="=">=</option>
+                                <option value="<">&lt;</option>
+                            </select>
+                            <input 
+                                type="number" 
+                                step="0.25" 
+                                wire:model.live.debounce.300ms="filterState.{{ $fKey }}" 
+                                placeholder="{{ $flt['placeholder'] ?? 'Value...' }}" 
+                                class="h-8.5 px-2.5 w-20 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-800 focus:ring-2 focus:ring-teal-500/20"
+                            />
+                        </div>
+                    @elseif($fType === 'date_range')
+                        @php
+                            $sKey = $flt['startKey'] ?? ($fKey . 'Start');
+                            $eKey = $flt['endKey'] ?? ($fKey . 'End');
+                        @endphp
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">{{ $flt['label'] ?? 'Dates' }}</span>
+                            <input 
+                                type="date" 
+                                wire:model.live="filterState.{{ $sKey }}" 
+                                class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
+                                title="Start Date"
+                            />
+                            <span class="text-slate-400 text-xs">–</span>
+                            <input 
+                                type="date" 
+                                wire:model.live="filterState.{{ $eKey }}" 
+                                class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
+                                title="End Date"
+                            />
+                        </div>
+                    @elseif($fType === 'text')
+                        <input 
+                            type="text" 
+                            wire:model.live.debounce.300ms="filterState.{{ $fKey }}" 
+                            placeholder="{{ $flt['label'] ?? 'Filter...' }}" 
+                            class="h-8.5 px-3 text-xs rounded-lg border border-slate-200 bg-white font-medium text-slate-800 focus:ring-2 focus:ring-teal-500/20"
+                        />
+                    @elseif($fType === 'boolean')
+                        <label class="inline-flex items-center gap-1.5 px-2.5 h-8.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                            <input 
+                                type="checkbox" 
+                                wire:model.live="filterState.{{ $fKey }}" 
+                                class="rounded text-teal-600 focus:ring-teal-500 border-slate-300 w-3.5 h-3.5"
+                            />
+                            <span>{{ $flt['label'] ?? ucfirst($fKey) }}</span>
+                        </label>
+                    @endif
+                @endif
+            @endforeach
+
+            @if($search || $family || $species || $lake || $angler || !empty(array_filter($filterState)))
                 <button 
                     wire:click="resetFilters" 
                     type="button" 

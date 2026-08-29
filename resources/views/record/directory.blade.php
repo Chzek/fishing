@@ -35,7 +35,64 @@
         </div>
     </div>
 
-    <!-- 2. Reactive Livewire Catches Directory Table -->
-    @livewire('directory.catch-directory')
+    <!-- 2. Reactive Livewire Catches Directory Table with Pluggable Filters -->
+    @livewire('components.generic-data-table', [
+        'modelClass' => \Fishinglog\Models\Record::class,
+        'with' => ['angler', 'lake', 'fishBreed', 'lure'],
+        'columns' => [
+            ['key' => 'caught', 'label' => 'Date', 'type' => 'date', 'sortable' => true],
+            ['key' => 'angler.lastName', 'label' => 'Angler', 'type' => 'angler_name', 'sortable' => true],
+            ['key' => 'lake.name', 'label' => 'Lake', 'type' => 'lake_link', 'sortable' => true],
+            ['key' => 'fishBreed.name', 'label' => 'Species', 'type' => 'species_name', 'sortable' => true],
+            ['key' => 'lure.name', 'label' => 'Lure / Bait', 'sortable' => true],
+            ['key' => 'weight', 'label' => 'Weight (lbs)', 'type' => 'heavy_record', 'align' => 'center', 'sortable' => true],
+            ['key' => 'length', 'label' => 'Length (in)', 'type' => 'lunker_record', 'align' => 'center', 'sortable' => true],
+            ['key' => 'released', 'label' => 'Status', 'type' => 'badge', 'align' => 'center', 'sortable' => true],
+        ],
+        'filters' => [
+            [
+                'key' => 'angler',
+                'type' => 'select',
+                'label' => 'All Anglers',
+                'column' => 'anglers_id',
+                'options' => $anglersList->pluck('fullName', 'id')->toArray(),
+            ],
+            [
+                'key' => 'lake',
+                'type' => 'select',
+                'label' => 'All Lakes & Waters',
+                'column' => 'lakes_id',
+                'options' => $lakesList->pluck('name', 'id')->toArray(),
+            ],
+            [
+                'key' => 'species',
+                'type' => 'select',
+                'label' => 'All Species',
+                'column' => 'fish_breeds_id',
+                'options' => $speciesList->pluck('name', 'id')->toArray(),
+            ],
+            [
+                'key' => 'length',
+                'type' => 'operator_number',
+                'label' => 'Length',
+                'column' => 'length',
+                'operatorKey' => 'lengthOperator',
+                'defaultOperator' => '>',
+            ],
+            [
+                'key' => 'caught',
+                'type' => 'date_range',
+                'label' => 'Date Range',
+                'column' => 'caught',
+                'startKey' => 'startDate',
+                'endKey' => 'endDate',
+            ],
+        ],
+        'searchPlaceholder' => 'Search species, lake, angler, lure...',
+        'itemName' => 'catches',
+        'perPage' => 15,
+        'defaultSortBy' => 'caught',
+        'defaultSortOrder' => 'desc',
+    ])
 </div>
 @endsection

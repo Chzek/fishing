@@ -78,6 +78,17 @@ class GenericDataTable extends Component
      */
     public array $sorts = [];
 
+    /**
+     * Dynamic pluggable filter definitions.
+     */
+    public array $filters = [];
+
+    /**
+     * Dynamic filter state store tracked by Livewire.
+     */
+    #[Url(history: true)]
+    public array $filterState = [];
+
     public function mount(
         string $modelClass,
         array $columns,
@@ -98,7 +109,8 @@ class GenericDataTable extends Component
         string $lureId = '',
         string $categoryId = '',
         string $fishingZoneId = '',
-        string $lakeId = ''
+        string $lakeId = '',
+        array $filters = []
     ): void {
         $this->modelClass = $modelClass;
         $this->columns = $columns;
@@ -108,12 +120,45 @@ class GenericDataTable extends Component
         $this->itemName = $itemName;
         $this->perPage = $perPage;
         $this->onlyTrashed = $onlyTrashed;
+        $this->filters = $filters;
 
         $this->expeditionId = $expeditionId;
         $this->lureId = $lureId;
         $this->categoryId = $categoryId;
         $this->fishingZoneId = $fishingZoneId;
         $this->lakeId = $lakeId;
+
+        // Initialize pluggable filter default states
+        foreach ($filters as $flt) {
+            $fKey = $flt['key'] ?? null;
+            if (!$fKey) continue;
+
+            $fType = $flt['type'] ?? 'select';
+
+            if ($fType === 'operator_number') {
+                $opKey = $flt['operatorKey'] ?? ($fKey . 'Operator');
+                $defaultOp = $flt['defaultOperator'] ?? '>';
+                if (!isset($this->filterState[$opKey])) {
+                    $this->filterState[$opKey] = (string) request($opKey, $defaultOp);
+                }
+                if (!isset($this->filterState[$fKey])) {
+                    $this->filterState[$fKey] = (string) request($fKey, '');
+                }
+            } elseif ($fType === 'date_range') {
+                $sKey = $flt['startKey'] ?? ($fKey . 'Start');
+                $eKey = $flt['endKey'] ?? ($fKey . 'End');
+                if (!isset($this->filterState[$sKey])) {
+                    $this->filterState[$sKey] = (string) request($sKey, '');
+                }
+                if (!isset($this->filterState[$eKey])) {
+                    $this->filterState[$eKey] = (string) request($eKey, '');
+                }
+            } else {
+                if (!isset($this->filterState[$fKey])) {
+                    $this->filterState[$fKey] = (string) request($fKey, $flt['default'] ?? '');
+                }
+            }
+        }
 
         $this->defaultSortBy = !empty($defaultSortBy) ? $defaultSortBy : ($columns[0]['key'] ?? 'id');
         $this->defaultSortOrder = $defaultSortOrder;
@@ -272,6 +317,11 @@ class GenericDataTable extends Component
         return null;
     }
 
+    public function updatedFilterState(): void
+    {
+        $this->resetPage();
+    }
+
     public function updatedSearch(): void
     {
         $this->resetPage();
@@ -284,7 +334,7 @@ class GenericDataTable extends Component
 
     public function resetFilters(): void
     {
-        $this->reset(['search', 'family', 'species', 'lake', 'angler', 'lure']);
+        $this->reset(['search', 'family', 'species', 'lake', 'angler', 'lure', 'filterState']);
         $this->sortBy = $this->defaultSortBy;
         $this->sortOrder = $this->defaultSortOrder;
         $this->sorts = [
@@ -379,6 +429,66 @@ class GenericDataTable extends Component
             }
         }
 
+        // Apply Pluggable Dynamic Filters
+        foreach ($this->filters as $flt) {
+            $fKey = $flt['key'] ?? null;
+            if (!$fKey) continue;
+
+            $fType = $flt['type'] ?? 'select';
+            $col = $flt['column'] ?? $fKey;
+
+            if ($fType === 'operator_number') {
+                $opKey = $flt['operatorKey'] ?? ($fKey . 'Operator');
+                $val = $this->filterState[$fKey] ?? null;
+                $op = $this->filterState[$opKey] ?? ($flt['defaultOperator'] ?? '>');
+                if ($val !== null && $val !== '') {
+                    $operator = in_array($op, ['>', '=', '<', '>=', '<=']) ? $op : '>';
+                    $query->where($col, $operator, (float) $val);
+                }
+            } elseif ($fType === 'date_range') {
+                $sKey = $flt['startKey'] ?? ($fKey . 'Start');
+                $eKey = $flt['endKey'] ?? ($fKey . 'End');
+                $start = $this->filterState[$sKey] ?? null;
+                $end = $this->filterState[$eKey] ?? null;
+                if ($start && $end) {
+                    $query->whereBetween($col, [$start, $end]);
+                } elseif ($start) {
+                    $query->where($col, '>=', $start);
+                } elseif ($end) {
+                    $query->where($col, '<=', $end);
+                }
+            } elseif ($fType === 'text') {
+                $val = $this->filterState[$fKey] ?? null;
+                if ($val !== null && $val !== '') {
+                    $query->where($col, 'like', '%' . $val . '%');
+                }
+            } elseif ($fType === 'boolean') {
+                $val = $this->filterState[$fKey] ?? null;
+                if ($val !== null && $val !== '') {
+                    $trueVal = $flt['trueValue'] ?? 1;
+                    $query->where($col, $val ? $trueVal : 0);
+                }
+            } else { // select
+                $val = $this->filterState[$fKey] ?? (isset($this->{$fKey}) && !empty($this->{$fKey}) ? $this->{$fKey} : null);
+                if ($val !== null && $val !== '') {
+                    if ($col instanceof \Closure) {
+                        $col($query, $val);
+                    } elseif (is_string($col) && str_contains($col, '.')) {
+                        [$relation, $relField] = explode('.', $col, 2);
+                        $query->whereHas($relation, fn($q) => $q->where($relField, $val));
+                    } elseif ($col === 'fish_breeds_id' && !is_numeric($val) && !\Illuminate\Support\Str::isUuid($val)) {
+                        $query->whereHas('fishBreed', fn($q) => $q->where('name', $val));
+                    } elseif ($col === 'lakes_id' && !is_numeric($val) && !\Illuminate\Support\Str::isUuid($val)) {
+                        $query->whereHas('lake', fn($q) => $q->where('name', $val));
+                    } elseif ($col === 'anglers_id' && !is_numeric($val) && !\Illuminate\Support\Str::isUuid($val)) {
+                        $query->whereHas('angler', fn($q) => $q->where(DB::raw("CONCAT(firstName, ' ', lastName)"), 'like', '%' . $val . '%')->orWhere('lastName', $val));
+                    } else {
+                        $query->where($col, $val);
+                    }
+                }
+            }
+        }
+
         // Apply Pre-filters from URL (family, species, lake, angler, etc.)
         if (!empty($this->family) && $this->modelClass === FishBreed::class) {
             $famVal = $this->family;
@@ -403,7 +513,11 @@ class GenericDataTable extends Component
                 }
 
                 if (empty($searchableCols)) {
-                    $searchableCols = ['name', 'title', 'firstName', 'lastName', 'email', 'description'];
+                    if ($this->modelClass === Record::class) {
+                        $searchableCols = ['fishBreed.name', 'lake.name', 'angler.firstName', 'angler.lastName', 'lure.name'];
+                    } else {
+                        $searchableCols = ['name', 'title', 'firstName', 'lastName', 'email', 'description'];
+                    }
                 }
 
                 $first = true;
@@ -457,6 +571,35 @@ class GenericDataTable extends Component
                       ->select('fish_breeds.*')
                       ->orderBy('fish_families.name', $order);
                 continue;
+            } elseif ($sortColKey === 'lake' || $sortColKey === 'lake.name') {
+                if ($this->modelClass === Record::class) {
+                    $query->leftJoin('lakes', 'records.lakes_id', '=', 'lakes.id')
+                          ->select('records.*')
+                          ->orderBy('lakes.name', $order);
+                    continue;
+                }
+            } elseif ($sortColKey === 'species' || $sortColKey === 'species_name' || $sortColKey === 'fishBreed.name') {
+                if ($this->modelClass === Record::class) {
+                    $query->leftJoin('fish_breeds', 'records.fish_breeds_id', '=', 'fish_breeds.id')
+                          ->select('records.*')
+                          ->orderBy('fish_breeds.name', $order);
+                    continue;
+                }
+            } elseif ($sortColKey === 'angler' || $sortColKey === 'angler.lastName') {
+                if ($this->modelClass === Record::class) {
+                    $query->leftJoin('anglers', 'records.anglers_id', '=', 'anglers.id')
+                          ->select('records.*')
+                          ->orderBy('anglers.lastName', $order)
+                          ->orderBy('anglers.firstName', $order);
+                    continue;
+                }
+            } elseif ($sortColKey === 'lure' || $sortColKey === 'lure.name') {
+                if ($this->modelClass === Record::class) {
+                    $query->leftJoin('lures', 'records.lures_id', '=', 'lures.id')
+                          ->select('records.*')
+                          ->orderBy('lures.name', $order);
+                    continue;
+                }
             }
 
             if (in_array($sortColKey, ['records_count', 'visits', 'anglers_count', 'lakes_count', 'crews_count', 'posts_count', 'longest_record', 'heaviest_record'])) {
