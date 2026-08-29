@@ -478,6 +478,28 @@ class GenericDataTable extends Component
                         $query->where($col, '<=', $end);
                     }
                 }
+            } elseif ($fType === 'weather_condition') {
+                $val = $this->filterState[$fKey] ?? null;
+                if ($val !== null && $val !== '') {
+                    $query->whereExists(function ($sub) use ($val) {
+                        $sub->select(DB::raw(1))
+                            ->from('lake_daily_weather')
+                            ->whereColumn('lake_daily_weather.lakes_id', 'records.lakes_id')
+                            ->whereRaw('lake_daily_weather.date = DATE(records.caught)')
+                            ->where('lake_daily_weather.weather_condition', 'like', '%' . $val . '%');
+                    });
+                }
+            } elseif ($fType === 'pressure_trend') {
+                $val = $this->filterState[$fKey] ?? null;
+                if ($val !== null && $val !== '') {
+                    $query->whereExists(function ($sub) use ($val) {
+                        $sub->select(DB::raw(1))
+                            ->from('lake_daily_weather')
+                            ->whereColumn('lake_daily_weather.lakes_id', 'records.lakes_id')
+                            ->whereRaw('lake_daily_weather.date = DATE(records.caught)')
+                            ->where('lake_daily_weather.pressure_trend', $val);
+                    });
+                }
             } elseif ($fType === 'text') {
                 $val = $this->filterState[$fKey] ?? null;
                 if ($val !== null && $val !== '') {

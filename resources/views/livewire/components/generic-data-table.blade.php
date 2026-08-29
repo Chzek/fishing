@@ -473,6 +473,24 @@
                                     <a href="{{ $record->fishBreed ? url('/fish/' . $record->fishBreed->id) : '#' }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
                                         {{ $record->fishBreed?->name ?? ($val ?? '—') }}
                                     </a>
+                                @elseif($type === 'weather_badge')
+                                    @php
+                                        $wWeather = $record->dailyWeather ?? null;
+                                    @endphp
+                                    @if($wWeather)
+                                        <x-weatherBadge :weather="$wWeather" :showTrend="false" />
+                                    @else
+                                        <span class="text-slate-400 text-[11px] italic">—</span>
+                                    @endif
+                                @elseif($type === 'pressure_trend')
+                                    @php
+                                        $wWeather = $record->dailyWeather ?? null;
+                                    @endphp
+                                    @if($wWeather)
+                                        <x-barometerTrend :weather="$wWeather" />
+                                    @else
+                                        <span class="text-slate-400 text-[11px] italic">—</span>
+                                    @endif
                                 @elseif($type === 'catch_length_weight')
                                     <span class="font-mono text-slate-700 font-semibold">
                                         {{ $record->length ? $record->length . ' in.' : '—' }} / {{ $record->weight ? $record->weight . ' lbs.' : '—' }}
