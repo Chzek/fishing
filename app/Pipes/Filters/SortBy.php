@@ -164,6 +164,19 @@ class SortBy implements PipeContract
                     case 'status':
                         $query->orderBy('records.released', $order);
                         continue 2;
+
+                    case 'dailyWeather':
+                    case 'weather':
+                    case 'air_temp':
+                        if (!in_array('lake_daily_weather', $joinedTables)) {
+                            $query->select('records.*')->leftJoin('lake_daily_weather', function ($join) {
+                                $join->on('records.lakes_id', '=', 'lake_daily_weather.lakes_id')
+                                     ->on(\Illuminate\Support\Facades\DB::raw('DATE(records.caught)'), '=', 'lake_daily_weather.date');
+                            });
+                            $joinedTables[] = 'lake_daily_weather';
+                        }
+                        $query->orderBy('lake_daily_weather.air_temp_mean', $order);
+                        continue 2;
                 }
             }
 

@@ -325,7 +325,7 @@
     <!-- Data Table Container -->
     <div wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-150" class="overflow-x-auto rounded-xl border border-slate-200/80 shadow-2xs bg-white">
         <table class="w-full text-left text-sm text-slate-700">
-            <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
+            <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80 relative z-20">
                 <tr>
                     @foreach($columns as $col)
                         @php
@@ -346,14 +346,42 @@
                             @if($isSortable) wire:click="sortByColumn('{{ $colKey }}', $event.shiftKey)" @endif
                         >
                             <div 
-                                class="inline-flex items-center gap-1.5 {{ $align === 'center' ? 'justify-center' : ($align === 'right' ? 'justify-end' : 'justify-start') }} hover:text-teal-600"
-                                @if($colKey === 'dailyWeather' || ($col['type'] ?? '') === 'weather_badge')
-                                    title="Temperature Scale Legend: <40°F (Ice Blue) • 50°F (Teal) • 70°F (Amber) • 90°F+ (Rose)"
-                                @endif
+                                x-data="{ open: false }" 
+                                @mouseenter="open = true" 
+                                @mouseleave="open = false"
+                                class="relative inline-flex items-center gap-1.5 {{ $align === 'center' ? 'justify-center' : ($align === 'right' ? 'justify-end' : 'justify-start') }} hover:text-teal-600"
                             >
                                 <span>{{ $col['label'] }}</span>
                                 @if($colKey === 'dailyWeather' || ($col['type'] ?? '') === 'weather_badge')
-                                    <i data-lucide="info" class="w-3 h-3 text-slate-400 hover:text-teal-500 shrink-0 transition-colors"></i>
+                                    <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 hover:text-teal-500 shrink-0 transition-colors cursor-help"></i>
+
+                                    <!-- Alpine.js Floating Temperature Legend Popover Card -->
+                                    <div 
+                                        x-show="open"
+                                        x-transition:enter="transition ease-out duration-150"
+                                        x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
+                                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                        x-transition:leave="transition ease-in duration-100"
+                                        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                                        x-transition:leave-end="opacity-0 -translate-y-1 scale-95"
+                                        x-cloak
+                                        class="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-50 p-3.5 bg-slate-900/95 backdrop-blur-md text-white rounded-2xl shadow-2xl border border-slate-700/90 w-64 pointer-events-none flex flex-col gap-2.5"
+                                    >
+                                        <!-- Arrow Pointer -->
+                                        <div class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-900 rotate-45 border-t border-l border-slate-700"></div>
+                                        
+                                        <!-- Popover Header -->
+                                        <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+                                            <div class="flex items-center gap-1.5">
+                                                <i data-lucide="thermometer" class="w-3.5 h-3.5 text-teal-400"></i>
+                                                <span class="text-xs font-bold text-white tracking-wide">Temperature Scale</span>
+                                            </div>
+                                            <span class="text-[9px] font-mono text-slate-400 uppercase font-semibold">10°F Brackets</span>
+                                        </div>
+
+                                        <!-- Temperature Legend Component with 4-Interval Color Breakdown -->
+                                        <x-temperatureLegend :showBreakdown="true" />
+                                    </div>
                                 @endif
                                 @if($isSortable)
                                     @if($sortDir)
