@@ -3,10 +3,22 @@ import './image-compressor';
 import dataTable from './components/data-table';
 import { createIcons, icons } from 'lucide';
 
-// Register custom Alpine components with Livewire 3's bundled Alpine
+// Register custom Alpine components and Livewire DOM morph hooks
 document.addEventListener('livewire:init', () => {
     if (window.Alpine) {
         window.Alpine.data('dataTable', dataTable);
+    }
+    if (window.Livewire) {
+        window.Livewire.hook('morph.updated', () => {
+            if (window.initLucideIcons) window.initLucideIcons();
+        });
+        window.Livewire.hook('commit', ({ respond, succeed }) => {
+            succeed(() => {
+                queueMicrotask(() => {
+                    if (window.initLucideIcons) window.initLucideIcons();
+                });
+            });
+        });
     }
 });
 
@@ -32,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.initLucideIcons();
 });
 
-// Re-initialize icons after Livewire DOM morph updates
+// Re-initialize icons after Livewire navigation and initialization
 document.addEventListener('livewire:initialized', () => {
     window.initLucideIcons();
 });
