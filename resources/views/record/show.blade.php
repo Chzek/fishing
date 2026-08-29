@@ -98,30 +98,35 @@
         @endif
 
         @if($record->dailyWeather)
-            <div class="bg-slate-900 text-slate-200 rounded-2xl p-5 border border-slate-800 space-y-3">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div class="flex items-center gap-2 text-teal-400 font-bold text-xs uppercase tracking-wider">
-                        <i data-lucide="cloud-sun" class="w-4 h-4"></i>
-                        <span>Environmental Telemetry & Pressure Trend</span>
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
+                            <i data-lucide="cloud-sun" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Environmental Telemetry</span>
+                            <span class="text-xs font-semibold text-slate-700">Prime Bite Window & Barometric Movement</span>
+                        </div>
                     </div>
                     <x-barometerTrend :weather="$record->dailyWeather" />
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center pt-2 border-t border-slate-800 text-xs">
-                    <div>
-                        <span class="text-[10px] uppercase text-slate-400 block">Condition</span>
-                        <strong class="text-white block mt-0.5">{{ $record->dailyWeather->weather_condition }}</strong>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center pt-3 border-t border-slate-100 text-xs">
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block">Condition</span>
+                        <span class="text-xs font-bold text-slate-900 block mt-0.5">{{ $record->dailyWeather->weather_condition }}</span>
                     </div>
-                    <div>
-                        <span class="text-[10px] uppercase text-slate-400 block">Air Temp</span>
-                        <strong class="text-white block mt-0.5">{{ $record->dailyWeather->air_temp_min }}°F – {{ $record->dailyWeather->air_temp_max }}°F</strong>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block">Air Temp</span>
+                        <span class="text-xs font-bold text-slate-900 font-mono block mt-0.5">{{ round($record->dailyWeather->air_temp_min, 1) }}°F – {{ round($record->dailyWeather->air_temp_max, 1) }}°F</span>
                     </div>
-                    <div>
-                        <span class="text-[10px] uppercase text-slate-400 block">Barometric</span>
-                        <strong class="text-white block mt-0.5">{{ $record->dailyWeather->barometric_pressure }} hPa</strong>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block">Barometric</span>
+                        <span class="text-xs font-bold text-slate-900 font-mono block mt-0.5">{{ round($record->dailyWeather->barometric_pressure, 1) }} hPa</span>
                     </div>
-                    <div>
-                        <span class="text-[10px] uppercase text-slate-400 block">Wind</span>
-                        <strong class="text-white block mt-0.5">{{ $record->dailyWeather->wind_speed_max }} mph</strong>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block">Max Wind</span>
+                        <span class="text-xs font-bold text-slate-900 font-mono block mt-0.5">{{ round($record->dailyWeather->wind_speed_max, 1) }} mph</span>
                     </div>
                 </div>
             </div>
