@@ -478,7 +478,7 @@
                                         $wWeather = $record->dailyWeather ?? null;
                                     @endphp
                                     @if($wWeather)
-                                        <x-weatherBadge :weather="$wWeather" :showTrend="false" />
+                                        <x-weatherBadge :weather="$wWeather" compact="true" />
                                     @else
                                         <span class="text-slate-400 text-[11px] italic">—</span>
                                     @endif
