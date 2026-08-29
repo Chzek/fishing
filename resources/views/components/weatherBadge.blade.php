@@ -78,20 +78,29 @@
             'icon' => 'trending-down',
             'label' => 'Falling Barometer (' . ($delta ? $delta . ' hPa' : '4-9 PM') . ')',
             'color' => 'text-emerald-600',
-            'bg' => 'bg-emerald-50/90 text-emerald-900 border-emerald-200/90',
         ],
         'rising' => [
             'icon' => 'trending-up',
             'label' => 'Rising Barometer (' . ($delta ? '+' . $delta . ' hPa' : '4-9 PM') . ')',
             'color' => 'text-slate-500',
-            'bg' => 'bg-slate-100/90 text-slate-800 border-slate-200',
         ],
         default => [
             'icon' => 'minus',
             'label' => 'Stable Barometer (4-9 PM)',
             'color' => 'text-sky-600',
-            'bg' => 'bg-sky-50/90 text-sky-900 border-sky-200/90',
         ],
+    };
+
+    // Temperature-based border and background styling (10-degree intervals)
+    $tempBorderClass = match (true) {
+        is_null($airTemp) => 'border-slate-200 bg-slate-50 text-slate-700',
+        $airTemp < 40 => 'border-blue-300/90 bg-blue-50/80 text-blue-950',
+        $airTemp < 50 => 'border-cyan-300/90 bg-cyan-50/80 text-cyan-950',
+        $airTemp < 60 => 'border-teal-300/90 bg-teal-50/80 text-teal-950',
+        $airTemp < 70 => 'border-emerald-300/90 bg-emerald-50/80 text-emerald-950',
+        $airTemp < 80 => 'border-amber-300/90 bg-amber-50/80 text-amber-950',
+        $airTemp < 90 => 'border-orange-300/90 bg-orange-50/80 text-orange-950',
+        default => 'border-rose-300/90 bg-rose-50/80 text-rose-950',
     };
 
     $tooltipText = $cleanCondition . ' • Air Temp: ' . round($airTemp, 1) . '°F' . ($pressure ? ' (' . round($pressure, 1) . ' hPa)' : '') . ' • 4-9 PM Barometer: ' . $trendBadge['label'];
@@ -99,19 +108,19 @@
 
 @if($airTemp || $pressure || $condition)
     @if($compact || $size === 'compact')
-        <!-- Compact 80px Weather + Pressure Badge with Rich Hover Tooltip -->
+        <!-- Compact Temperature-Colored Weather + Pressure Badge -->
         <span 
-            {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold border shadow-2xs transition-colors cursor-help select-none ' . $trendBadge['bg']]) }} 
+            {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold border shadow-2xs transition-all hover:scale-102 cursor-help select-none ' . $tempBorderClass]) }} 
             title="{{ $tooltipText }}"
         >
             <i data-lucide="{{ $config['icon'] }}" class="w-3.5 h-3.5 {{ $config['color'] }} shrink-0"></i>
-            <span class="font-mono text-slate-900 font-extrabold">{{ round($airTemp, 0) }}°F</span>
+            <span class="font-mono font-extrabold text-slate-900">{{ round($airTemp, 0) }}°F</span>
             <i data-lucide="{{ $trendBadge['icon'] }}" class="w-3 h-3 {{ $trendBadge['color'] }} shrink-0"></i>
         </span>
     @else
-        <!-- Full Weather Badge -->
+        <!-- Full Temperature-Colored Weather Badge -->
         <div class="inline-flex items-center gap-1.5 flex-wrap">
-            <div {{ $attributes->merge(['class' => 'inline-flex items-center gap-2 px-2.5 py-1 bg-slate-50 border border-slate-200/80 rounded-xl text-xs text-slate-700 font-medium shadow-xs']) }}>
+            <div {{ $attributes->merge(['class' => 'inline-flex items-center gap-2 px-2.5 py-1 rounded-xl text-xs font-medium border shadow-2xs ' . $tempBorderClass]) }}>
                 <i data-lucide="{{ $config['icon'] }}" class="w-3.5 h-3.5 {{ $config['color'] }} shrink-0"></i>
                 @if($showEmoji)
                     <span class="text-xs">{{ $config['emoji'] }}</span>
