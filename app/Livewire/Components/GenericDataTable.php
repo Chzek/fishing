@@ -55,6 +55,18 @@ class GenericDataTable extends Component
     #[Url(history: true)]
     public string $lure = '';
 
+    public bool $onlyTrashed = false;
+
+    public string $expeditionId = '';
+
+    public string $lureId = '';
+
+    public string $categoryId = '';
+
+    public string $fishingZoneId = '';
+
+    public string $lakeId = '';
+
     #[Url(history: true, as: 'sort_by')]
     public string $sortBy = '';
 
@@ -80,7 +92,13 @@ class GenericDataTable extends Component
         string $species = '',
         string $lake = '',
         string $angler = '',
-        string $lure = ''
+        string $lure = '',
+        bool $onlyTrashed = false,
+        string $expeditionId = '',
+        string $lureId = '',
+        string $categoryId = '',
+        string $fishingZoneId = '',
+        string $lakeId = ''
     ): void {
         $this->modelClass = $modelClass;
         $this->columns = $columns;
@@ -89,6 +107,13 @@ class GenericDataTable extends Component
         $this->searchPlaceholder = $searchPlaceholder;
         $this->itemName = $itemName;
         $this->perPage = $perPage;
+        $this->onlyTrashed = $onlyTrashed;
+
+        $this->expeditionId = $expeditionId;
+        $this->lureId = $lureId;
+        $this->categoryId = $categoryId;
+        $this->fishingZoneId = $fishingZoneId;
+        $this->lakeId = $lakeId;
 
         $this->defaultSortBy = !empty($defaultSortBy) ? $defaultSortBy : ($columns[0]['key'] ?? 'id');
         $this->defaultSortOrder = $defaultSortOrder;
@@ -275,7 +300,9 @@ class GenericDataTable extends Component
         }
 
         /** @var \Illuminate\Database\Eloquent\Builder $query */
-        $query = forward_static_call([$this->modelClass, 'query']);
+        $query = $this->onlyTrashed
+            ? forward_static_call([$this->modelClass, 'onlyTrashed'])
+            : forward_static_call([$this->modelClass, 'query']);
 
         if (!empty($this->with)) {
             $query->with($this->with);
@@ -313,6 +340,42 @@ class GenericDataTable extends Component
         } else {
             if (!empty($this->withCount)) {
                 $query->withCount($this->withCount);
+            }
+        }
+
+        // Scope relation filters for sub-tables
+        if (!empty($this->expeditionId)) {
+            if ($this->modelClass === Record::class) {
+                $exp = Expedition::find($this->expeditionId);
+                if ($exp) {
+                    $query->whereBetween('caught', [$exp->start, $exp->finish]);
+                }
+            } else {
+                $query->where('expedition_id', $this->expeditionId);
+            }
+        }
+
+        if (!empty($this->lureId)) {
+            if ($this->modelClass === Record::class) {
+                $query->where('lures_id', $this->lureId);
+            } else {
+                $query->where('lure_id', $this->lureId);
+            }
+        }
+
+        if (!empty($this->categoryId)) {
+            $query->where('lure_category_id', $this->categoryId);
+        }
+
+        if (!empty($this->fishingZoneId)) {
+            $query->where('fishing_zone_id', $this->fishingZoneId);
+        }
+
+        if (!empty($this->lakeId)) {
+            if ($this->modelClass === Record::class) {
+                $query->where('lakes_id', $this->lakeId);
+            } else {
+                $query->where('lake_id', $this->lakeId);
             }
         }
 

@@ -220,4 +220,27 @@ class GenericDataTableLivewireTest extends TestCase
         $response->assertSee('Brook Trout');
         $response->assertDontSee('Smallmouth Bass');
     }
+
+    #[Test]
+    public function generic_data_table_supports_only_trashed_records()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $lake = Lake::factory()->create(['name' => 'Ghost Lake']);
+        $lake->delete(); // Soft delete
+
+        Livewire::test(GenericDataTable::class, [
+            'modelClass' => Lake::class,
+            'onlyTrashed' => true,
+            'columns' => [
+                ['key' => 'name', 'label' => 'Lake Name', 'searchable' => true],
+            ],
+            'itemName' => 'lakes',
+        ])
+        ->assertStatus(200)
+        ->assertSee('Ghost Lake')
+        ->assertSee('Restore')
+        ->assertSee('Purge');
+    }
 }

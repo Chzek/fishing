@@ -50,234 +50,87 @@
     <!-- Catches Tab -->
     <div x-show="tab === 'records'" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
         <h2 class="font-bold text-slate-900 text-sm">Soft-Deleted Catches</h2>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                    <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50/50">
-                        <th class="py-3 px-4">Catch Date</th>
-                        <th class="py-3 px-4">Angler</th>
-                        <th class="py-3 px-4">Lake</th>
-                        <th class="py-3 px-4">Length</th>
-                        <th class="py-3 px-4">Deleted At</th>
-                        <th class="py-3 px-4 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-slate-700">
-                    @forelse($trashedCatches as $cat)
-                        <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="py-3.5 px-4 font-mono font-medium">{{ $cat->caught }}</td>
-                            <td class="py-3.5 px-4 font-bold text-slate-900">{{ $cat->angler->fullName ?? 'Unknown' }}</td>
-                            <td class="py-3.5 px-4 font-semibold text-slate-800">{{ $cat->lake->name ?? 'Unknown' }}</td>
-                            <td class="py-3.5 px-4 font-mono">{{ $cat->length }} in.</td>
-                            <td class="py-3.5 px-4 font-mono text-[11px] text-rose-600">{{ $cat->deleted_at }}</td>
-                            <td class="py-3.5 px-4 text-right">
-                                <div class="flex items-center justify-end gap-2">
-                                    <form action="{{ route('admin.trash.restore') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="type" value="record">
-                                        <input type="hidden" name="id" value="{{ $cat->id }}">
-                                        <button type="submit" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow transition-colors">Restore</button>
-                                    </form>
-                                    <form action="{{ route('admin.trash.force-delete') }}" method="POST" onsubmit="return confirm('Permanently delete this catch record?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" name="type" value="record">
-                                        <input type="hidden" name="id" value="{{ $cat->id }}">
-                                        <button type="submit" class="px-3 py-1 bg-rose-50 border border-rose-200 text-rose-700 font-bold text-xs rounded-lg hover:bg-rose-100 transition-colors">Delete Permanently</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="py-6 text-center text-slate-400 text-xs">No soft-deleted catches in trash.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        @livewire('components.generic-data-table', [
+            'modelClass' => \Fishinglog\Models\Record::class,
+            'onlyTrashed' => true,
+            'with' => ['angler', 'lake', 'fishBreed'],
+            'columns' => [
+                ['key' => 'caught', 'label' => 'Catch Date', 'type' => 'date', 'sortable' => true],
+                ['key' => 'angler.lastName', 'label' => 'Angler', 'type' => 'angler_name', 'sortable' => true],
+                ['key' => 'lake.name', 'label' => 'Lake', 'type' => 'lake_link', 'sortable' => true],
+                ['key' => 'length', 'label' => 'Length / Weight', 'type' => 'catch_length_weight', 'sortable' => true],
+                ['key' => 'deleted_at', 'label' => 'Deleted At', 'type' => 'date', 'sortable' => true],
+            ],
+            'searchPlaceholder' => 'Search deleted catches...',
+            'itemName' => 'catches',
+            'perPage' => 10,
+        ])
     </div>
 
     <!-- Lakes Tab -->
     <div x-show="tab === 'lakes'" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
         <h2 class="font-bold text-slate-900 text-sm">Soft-Deleted Lakes & Waterbodies</h2>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                    <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50/50">
-                        <th class="py-3 px-4">Lake Name</th>
-                        <th class="py-3 px-4">Coordinates</th>
-                        <th class="py-3 px-4">Deleted At</th>
-                        <th class="py-3 px-4 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-slate-700">
-                    @forelse($trashedLakes as $lk)
-                        <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="py-3.5 px-4 font-bold text-slate-900">{{ $lk->name }}</td>
-                            <td class="py-3.5 px-4 font-mono text-[11px]">{{ $lk->latitude }}, {{ $lk->longitude }}</td>
-                            <td class="py-3.5 px-4 font-mono text-[11px] text-rose-600">{{ $lk->deleted_at }}</td>
-                            <td class="py-3.5 px-4 text-right">
-                                <div class="flex items-center justify-end gap-2">
-                                    <form action="{{ route('admin.trash.restore') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="type" value="lake">
-                                        <input type="hidden" name="id" value="{{ $lk->id }}">
-                                        <button type="submit" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow transition-colors">Restore</button>
-                                    </form>
-                                    <form action="{{ route('admin.trash.force-delete') }}" method="POST" onsubmit="return confirm('Permanently delete this lake?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" name="type" value="lake">
-                                        <input type="hidden" name="id" value="{{ $lk->id }}">
-                                        <button type="submit" class="px-3 py-1 bg-rose-50 border border-rose-200 text-rose-700 font-bold text-xs rounded-lg hover:bg-rose-100 transition-colors">Delete Permanently</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="py-6 text-center text-slate-400 text-xs">No soft-deleted lakes in trash.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        @livewire('components.generic-data-table', [
+            'modelClass' => \Fishinglog\Models\Lake::class,
+            'onlyTrashed' => true,
+            'columns' => [
+                ['key' => 'name', 'label' => 'Lake Name', 'type' => 'lake_name', 'sortable' => true, 'searchable' => true],
+                ['key' => 'deleted_at', 'label' => 'Deleted At', 'type' => 'date', 'sortable' => true],
+            ],
+            'searchPlaceholder' => 'Search deleted lakes...',
+            'itemName' => 'lakes',
+            'perPage' => 10,
+        ])
     </div>
 
     <!-- Anglers Tab -->
     <div x-show="tab === 'anglers'" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
         <h2 class="font-bold text-slate-900 text-sm">Soft-Deleted Angler Profiles</h2>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                    <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50/50">
-                        <th class="py-3 px-4">Angler Name</th>
-                        <th class="py-3 px-4">Deleted At</th>
-                        <th class="py-3 px-4 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-slate-700">
-                    @forelse($trashedAnglers as $ang)
-                        <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="py-3.5 px-4 font-bold text-slate-900">{{ $ang->fullName }}</td>
-                            <td class="py-3.5 px-4 font-mono text-[11px] text-rose-600">{{ $ang->deleted_at }}</td>
-                            <td class="py-3.5 px-4 text-right">
-                                <div class="flex items-center justify-end gap-2">
-                                    <form action="{{ route('admin.trash.restore') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="type" value="angler">
-                                        <input type="hidden" name="id" value="{{ $ang->id }}">
-                                        <button type="submit" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow transition-colors">Restore</button>
-                                    </form>
-                                    <form action="{{ route('admin.trash.force-delete') }}" method="POST" onsubmit="return confirm('Permanently delete this angler profile?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" name="type" value="angler">
-                                        <input type="hidden" name="id" value="{{ $ang->id }}">
-                                        <button type="submit" class="px-3 py-1 bg-rose-50 border border-rose-200 text-rose-700 font-bold text-xs rounded-lg hover:bg-rose-100 transition-colors">Delete Permanently</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="py-6 text-center text-slate-400 text-xs">No soft-deleted anglers in trash.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        @livewire('components.generic-data-table', [
+            'modelClass' => \Fishinglog\Models\Angler::class,
+            'onlyTrashed' => true,
+            'columns' => [
+                ['key' => 'lastName', 'label' => 'Angler Name', 'type' => 'angler_name', 'sortable' => true, 'searchable' => true],
+                ['key' => 'deleted_at', 'label' => 'Deleted At', 'type' => 'date', 'sortable' => true],
+            ],
+            'searchPlaceholder' => 'Search deleted anglers...',
+            'itemName' => 'anglers',
+            'perPage' => 10,
+        ])
     </div>
 
     <!-- Lures Tab -->
     <div x-show="tab === 'lures'" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-        <h2 class="font-bold text-slate-900 text-sm">Soft-Deleted Lures & Tackle</h2>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                    <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50/50">
-                        <th class="py-3 px-4">Lure Name</th>
-                        <th class="py-3 px-4">Deleted At</th>
-                        <th class="py-3 px-4 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-slate-700">
-                    @forelse($trashedLures as $lr)
-                        <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="py-3.5 px-4 font-bold text-slate-900">{{ $lr->displayName }}</td>
-                            <td class="py-3.5 px-4 font-mono text-[11px] text-rose-600">{{ $lr->deleted_at }}</td>
-                            <td class="py-3.5 px-4 text-right">
-                                <div class="flex items-center justify-end gap-2">
-                                    <form action="{{ route('admin.trash.restore') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="type" value="lure">
-                                        <input type="hidden" name="id" value="{{ $lr->id }}">
-                                        <button type="submit" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow transition-colors">Restore</button>
-                                    </form>
-                                    <form action="{{ route('admin.trash.force-delete') }}" method="POST" onsubmit="return confirm('Permanently delete this lure entry?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" name="type" value="lure">
-                                        <input type="hidden" name="id" value="{{ $lr->id }}">
-                                        <button type="submit" class="px-3 py-1 bg-rose-50 border border-rose-200 text-rose-700 font-bold text-xs rounded-lg hover:bg-rose-100 transition-colors">Delete Permanently</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="py-6 text-center text-slate-400 text-xs">No soft-deleted lures in trash.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        <h2 class="font-bold text-slate-900 text-sm">Soft-Deleted Lures</h2>
+        @livewire('components.generic-data-table', [
+            'modelClass' => \Fishinglog\Models\Lure::class,
+            'onlyTrashed' => true,
+            'columns' => [
+                ['key' => 'name', 'label' => 'Lure Name', 'sortable' => true, 'searchable' => true],
+                ['key' => 'deleted_at', 'label' => 'Deleted At', 'type' => 'date', 'sortable' => true],
+            ],
+            'searchPlaceholder' => 'Search deleted lures...',
+            'itemName' => 'lures',
+            'perPage' => 10,
+        ])
     </div>
 
     <!-- Expeditions Tab -->
     <div x-show="tab === 'expeditions'" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
         <h2 class="font-bold text-slate-900 text-sm">Soft-Deleted Expeditions</h2>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                    <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50/50">
-                        <th class="py-3 px-4">Expedition Title</th>
-                        <th class="py-3 px-4">Deleted At</th>
-                        <th class="py-3 px-4 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-slate-700">
-                    @forelse($trashedExpeditions as $exp)
-                        <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="py-3.5 px-4 font-bold text-slate-900">{{ $exp->title }}</td>
-                            <td class="py-3.5 px-4 font-mono text-[11px] text-rose-600">{{ $exp->deleted_at }}</td>
-                            <td class="py-3.5 px-4 text-right">
-                                <div class="flex items-center justify-end gap-2">
-                                    <form action="{{ route('admin.trash.restore') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="type" value="expedition">
-                                        <input type="hidden" name="id" value="{{ $exp->id }}">
-                                        <button type="submit" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow transition-colors">Restore</button>
-                                    </form>
-                                    <form action="{{ route('admin.trash.force-delete') }}" method="POST" onsubmit="return confirm('Permanently delete this expedition?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" name="type" value="expedition">
-                                        <input type="hidden" name="id" value="{{ $exp->id }}">
-                                        <button type="submit" class="px-3 py-1 bg-rose-50 border border-rose-200 text-rose-700 font-bold text-xs rounded-lg hover:bg-rose-100 transition-colors">Delete Permanently</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="py-6 text-center text-slate-400 text-xs">No soft-deleted expeditions in trash.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        @livewire('components.generic-data-table', [
+            'modelClass' => \Fishinglog\Models\Expedition::class,
+            'onlyTrashed' => true,
+            'columns' => [
+                ['key' => 'description', 'label' => 'Description', 'type' => 'expedition_desc', 'sortable' => true, 'searchable' => true],
+                ['key' => 'start', 'label' => 'Start Date', 'type' => 'date', 'sortable' => true],
+                ['key' => 'finish', 'label' => 'End Date', 'type' => 'date', 'sortable' => true],
+                ['key' => 'deleted_at', 'label' => 'Deleted At', 'type' => 'date', 'sortable' => true],
+            ],
+            'searchPlaceholder' => 'Search deleted expeditions...',
+            'itemName' => 'expeditions',
+            'perPage' => 10,
+        ])
     </div>
 </div>
 @endsection

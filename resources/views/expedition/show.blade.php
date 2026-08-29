@@ -513,50 +513,21 @@
                 <span>Expedition Catches Log</span>
             </h2>
 
-            <div class="overflow-x-auto rounded-xl border border-slate-200/80">
-                <table class="w-full text-left text-sm text-slate-700">
-                    <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
-                        <tr>
-                            <th scope="col" class="py-3 px-4">Date</th>
-                            <th scope="col" class="py-3 px-4">Angler</th>
-                            <th scope="col" class="py-3 px-4">Lake</th>
-                            <th scope="col" class="py-3 px-4">Species</th>
-                            <th scope="col" class="py-3 px-4">Lure</th>
-                            <th scope="col" class="py-3 px-4 text-center">Weight</th>
-                            <th scope="col" class="py-3 px-4 text-center">Length</th>
-                            <th scope="col" class="py-3 px-4">Status</th>
-                            <th scope="col" class="py-3 px-4 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 bg-white">
-                        @foreach($records as $record)
-                            <tr class="hover:bg-slate-50/70 transition-colors text-xs">
-                                <td class="py-3 px-4 font-medium text-slate-900">{{ $record->caught }}</td>
-                                <td class="py-3 px-4 font-semibold text-slate-800">{{ $record->angler->full_name }}</td>
-                                <td class="py-3 px-4 text-slate-700">{{ $record->lake->name }}</td>
-                                <td class="py-3 px-4 font-bold text-teal-700">{{ $record->fishBreed->name }}</td>
-                                <td class="py-3 px-4 text-slate-600">{{ optional($record->lure)->displayName ?? '—' }}</td>
-                                <td class="py-3 px-4 text-center font-mono font-medium">{{ $record->weight ? number_format($record->weight, 2) . ' lbs' : '—' }}</td>
-                                <td class="py-3 px-4 text-center font-mono font-medium">{{ $record->length ? number_format($record->length, 2) . ' in' : '—' }}</td>
-                                <td class="py-3 px-4">
-                                    @if($record->released == 1)
-                                        <span class="inline-flex items-center bg-amber-50 text-amber-700 text-[11px] font-bold px-2 py-0.5 rounded-full border border-amber-200">Released</span>
-                                    @else
-                                        <span class="inline-flex items-center bg-emerald-50 text-emerald-700 text-[11px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">Kept</span>
-                                    @endif
-                                </td>
-                                <td class="py-3 px-4 text-right">
-                                    <x-tableOptions name='record' identifier='{{ $record->id }}' />
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="pt-2">
-                {{ $records->links() }}
-            </div>
+            @livewire('components.generic-data-table', [
+                'modelClass' => \Fishinglog\Models\Record::class,
+                'expeditionId' => (string) $expedition->id,
+                'with' => ['angler', 'lake', 'fishBreed', 'lure'],
+                'columns' => [
+                    ['key' => 'caught', 'label' => 'Date', 'type' => 'date', 'sortable' => true],
+                    ['key' => 'angler.lastName', 'label' => 'Angler', 'type' => 'angler_name', 'sortable' => true],
+                    ['key' => 'lake.name', 'label' => 'Lake', 'type' => 'lake_link', 'sortable' => true],
+                    ['key' => 'fishBreed.name', 'label' => 'Species', 'type' => 'species_name', 'sortable' => true],
+                    ['key' => 'length', 'label' => 'Length / Weight', 'type' => 'catch_length_weight', 'sortable' => true],
+                ],
+                'searchPlaceholder' => 'Search expedition catches...',
+                'itemName' => 'catches',
+                'perPage' => 10,
+            ])
         </div>
     @endif
 </div>

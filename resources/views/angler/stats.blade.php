@@ -232,60 +232,19 @@
         </div>
 
         @if($anglersList->total() > 0)
-            <div x-data="dataTable({ defaultDensity: 'normal' })">
-                <x-table.wrapper 
-                    searchPlaceholder="Filter angler telemetry..." 
-                    itemName="anglers"
-                    :totalCount="$anglersList->total()"
-                    :showColumnPicker="true"
-                    :showDensity="true"
-                >
-                    <table class="w-full text-left text-xs text-slate-700">
-                        <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
-                            <tr>
-                                <x-table.th col="angler" type="text" label="Angler">Angler</x-table.th>
-                                <x-table.th col="catches" type="number" align="center" label="Catches">Catches</x-table.th>
-                                <x-table.th col="lakes" type="number" align="center" label="Lakes Fished">Lakes Fished</x-table.th>
-                                <x-table.th col="expeditions" type="number" align="center" label="Expeditions">Expeditions</x-table.th>
-                                <x-table.th col="avg_length" type="number" align="center" label="Avg Length">Avg. Length</x-table.th>
-                                <x-table.th col="avg_weight" type="number" align="center" label="Avg Weight">Avg. Weight</x-table.th>
-                                <x-table.th col="release_rate" type="number" align="center" label="C&R Rate">C&R Release %</x-table.th>
-                                <x-table.th col="target_species" type="text" label="Target Species">Target Species</x-table.th>
-                            </tr>
-                        </thead>
-                        <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
-                            @foreach($anglersList as $ang)
-                                <tr data-table-row class="hover:bg-slate-50/70 transition-colors">
-                                    <td data-col="angler" data-sort-val="{{ $ang->firstName }} {{ $ang->lastName }}" x-show="isColumnVisible('angler')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-medium text-slate-900">
-                                        <div class="flex items-center gap-3">
-                                            <a href="{{ url('/angler/' . $ang->id . '/profile') }}" class="shrink-0">
-                                                <x-anglerAvatar :angler="$ang" size="sm" />
-                                            </a>
-                                            <a href="{{ url('/angler/' . $ang->id . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline block text-xs leading-tight">
-                                                {{ $ang->fullName }}
-                                            </a>
-                                        </div>
-                                    </td>
-                                    <td data-col="catches" data-sort-val="{{ $ang->records_count }}" x-show="isColumnVisible('catches')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-teal-700 text-xs">{{ number_format($ang->records_count) }}</td>
-                                    <td data-col="lakes" data-sort-val="{{ $ang->unique_lakes_count }}" x-show="isColumnVisible('lakes')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800 text-xs">{{ $ang->unique_lakes_count }}</td>
-                                    <td data-col="expeditions" data-sort-val="{{ $ang->expeditions_count }}" x-show="isColumnVisible('expeditions')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800 text-xs">{{ $ang->expeditions_count }}</td>
-                                    <td data-col="avg_length" data-sort-val="{{ $ang->avg_length ?? 0 }}" x-show="isColumnVisible('avg_length')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono text-slate-700 text-xs">{{ $ang->avg_length ? $ang->avg_length . ' in.' : '—' }}</td>
-                                    <td data-col="avg_weight" data-sort-val="{{ $ang->avg_weight ?? 0 }}" x-show="isColumnVisible('avg_weight')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono text-slate-700 text-xs">{{ $ang->avg_weight ? $ang->avg_weight . ' lbs.' : '—' }}</td>
-                                    <td data-col="release_rate" data-sort-val="{{ $ang->release_rate }}" x-show="isColumnVisible('release_rate')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-emerald-600 text-xs">{{ $ang->release_rate }}%</td>
-                                    <td data-col="target_species" data-sort-val="{{ $ang->top_species_name }}" x-show="isColumnVisible('target_species')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-semibold text-slate-800 text-xs">
-                                        <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded-md border border-slate-200">{{ $ang->top_species_name }}</span>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </x-table.wrapper>
-
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 pt-4 border-t border-slate-100 mt-4">
-                    <span>Showing {{ $anglersList->firstItem() }} to {{ $anglersList->lastItem() }} of {{ $anglersList->total() }} Anglers</span>
-                    <div>{{ $anglersList->links() }}</div>
-                </div>
-            </div>
+            @livewire('components.generic-data-table', [
+                'modelClass' => \Fishinglog\Models\Angler::class,
+                'columns' => [
+                    ['key' => 'lastName', 'label' => 'Angler', 'type' => 'angler_name', 'sortable' => true, 'searchable' => true],
+                    ['key' => 'records_count', 'label' => 'Catches', 'type' => 'count', 'align' => 'center', 'sortable' => true, 'sortKey' => 'records_count'],
+                    ['key' => 'lakes_count', 'label' => 'Lakes Fished', 'type' => 'count', 'align' => 'center', 'sortable' => true, 'sortKey' => 'lakes_count'],
+                ],
+                'searchPlaceholder' => 'Filter angler telemetry...',
+                'itemName' => 'anglers',
+                'perPage' => 15,
+                'defaultSortBy' => 'records_count',
+                'defaultSortOrder' => 'desc',
+            ])
         @else
             <div class="text-center py-12 px-4 space-y-3">
                 <i data-lucide="users" class="w-8 h-8 text-slate-400 mx-auto"></i>

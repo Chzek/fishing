@@ -297,52 +297,17 @@
         </div>
 
         @if(count($lakes) > 0)
-            <div class="overflow-x-auto rounded-xl border border-slate-200/80">
-                <table class="w-full text-left text-xs text-slate-700">
-                    <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/80">
-                        <tr>
-                            <th scope="col" class="py-3 px-4">Lake Name</th>
-                            <th scope="col" class="py-3 px-4 text-center">GPS Coordinates</th>
-                            <th scope="col" class="py-3 px-4 text-center">Total Catches</th>
-                            <th scope="col" class="py-3 px-4 text-center">Length (Min / Max / Avg)</th>
-                            <th scope="col" class="py-3 px-4 text-center">Recorded Visits</th>
-                            <th scope="col" class="py-3 px-4 text-right">View Lake</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 bg-white">
-                        @foreach($lakes as $lake)
-                            <tr class="hover:bg-slate-50/70 transition-colors">
-                                <td class="py-3.5 px-4 font-bold text-slate-900">
-                                    <a href="/lake/{{ $lake->lake->id }}" class="hover:text-teal-600 hover:underline">
-                                        {{ $lake->lake->name }}
-                                    </a>
-                                </td>
-                                <td class="py-3.5 px-4 text-center font-mono text-slate-500">
-                                    @if($lake->lake->latitude && $lake->lake->longitude)
-                                        {{ number_format($lake->lake->latitude, 4) }}, {{ number_format($lake->lake->longitude, 4) }}
-                                    @else
-                                        <span class="text-slate-400">—</span>
-                                    @endif
-                                </td>
-                                <td class="py-3.5 px-4 text-center font-mono font-bold text-teal-700">
-                                    {{ number_format($lake->count) }}
-                                </td>
-                                <td class="py-3.5 px-4 text-center font-mono text-slate-700 font-semibold">
-                                    {{ $lake->min_length }} / <strong class="text-slate-900">{{ $lake->max_length }}</strong> / {{ $lake->avg_length }} in.
-                                </td>
-                                <td class="py-3.5 px-4 text-center font-mono text-slate-700">
-                                    {{ number_format($lake->visits) }}
-                                </td>
-                                <td class="py-3.5 px-4 text-right">
-                                    <a href='/lake/{{ $lake->lake->id }}' class="p-1.5 rounded-lg text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors inline-block" title="View Lake Details">
-                                        <i data-lucide="arrow-right" class="w-4 h-4 text-teal-600"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+            @livewire('components.generic-data-table', [
+                'modelClass' => \Fishinglog\Models\Lake::class,
+                'columns' => [
+                    ['key' => 'name', 'label' => 'Lake Name', 'type' => 'lake_name', 'sortable' => true, 'searchable' => true],
+                    ['key' => 'records_count', 'label' => 'Total Catches', 'type' => 'count', 'align' => 'center', 'sortable' => true, 'sortKey' => 'records_count'],
+                    ['key' => 'visits', 'label' => 'Recorded Visits', 'type' => 'count', 'align' => 'center', 'sortable' => true, 'sortKey' => 'visits'],
+                ],
+                'searchPlaceholder' => 'Search lakes...',
+                'itemName' => 'lakes',
+                'perPage' => 10,
+            ])
         @else
             <x-emptyState icon="map-pin-off" title="No Lake Distribution Data" description="No waterbody locations logged for this species yet." />
         @endif

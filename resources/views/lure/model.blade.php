@@ -78,7 +78,9 @@
                                     <a href="/lure/{{ $variant->id }}" class="px-2.5 py-1 bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-700 font-semibold text-[11px] rounded-lg border border-slate-200 transition-colors">
                                         Variant Specs →
                                     </a>
-                                    <x-tableOptions name="lure" identifier="{{ $variant->id }}" />
+                                    <a href="/lure/{{ $variant->id }}/edit" title="Edit Lure Variant" class="p-1 text-slate-400 hover:text-teal-600 transition-colors">
+                                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

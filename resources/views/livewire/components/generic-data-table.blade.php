@@ -208,6 +208,31 @@
                                             Standard User
                                         </span>
                                     @endif
+                                @elseif($type === 'angler_name')
+                                    @php
+                                        $angObj = $record instanceof \Fishinglog\Models\Angler ? $record : $record->angler;
+                                        $angName = $angObj ? $angObj->firstName . ' ' . $angObj->lastName : ($val ?? '—');
+                                        $angProfileId = $angObj ? $angObj->id : null;
+                                    @endphp
+                                    @if($angProfileId)
+                                        <a href="{{ url('/angler/' . $angProfileId . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline">
+                                            {{ $angName }}
+                                        </a>
+                                    @else
+                                        <span class="font-semibold text-slate-900">{{ $angName }}</span>
+                                    @endif
+                                @elseif($type === 'lake_link')
+                                    <a href="{{ $record->lake ? url('/lake/' . $record->lake->id) : '#' }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
+                                        {{ $record->lake?->name ?? ($val ?? '—') }}
+                                    </a>
+                                @elseif($type === 'species_name')
+                                    <a href="{{ $record->fishBreed ? url('/fish/' . $record->fishBreed->id) : '#' }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
+                                        {{ $record->fishBreed?->name ?? ($val ?? '—') }}
+                                    </a>
+                                @elseif($type === 'catch_length_weight')
+                                    <span class="font-mono text-slate-700 font-semibold">
+                                        {{ $record->length ? $record->length . ' in.' : '—' }} / {{ $record->weight ? $record->weight . ' lbs.' : '—' }}
+                                    </span>
                                 @elseif($type === 'link')
                                     @php
                                         $urlPath = isset($col['urlPrefix']) ? $col['urlPrefix'] . '/' . data_get($record, $col['urlParam'] ?? 'id') : '#';
@@ -235,7 +260,37 @@
                             </td>
                         @endforeach
                         <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap font-medium text-xs">
-                            @if(method_exists($record, 'getTable'))
+                            @if($onlyTrashed && method_exists($record, 'getTable'))
+                                @php
+                                    $modelType = match($record->getTable()) {
+                                        'records' => 'record',
+                                        'lakes' => 'lake',
+                                        'anglers' => 'angler',
+                                        'lures' => 'lure',
+                                        'expeditions' => 'expedition',
+                                        default => 'record',
+                                    };
+                                @endphp
+                                <div class="flex items-center justify-end gap-2">
+                                    <form action="{{ route('admin.trash.restore') }}" method="POST" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="type" value="{{ $modelType }}">
+                                        <input type="hidden" name="id" value="{{ $record->id }}">
+                                        <button type="submit" class="px-2.5 py-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer">
+                                            Restore
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.trash.force-delete') }}" method="POST" class="inline" onsubmit="return confirm('Permanently delete this item?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <input type="hidden" name="type" value="{{ $modelType }}">
+                                        <input type="hidden" name="id" value="{{ $record->id }}">
+                                        <button type="submit" class="px-2.5 py-1 text-[11px] font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors cursor-pointer">
+                                            Purge
+                                        </button>
+                                    </form>
+                                </div>
+                            @elseif(method_exists($record, 'getTable'))
                                 @php
                                     $tbl = $record->getTable();
                                 @endphp
@@ -248,7 +303,9 @@
                                         View Profile →
                                     </a>
                                 @elseif($tbl === 'expeditions')
-                                    <x-tableOptions name='expedition' identifier='{{ $record->id }}' />
+                                    <a href="{{ url('/expedition/' . $record->id) }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
+                                        View Trip →
+                                    </a>
                                 @elseif($tbl === 'fish_breeds')
                                     <div class="flex items-center justify-end gap-1.5">
                                         <a href="{{ url('/fish/' . $record->id) }}" class="p-1.5 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="View Dossier">
