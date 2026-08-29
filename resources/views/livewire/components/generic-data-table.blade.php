@@ -345,28 +345,16 @@
                             class="py-3 px-4 {{ $alignClass }} {{ $isSortable ? 'select-none cursor-pointer group' : '' }}"
                             @if($isSortable) wire:click="sortByColumn('{{ $colKey }}', $event.shiftKey)" @endif
                         >
-                        @if($colKey === 'dailyWeather' || ($col['type'] ?? '') === 'weather_badge')
-                            <div class="flex flex-col items-center gap-1 hover:text-teal-600">
-                                <div class="inline-flex items-center gap-1.5 justify-center">
-                                    <span>{{ $col['label'] }}</span>
-                                    @if($isSortable)
-                                        @if($sortDir)
-                                            <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
-                                                @if($sortIdx)
-                                                    <span class="text-[9px] text-teal-800 font-mono font-bold">{{ $sortIdx }}</span>
-                                                @endif
-                                                <span>{{ strtolower($sortDir) === 'asc' ? '▲' : '▼' }}</span>
-                                            </span>
-                                        @else
-                                            <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
-                                        @endif
-                                    @endif
-                                </div>
-                                <x-temperatureLegend size="xs" />
-                            </div>
-                        @else
-                            <div class="inline-flex items-center gap-1.5 {{ $align === 'center' ? 'justify-center' : ($align === 'right' ? 'justify-end' : 'justify-start') }} hover:text-teal-600">
+                            <div 
+                                class="inline-flex items-center gap-1.5 {{ $align === 'center' ? 'justify-center' : ($align === 'right' ? 'justify-end' : 'justify-start') }} hover:text-teal-600"
+                                @if($colKey === 'dailyWeather' || ($col['type'] ?? '') === 'weather_badge')
+                                    title="Temperature Scale Legend: <40°F (Ice Blue) • 50°F (Teal) • 70°F (Amber) • 90°F+ (Rose)"
+                                @endif
+                            >
                                 <span>{{ $col['label'] }}</span>
+                                @if($colKey === 'dailyWeather' || ($col['type'] ?? '') === 'weather_badge')
+                                    <i data-lucide="info" class="w-3 h-3 text-slate-400 hover:text-teal-500 shrink-0 transition-colors"></i>
+                                @endif
                                 @if($isSortable)
                                     @if($sortDir)
                                         <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
@@ -380,7 +368,6 @@
                                     @endif
                                 @endif
                             </div>
-                        @endif
                         </th>
                     @endforeach
                     <th scope="col" class="py-3 px-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
