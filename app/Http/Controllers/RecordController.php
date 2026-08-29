@@ -7,6 +7,7 @@ use Fishinglog\Http\Requests\UpdateRecordRequest;
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\Lake;
+use Fishinglog\Models\LakeDailyWeather;
 use Fishinglog\Models\Lure;
 use Fishinglog\Models\Photo;
 use Fishinglog\Models\Record;
@@ -283,7 +284,7 @@ class RecordController extends Controller
      */
     public function directory(Pipeline $pipeline, Request $request)
     {
-        $recordsQuery = Record::with(['angler', 'lake.dailyWeather', 'fishBreed', 'lure'])
+        $recordsQuery = Record::with(['angler', 'lake', 'fishBreed', 'lure'])
             ->orderBy('caught', 'desc')
             ->orderBy('lakes_id', 'asc')
             ->orderBy('anglers_id', 'asc');
@@ -302,6 +303,27 @@ class RecordController extends Controller
 
         $records = (clone $filteredRecords)->paginate(15)->withQueryString();
         $totalCount = (clone $filteredRecords)->count();
+
+        // Optimizing weather telemetry: batch load exact daily weather records for current 15 page items
+        $lakesAndDates = $records->getCollection()->map(function ($r) {
+            $cDate = is_a($r->caught, \DateTimeInterface::class) ? $r->caught->format('Y-m-d') : substr((string)$r->caught, 0, 10);
+            return ['lake_id' => $r->lakes_id, 'date' => $cDate];
+        })->filter(fn($item) => !empty($item['lake_id']) && !empty($item['date']))->unique();
+
+        if ($lakesAndDates->isNotEmpty()) {
+            $weatherModels = LakeDailyWeather::where(function ($query) use ($lakesAndDates) {
+                foreach ($lakesAndDates as $item) {
+                    $query->orWhere(function ($q) use ($item) {
+                        $q->where('lakes_id', $item['lake_id'])->where('date', $item['date']);
+                    });
+                }
+            })->get()->keyBy(fn($w) => $w->lakes_id . '_' . (is_a($w->date, \DateTimeInterface::class) ? $w->date->format('Y-m-d') : substr((string)$w->date, 0, 10)));
+
+            $records->getCollection()->each(function ($record) use ($weatherModels) {
+                $cDate = is_a($record->caught, \DateTimeInterface::class) ? $record->caught->format('Y-m-d') : substr((string)$record->caught, 0, 10);
+                $record->setRelation('dailyWeather', $weatherModels->get($record->lakes_id . '_' . $cDate));
+            });
+        }
 
         return view('record.directory', [
             'records' => $records,
