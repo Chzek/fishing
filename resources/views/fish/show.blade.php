@@ -263,9 +263,25 @@
                         <span class="text-[10px] text-slate-400 font-mono font-semibold">{{ $activeWeatherStats->count() }} Productive</span>
                     </div>
 
-                    <div class="flex items-end justify-around gap-2 h-24 pt-1">
+                    <div class="flex items-end justify-around gap-2 h-28 pt-1">
                         @foreach($activeWeatherStats as $ws)
+                            @php
+                                $wKey = strtolower($ws['key'] ?? $ws['label'] ?? '');
+                                $iconConfig = match (true) {
+                                    str_contains($wKey, 'clear sky') || $wKey === 'sunny' || $wKey === 'clear' => ['icon' => 'sun', 'color' => 'text-amber-500'],
+                                    str_contains($wKey, 'mainly') => ['icon' => 'sun-medium', 'color' => 'text-amber-400'],
+                                    str_contains($wKey, 'partly') => ['icon' => 'cloud-sun', 'color' => 'text-amber-400'],
+                                    str_contains($wKey, 'overcast') => ['icon' => 'cloud', 'color' => 'text-slate-400'],
+                                    str_contains($wKey, 'fog') => ['icon' => 'cloud-fog', 'color' => 'text-slate-400'],
+                                    str_contains($wKey, 'drizzle') => ['icon' => 'cloud-drizzle', 'color' => 'text-sky-400'],
+                                    str_contains($wKey, 'rain') => ['icon' => 'cloud-rain', 'color' => 'text-blue-500'],
+                                    str_contains($wKey, 'snow') => ['icon' => 'snowflake', 'color' => 'text-cyan-300'],
+                                    str_contains($wKey, 'thunder') || str_contains($wKey, 'storm') => ['icon' => 'cloud-lightning', 'color' => 'text-purple-500'],
+                                    default => ['icon' => 'cloud-sun', 'color' => 'text-indigo-500'],
+                                };
+                            @endphp
                             <div class="flex-1 max-w-[60px] flex flex-col items-center gap-1 h-full justify-end group relative" title="{{ $ws['key'] }}: {{ $ws['count'] }} catches">
+                                <i data-lucide="{{ $iconConfig['icon'] }}" class="w-3.5 h-3.5 {{ $iconConfig['color'] }} shrink-0"></i>
                                 <span class="text-[10px] font-bold font-mono text-indigo-600">
                                     {{ $ws['count'] }}
                                 </span>
