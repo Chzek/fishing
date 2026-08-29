@@ -628,6 +628,16 @@ class GenericDataTable extends Component
                           ->orderBy('fish_breeds.name', $order);
                     continue;
                 }
+            } elseif ($sortColKey === 'dailyWeather' || $sortColKey === 'weather' || $sortColKey === 'air_temp') {
+                if ($this->modelClass === Record::class) {
+                    $query->leftJoin('lake_daily_weather', function ($join) {
+                        $join->on('records.lakes_id', '=', 'lake_daily_weather.lakes_id')
+                             ->on(DB::raw('DATE(records.caught)'), '=', 'lake_daily_weather.date');
+                    })
+                    ->select('records.*')
+                    ->orderBy('lake_daily_weather.air_temp_mean', $order);
+                    continue;
+                }
             } elseif ($sortColKey === 'angler' || $sortColKey === 'angler.lastName') {
                 if ($this->modelClass === Record::class) {
                     $query->leftJoin('anglers', 'records.anglers_id', '=', 'anglers.id')

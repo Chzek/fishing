@@ -347,6 +347,9 @@
                         >
                             <div class="inline-flex items-center gap-1.5 {{ $align === 'center' ? 'justify-center' : ($align === 'right' ? 'justify-end' : 'justify-start') }} hover:text-teal-600">
                                 <span>{{ $col['label'] }}</span>
+                                @if($colKey === 'dailyWeather' || ($col['type'] ?? '') === 'weather_badge')
+                                    <x-temperatureLegend size="xs" class="ml-1" />
+                                @endif
                                 @if($isSortable)
                                     @if($sortDir)
                                         <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">

@@ -142,4 +142,15 @@ class RecordFilterTest extends TestCase
         $responseLakes = $this->actingAs($user)->get('/angler?sort_by=lakes&sort_order=desc');
         $responseLakes->assertStatus(200);
     }
+
+    public function test_can_sort_catches_by_daily_weather_temperature()
+    {
+        $user = User::factory()->create();
+
+        $responseAsc = $this->actingAs($user)->get('/record/directory?sort_by=dailyWeather&sort_order=asc');
+        $responseAsc->assertStatus(200);
+
+        $responseDesc = $this->actingAs($user)->get('/record/directory?sort_by=dailyWeather&sort_order=desc');
+        $responseDesc->assertStatus(200);
+    }
 }
