@@ -290,21 +290,76 @@
             @forelse($weatherDistribution as $item)
                 @php
                     $cond = strtolower($item->weather_condition ?? '');
-                    $emoji = '🌤️';
-                    if (str_contains($cond, 'clear')) { $emoji = '☀️'; }
-                    elseif (str_contains($cond, 'overcast') || str_contains($cond, 'cloud')) { $emoji = '☁️'; }
-                    elseif (str_contains($cond, 'rain') || str_contains($cond, 'drizzle')) { $emoji = '🌧️'; }
-                    elseif (str_contains($cond, 'thunder') || str_contains($cond, 'storm')) { $emoji = '🌩️'; }
-                    elseif (str_contains($cond, 'snow')) { $emoji = '❄️'; }
-                    elseif (str_contains($cond, 'fog')) { $emoji = '🌫️'; }
-                    
+                    $config = match (true) {
+                        str_contains($cond, 'clear sky') || $cond === 'sunny' || $cond === 'clear' => [
+                            'icon' => 'sun',
+                            'emoji' => '☀️',
+                            'color' => 'text-amber-500',
+                            'bgColor' => 'bg-amber-50 border-amber-200/80',
+                        ],
+                        str_contains($cond, 'mainly clear') => [
+                            'icon' => 'sun-medium',
+                            'emoji' => '🌤️',
+                            'color' => 'text-amber-400',
+                            'bgColor' => 'bg-amber-50 border-amber-200/80',
+                        ],
+                        str_contains($cond, 'partly') || str_contains($cond, 'cloudy') => [
+                            'icon' => 'cloud-sun',
+                            'emoji' => '⛅',
+                            'color' => 'text-amber-300',
+                            'bgColor' => 'bg-sky-50 border-sky-200/80',
+                        ],
+                        str_contains($cond, 'overcast') => [
+                            'icon' => 'cloud',
+                            'emoji' => '☁️',
+                            'color' => 'text-slate-400',
+                            'bgColor' => 'bg-slate-100 border-slate-200',
+                        ],
+                        str_contains($cond, 'fog') => [
+                            'icon' => 'cloud-fog',
+                            'emoji' => '🌫️',
+                            'color' => 'text-slate-400',
+                            'bgColor' => 'bg-slate-100 border-slate-200',
+                        ],
+                        str_contains($cond, 'drizzle') => [
+                            'icon' => 'cloud-drizzle',
+                            'emoji' => '🌧️',
+                            'color' => 'text-sky-400',
+                            'bgColor' => 'bg-sky-50 border-sky-200/80',
+                        ],
+                        str_contains($cond, 'rain') => [
+                            'icon' => 'cloud-rain',
+                            'emoji' => '🌧️',
+                            'color' => 'text-blue-500',
+                            'bgColor' => 'bg-blue-50 border-blue-200/80',
+                        ],
+                        str_contains($cond, 'snow') => [
+                            'icon' => 'snowflake',
+                            'emoji' => '❄️',
+                            'color' => 'text-cyan-300',
+                            'bgColor' => 'bg-cyan-50 border-cyan-200/80',
+                        ],
+                        str_contains($cond, 'thunder') || str_contains($cond, 'storm') => [
+                            'icon' => 'cloud-lightning',
+                            'emoji' => '🌩️',
+                            'color' => 'text-purple-500',
+                            'bgColor' => 'bg-purple-50 border-purple-200/80',
+                        ],
+                        default => [
+                            'icon' => 'thermometer',
+                            'emoji' => '🌡️',
+                            'color' => 'text-slate-500',
+                            'bgColor' => 'bg-slate-50 border-slate-200',
+                        ],
+                    };
+
                     $cleanTitle = trim(preg_replace('/[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]/u', '', $item->weather_condition ?? 'Unknown'));
                 @endphp
                 <div class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 hover:bg-slate-50 hover:border-slate-300 transition-all space-y-3">
                     <div class="flex items-center gap-3">
                         <!-- Prominent Left Weather Icon Badge -->
-                        <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-700 border border-sky-200/80 flex items-center justify-center text-xl shrink-0 shadow-xs">
-                            {{ $emoji }}
+                        <div class="w-10 h-10 rounded-xl {{ $config['bgColor'] }} flex items-center justify-center shrink-0 shadow-xs">
+                            <i data-lucide="{{ $config['icon'] }}" class="w-5 h-5 {{ $config['color'] }}"></i>
                         </div>
 
                         <div class="flex-1 min-w-0 space-y-1">
