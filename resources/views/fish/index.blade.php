@@ -160,18 +160,11 @@
                 @foreach($fishes as $fish)
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col justify-between hover:shadow-md hover:border-teal-500/40 transition-all group">
                         <div class="p-4 space-y-3">
-                            <div class="w-full h-36 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center p-3 relative overflow-hidden group-hover:bg-teal-50/20 transition-colors">
-                                @if($fish->imageUrl)
-                                    <img src="{{ $fish->imageUrl }}" alt="{{ $fish->name }}" class="max-h-full max-w-full object-contain filter drop-shadow-sm group-hover:scale-105 transition-transform duration-300">
-                                @else
-                                    <div class="text-center text-slate-300">
-                                        <i data-lucide="fish" class="w-12 h-12 mx-auto stroke-[1.25]"></i>
-                                        <span class="text-[10px] font-medium block mt-1">No Illustration</span>
-                                    </div>
-                                @endif
+                            <div class="w-full h-36 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center p-3 relative overflow-hidden group-hover:border-teal-500/50 transition-colors">
+                                <x-fishAvatar :breed="$fish" size="lg" class="w-24 h-24 shadow-lg group-hover:scale-105 transition-transform duration-300" />
 
                                 @if($fish->family)
-                                    <span class="absolute top-2 left-2 text-[10px] font-bold text-slate-600 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded-md border border-slate-200/70 shadow-2xs">
+                                    <span class="absolute top-2 left-2 text-[10px] font-bold text-slate-300 bg-slate-950/80 backdrop-blur-xs px-2 py-0.5 rounded-md border border-slate-700/80 shadow-2xs">
                                         {{ $fish->family->name }}
                                     </span>
                                 @endif

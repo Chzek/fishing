@@ -438,7 +438,7 @@
                                     </div>
                                 @elseif($type === 'species_avatar')
                                     <div class="flex items-center gap-3">
-                                        <x-fishAvatar :fish="$record" size="sm" />
+                                        <x-fishAvatar :breed="$record" size="sm" />
                                         <a href="{{ url('/fish/' . $record->id) }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline text-xs sm:text-sm">
                                             {{ $val ?? '—' }}
                                         </a>
