@@ -28,20 +28,21 @@ class FishBreed extends Model
             return null;
         }
 
-        if (file_exists(public_path('images/fish/avatars/' . $this->avatar))) {
-            return asset('images/fish/avatars/' . $this->avatar);
-        }
+        $base = pathinfo($this->avatar, PATHINFO_FILENAME);
 
-        if (file_exists(public_path('images/fish/' . $this->avatar))) {
-            return asset('images/fish/' . $this->avatar);
-        }
-
-        if (file_exists(storage_path('app/public/fish/avatars/' . $this->avatar))) {
-            return asset('storage/fish/avatars/' . $this->avatar);
-        }
-
-        if (file_exists(storage_path('app/public/fish/' . $this->avatar))) {
-            return asset('storage/fish/' . $this->avatar);
+        foreach (['svg', 'png', 'jpg', 'jpeg'] as $ext) {
+            if (file_exists(public_path('images/fish/avatars/' . $base . '.' . $ext))) {
+                return asset('images/fish/avatars/' . $base . '.' . $ext);
+            }
+            if (file_exists(public_path('images/fish/' . $base . '.' . $ext))) {
+                return asset('images/fish/' . $base . '.' . $ext);
+            }
+            if (file_exists(storage_path('app/public/fish/avatars/' . $base . '.' . $ext))) {
+                return asset('storage/fish/avatars/' . $base . '.' . $ext);
+            }
+            if (file_exists(storage_path('app/public/fish/' . $base . '.' . $ext))) {
+                return asset('storage/fish/' . $base . '.' . $ext);
+            }
         }
 
         return null;

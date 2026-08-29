@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-full h-full">
+  <circle cx="50" cy="50" r="48" fill="#0f172a"/>
+  <!-- Smallmouth Bass Head Portrait (Bronze body, dark vertical cheek bars, red iris eye) -->
+  <g transform="translate(5, 5)">
+    <!-- Bronze Body -->
+    <path d="M15 65 Q25 25 75 15 Q85 40 70 80 Q35 85 15 65 Z" fill="#b45309" stroke="#451a03" stroke-width="3"/>
+    <!-- Dark Vertical Cheek Bars -->
+    <path d="M35 30 L38 65" stroke="#451a03" stroke-width="4" stroke-linecap="round"/>
+    <path d="M48 25 L52 70" stroke="#451a03" stroke-width="4" stroke-linecap="round"/>
+    <path d="M60 22 L63 60" stroke="#451a03" stroke-width="4" stroke-linecap="round"/>
+    <!-- Jaw -->
+    <path d="M70 42 Q82 45 78 55 Q68 60 58 52" fill="#292524" stroke="#451a03" stroke-width="3"/>
+    <!-- Red Iris Eye -->
+    <circle cx="32" cy="35" r="7" fill="#dc2626" stroke="#451a03" stroke-width="2"/>
+    <circle cx="33" cy="34" r="3.5" fill="#000"/>
+    <circle cx="34" cy="33" r="1" fill="#fff"/>
+    <!-- Dorsal Fin Spines -->
+    <path d="M25 25 L32 10 L38 20 L45 8 L52 18 L60 12 L65 24" fill="#78350f" stroke="#451a03" stroke-width="2"/>
+  </g>
+</svg>

@@ -24,12 +24,16 @@
 
     $avatarUrl = $breed?->avatar_url;
 
-    if (!$avatarUrl) {
+    if (!$avatarUrl && !empty($name)) {
         $slug = \Illuminate\Support\Str::slug(strtolower($name), '_');
-        if (file_exists(public_path('images/fish/avatars/' . $slug . '.jpg'))) {
-            $avatarUrl = asset('images/fish/avatars/' . $slug . '.jpg');
-        } elseif (file_exists(public_path('images/fish/' . $slug . '.jpg'))) {
-            $avatarUrl = asset('images/fish/' . $slug . '.jpg');
+        foreach (['svg', 'png', 'jpg', 'jpeg'] as $ext) {
+            if (file_exists(public_path('images/fish/avatars/' . $slug . '.' . $ext))) {
+                $avatarUrl = asset('images/fish/avatars/' . $slug . '.' . $ext);
+                break;
+            } elseif (file_exists(public_path('images/fish/' . $slug . '.' . $ext))) {
+                $avatarUrl = asset('images/fish/' . $slug . '.' . $ext);
+                break;
+            }
         }
     }
 @endphp
