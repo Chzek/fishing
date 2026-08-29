@@ -488,19 +488,23 @@
                                 @elseif($type === 'angler_name')
                                     @php
                                         $angObj = $record instanceof \Fishinglog\Models\Angler ? $record : $record->angler;
-                                        $angName = $angObj ? $angObj->firstName . ' ' . $angObj->lastName : ($val ?? '—');
+                                        $angName = $angObj ? trim($angObj->firstName . ' ' . $angObj->lastName) : null;
                                         $angProfileId = $angObj ? $angObj->id : null;
                                     @endphp
-                                    <div class="flex items-center gap-2">
-                                        <x-anglerAvatar :angler="$angObj" size="xs" />
-                                        @if($angProfileId)
-                                            <a href="{{ url('/angler/' . $angProfileId . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline">
-                                                {{ $angName }}
-                                            </a>
-                                        @else
-                                            <span class="font-semibold text-slate-900">{{ $angName }}</span>
-                                        @endif
-                                    </div>
+                                    @if($angObj)
+                                        <div class="flex items-center gap-2">
+                                            <x-anglerAvatar :angler="$angObj" size="xs" />
+                                            @if($angProfileId)
+                                                <a href="{{ url('/angler/' . $angProfileId . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline">
+                                                    {{ $angName }}
+                                                </a>
+                                            @else
+                                                <span class="font-semibold text-slate-900">{{ $angName }}</span>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <span class="text-slate-400 text-xs italic">Unlinked</span>
+                                    @endif
                                 @elseif($type === 'lake_link')
                                     <a href="{{ $record->lake ? url('/lake/' . $record->lake->id) : '#' }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
                                         {{ $record->lake?->name ?? ($val ?? '—') }}

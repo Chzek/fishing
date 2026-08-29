@@ -89,6 +89,11 @@ class GenericDataTable extends Component
     #[Url(history: true)]
     public array $filterState = [];
 
+    /**
+     * Optional query scopes to apply to the model query.
+     */
+    public array $scopes = [];
+
     public function mount(
         string $modelClass,
         array $columns,
@@ -110,7 +115,8 @@ class GenericDataTable extends Component
         string $categoryId = '',
         string $fishingZoneId = '',
         string $lakeId = '',
-        array $filters = []
+        array $filters = [],
+        array $scopes = []
     ): void {
         $this->modelClass = $modelClass;
         $this->columns = $columns;
@@ -121,6 +127,7 @@ class GenericDataTable extends Component
         $this->perPage = $perPage;
         $this->onlyTrashed = $onlyTrashed;
         $this->filters = $filters;
+        $this->scopes = $scopes;
 
         $this->expeditionId = $expeditionId;
         $this->lureId = $lureId;
@@ -336,6 +343,26 @@ class GenericDataTable extends Component
         $this->resetPage();
     }
 
+    public function updatedSpecies(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedLake(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedAngler(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedLure(): void
+    {
+        $this->resetPage();
+    }
+
     public function resetFilters(): void
     {
         $this->reset(['search', 'family', 'species', 'lake', 'angler', 'lure', 'filterState']);
@@ -362,29 +389,48 @@ class GenericDataTable extends Component
             $query->with($this->with);
         }
 
+        // Apply caller-provided model scopes
+        foreach ($this->scopes as $scopeName => $scopeArgs) {
+            if (is_int($scopeName) && is_string($scopeArgs)) {
+                $query->{$scopeArgs}();
+            } elseif (is_string($scopeName)) {
+                if (is_array($scopeArgs)) {
+                    $query->{$scopeName}(...$scopeArgs);
+                } else {
+                    $query->{$scopeName}($scopeArgs);
+                }
+            }
+        }
+
         // Apply Model-specific relation counts & computed aggregates safely
         if ($this->modelClass === Lake::class) {
-            $query->withCount('records')
-                  ->withCount(['records as visits' => function ($q) {
-                      $q->select(DB::raw('count(distinct records.caught)'));
-                  }])
-                  ->withCount(['anglers as anglers_count' => function ($q) {
-                      $q->select(DB::raw('count(distinct anglers.id)'));
-                  }]);
+            $lakeCounts = [
+                'records',
+                'records as visits' => function ($q) {
+                    $q->select(DB::raw('count(distinct records.caught)'));
+                },
+                'anglers as anglers_count' => function ($q) {
+                    $q->select(DB::raw('count(distinct anglers.id)'));
+                }
+            ];
+            $query->withCount(array_merge($this->withCount, $lakeCounts));
         } elseif ($this->modelClass === Angler::class) {
-            $query->withCount('records')
-                  ->withCount(['records as lakes_count' => function ($q) {
-                      $q->select(DB::raw('count(distinct records.lakes_id)'));
-                  }]);
+            $anglerCounts = [
+                'records',
+                'records as lakes_count' => function ($q) {
+                    $q->select(DB::raw('count(distinct records.lakes_id)'));
+                }
+            ];
+            $query->withCount(array_merge($this->withCount, $anglerCounts));
         } elseif ($this->modelClass === Expedition::class) {
-            $query->withCount('posts', 'crews')
+            $query->withCount(array_merge($this->withCount, ['posts', 'crews']))
                   ->addSelect(['records_count' => Record::selectRaw('count(*)')
                       ->whereColumn('caught', '>=', 'expeditions.start')
                       ->whereColumn('caught', '<=', 'expeditions.finish')
                   ]);
         } elseif ($this->modelClass === FishBreed::class) {
             $query->with(['family'])
-                  ->withCount('records')
+                  ->withCount(array_merge($this->withCount, ['records']))
                   ->addSelect(['longest_record' => Record::selectRaw('max(length)')
                       ->whereColumn('fish_breeds_id', 'fish_breeds.id')
                   ])
@@ -642,6 +688,12 @@ class GenericDataTable extends Component
                 if ($this->modelClass === Record::class) {
                     $query->leftJoin('anglers', 'records.anglers_id', '=', 'anglers.id')
                           ->select('records.*')
+                          ->orderBy('anglers.lastName', $order)
+                          ->orderBy('anglers.firstName', $order);
+                    continue;
+                } elseif ($this->modelClass === User::class) {
+                    $query->leftJoin('anglers', 'users.id', '=', 'anglers.user_id')
+                          ->select('users.*')
                           ->orderBy('anglers.lastName', $order)
                           ->orderBy('anglers.firstName', $order);
                     continue;

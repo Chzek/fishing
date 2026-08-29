@@ -55,6 +55,14 @@ class Lake extends Model
     }
 
     /**
+     * Scope query to only include lakes with valid GPS coordinates.
+     */
+    public function scopeWithCoordinates($query)
+    {
+        return $query->whereNotNull('latitude')->whereNotNull('longitude')->where('latitude', '!=', 0)->where('longitude', '!=', 0);
+    }
+
+    /**
      * Biggest fish by length of the lake.
      * 
      * @return \Fishinglog\Models\Record|null

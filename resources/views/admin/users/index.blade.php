@@ -179,7 +179,7 @@
                 ['key' => 'name', 'label' => 'User Account', 'type' => 'user_account', 'sortable' => true, 'searchable' => true],
                 ['key' => 'email', 'label' => 'Email / Verification', 'type' => 'user_email', 'sortable' => true, 'searchable' => true],
                 ['key' => 'type', 'label' => 'Role Privileges', 'type' => 'user_role', 'sortable' => true],
-                ['key' => 'angler.lastName', 'label' => 'Associated Angler Profile', 'type' => 'link', 'urlPrefix' => 'angler', 'urlParam' => 'angler.id', 'sortable' => true, 'sortKey' => 'angler'],
+                ['key' => 'angler.lastName', 'label' => 'Associated Angler Profile', 'type' => 'angler_name', 'sortable' => true, 'sortKey' => 'angler'],
             ],
             'searchPlaceholder' => 'Quick filter users by name, email, or role...',
             'itemName' => 'users',

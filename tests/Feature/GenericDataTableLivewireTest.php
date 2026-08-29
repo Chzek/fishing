@@ -243,4 +243,109 @@ class GenericDataTableLivewireTest extends TestCase
         ->assertSee('Restore')
         ->assertSee('Purge');
     }
+
+    #[Test]
+    public function generic_data_table_applies_custom_query_scopes()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $lake1 = Lake::factory()->create(['name' => 'Mapped Lake', 'latitude' => 45.0, 'longitude' => -80.0]);
+        $lake2 = Lake::factory()->create(['name' => 'Unmapped Lake', 'latitude' => null, 'longitude' => null]);
+
+        Livewire::test(GenericDataTable::class, [
+            'modelClass' => Lake::class,
+            'columns' => [
+                ['key' => 'name', 'label' => 'Lake Name', 'searchable' => true],
+            ],
+            'scopes' => ['withCoordinates'],
+            'itemName' => 'lakes',
+        ])
+        ->assertStatus(200)
+        ->assertSee('Mapped Lake')
+        ->assertDontSee('Unmapped Lake');
+    }
+
+    #[Test]
+    public function generic_data_table_merges_passed_with_count_with_model_specific_counts()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $lake = Lake::factory()->create(['name' => 'Count Lake']);
+
+        Livewire::test(GenericDataTable::class, [
+            'modelClass' => Lake::class,
+            'withCount' => ['anglers'],
+            'columns' => [
+                ['key' => 'name', 'label' => 'Lake Name', 'searchable' => true],
+                ['key' => 'anglers_count', 'label' => 'Anglers', 'type' => 'count'],
+            ],
+            'itemName' => 'lakes',
+        ])
+        ->assertStatus(200)
+        ->assertSee('Count Lake');
+    }
+
+    #[Test]
+    public function generic_data_table_resets_pagination_when_legacy_filters_update()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        Livewire::test(GenericDataTable::class, [
+            'modelClass' => Lake::class,
+            'columns' => [
+                ['key' => 'name', 'label' => 'Lake Name', 'searchable' => true],
+            ],
+            'itemName' => 'lakes',
+        ])
+        ->call('gotoPage', 3)
+        ->assertSet('paginators.page', 3)
+        ->set('species', 'Walleye')
+        ->assertSet('paginators.page', 1)
+        ->call('gotoPage', 2)
+        ->set('lake', 'Lake Ontario')
+        ->assertSet('paginators.page', 1)
+        ->call('gotoPage', 4)
+        ->set('angler', 'John Doe')
+        ->assertSet('paginators.page', 1)
+        ->call('gotoPage', 5)
+        ->set('lure', 'Jerkbait')
+        ->assertSet('paginators.page', 1);
+    }
+
+    #[Test]
+    public function generic_data_table_renders_associated_angler_avatar_and_full_name_for_users()
+    {
+        $adminUser = User::factory()->create(['type' => 'admin']);
+        $this->be($adminUser);
+
+        $angler = Angler::factory()->create([
+            'firstName' => 'Samantha',
+            'lastName' => 'Walker',
+        ]);
+
+        $user = User::factory()->create([
+            'name' => 'Samantha User',
+            'email' => 'samantha@example.com',
+        ]);
+
+        $angler->update(['user_id' => $user->id]);
+
+        Livewire::test(GenericDataTable::class, [
+            'modelClass' => User::class,
+            'with' => ['angler'],
+            'columns' => [
+                ['key' => 'name', 'label' => 'User Account', 'type' => 'user_account', 'searchable' => true],
+                ['key' => 'email', 'label' => 'Email', 'type' => 'user_email'],
+                ['key' => 'angler.lastName', 'label' => 'Associated Angler Profile', 'type' => 'angler_name', 'sortable' => true, 'sortKey' => 'angler'],
+            ],
+            'itemName' => 'users',
+        ])
+        ->assertStatus(200)
+        ->assertSee('Samantha User')
+        ->assertSee('Samantha Walker')
+        ->assertSee('/angler/' . $angler->id . '/profile');
+    }
 }
