@@ -32,8 +32,8 @@
         'searchPlaceholder' => 'Search anglers by first or last name...',
         'itemName' => 'anglers',
         'perPage' => 10,
-        'defaultSortBy' => 'lastName',
-        'defaultSortOrder' => 'asc',
+        'defaultSortBy' => 'records_count',
+        'defaultSortOrder' => 'desc',
     ])
 </div>
 @endsection
