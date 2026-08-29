@@ -99,9 +99,12 @@
 
         @if($record->dailyWeather)
             <div class="bg-slate-900 text-slate-200 rounded-2xl p-5 border border-slate-800 space-y-3">
-                <div class="flex items-center gap-2 text-teal-400 font-bold text-xs uppercase tracking-wider">
-                    <i data-lucide="cloud-sun" class="w-4 h-4"></i>
-                    <span>Daily Environmental Telemetry</span>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 text-teal-400 font-bold text-xs uppercase tracking-wider">
+                        <i data-lucide="cloud-sun" class="w-4 h-4"></i>
+                        <span>Environmental Telemetry & Pressure Trend</span>
+                    </div>
+                    <x-barometerTrend :weather="$record->dailyWeather" />
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center pt-2 border-t border-slate-800 text-xs">
                     <div>
