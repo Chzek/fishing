@@ -9,7 +9,7 @@
         @livewire('components.generic-data-table', [
             'modelClass' => \Fishinglog\Models\Lake::class,
             'columns' => [
-                ['key' => 'name', 'label' => 'Lake Name', 'type' => 'link', 'urlPrefix' => 'lake', 'sortable' => true, 'searchable' => true],
+                ['key' => 'name', 'label' => 'Lake Name', 'type' => 'lake_name', 'urlPrefix' => 'lake', 'sortable' => true, 'searchable' => true],
                 ['key' => 'records_count', 'label' => 'Total Catches', 'type' => 'count', 'align' => 'center', 'sortable' => true, 'sortKey' => 'records_count'],
                 ['key' => 'visits', 'label' => 'Total Visits', 'type' => 'count', 'align' => 'center', 'sortable' => true, 'sortKey' => 'visits'],
                 ['key' => 'anglers_count', 'label' => 'Anglers Fished', 'type' => 'count', 'align' => 'center', 'sortable' => true, 'sortKey' => 'anglers_count'],

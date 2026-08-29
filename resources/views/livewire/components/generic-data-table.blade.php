@@ -148,6 +148,17 @@
                                             {{ $val ?? '—' }}
                                         </a>
                                     </div>
+                                @elseif($type === 'lake_name')
+                                    <div class="flex items-center gap-2 font-bold text-slate-900">
+                                        @if(!empty($record->latitude) && !empty($record->longitude) && (float)$record->latitude != 0.0 && (float)$record->longitude != 0.0)
+                                            <i data-lucide="map-pin" class="w-4 h-4 text-emerald-600 shrink-0" title="GPS Coordinates: {{ $record->latitude }}, {{ $record->longitude }}"></i>
+                                        @else
+                                            <i data-lucide="map-pin-off" class="w-4 h-4 text-slate-400 shrink-0" title="No GPS Coordinates"></i>
+                                        @endif
+                                        <a href="{{ url('/lake/' . $record->id) }}" class="hover:text-teal-600 hover:underline">
+                                            {{ $val ?? '—' }}
+                                        </a>
+                                    </div>
                                 @elseif($type === 'species_avatar')
                                     <div class="flex items-center gap-3">
                                         <x-fishAvatar :fish="$record" size="sm" />

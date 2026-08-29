@@ -22,19 +22,21 @@ class GenericDataTableLivewireTest extends TestCase
         $user = User::factory()->create();
         $this->be($user);
 
-        $lake1 = Lake::factory()->create(['name' => 'Wawa Lake']);
-        $lake2 = Lake::factory()->create(['name' => 'Davies Lake']);
+        $lake1 = Lake::factory()->create(['name' => 'Wawa Lake', 'latitude' => 47.9942, 'longitude' => -84.7732]);
+        $lake2 = Lake::factory()->create(['name' => 'Davies Lake', 'latitude' => null, 'longitude' => null]);
 
         Livewire::test(GenericDataTable::class, [
             'modelClass' => Lake::class,
             'columns' => [
-                ['key' => 'name', 'label' => 'Lake Name', 'searchable' => true],
+                ['key' => 'name', 'label' => 'Lake Name', 'type' => 'lake_name', 'searchable' => true],
             ],
             'itemName' => 'lakes',
         ])
         ->assertStatus(200)
         ->assertSee('Wawa Lake')
-        ->assertSee('Davies Lake');
+        ->assertSee('Davies Lake')
+        ->assertSee('text-emerald-600')
+        ->assertSee('map-pin-off');
     }
 
     #[Test]
