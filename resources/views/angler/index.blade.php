@@ -25,7 +25,7 @@
     @livewire('components.generic-data-table', [
         'modelClass' => \Fishinglog\Models\Angler::class,
         'columns' => [
-            ['key' => 'full_name', 'label' => 'Angler Name', 'type' => 'link', 'urlPrefix' => 'angler', 'urlParam' => 'id', 'sortable' => true, 'sortKey' => 'lastName', 'searchable' => true],
+            ['key' => 'lastName', 'label' => 'Angler Name', 'type' => 'angler_name', 'sortable' => true, 'sortKey' => 'lastName', 'searchable' => true],
             ['key' => 'records_count', 'label' => 'Total Catches', 'type' => 'count', 'align' => 'center', 'sortable' => true, 'sortKey' => 'records_count'],
             ['key' => 'lakes_count', 'label' => 'Lakes Visited', 'type' => 'count', 'align' => 'center', 'sortable' => true, 'sortKey' => 'lakes_count'],
         ],
