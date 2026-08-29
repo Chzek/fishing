@@ -10,9 +10,10 @@
                     <i data-lucide="arrow-left" class="w-5 h-5"></i>
                 </a>
                 <div>
-                    <h1 class="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
+                    <h1 class="text-2xl font-extrabold text-white tracking-tight flex flex-wrap items-center gap-2.5">
                         <span>Catches Logbook Directory</span>
                         <span class="bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono">{{ number_format($totalCount) }} Total Records</span>
+                        <x-temperatureLegend />
                     </h1>
                     <p class="text-xs text-slate-400 font-medium pt-0.5">Search, filter, and inspect individual catch records, weather telemetry, and lure logs</p>
                 </div>
