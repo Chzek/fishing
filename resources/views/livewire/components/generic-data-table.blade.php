@@ -529,6 +529,14 @@
                                     <span class="font-mono text-slate-600">
                                         {{ $val ?? '—' }}
                                     </span>
+                                @elseif($type === 'coordinates')
+                                    @if($record->latitude && $record->longitude)
+                                        <span class="inline-flex items-center gap-1 font-mono text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                            📍 {{ number_format($record->latitude, 4) }}, {{ number_format($record->longitude, 4) }}
+                                        </span>
+                                    @else
+                                        <span class="text-slate-400 text-xs">Lake Default</span>
+                                    @endif
                                 @else
                                     <span class="font-medium text-slate-700">
                                         {{ $val ?? '—' }}

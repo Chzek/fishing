@@ -67,60 +67,44 @@
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <div class="flex items-center gap-2">
                 <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
-                <h2 class="font-bold text-slate-900 text-sm">Recently Synced Catches</h2>
+                <h2 class="font-bold text-slate-900 text-sm">Recently Synced Server Catches</h2>
             </div>
-            <span class="text-xs text-slate-500">Last 15 Uploads</span>
+            <span class="text-xs text-slate-500">Live Database Telemetry</span>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                    <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[10px] bg-slate-50/50">
-                        <th class="py-3 px-4">Catch Date</th>
-                        <th class="py-3 px-4">Angler</th>
-                        <th class="py-3 px-4">Lake / Water</th>
-                        <th class="py-3 px-4">Species</th>
-                        <th class="py-3 px-4">Length / Weight</th>
-                        <th class="py-3 px-4">Pinpoint GPS</th>
-                        <th class="py-3 px-4 text-right">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-slate-700">
-                    @forelse($recentCatches as $cat)
-                        <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="py-3.5 px-4 font-mono font-medium">{{ $cat->caught }}</td>
-                            <td class="py-3.5 px-4 font-bold text-slate-900">{{ $cat->angler->fullName ?? 'Unknown' }}</td>
-                            <td class="py-3.5 px-4 font-semibold text-slate-800">{{ $cat->lake->name ?? 'Unknown' }}</td>
-                            <td class="py-3.5 px-4">
-                                <span class="font-bold text-teal-700">{{ $cat->fishBreed->name ?? 'Fish' }}</span>
-                            </td>
-                            <td class="py-3.5 px-4 font-mono">
-                                <strong>{{ $cat->length }} in.</strong>
-                                @if($cat->weight)
-                                    <span class="text-slate-400">/ {{ $cat->weight }} lbs.</span>
-                                @endif
-                            </td>
-                            <td class="py-3.5 px-4 font-mono text-[11px]">
-                                @if($cat->latitude && $cat->longitude)
-                                    <span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                                        📍 {{ number_format($cat->latitude, 4) }}, {{ number_format($cat->longitude, 4) }}
-                                    </span>
-                                @else
-                                    <span class="text-slate-400">Lake Default</span>
-                                @endif
-                            </td>
-                            <td class="py-3.5 px-4 text-right">
-                                <a href="/record/{{ $cat->id }}" class="text-xs font-bold text-teal-600 hover:text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200">View Detail →</a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="py-6 text-center text-slate-400 text-xs">No catches uploaded yet.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        @livewire('components.generic-data-table', [
+            'modelClass' => \Fishinglog\Models\Record::class,
+            'with' => ['angler', 'lake', 'fishBreed', 'lure'],
+            'columns' => [
+                ['key' => 'caught', 'label' => 'Catch Date', 'type' => 'date', 'sortable' => true],
+                ['key' => 'angler.lastName', 'label' => 'Angler', 'type' => 'angler_name', 'sortable' => true],
+                ['key' => 'lake.name', 'label' => 'Lake / Water', 'type' => 'lake_link', 'sortable' => true],
+                ['key' => 'fishBreed.name', 'label' => 'Species', 'type' => 'species_name', 'sortable' => true],
+                ['key' => 'length', 'label' => 'Length', 'type' => 'lunker_record', 'align' => 'center', 'sortable' => true],
+                ['key' => 'weight', 'label' => 'Weight', 'type' => 'heavy_record', 'align' => 'center', 'sortable' => true],
+                ['key' => 'coordinates', 'label' => 'Pinpoint GPS', 'type' => 'coordinates', 'sortable' => false],
+            ],
+            'filters' => [
+                [
+                    'key' => 'species',
+                    'type' => 'select',
+                    'label' => 'All Species',
+                    'column' => 'fish_breeds_id',
+                    'options' => \Fishinglog\Models\FishBreed::orderBy('name')->pluck('name', 'id')->toArray(),
+                ],
+                [
+                    'key' => 'caught',
+                    'type' => 'date_range',
+                    'label' => 'Date Range',
+                    'column' => 'caught',
+                ],
+            ],
+            'searchPlaceholder' => 'Search synced catches by lake, species, angler...',
+            'itemName' => 'synced catches',
+            'defaultSortBy' => 'caught',
+            'defaultSortOrder' => 'desc',
+            'perPage' => 10,
+        ])
     </div>
 </div>
 @endsection
