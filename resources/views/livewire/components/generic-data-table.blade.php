@@ -455,13 +455,16 @@
                                         $angName = $angObj ? $angObj->firstName . ' ' . $angObj->lastName : ($val ?? '—');
                                         $angProfileId = $angObj ? $angObj->id : null;
                                     @endphp
-                                    @if($angProfileId)
-                                        <a href="{{ url('/angler/' . $angProfileId . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline">
-                                            {{ $angName }}
-                                        </a>
-                                    @else
-                                        <span class="font-semibold text-slate-900">{{ $angName }}</span>
-                                    @endif
+                                    <div class="flex items-center gap-2">
+                                        <x-anglerAvatar :angler="$angObj" size="xs" />
+                                        @if($angProfileId)
+                                            <a href="{{ url('/angler/' . $angProfileId . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline">
+                                                {{ $angName }}
+                                            </a>
+                                        @else
+                                            <span class="font-semibold text-slate-900">{{ $angName }}</span>
+                                        @endif
+                                    </div>
                                 @elseif($type === 'lake_link')
                                     <a href="{{ $record->lake ? url('/lake/' . $record->lake->id) : '#' }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
                                         {{ $record->lake?->name ?? ($val ?? '—') }}

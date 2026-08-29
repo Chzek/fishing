@@ -75,7 +75,12 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 space-y-1">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Angler</span>
-                <span class="text-base font-bold text-slate-800 block">{{ $record->angler->fullName }}</span>
+                <div class="flex items-center gap-2.5 pt-0.5">
+                    <x-anglerAvatar :angler="$record->angler" size="sm" />
+                    <a href="{{ url('/angler/' . $record->angler->id . '/profile') }}" class="text-base font-bold text-slate-800 hover:text-teal-600 hover:underline">
+                        {{ $record->angler->fullName }}
+                    </a>
+                </div>
             </div>
             <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 space-y-1">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Water / Lake</span>

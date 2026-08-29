@@ -22,7 +22,7 @@ class LakeFactory extends Factory
     public function definition()
     {
         return [
-            'name' => 'fake-Lake ' . $this->faker->lastName,
+            'name' => 'fake-Lake ' . $this->faker->lastName . ' ' . $this->faker->unique()->numberBetween(100, 999999),
             'latitude' => $this->faker->latitude,
             'longitude' => $this->faker->longitude,
         ];
