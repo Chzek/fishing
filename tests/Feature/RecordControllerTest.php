@@ -88,6 +88,17 @@ class RecordControllerTest extends TestCase
 
         $response = $this->get('/record/' . $this->record->id);
         $response->assertStatus(200);
+        $response->assertSee($this->record->fishBreed->name);
+    }
+
+    #[Test]
+    public function authenticated_user_can_view_a_record_via_plural_records_route()
+    {
+        $this->actingAs($this->user);
+
+        $response = $this->get('/records/' . $this->record->id);
+        $response->assertStatus(200);
+        $response->assertSee($this->record->fishBreed->name);
     }
 
     #[Test]

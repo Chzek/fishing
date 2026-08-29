@@ -177,6 +177,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::delete('/{record}', [RecordController::class, 'destroy']);
     });
 
+    // Plural route aliases to prevent 404s on /records/{id}
+    Route::get('/records/{record}', [RecordController::class, 'show']);
+    Route::get('/records', function () {
+        return redirect('/catches');
+    });
+
     // Expedition routes
     Route::prefix('expedition')->group(function () {
         Route::get('/', [ExpeditionController::class, 'index']);
