@@ -1,4 +1,4 @@
-<div x-data="dataTable({ defaultDensity: 'normal' })" class="space-y-4">
+<div x-data="dataTable({ defaultDensity: 'normal' })" x-effect="$nextTick(() => { if (window.initLucideIcons) window.initLucideIcons(); })" class="space-y-4">
     <!-- Livewire Interactive Toolbar styled with x-table.wrapper design system -->
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
         <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
@@ -124,7 +124,7 @@
     </div>
 
     <!-- Data Table Container matching x-table.wrapper design system -->
-    <div class="overflow-x-auto rounded-xl border border-slate-200/80 shadow-2xs bg-white">
+    <div wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-150" class="overflow-x-auto rounded-xl border border-slate-200/80 shadow-2xs bg-white">
         <table class="w-full text-left text-sm text-slate-700">
             <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80">
                 <tr>
@@ -245,9 +245,9 @@
             </thead>
             <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
                 @forelse($records as $record)
-                    <tr class="hover:bg-slate-50/70 transition-colors">
-                        <td data-col="date" x-show="isColumnVisible('date')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-medium text-slate-900 whitespace-nowrap font-mono text-xs">{{ $record->caught }}</td>
-                        <td data-col="angler" x-show="isColumnVisible('angler')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-semibold text-slate-800 whitespace-nowrap">
+                    <tr wire:key="row-{{ $record->id }}" class="hover:bg-slate-50/70 transition-colors">
+                        <td data-col="date" x-show="isColumnVisible('date')" :class="{ 'py-2 px-4': density === 'compact', 'py-3.5 px-4': density !== 'compact' }" class="py-3.5 px-4 font-medium text-slate-900 whitespace-nowrap font-mono text-xs">{{ $record->caught }}</td>
+                        <td data-col="angler" x-show="isColumnVisible('angler')" :class="{ 'py-2 px-4': density === 'compact', 'py-3.5 px-4': density !== 'compact' }" class="py-3.5 px-4 font-semibold text-slate-800 whitespace-nowrap">
                             @if($record->angler)
                                 <a href="{{ url('/angler/' . $record->angler->id . '/profile') }}" class="hover:text-teal-600 hover:underline">
                                     {{ $record->angler->full_name }}
@@ -256,7 +256,7 @@
                                 <span class="text-slate-400">—</span>
                             @endif
                         </td>
-                        <td data-col="lake" x-show="isColumnVisible('lake')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-slate-700 whitespace-nowrap">
+                        <td data-col="lake" x-show="isColumnVisible('lake')" :class="{ 'py-2 px-4': density === 'compact', 'py-3.5 px-4': density !== 'compact' }" class="py-3.5 px-4 text-slate-700 whitespace-nowrap">
                             @if($record->lake)
                                 <a href="{{ url('/lake/' . $record->lake->id) }}" class="hover:text-teal-600 hover:underline">
                                     {{ $record->lake->name }}
@@ -265,8 +265,8 @@
                                 <span class="text-slate-400">—</span>
                             @endif
                         </td>
-                        <td data-col="species" x-show="isColumnVisible('species')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="font-bold text-teal-700 whitespace-nowrap">{{ $record->fishBreed->name ?? 'Unknown' }}</td>
-                        <td data-col="lure" x-show="isColumnVisible('lure')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-xs text-slate-600">
+                        <td data-col="species" x-show="isColumnVisible('species')" :class="{ 'py-2 px-4': density === 'compact', 'py-3.5 px-4': density !== 'compact' }" class="py-3.5 px-4 font-bold text-teal-700 whitespace-nowrap">{{ $record->fishBreed->name ?? 'Unknown' }}</td>
+                        <td data-col="lure" x-show="isColumnVisible('lure')" :class="{ 'py-2 px-4': density === 'compact', 'py-3.5 px-4': density !== 'compact' }" class="py-3.5 px-4 text-xs text-slate-600">
                             @if($record->lure)
                                 <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium border border-slate-200">
                                     {{ $record->lure->name }}
@@ -275,16 +275,16 @@
                                 <span class="text-slate-400">—</span>
                             @endif
                         </td>
-                        <td data-col="weight" x-show="isColumnVisible('weight')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-800 whitespace-nowrap">
+                        <td data-col="weight" x-show="isColumnVisible('weight')" :class="{ 'py-2 px-4': density === 'compact', 'py-3.5 px-4': density !== 'compact' }" class="py-3.5 px-4 text-center font-mono font-bold text-slate-800 whitespace-nowrap">
                             {{ $record->weight ? number_format($record->weight, 2) : '—' }}
                         </td>
-                        <td data-col="length" x-show="isColumnVisible('length')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center font-mono font-bold text-slate-900 whitespace-nowrap">
+                        <td data-col="length" x-show="isColumnVisible('length')" :class="{ 'py-2 px-4': density === 'compact', 'py-3.5 px-4': density !== 'compact' }" class="py-3.5 px-4 text-center font-mono font-bold text-slate-900 whitespace-nowrap">
                             {{ $record->length ? number_format($record->length, 1) : '—' }}
                         </td>
-                        <td data-col="status" x-show="isColumnVisible('status')" :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-center whitespace-nowrap">
+                        <td data-col="status" x-show="isColumnVisible('status')" :class="{ 'py-2 px-4': density === 'compact', 'py-3.5 px-4': density !== 'compact' }" class="py-3.5 px-4 text-center whitespace-nowrap">
                             <x-statusBadge :type="$record->released ? 'released' : 'kept'" />
                         </td>
-                        <td :class="density === 'compact' ? 'py-2 px-4' : 'py-3.5 px-4'" class="text-right whitespace-nowrap font-medium text-xs">
+                        <td :class="{ 'py-2 px-4': density === 'compact', 'py-3.5 px-4': density !== 'compact' }" class="py-3.5 px-4 text-right whitespace-nowrap font-medium text-xs">
                             <a href="{{ route('record.show', $record->id) }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
                                 View Details →
                             </a>
