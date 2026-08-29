@@ -1,54 +1,41 @@
 @props([
-    'fish' => null,
+    'breed' => null,
     'size' => 'md',
-    'class' => '',
 ])
 
 @php
-    $sizeClasses = [
-        'xs' => 'w-7 h-7 text-[10px]',
-        'sm' => 'w-8 h-8 text-xs',
-        'md' => 'w-10 h-10 text-xs',
-        'lg' => 'w-14 h-14 text-sm',
-        'xl' => 'w-20 h-20 text-base',
-    ][$size] ?? 'w-10 h-10 text-xs';
+    $dimensions = match($size) {
+        'xs' => 'w-4 h-4 text-[10px]',
+        'sm' => 'w-6 h-6 text-xs',
+        'lg' => 'w-10 h-10 text-base',
+        default => 'w-8 h-8 text-sm',
+    };
 
-    $iconSizes = [
-        'xs' => 'w-3.5 h-3.5',
-        'sm' => 'w-4 h-4',
-        'md' => 'w-5 h-5',
-        'lg' => 'w-7 h-7',
-        'xl' => 'w-10 h-10',
-    ][$size] ?? 'w-5 h-5';
+    $name = $breed?->name ?? 'Fish';
+    $family = strtolower($breed?->family?->name ?? '');
 
-    $avatarUrl = $fish->avatarUrl ?? null;
-    $displayImage = $avatarUrl;
+    $badgeStyle = match(true) {
+        str_contains($family, 'pike') => 'bg-emerald-50 border-emerald-300/80 text-emerald-800',
+        str_contains($family, 'perch') => 'bg-amber-50 border-amber-300/80 text-amber-800',
+        str_contains($family, 'salmon') || str_contains($family, 'trout') => 'bg-sky-50 border-sky-300/80 text-sky-800',
+        str_contains($family, 'sunfish') || str_contains($family, 'bass') => 'bg-indigo-50 border-indigo-300/80 text-indigo-800',
+        default => 'bg-slate-100 border-slate-300/80 text-slate-800',
+    };
 
-
-    // Palette selection based on fish family or species name hash
-    $palettes = [
-        ['bg' => 'bg-teal-500/15', 'border' => 'border-teal-500/30', 'text' => 'text-teal-600'],
-        ['bg' => 'bg-emerald-500/15', 'border' => 'border-emerald-500/30', 'text' => 'text-emerald-600'],
-        ['bg' => 'bg-sky-500/15', 'border' => 'border-sky-500/30', 'text' => 'text-sky-600'],
-        ['bg' => 'bg-amber-500/15', 'border' => 'border-amber-500/30', 'text' => 'text-amber-600'],
-        ['bg' => 'bg-indigo-500/15', 'border' => 'border-indigo-500/30', 'text' => 'text-indigo-600'],
-        ['bg' => 'bg-purple-500/15', 'border' => 'border-purple-500/30', 'text' => 'text-purple-600'],
-    ];
-
-    $hash = abs(crc32(($fish->name ?? 'fish') . '_' . ($fish->id ?? 0)));
-    $color = $palettes[$hash % count($palettes)];
+    $imageFile = match(true) {
+        str_contains(strtolower($name), 'pike') => 'northern_pike.jpg',
+        str_contains(strtolower($name), 'muskellunge') => 'northern_pike.jpg',
+        str_contains(strtolower($name), 'walleye') => 'walleye.jpg',
+        str_contains(strtolower($name), 'bass') => 'largemouth_bass.jpg',
+        str_contains(strtolower($name), 'trout') || str_contains(strtolower($name), 'salmon') => 'rainbow_trout.jpg',
+        default => null,
+    };
 @endphp
 
-@if($displayImage)
-    <div class="{{ $sizeClasses }} rounded-xl bg-white border border-slate-200/80 p-1 flex items-center justify-center shrink-0 shadow-sm overflow-hidden group-hover:border-teal-500/40 transition-colors {{ $class }}">
-        <img src="{{ $displayImage }}" 
-             alt="{{ $fish->name ?? 'Fish' }}" 
-             class="w-full h-full object-contain filter drop-shadow-sm">
-    </div>
-
-@else
-    <div class="{{ $sizeClasses }} rounded-xl {{ $color['bg'] }} border {{ $color['border'] }} {{ $color['text'] }} font-bold flex items-center justify-center shrink-0 shadow-sm {{ $class }}"
-         title="{{ $fish->name ?? 'Fish' }}">
-        <i data-lucide="fish" class="{{ $iconSizes }}"></i>
-    </div>
-@endif
+<div {{ $attributes->merge(['class' => "relative inline-flex items-center justify-center shrink-0 rounded-full border shadow-2xs overflow-hidden {$dimensions} {$badgeStyle}"]) }} title="{{ $name }}">
+    @if($imageFile && file_exists(public_path('images/fish/' . $imageFile)))
+        <img src="{{ asset('images/fish/' . $imageFile) }}" alt="{{ $name }}" class="w-full h-full object-cover rounded-full" />
+    @else
+        <i data-lucide="fish" class="w-3/5 h-3/5 shrink-0 opacity-80"></i>
+    @endif
+</div>

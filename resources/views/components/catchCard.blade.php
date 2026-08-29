@@ -22,7 +22,7 @@
                 <img src="{{ $imageUrl }}" alt="{{ $speciesName }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
             @else
                 <div class="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-teal-950 flex flex-col items-center justify-center text-slate-400 p-4 text-center">
-                    <x-fishAvatar :fish="$record->fishBreed" size="lg" />
+                    <x-fishAvatar :breed="$record->fishBreed" size="lg" />
                     <span class="text-[11px] font-bold text-slate-300 mt-2 truncate max-w-[90%]">{{ $speciesName }}</span>
                 </div>
             @endif
@@ -30,7 +30,7 @@
             <!-- Species Avatar Badge Overlay -->
             @if($showSpeciesAvatar && $record->fishBreed)
                 <div class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md p-1 rounded-xl border border-slate-700/80 shadow-md">
-                    <x-fishAvatar :fish="$record->fishBreed" size="xs" />
+                    <x-fishAvatar :breed="$record->fishBreed" size="xs" />
                 </div>
             @endif
 

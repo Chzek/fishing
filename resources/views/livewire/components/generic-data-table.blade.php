@@ -506,9 +506,12 @@
                                         {{ $record->lake?->name ?? ($val ?? '—') }}
                                     </a>
                                 @elseif($type === 'species_name')
-                                    <a href="{{ $record->fishBreed ? url('/fish/' . $record->fishBreed->id) : '#' }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
-                                        {{ $record->fishBreed?->name ?? ($val ?? '—') }}
-                                    </a>
+                                    <div class="inline-flex items-center gap-2">
+                                        <x-fishAvatar :breed="$record->fishBreed" size="sm" />
+                                        <a href="{{ $record->fishBreed ? url('/fish/' . $record->fishBreed->id) : '#' }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
+                                            {{ $record->fishBreed?->name ?? ($val ?? '—') }}
+                                        </a>
+                                    </div>
                                 @elseif($type === 'weather_badge')
                                     @php
                                         $wWeather = $record->dailyWeather ?? null;
