@@ -26,6 +26,11 @@ class LakeDailyWeather extends Model
         'wind_direction_dominant',
         'weather_condition',
         'weather_code',
+        'hourly_telemetry',
+        'window_pressure_start',
+        'window_pressure_end',
+        'window_pressure_delta',
+        'pressure_trend',
     ];
 
     protected $casts = [
@@ -37,11 +42,33 @@ class LakeDailyWeather extends Model
         'wind_speed_max' => 'float',
         'wind_direction_dominant' => 'integer',
         'weather_code' => 'integer',
+        'hourly_telemetry' => 'array',
+        'window_pressure_start' => 'float',
+        'window_pressure_end' => 'float',
+        'window_pressure_delta' => 'float',
     ];
 
     public function lake()
     {
         return $this->belongsTo(Lake::class, 'lakes_id', 'id');
+    }
+
+    /**
+     * Helper to get telemetry for a specific hour (0 to 23).
+     */
+    public function getTelemetryForHour(int $hour): ?array
+    {
+        if (empty($this->hourly_telemetry) || !is_array($this->hourly_telemetry)) {
+            return null;
+        }
+
+        foreach ($this->hourly_telemetry as $point) {
+            if (isset($point['hour']) && (int) $point['hour'] === $hour) {
+                return $point;
+            }
+        }
+
+        return null;
     }
 
     /**
