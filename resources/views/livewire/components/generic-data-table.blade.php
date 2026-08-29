@@ -315,10 +315,46 @@
                                     <a href="{{ url($urlPath) }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
                                         {{ $val ?? '—' }}
                                     </a>
+                                @elseif($type === 'release_status' || $colKey === 'released')
+                                    @if($val)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-2xs">
+                                            <i data-lucide="rotate-ccw" class="w-3 h-3 text-emerald-600"></i>
+                                            <span>Released</span>
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs">
+                                            <i data-lucide="shopping-bag" class="w-3 h-3 text-amber-600"></i>
+                                            <span>Kept</span>
+                                        </span>
+                                    @endif
+                                @elseif($type === 'boolean')
+                                    @if($val)
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            <i data-lucide="check" class="w-3 h-3 text-emerald-600"></i>
+                                            <span>Yes</span>
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                                            <i data-lucide="x" class="w-3 h-3 text-slate-400"></i>
+                                            <span>No</span>
+                                        </span>
+                                    @endif
                                 @elseif($type === 'badge')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-teal-50 text-teal-700 border border-teal-200/80">
-                                        {{ $val ?? '—' }}
-                                    </span>
+                                    @if($val === 1 || $val === '1' || $val === true)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-2xs">
+                                            <i data-lucide="rotate-ccw" class="w-3 h-3 text-emerald-600"></i>
+                                            <span>Released</span>
+                                        </span>
+                                    @elseif($val === 0 || $val === '0' || $val === false)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs">
+                                            <i data-lucide="shopping-bag" class="w-3 h-3 text-amber-600"></i>
+                                            <span>Kept</span>
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-teal-50 text-teal-700 border border-teal-200/80">
+                                            {{ $val ?? '—' }}
+                                        </span>
+                                    @endif
                                 @elseif($type === 'count')
                                     <span class="font-mono font-bold text-slate-800">
                                         {{ number_format((int) ($val ?? 0)) }}

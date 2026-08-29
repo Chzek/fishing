@@ -47,7 +47,7 @@
             ['key' => 'lure.name', 'label' => 'Lure / Bait', 'sortable' => true],
             ['key' => 'weight', 'label' => 'Weight (lbs)', 'type' => 'heavy_record', 'align' => 'center', 'sortable' => true],
             ['key' => 'length', 'label' => 'Length (in)', 'type' => 'lunker_record', 'align' => 'center', 'sortable' => true],
-            ['key' => 'released', 'label' => 'Status', 'type' => 'badge', 'align' => 'center', 'sortable' => true],
+            ['key' => 'released', 'label' => 'Status', 'type' => 'release_status', 'align' => 'center', 'sortable' => true],
         ],
         'filters' => [
             [
