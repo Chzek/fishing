@@ -10,7 +10,7 @@
                         type="text" 
                         wire:model.live.debounce.300ms="search" 
                         placeholder="{{ $searchPlaceholder }}" 
-                        class="w-full h-8.5 pl-9 pr-8 text-xs rounded-lg border border-slate-200 bg-white font-medium text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
+                        class="w-full h-9 pl-9 pr-8 text-xs rounded-lg border border-slate-200 bg-white font-medium text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
                     />
                     @if($search)
                         <button 
@@ -33,7 +33,7 @@
                 @endphp
                 @if($fKey)
                     @if($fType === 'select')
-                        <select wire:model.live="filterState.{{ $fKey }}" class="h-8.5 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                        <select wire:model.live="filterState.{{ $fKey }}" class="h-9 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
                             <option value="">{{ $flt['label'] ?? 'All ' . ucfirst($fKey) }}</option>
                             @foreach(($flt['options'] ?? []) as $optVal => $optLabel)
                                 <option value="{{ $optVal }}">{{ $optLabel }}</option>
@@ -45,7 +45,7 @@
                         @endphp
                         <div class="flex items-center gap-1.5 shrink-0">
                             <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">{{ $flt['label'] ?? ucfirst($fKey) }}</span>
-                            <select wire:model.live="filterState.{{ $opKey }}" class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                            <select wire:model.live="filterState.{{ $opKey }}" class="h-9 px-2 text-xs rounded-lg border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
                                 <option value=">">&gt;</option>
                                 <option value="=">=</option>
                                 <option value="<">&lt;</option>
@@ -55,7 +55,7 @@
                                 step="0.25" 
                                 wire:model.live.debounce.300ms="filterState.{{ $fKey }}" 
                                 placeholder="{{ $flt['placeholder'] ?? 'Value...' }}" 
-                                class="h-8.5 px-2.5 w-20 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-800 focus:ring-2 focus:ring-teal-500/20"
+                                class="h-9 px-2.5 w-20 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-800 focus:ring-2 focus:ring-teal-500/20"
                             />
                         </div>
                     @elseif($fType === 'date_range')
@@ -66,7 +66,7 @@
                             $activePreset = $filterState[$pKey] ?? '';
                         @endphp
                         <div class="flex items-center gap-1.5 shrink-0">
-                            <select wire:model.live="filterState.{{ $pKey }}" class="h-8.5 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                            <select wire:model.live="filterState.{{ $pKey }}" class="h-9 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
                                 <option value="">📅 All Dates</option>
                                 <option value="today">Today</option>
                                 <option value="yesterday">Yesterday</option>
@@ -81,14 +81,14 @@
                                 <input 
                                     type="date" 
                                     wire:model.live="filterState.{{ $sKey }}" 
-                                    class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
+                                    class="h-9 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
                                     title="Start Date"
                                 />
                                 <span class="text-slate-400 text-xs">–</span>
                                 <input 
                                     type="date" 
                                     wire:model.live="filterState.{{ $eKey }}" 
-                                    class="h-8.5 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
+                                    class="h-9 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
                                     title="End Date"
                                 />
                             @endif
@@ -98,10 +98,10 @@
                             type="text" 
                             wire:model.live.debounce.300ms="filterState.{{ $fKey }}" 
                             placeholder="{{ $flt['label'] ?? 'Filter...' }}" 
-                            class="h-8.5 px-3 text-xs rounded-lg border border-slate-200 bg-white font-medium text-slate-800 focus:ring-2 focus:ring-teal-500/20"
+                            class="h-9 px-3 text-xs rounded-lg border border-slate-200 bg-white font-medium text-slate-800 focus:ring-2 focus:ring-teal-500/20"
                         />
                     @elseif($fType === 'boolean')
-                        <label class="inline-flex items-center gap-1.5 px-2.5 h-8.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                        <label class="inline-flex items-center gap-1.5 px-2.5 h-9 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 cursor-pointer select-none">
                             <input 
                                 type="checkbox" 
                                 wire:model.live="filterState.{{ $fKey }}" 
