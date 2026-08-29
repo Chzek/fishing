@@ -69,3 +69,21 @@ This skill governs Livewire 3 component architecture, reactive state management,
   document.addEventListener('livewire:initialized', () => window.initLucideIcons());
   document.addEventListener('livewire:navigated', () => window.initLucideIcons());
   ```
+
+---
+
+## 4. Preventing Layout Shift & FOUC "Loading Hiccups"
+
+To prevent the Flash of Unstyled Content (FOUC) or layout "hiccups" when Livewire components mount or update in the browser, strictly follow these architectural rules:
+
+- **Server-Side Pre-rendered Default Classes**:
+  - Never rely exclusively on Alpine `:class="..."` for initial padding, margins, or layout styles. Provide complete server-rendered default Tailwind classes (e.g., `class="py-3.5 px-4 ..."`) on the Blade HTML element so initial HTML is perfectly styled before Alpine JS initializes, then use Alpine object bindings `:class="{ 'py-2 px-4': density === 'compact', 'py-3.5 px-4': density !== 'compact' }"` for dynamic state changes.
+- **Unique Morph DOM Keys (`wire:key`)**:
+  - Always assign explicit `wire:key` attributes to table rows (`<tr wire:key="row-{{ $record->id ?? $loop->index }}">`) and headers (`<th wire:key="th-{{ $colKey }}">`). This prevents Livewire 3's DOM morphing engine from tearing down and rebuilding DOM nodes during re-renders.
+- **Smooth Network Transitions (`wire:loading.class`)**:
+  - Apply `wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-150"` to table containers to provide smooth visual feedback during Livewire server requests.
+- **Explicit Icon Sizing**:
+  - Always assign fixed size and shrink rules (e.g., `class="w-4 h-4 inline-block shrink-0"`) to Lucide icon placeholders (`<i data-lucide="...">`) so layout bounds remain stable while icons are hydrated into SVG elements.
+- **`x-cloak` for Alpine Overlays**:
+  - Add `x-cloak` to Alpine dropdowns, filter menus, and floating tooltips so unrendered overlays do not flash on initial load.
+
