@@ -65,32 +65,174 @@
                             $eKey = $flt['endKey'] ?? ($fKey . 'End');
                             $activePreset = $filterState[$pKey] ?? '';
                         @endphp
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <select wire:model.live="filterState.{{ $pKey }}" class="h-9 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
-                                <option value="">📅 All Dates</option>
-                                <option value="today">Today</option>
-                                <option value="yesterday">Yesterday</option>
-                                <option value="this_week">Last 7 Days</option>
-                                <option value="this_month">This Month (30 Days)</option>
-                                <option value="this_season">This Season ({{ date('Y') }})</option>
-                                <option value="last_season">Last Season ({{ date('Y') - 1 }})</option>
-                                <option value="custom">Custom Range...</option>
-                            </select>
+                        <div x-data="{ open: false }" @click.outside="open = false" class="relative inline-flex items-center shrink-0">
+                            <!-- Trigger Button -->
+                            <button 
+                                @click="open = !open" 
+                                type="button" 
+                                class="h-9 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 hover:bg-slate-50 focus:ring-2 focus:ring-teal-500/20 flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+                            >
+                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-teal-600"></i>
+                                <span>
+                                    @switch($activePreset)
+                                        @case('today') Today @break
+                                        @case('yesterday') Yesterday @break
+                                        @case('this_week') Last 7 Days @break
+                                        @case('this_month') This Month (30 Days) @break
+                                        @case('this_season') This Season ({{ date('Y') }}) @break
+                                        @case('last_season') Last Season ({{ date('Y') - 1 }}) @break
+                                        @case('custom') Custom Range... @break
+                                        @default All Dates
+                                    @endswitch
+                                </span>
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': open }"></i>
+                            </button>
+
+                            <!-- Floating Tailwind Popover Card -->
+                            <div 
+                                x-show="open" 
+                                x-transition:enter="transition ease-out duration-100"
+                                x-transition:enter-start="transform opacity-0 scale-95"
+                                x-transition:enter-end="transform opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-75"
+                                x-transition:leave-start="transform opacity-100 scale-100"
+                                x-transition:leave-end="transform opacity-0 scale-95"
+                                class="absolute left-0 top-full mt-1.5 w-60 rounded-xl bg-white border border-slate-200/90 shadow-xl z-50 p-1.5 space-y-0.5"
+                                style="display: none;"
+                            >
+                                <div class="px-2.5 py-1.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Filter by Date</div>
+
+                                <button 
+                                    @click="$wire.set('filterState.{{ $pKey }}', ''); open = false;" 
+                                    type="button" 
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ empty($activePreset) ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>All Dates</span>
+                                    </div>
+                                    @if(empty($activePreset))
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                    @endif
+                                </button>
+
+                                <button 
+                                    @click="$wire.set('filterState.{{ $pKey }}', 'today'); open = false;" 
+                                    type="button" 
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'today' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>Today</span>
+                                    </div>
+                                    @if($activePreset === 'today')
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                    @endif
+                                </button>
+
+                                <button 
+                                    @click="$wire.set('filterState.{{ $pKey }}', 'yesterday'); open = false;" 
+                                    type="button" 
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'yesterday' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="history" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>Yesterday</span>
+                                    </div>
+                                    @if($activePreset === 'yesterday')
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                    @endif
+                                </button>
+
+                                <button 
+                                    @click="$wire.set('filterState.{{ $pKey }}', 'this_week'); open = false;" 
+                                    type="button" 
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'this_week' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="calendar-days" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>Last 7 Days</span>
+                                    </div>
+                                    @if($activePreset === 'this_week')
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                    @endif
+                                </button>
+
+                                <button 
+                                    @click="$wire.set('filterState.{{ $pKey }}', 'this_month'); open = false;" 
+                                    type="button" 
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'this_month' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="calendar-range" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>This Month (30 Days)</span>
+                                    </div>
+                                    @if($activePreset === 'this_month')
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                    @endif
+                                </button>
+
+                                <button 
+                                    @click="$wire.set('filterState.{{ $pKey }}', 'this_season'); open = false;" 
+                                    type="button" 
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'this_season' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="sun" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>This Season ({{ date('Y') }})</span>
+                                    </div>
+                                    @if($activePreset === 'this_season')
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                    @endif
+                                </button>
+
+                                <button 
+                                    @click="$wire.set('filterState.{{ $pKey }}', 'last_season'); open = false;" 
+                                    type="button" 
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'last_season' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="snowflake" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>Last Season ({{ date('Y') - 1 }})</span>
+                                    </div>
+                                    @if($activePreset === 'last_season')
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                    @endif
+                                </button>
+
+                                <div class="my-1 border-t border-slate-100"></div>
+
+                                <button 
+                                    @click="$wire.set('filterState.{{ $pKey }}', 'custom'); open = false;" 
+                                    type="button" 
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'custom' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                >
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="sliders" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>Custom Range...</span>
+                                    </div>
+                                    @if($activePreset === 'custom')
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                    @endif
+                                </button>
+                            </div>
 
                             @if($activePreset === 'custom')
-                                <input 
-                                    type="date" 
-                                    wire:model.live="filterState.{{ $sKey }}" 
-                                    class="h-9 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
-                                    title="Start Date"
-                                />
-                                <span class="text-slate-400 text-xs">–</span>
-                                <input 
-                                    type="date" 
-                                    wire:model.live="filterState.{{ $eKey }}" 
-                                    class="h-9 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
-                                    title="End Date"
-                                />
+                                <div class="inline-flex items-center gap-1.5 ml-2">
+                                    <input 
+                                        type="date" 
+                                        wire:model.live="filterState.{{ $sKey }}" 
+                                        class="h-9 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
+                                        title="Start Date"
+                                    />
+                                    <span class="text-slate-400 text-xs">–</span>
+                                    <input 
+                                        type="date" 
+                                        wire:model.live="filterState.{{ $eKey }}" 
+                                        class="h-9 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
+                                        title="End Date"
+                                    />
+                                </div>
                             @endif
                         </div>
                     @elseif($fType === 'text')
