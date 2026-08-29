@@ -1,4 +1,4 @@
-<div x-data="dataTable({ defaultDensity: 'normal' })" x-effect="$nextTick(() => { if (window.initLucideIcons) window.initLucideIcons(); })" class="space-y-4">
+<div x-data="dataTable({ tableId: '{{ str_replace('\\', '_', $modelClass) }}', defaultDensity: 'normal' })" x-effect="$nextTick(() => { if (window.initLucideIcons) window.initLucideIcons(); })" class="space-y-4">
     <!-- Livewire Interactive Toolbar styled with x-table.wrapper design system -->
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
         <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
@@ -307,6 +307,16 @@
                             <span x-text="col.label"></span>
                         </label>
                     </template>
+
+                    <div class="pt-1 mt-1 border-t border-slate-100 flex justify-end">
+                        <button 
+                            type="button" 
+                            @click="resetColumnState()" 
+                            class="w-full text-left px-2 py-1 text-[11px] font-semibold text-slate-500 hover:text-slate-800 hover:underline transition-colors"
+                        >
+                            Reset Defaults
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
