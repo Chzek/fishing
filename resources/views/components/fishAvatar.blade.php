@@ -22,19 +22,21 @@
         default => 'ring-1 ring-slate-400/60 border-slate-500/80',
     };
 
-    $imageFile = match(true) {
-        str_contains(strtolower($name), 'pike') => 'northern_pike.jpg',
-        str_contains(strtolower($name), 'muskellunge') => 'northern_pike.jpg',
-        str_contains(strtolower($name), 'walleye') => 'walleye.jpg',
-        str_contains(strtolower($name), 'bass') => 'largemouth_bass.jpg',
-        str_contains(strtolower($name), 'trout') || str_contains(strtolower($name), 'salmon') => 'rainbow_trout.jpg',
-        default => null,
-    };
+    $avatarUrl = $breed?->avatar_url;
+
+    if (!$avatarUrl) {
+        $slug = \Illuminate\Support\Str::slug(strtolower($name), '_');
+        if (file_exists(public_path('images/fish/avatars/' . $slug . '.jpg'))) {
+            $avatarUrl = asset('images/fish/avatars/' . $slug . '.jpg');
+        } elseif (file_exists(public_path('images/fish/' . $slug . '.jpg'))) {
+            $avatarUrl = asset('images/fish/' . $slug . '.jpg');
+        }
+    }
 @endphp
 
 <div {{ $attributes->merge(['class' => "relative inline-flex items-center justify-center shrink-0 rounded-full bg-slate-900 border shadow-xs overflow-hidden {$dimensions} {$ringAccent}"]) }} title="{{ $name }}">
-    @if($imageFile && file_exists(public_path('images/fish/' . $imageFile)))
-        <img src="{{ asset('images/fish/' . $imageFile) }}" alt="{{ $name }}" class="w-full h-full object-cover rounded-full transition-transform duration-200 hover:scale-110" />
+    @if($avatarUrl)
+        <img src="{{ $avatarUrl }}" alt="{{ $name }}" class="w-full h-full object-cover rounded-full transition-transform duration-200 hover:scale-110" />
     @else
         <i data-lucide="fish" class="w-3/5 h-3/5 shrink-0 text-slate-300"></i>
     @endif
