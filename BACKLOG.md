@@ -13,13 +13,10 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 - **Impact**: **High** (Database Safety & Disaster Recovery)
 - **Description**: Integrate `spatie/laravel-backup` via Sail with scheduled, timestamped MySQL and `storage/app/public` media snapshots to `database/backups/` and the Synology NAS.
 
-#### 2. Playwright Interactive E2E Front-End Test Suite Expansion (`playwright-e2e-tester`)
-- **Agents**: `playwright-e2e-tester` & `phpunit-test-architect`
-- **Impact**: **High** (Regression Prevention)
-- **Description**: Expand Playwright E2E browser tests to cover high-density interactive UI components:
-  - `catch-directory.spec.js`: Livewire 3 reactive debounced search, multi-filter combinations, and pagination.
-  - `tacklebox.spec.js`: 2-Tier Category Tray expansion, Lure Model accordions, color variant tables, and multi-color batch lure creation forms.
-  - `quick-catch-map.spec.js`: Quick Catch logger form, `<optgroup>` category-grouped lure selection, and Leaflet Map Explorer drawer navigation.
+#### 2. Static Analysis & Strict Typing Auditing (`larastan/larastan`)
+- **Agents**: `laravel-architect` & `phpunit-test-architect`
+- **Impact**: **High** (Type Safety & Regression Prevention)
+- **Description**: Configure PHPStan / Larastan at Level 5+ to guarantee strict typing, Eloquent relationship validation, and null-safety across all 13 models, services, and Action classes.
 
 ---
 
@@ -56,17 +53,12 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 - **Impact**: **Medium** (NAS Sync RAM Optimization)
 - **Description**: Enhance [`NasSyncService.php`](file:///home/gmroczek/git/fishing/app/Services/NasSyncService.php) photo payload synchronization to stream binary media files in multipart chunks instead of loading large base64 strings into PHP RAM during bulk catch syncs.
 
-#### 8. Static Analysis & Strict Typing Auditing (`larastan/larastan`)
-- **Agents**: `laravel-architect` & `phpunit-test-architect`
-- **Impact**: **Medium** (Type Safety & Code Quality)
-- **Description**: Configure PHPStan / Larastan at Level 5+ to guarantee strict typing, Eloquent relationship validation, and null-safety across all 13 models, services, and Action classes.
-
-#### 9. Live Weather & Telemetry Barometer Widget (`@livewire('widgets.weather-telemetry')`)
+#### 8. Live Weather & Telemetry Barometer Widget (`@livewire('widgets.weather-telemetry')`)
 - **Agents**: `livewire-architect` & `seasoned-angler-advisor`
 - **Impact**: **Medium** (Real-Time Weather Signals)
 - **Description**: Reactive weather widget that auto-fetches or updates live barometric pressure trends, wind velocity/direction, and surface water temp when selecting lakes during catch logging.
 
-#### 10. Catch Logbook CSV / Excel Streaming Export (`spatie/laravel-simple-excel`)
+#### 9. Catch Logbook CSV / Excel Streaming Export (`spatie/laravel-simple-excel`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Low-Medium** (Data Portability)
 - **Description**: Zero-overhead streaming CSV/XLSX export for annual Catch Logbooks and Expedition summary sheets.
@@ -89,24 +81,28 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🏆 Completed Milestones (Merged into `master`)
 
-1. **Searchable Autocomplete Lure & Tackle Selector (`@livewire('ui.lure-selector')`)**:
+1. **Playwright Interactive E2E Front-End Test Suite Expansion & Master README Consolidation**:
+   - Built an automated 8-spec end-to-end testing suite (56 multi-viewport tests across Desktop Chromium and Google Pixel 10 Pro touch emulation).
+   - Validated full coverage across Authentication, Catch Directory Generic Data Table (search, sorting, density, column picker), Tacklebox (KPIs, categories, lures, telemetry), Boat Quick Catch Logger & Leaflet Lake Explorer, Species Dossier, and Autocomplete Lure Selector.
+   - Merged and consolidated `readme.md` and `README.md` into a unified master documentation guide detailing all 10 core subsystems, offline boat Wi-Fi SSL architectures, and test execution procedures.
+2. **Searchable Autocomplete Lure & Tackle Selector (`@livewire('ui.lure-selector')`)**:
    - Built a reactive Livewire 3 autocomplete component with real-time debounced query filtering, category pill headers, 2-tier grouped tackle lists, manufacturer badges, technical specs, and verified catch stats.
    - Replaced static HTML select dropdowns in Standard Catch Logger (`/record/create`), Edit Catch (`/record/{id}/edit`), and boat Quick Catch (`/record/quick`).
    - Covered with PHPUnit Feature tests (`tests/Feature/LureSelectorLivewireTest.php`) and Playwright E2E browser tests (`tests/e2e/lure-selector.spec.js`).
-2. **Blade Lucide Icon Native Migration (`mallardduck/blade-lucide-icons`)**:
+3. **Blade Lucide Icon Native Migration (`mallardduck/blade-lucide-icons`)**:
    - Replaced all runtime client-side JavaScript icon injection (`<i data-lucide="...">` + `createIcons()`) across 72 Blade templates with server-rendered `<x-lucide-...>` and `<x-dynamic-component :component="'lucide-' . $icon" />` tags.
    - Stripped client-side JS bundle overhead, removed Livewire DOM morph and SPA navigation re-scan event listeners, eliminating icon flickering and layout shifts.
-3. **Complete 18-Species Fish Avatar Library & Prompt Architecture**:
+4. **Complete 18-Species Fish Avatar Library & Prompt Architecture**:
    - Generated high-resolution vector artwork with cel-shading and unified slate-blue badge styling for all 18 freshwater species in [`public/images/fish/avatars/`](file:///home/gmroczek/git/fishing/public/images/fish/avatars/).
    - Documented master style guide and prompts in [`public/images/fish/avatars/PROMPTS.md`](file:///home/gmroczek/git/fishing/public/images/fish/avatars/PROMPTS.md).
    - Removed legacy `.svg` files and integrated `<x-fishAvatar>` across Species Index, Catches Directory, User & Angler Profile Personal Bests, and Admin Portal.
-4. **Species Dossier Direct Catch Directory Banner**:
+5. **Species Dossier Direct Catch Directory Banner**:
    - Replaced redundant recent catch cards on [`/fish/{id}`](file:///home/gmroczek/git/fishing/resources/views/fish/show.blade.php) with an interactive **Catches Logbook Directory** banner link pre-filtered to the species.
-5. **Admin User-Angler Linking & Account Management**:
+6. **Admin User-Angler Linking & Account Management**:
    - Added `admin_user_actions` column to `GenericDataTable` allowing administrators to pair registered users to Angler profiles, toggle admin roles, and manage accounts.
-6. **App-Wide Generic Livewire 3 Data Table (`@livewire('components.generic-data-table')`)**:
+7. **App-Wide Generic Livewire 3 Data Table (`@livewire('components.generic-data-table')`)**:
    - Created unified data table with dynamic columns, instant search, multi-column Shift-click sorting, relation counts, soft-delete views, and custom query scopes across Lakes, Anglers, Catches, Expeditions, Trash, and Admin Users.
-7. **Controller Refactoring into Action Classes & Domain Services**:
+8. **Controller Refactoring into Action Classes & Domain Services**:
    - Extracted business logic from fat controllers into single-responsibility Action classes and Domain Services ([`CreateLureVariantAction`](file:///home/gmroczek/git/fishing/app/Actions/Lures/CreateLureVariantAction.php), [`ExpeditionAnalyticsService`](file:///home/gmroczek/git/fishing/app/Services/ExpeditionAnalyticsService.php)).
-8. **Expedition & Species Dossier Query Optimization**:
+9. **Expedition & Species Dossier Query Optimization**:
    - Eliminated N+1 queries across trip dashboards, lake distribution tables, and monthly telemetry charts.

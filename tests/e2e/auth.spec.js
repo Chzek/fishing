@@ -18,12 +18,11 @@ test.describe('Fishing Logbook - Authentication Flows', () => {
         const form = page.locator('form[action*="login"]');
         await expect(form.locator('input#email')).toBeVisible();
 
-        const uniqueFailedEmail = `failed-${Date.now()}-${Math.random().toString(36).substring(2, 6)}@example.com`;
-        await form.locator('input#email').fill(uniqueFailedEmail);
+        await form.locator('input#email').fill('invalid-angler@example.com');
         await form.locator('input#password').fill('wrongpassword');
 
-        // Submit form
-        await form.locator('button[type="submit"]').click();
+        // Submit form via requestSubmit for universal desktop and mobile compatibility
+        await form.evaluate(el => el.requestSubmit());
 
         // Verify that credential validation error appears in the rendered Blade view
         const errorMessage = page.locator('.text-rose-600');
