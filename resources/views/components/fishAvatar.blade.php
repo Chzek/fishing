@@ -1,13 +1,17 @@
 @props([
     'breed' => null,
+    'fish' => null,
     'size' => 'md',
 ])
 
 @php
+    $breed = $breed ?? $fish;
     $dimensions = match($size) {
         'xs' => 'w-5 h-5 text-[10px]',
         'sm' => 'w-7 h-7 text-xs',
         'lg' => 'w-12 h-12 text-base',
+        'xl' => 'w-14 h-14 text-lg',
+        '2xl' => 'w-16 h-16 text-xl',
         default => 'w-9 h-9 text-sm',
     };
 

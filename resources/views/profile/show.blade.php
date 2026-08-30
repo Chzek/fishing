@@ -125,18 +125,21 @@
                         <span class="text-xs font-black text-amber-600 bg-amber-100 px-2.5 py-0.5 rounded-full">Length</span>
                     </div>
                     @if(isset($personalBest['byLength']) && $personalBest['byLength'])
-                        <div class="space-y-1 pt-1">
-                            <div class="flex items-baseline gap-1.5">
-                                <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($personalBest['byLength']->length, 1) }}</span>
-                                <span class="text-xs font-bold text-slate-500">inches</span>
-                            </div>
-                            <div class="text-xs font-bold text-teal-700">{{ $personalBest['byLength']->fishBreed->name ?? 'Fish' }}</div>
-                            <div class="pt-2 border-t border-amber-100/80 flex items-center justify-between text-xs text-slate-600">
-                                <span class="flex items-center gap-1 truncate">
-                                    <i data-lucide="map-pin" class="w-3 h-3 text-slate-400 shrink-0"></i>
-                                    <span class="truncate font-medium">{{ $personalBest['byLength']->lake->name ?? 'Lake' }}</span>
-                                </span>
-                                <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $personalBest['byLength']->caught }}</span>
+                        <div class="flex items-center gap-3.5 pt-1">
+                            <x-fishAvatar :breed="$personalBest['byLength']->fishBreed" size="xl" class="shadow-sm ring-2 ring-amber-400/40" />
+                            <div class="space-y-1 min-w-0 flex-1">
+                                <div class="flex items-baseline gap-1.5">
+                                    <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($personalBest['byLength']->length, 1) }}</span>
+                                    <span class="text-xs font-bold text-slate-500">inches</span>
+                                </div>
+                                <div class="text-xs font-bold text-teal-700 truncate">{{ $personalBest['byLength']->fishBreed->name ?? 'Fish' }}</div>
+                                <div class="pt-2 border-t border-amber-100/80 flex items-center justify-between text-xs text-slate-600">
+                                    <span class="flex items-center gap-1 truncate">
+                                        <i data-lucide="map-pin" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                                        <span class="truncate font-medium">{{ $personalBest['byLength']->lake->name ?? 'Lake' }}</span>
+                                    </span>
+                                    <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $personalBest['byLength']->caught }}</span>
+                                </div>
                             </div>
                         </div>
                     @else
@@ -155,18 +158,21 @@
                         <span class="text-xs font-black text-sky-600 bg-sky-100 px-2.5 py-0.5 rounded-full">Weight</span>
                     </div>
                     @if(isset($personalBest['byWeight']) && $personalBest['byWeight'])
-                        <div class="space-y-1 pt-1">
-                            <div class="flex items-baseline gap-1.5">
-                                <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($personalBest['byWeight']->weight, 1) }}</span>
-                                <span class="text-xs font-bold text-slate-500">lbs</span>
-                            </div>
-                            <div class="text-xs font-bold text-sky-700">{{ $personalBest['byWeight']->fishBreed->name ?? 'Fish' }}</div>
-                            <div class="pt-2 border-t border-sky-100/80 flex items-center justify-between text-xs text-slate-600">
-                                <span class="flex items-center gap-1 truncate">
-                                    <i data-lucide="map-pin" class="w-3 h-3 text-slate-400 shrink-0"></i>
-                                    <span class="truncate font-medium">{{ $personalBest['byWeight']->lake->name ?? 'Lake' }}</span>
-                                </span>
-                                <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $personalBest['byWeight']->caught }}</span>
+                        <div class="flex items-center gap-3.5 pt-1">
+                            <x-fishAvatar :breed="$personalBest['byWeight']->fishBreed" size="xl" class="shadow-sm ring-2 ring-sky-400/40" />
+                            <div class="space-y-1 min-w-0 flex-1">
+                                <div class="flex items-baseline gap-1.5">
+                                    <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($personalBest['byWeight']->weight, 1) }}</span>
+                                    <span class="text-xs font-bold text-slate-500">lbs</span>
+                                </div>
+                                <div class="text-xs font-bold text-sky-700 truncate">{{ $personalBest['byWeight']->fishBreed->name ?? 'Fish' }}</div>
+                                <div class="pt-2 border-t border-sky-100/80 flex items-center justify-between text-xs text-slate-600">
+                                    <span class="flex items-center gap-1 truncate">
+                                        <i data-lucide="map-pin" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                                        <span class="truncate font-medium">{{ $personalBest['byWeight']->lake->name ?? 'Lake' }}</span>
+                                    </span>
+                                    <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $personalBest['byWeight']->caught }}</span>
+                                </div>
                             </div>
                         </div>
                     @else
