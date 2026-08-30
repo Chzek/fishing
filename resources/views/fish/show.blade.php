@@ -329,23 +329,31 @@
         @endif
     </div>
 
-    <!-- Recent Catches Log Feed (Powered by x-catchCard) -->
-    @if($recentCatches->count() > 0)
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                    <i data-lucide="history" class="w-4 h-4 text-teal-600"></i>
-                    <span>Recent Catches for {{ $fish->name }}</span>
-                </h2>
-                <span class="text-xs text-slate-400 font-mono">Latest {{ $recentCatches->count() }} Entries</span>
+    <!-- Catches Logbook Directory Callout Banner -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-600 flex items-center justify-center shrink-0 shadow-inner">
+                <i data-lucide="book-open" class="w-6 h-6"></i>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                @foreach($recentCatches as $catch)
-                    <x-catchCard :record="$catch" :showSpeciesAvatar="false" />
-                @endforeach
+            <div>
+                <h3 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+                    <span>Catches Logbook Directory</span>
+                    <span class="bg-teal-50 text-teal-700 font-mono text-xs font-bold px-2.5 py-0.5 rounded-full border border-teal-200">
+                        {{ number_format($count) }} Records
+                    </span>
+                </h3>
+                <p class="text-xs text-slate-500 mt-1">
+                    Explore, search, and filter the complete catches directory with weather telemetry, lake locations, and lure history.
+                </p>
             </div>
         </div>
-    @endif
+
+        <div class="shrink-0 w-full md:w-auto">
+            <a href="{{ url('/record/directory?species=' . $fish->id) }}" class="w-full md:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                <span>Open Logbook Directory</span>
+                <i data-lucide="arrow-right" class="w-4 h-4 text-teal-400"></i>
+            </a>
+        </div>
+    </div>
 </div>
 @endsection
