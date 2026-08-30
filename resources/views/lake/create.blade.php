@@ -6,7 +6,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-600 flex items-center justify-center shrink-0">
-                    <i data-lucide="map-pin" class="w-5 h-5"></i>
+                    <x-lucide-map-pin class="w-5 h-5" />
                 </div>
                 <div>
                     <h1 class="text-xl font-bold text-slate-900 tracking-tight">Log New Lake / Waterbody</h1>
@@ -15,7 +15,7 @@
             </div>
 
             <button type="button" id="btn-use-gps" onclick="useCurrentGPS()" class="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs py-2 px-3.5 rounded-xl shadow transition-colors shrink-0">
-                <i data-lucide="navigation" class="w-3.5 h-3.5"></i>
+                <x-lucide-navigation class="w-3.5 h-3.5" />
                 <span>Use Current GPS Location</span>
             </button>
         </div>

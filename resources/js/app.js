@@ -1,55 +1,11 @@
 import './bootstrap';
 import './image-compressor';
 import dataTable from './components/data-table';
-import { createIcons, icons } from 'lucide';
-
-// Register custom Alpine components and Livewire DOM morph hooks
+// Register custom Alpine components
 document.addEventListener('livewire:init', () => {
     if (window.Alpine) {
         window.Alpine.data('dataTable', dataTable);
     }
-    if (window.Livewire) {
-        window.Livewire.hook('morph.updated', () => {
-            if (window.initLucideIcons) window.initLucideIcons();
-        });
-        window.Livewire.hook('commit', ({ respond, succeed }) => {
-            succeed(() => {
-                queueMicrotask(() => {
-                    if (window.initLucideIcons) window.initLucideIcons();
-                });
-            });
-        });
-    }
-});
-
-// Fallback for non-Livewire pages
-if (window.Alpine) {
-    window.Alpine.data('dataTable', dataTable);
-} else if (typeof window.Livewire === 'undefined') {
-    import('alpinejs').then(({ default: Alpine }) => {
-        if (!window.Alpine) {
-            window.Alpine = Alpine;
-            Alpine.data('dataTable', dataTable);
-            Alpine.start();
-        }
-    });
-}
-
-// Initialize Lucide icons on page load and dynamically after DOM updates
-window.initLucideIcons = () => {
-    createIcons({ icons });
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    window.initLucideIcons();
-});
-
-// Re-initialize icons after Livewire navigation and initialization
-document.addEventListener('livewire:initialized', () => {
-    window.initLucideIcons();
-});
-document.addEventListener('livewire:navigated', () => {
-    window.initLucideIcons();
 });
 
 // Global Ctrl+K / Cmd+K Search & Command Palette Focus Listener

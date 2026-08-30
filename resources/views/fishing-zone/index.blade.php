@@ -6,7 +6,7 @@
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
             <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
-                <i data-lucide="shield" class="w-6 h-6"></i>
+                <x-lucide-shield class="w-6 h-6" />
             </div>
             <div>
                 <h1 class="text-xl font-bold text-white tracking-tight">Fisheries Management Zones (FMZs)</h1>
@@ -29,7 +29,7 @@
                             {{ $zone->code }}
                         </span>
                         <span class="text-xs text-slate-500 font-medium flex items-center gap-1">
-                            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i>
+                            <x-lucide-map-pin class="w-3.5 h-3.5 text-slate-400" />
                             {{ $zone->province_state }}, {{ $zone->country }}
                         </span>
                     </div>
@@ -49,13 +49,13 @@
 
                 <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
                     <span class="text-slate-500 font-medium flex items-center gap-1.5">
-                        <i data-lucide="waves" class="w-3.5 h-3.5 text-teal-600"></i>
+                        <x-lucide-waves class="w-3.5 h-3.5 text-teal-600" />
                         <strong class="font-mono text-slate-800">{{ $zone->lakes_count }}</strong> Lakes
                     </span>
 
                     <a href="{{ url('/fishing-zone/' . $zone->id) }}" class="text-teal-600 hover:text-teal-700 font-bold flex items-center gap-1">
                         <span>Details</span>
-                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        <x-lucide-arrow-right class="w-3.5 h-3.5" />
                     </a>
                 </div>
             </div>

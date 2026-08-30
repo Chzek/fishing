@@ -6,7 +6,7 @@
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
             <div class="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/30 text-rose-400 flex items-center justify-center shrink-0">
-                <i data-lucide="trash-2" class="w-6 h-6"></i>
+                <x-lucide-trash-2 class="w-6 h-6" />
             </div>
             <div>
                 <h1 class="text-xl font-bold text-white tracking-tight">Admin Trash Bin & Recovery Console</h1>

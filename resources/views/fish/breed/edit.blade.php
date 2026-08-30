@@ -6,7 +6,7 @@
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-600 flex items-center justify-center shrink-0">
-                    <i data-lucide="edit-3" class="w-5 h-5"></i>
+                    <x-lucide-edit-3 class="w-5 h-5" />
                 </div>
                 <div>
                     <h1 class="text-xl font-bold text-slate-900 tracking-tight">Edit Fish Species</h1>
@@ -63,7 +63,7 @@
                             <img src="{{ $breed->imageUrl }}" alt="{{ $breed->name }}" class="max-h-full max-w-full object-contain filter drop-shadow-sm">
                         @else
                             <div class="text-center text-slate-300">
-                                <i data-lucide="image" class="w-5 h-5 mx-auto stroke-[1.5]"></i>
+                                <x-lucide-image class="w-5 h-5 mx-auto stroke-[1.5]" />
                                 <span class="text-[9px] font-medium block">No Image</span>
                             </div>
                         @endif

@@ -4,7 +4,7 @@
 <div class="max-w-2xl mx-auto space-y-6">
     @if (session('status'))
         <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-2xl p-4 flex items-center gap-3 shadow-sm" role="alert">
-            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-500 shrink-0"></i>
+            <x-lucide-check-circle class="w-5 h-5 text-emerald-500 shrink-0" />
             <span>{{ session('status') }}</span>
         </div>
     @endif
@@ -12,7 +12,7 @@
     @if ($errors->any())
         <div class="bg-rose-50 border border-rose-200 text-rose-800 text-sm rounded-2xl p-4 space-y-1 shadow-sm">
             <div class="font-bold flex items-center gap-2">
-                <i data-lucide="alert-circle" class="w-5 h-5 text-rose-500"></i>
+                <x-lucide-alert-circle class="w-5 h-5 text-rose-500" />
                 <span>Please fix the following issues:</span>
             </div>
             <ul class="list-disc list-inside text-xs space-y-1 pt-1 text-rose-700">
@@ -27,7 +27,7 @@
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-600 flex items-center justify-center shrink-0">
-                    <i data-lucide="user-cog" class="w-5 h-5"></i>
+                    <x-lucide-user-cog class="w-5 h-5" />
                 </div>
                 <div>
                     <h1 class="text-xl font-bold text-slate-900 tracking-tight">User Account Preferences</h1>
@@ -47,7 +47,7 @@
                     </div>
                 </div>
                 <a href="/angler/{{ $user->angler->id }}/edit" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-teal-50 text-slate-700 hover:text-teal-700 font-semibold text-xs rounded-xl border border-slate-200 hover:border-teal-200 transition-colors">
-                    <i data-lucide="edit-3" class="w-3.5 h-3.5 text-teal-600"></i>
+                    <x-lucide-edit-3 class="w-3.5 h-3.5 text-teal-600" />
                     <span>Edit Angler Name / Bio</span>
                 </a>
             </div>
@@ -60,7 +60,7 @@
             <!-- Section 1: User Account Details -->
             <div class="space-y-4">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-teal-700 flex items-center gap-1.5">
-                    <i data-lucide="user" class="w-4 h-4 text-teal-600"></i> Account Identity
+                    <x-lucide-user class="w-4 h-4 text-teal-600" /> Account Identity
                 </h2>
 
                 <div class="space-y-1.5">
@@ -80,7 +80,7 @@
             <div class="space-y-4">
                 <div>
                     <h2 class="text-xs font-bold uppercase tracking-wider text-teal-700 flex items-center gap-1.5">
-                        <i data-lucide="key-round" class="w-4 h-4 text-teal-600"></i> Change Password
+                        <x-lucide-key-round class="w-4 h-4 text-teal-600" /> Change Password
                     </h2>
                     <p class="text-xs text-slate-400 mt-0.5">Leave blank if you do not wish to change your password.</p>
                 </div>

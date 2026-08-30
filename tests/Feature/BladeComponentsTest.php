@@ -34,6 +34,7 @@ class BladeComponentsTest extends TestCase
         $view = $this->blade('<x-emptyState icon="fish-off" title="No Catches Yet" description="Log your first catch." />');
         $view->assertSee('No Catches Yet');
         $view->assertSee('Log your first catch.');
+        $view->assertSee('<svg', false);
     }
 
     #[Test]
@@ -42,6 +43,7 @@ class BladeComponentsTest extends TestCase
         $view = $this->blade('<x-card title="Telemetry Overview" icon="anchor"><span>Card Content</span></x-card>');
         $view->assertSee('Telemetry Overview');
         $view->assertSee('Card Content');
+        $view->assertSee('<svg', false);
     }
 
     #[Test]
@@ -63,6 +65,7 @@ class BladeComponentsTest extends TestCase
         $view->assertSee('Crappie');
         $view->assertSee('14.5');
         $view->assertSee('Black Lake');
+        $view->assertSee('<svg', false);
     }
 
     #[Test]
@@ -72,6 +75,7 @@ class BladeComponentsTest extends TestCase
         $view->assertSee('Unique Waters');
         $view->assertSee('18');
         $view->assertSee('Visited Lakes');
+        $view->assertSee('<svg', false);
     }
 
     #[Test]
@@ -86,6 +90,14 @@ class BladeComponentsTest extends TestCase
         $view = $this->blade('<x-lakeCard :lake="$lake" :catchesCount="12" />', ['lake' => $lake]);
         $view->assertSee('Mirror Lake');
         $view->assertSee('12 catches');
+        $view->assertSee('<svg', false);
+    }
+
+    #[Test]
+    public function fish_avatar_fallback_renders_svg_icon()
+    {
+        $view = $this->blade('<x-fishAvatar />');
+        $view->assertSee('<svg', false);
     }
 }
 

@@ -6,7 +6,7 @@
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
             <div class="w-12 h-12 rounded-2xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
-                <i data-lucide="wifi" class="w-6 h-6"></i>
+                <x-lucide-wifi class="w-6 h-6" />
             </div>
             <div>
                 <h1 class="text-xl font-bold text-white tracking-tight">Offline Field Sync & Catch Inspection</h1>
@@ -16,7 +16,7 @@
 
         <div class="flex items-center gap-3">
             <button onclick="window.offlineSyncManager.syncNow()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-xs rounded-xl shadow-lg shadow-teal-900/30 transition-all cursor-pointer">
-                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                <x-lucide-refresh-cw class="w-4 h-4" />
                 <span>Sync Pending Catches Now</span>
             </button>
             <a href="/record/quick" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors">
@@ -31,7 +31,7 @@
         <div class="lg:col-span-2 space-y-2">
             <div class="flex items-center justify-between text-xs text-slate-700 font-bold uppercase tracking-wider">
                 <span class="flex items-center gap-2">
-                    <i data-lucide="map-pin" class="w-4 h-4 text-teal-600"></i> Catch GPS Map Overview
+                    <x-lucide-map-pin class="w-4 h-4 text-teal-600" /> Catch GPS Map Overview
                 </span>
                 <span class="text-slate-500 font-mono text-[11px] font-normal">Pending & Recent Pinpoints</span>
             </div>
@@ -66,7 +66,7 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <div class="flex items-center gap-2">
-                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+                <x-lucide-check-circle-2 class="w-4 h-4 text-emerald-600" />
                 <h2 class="font-bold text-slate-900 text-sm">Recently Synced Server Catches</h2>
             </div>
             <span class="text-xs text-slate-500">Live Database Telemetry</span>

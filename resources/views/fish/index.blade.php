@@ -6,7 +6,7 @@
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
             <div class="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0 shadow-inner">
-                <i data-lucide="book-open" class="w-6 h-6"></i>
+                <x-lucide-book-open class="w-6 h-6" />
             </div>
             <div>
                 <h1 class="text-2xl font-black text-white tracking-tight flex items-center gap-2">
@@ -19,15 +19,15 @@
 
         <div class="flex flex-wrap items-center gap-2.5">
             <a href="/record/quick" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 cursor-pointer">
-                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                <x-lucide-plus-circle class="w-3.5 h-3.5" />
                 <span>Log Catch</span>
             </a>
             <a href="/fish/breed/create" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 cursor-pointer">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <x-lucide-plus class="w-3.5 h-3.5" />
                 <span>Add Species</span>
             </a>
             <a href="/fish/family/create" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
-                <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
+                <x-lucide-folder-plus class="w-3.5 h-3.5" />
                 <span>Add Family</span>
             </a>
         </div>
@@ -37,7 +37,7 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex items-center gap-3.5">
             <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
-                <i data-lucide="fish" class="w-5 h-5"></i>
+                <x-lucide-fish class="w-5 h-5" />
             </div>
             <div>
                 <span class="text-2xl font-black text-slate-900 block leading-tight">{{ $totalBreedsCount }}</span>
@@ -47,7 +47,7 @@
 
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex items-center gap-3.5">
             <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
-                <i data-lucide="layers" class="w-5 h-5"></i>
+                <x-lucide-layers class="w-5 h-5" />
             </div>
             <div>
                 <span class="text-2xl font-black text-slate-900 block leading-tight">{{ $totalFamiliesCount }}</span>
@@ -57,7 +57,7 @@
 
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex items-center gap-3.5">
             <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0">
-                <i data-lucide="award" class="w-5 h-5"></i>
+                <x-lucide-award class="w-5 h-5" />
             </div>
             <div>
                 <span class="text-2xl font-black text-slate-900 block leading-tight">{{ $totalCatchesCount }}</span>
@@ -67,7 +67,7 @@
 
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex items-center gap-3.5">
             <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0">
-                <i data-lucide="flame" class="w-5 h-5"></i>
+                <x-lucide-flame class="w-5 h-5" />
             </div>
             <div class="min-w-0 flex-1">
                 <span class="text-sm font-bold text-slate-900 block truncate">{{ $topSpecies?->name ?? 'None' }}</span>
@@ -94,10 +94,10 @@
                         placeholder="Search species or biological family..."
                         class="w-full h-10 pl-10 pr-10 rounded-xl border border-slate-200 bg-slate-50/70 text-slate-800 text-xs focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors placeholder:text-slate-400"
                     >
-                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                    <x-lucide-search class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                     @if(!empty($search))
                         <a href="/fish{{ $selectedFamilyId ? '?family='.$selectedFamilyId : '' }}" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600" title="Clear Search">
-                            <i data-lucide="x" class="w-4 h-4"></i>
+                            <x-lucide-x class="w-4 h-4" />
                         </a>
                     @endif
                 </div>
@@ -111,7 +111,7 @@
                     :class="viewMode === 'grid' ? 'bg-white text-teal-700 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800 font-medium'"
                     class="px-3 py-1.5 text-xs rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
                 >
-                    <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                    <x-lucide-layout-grid class="w-3.5 h-3.5" />
                     <span>Grid View</span>
                 </button>
                 <button 
@@ -120,7 +120,7 @@
                     :class="viewMode === 'table' ? 'bg-white text-teal-700 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800 font-medium'"
                     class="px-3 py-1.5 text-xs rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
                 >
-                    <i data-lucide="list" class="w-3.5 h-3.5"></i>
+                    <x-lucide-list class="w-3.5 h-3.5" />
                     <span>Table View</span>
                 </button>
             </div>
@@ -129,7 +129,7 @@
         <!-- Biological Family Filter Pills -->
         <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
             <span class="text-slate-400 font-bold uppercase text-[10px] tracking-wider shrink-0 flex items-center gap-1">
-                <i data-lucide="filter" class="w-3 h-3 text-slate-400"></i> Families:
+                <x-lucide-filter class="w-3 h-3 text-slate-400" /> Families:
             </span>
 
             <a 
@@ -165,7 +165,7 @@
                                     <img src="{{ $fish->imageUrl }}" alt="{{ $fish->name }}" class="max-h-full max-w-full object-contain filter drop-shadow-sm group-hover:scale-105 transition-transform duration-300">
                                 @else
                                     <div class="text-center text-slate-300">
-                                        <i data-lucide="fish" class="w-12 h-12 mx-auto stroke-[1.25]"></i>
+                                        <x-lucide-fish class="w-12 h-12 mx-auto stroke-[1.25]" />
                                         <span class="text-[10px] font-medium block mt-1">No Illustration</span>
                                     </div>
                                 @endif
@@ -208,7 +208,7 @@
                         <div class="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
                             <a href="/fish/{{ $fish->id }}" class="text-xs font-extrabold text-teal-700 hover:text-teal-800 flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-teal-50 transition-colors">
                                 <span>View Dossier</span>
-                                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                                <x-lucide-arrow-right class="w-3.5 h-3.5" />
                             </a>
 
                             <a 
@@ -216,7 +216,7 @@
                                 class="p-1.5 bg-white hover:bg-slate-100 text-slate-600 rounded-xl border border-slate-200 transition-colors flex items-center gap-1 text-xs font-medium" 
                                 title="Edit Species"
                             >
-                                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                <x-lucide-edit-3 class="w-3.5 h-3.5" />
                                 <span class="text-[11px] font-semibold text-slate-600">Edit</span>
                             </a>
                         </div>
@@ -227,14 +227,14 @@
             <!-- Empty Search / Filter State -->
             <div class="bg-white rounded-2xl p-12 text-center border border-slate-200/80 shadow-sm space-y-4">
                 <div class="w-16 h-16 rounded-2xl bg-slate-50 text-slate-400 border border-slate-200 flex items-center justify-center mx-auto">
-                    <i data-lucide="fish-off" class="w-8 h-8"></i>
+                    <x-lucide-fish-off class="w-8 h-8" />
                 </div>
                 <div class="space-y-1">
                     <h3 class="text-base font-bold text-slate-800">No fish species found</h3>
                     <p class="text-xs text-slate-500">No species match your current search or family filter criteria.</p>
                 </div>
                 <a href="/fish" class="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors">
-                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    <x-lucide-rotate-ccw class="w-3.5 h-3.5" />
                     <span>Reset All Filters</span>
                 </a>
             </div>

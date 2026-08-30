@@ -39,7 +39,7 @@
             <div class="p-5 flex items-center justify-between border-b border-slate-800">
                 <a href="{{ url('/') }}" class="flex items-center gap-3 group">
                     <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center shadow-inner group-hover:bg-teal-500/20 transition-all duration-200">
-                        <i data-lucide="anchor" class="w-5 h-5"></i>
+                        <x-lucide-anchor class="w-5 h-5" />
                     </div>
                     <div>
                         <span class="font-bold text-white tracking-wide text-base block leading-tight">Fishing Log</span>
@@ -52,7 +52,7 @@
             @auth
             <div class="px-4 pt-4 pb-1">
                 <form action="{{ route('search') }}" method="GET" class="relative flex items-center">
-                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none shrink-0"></i>
+                    <x-lucide-search class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none shrink-0" />
                     <input type="text" name="q" value="{{ request('q') }}" placeholder="Search & commands..."
                         class="w-full h-9 pl-10 pr-14 text-xs rounded-xl border border-slate-800 bg-slate-950/80 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 transition-colors">
                     <kbd class="absolute right-2.5 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-500 bg-slate-900 border border-slate-800 rounded pointer-events-none">Ctrl K</kbd>
@@ -62,7 +62,7 @@
             <!-- Quick Catch Primary Action Button -->
             <div class="px-4 pt-2 pb-2">
                 <a href="{{ url('/record/quick') }}" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-semibold py-2.5 px-4 rounded-xl shadow-lg shadow-teal-900/30 hover:shadow-teal-800/40 transition-all duration-200 group">
-                    <i data-lucide="zap" class="w-4 h-4 text-teal-200 group-hover:scale-110 transition-transform"></i>
+                    <x-lucide-zap class="w-4 h-4 text-teal-200 group-hover:scale-110 transition-transform" />
                     <span>Quick Catch</span>
                 </a>
             </div>
@@ -73,51 +73,51 @@
                 @auth
                     <div class="px-3 pb-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Field Tools</div>
                     <a href="{{ url('/profile') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('profile*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                        <x-lucide-layout-dashboard class="w-4 h-4" />
                         <span>Dashboard & Stats</span>
                     </a>
                     <a href="{{ url('/map/explorer') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('map/explorer*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="compass" class="w-4 h-4"></i>
+                        <x-lucide-compass class="w-4 h-4" />
                         <span>Map Explorer</span>
                     </a>
                     <a href="{{ url('/map/offline') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('map/offline*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="map" class="w-4 h-4"></i>
+                        <x-lucide-map class="w-4 h-4" />
                         <span>Offline Maps</span>
                     </a>
 
                     <div class="px-3 pt-4 pb-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Logbook Records</div>
                     <a href="{{ url('/expedition') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('expedition*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="ship" class="w-4 h-4"></i>
+                        <x-lucide-ship class="w-4 h-4" />
                         <span>Expeditions</span>
                     </a>
                     <a href="{{ url('/record') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('record') && !Request::is('record/directory*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="bar-chart-2" class="w-4 h-4 text-teal-400"></i>
+                        <x-lucide-bar-chart-2 class="w-4 h-4 text-teal-400" />
                         <span>Catches Telemetry</span>
                     </a>
                     <a href="{{ url('/record/directory') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('record/directory*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="list" class="w-4 h-4"></i>
+                        <x-lucide-list class="w-4 h-4" />
                         <span>Catches Directory</span>
                     </a>
                     <a href="{{ url('/fish') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('fish', 'fish/*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="dna" class="w-4 h-4 text-emerald-400"></i>
+                        <x-lucide-dna class="w-4 h-4 text-emerald-400" />
                         <span>Fish & Species</span>
                     </a>
                     <a href="{{ url('/lake') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('lake*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="waves" class="w-4 h-4"></i>
+                        <x-lucide-waves class="w-4 h-4" />
                         <span>Lakes & Waters</span>
                     </a>
                     <a href="{{ url('/fishing-zone') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('fishing-zone*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="shield" class="w-4 h-4 text-indigo-400"></i>
+                        <x-lucide-shield class="w-4 h-4 text-indigo-400" />
                         <span>License Zones (FMZs)</span>
                     </a>
                     <a href="{{ url('/lure') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('lure*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="fishing-hook" class="w-4 h-4"></i>
+                        <x-lucide-fishing-hook class="w-4 h-4" />
                         <span>Tacklebox</span>
                     </a>
 
 
                     <a href="{{ url('/angler') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('angler*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                        <i data-lucide="users" class="w-4 h-4"></i>
+                        <x-lucide-users class="w-4 h-4" />
                         <span>Anglers</span>
                     </a>
 
@@ -129,7 +129,7 @@
                         @endphp
                         <div class="px-3 pt-4 pb-2 text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
                             <span class="flex items-center gap-1.5">
-                                <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-400"></i>
+                                <x-lucide-shield class="w-3.5 h-3.5 text-amber-400" />
                                 <span>Admin Console</span>
                             </span>
                             @if($adminAlertCount > 0)
@@ -138,7 +138,7 @@
                         </div>
                         <a href="{{ route('admin') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('admin') ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
                             <div class="flex items-center gap-3">
-                                <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+                                <x-lucide-shield-alert class="w-4 h-4 text-amber-400" />
                                 <span>Admin Overview</span>
                             </div>
                             @if($adminUnreadNotificationsCount > 0)
@@ -147,7 +147,7 @@
                         </a>
                         <a href="{{ route('admin.users') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('admin/users*') ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
                             <div class="flex items-center gap-3">
-                                <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i>
+                                <x-lucide-user-check class="w-4 h-4 text-amber-400" />
                                 <span>User Accounts</span>
                             </div>
                             @if($unlinkedUsersCount > 0)
@@ -155,7 +155,7 @@
                             @endif
                         </a>
                         <a href="{{ route('admin.trash') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('admin/trash*') ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
-                            <i data-lucide="trash-2" class="w-4 h-4 text-amber-400"></i>
+                            <x-lucide-trash-2 class="w-4 h-4 text-amber-400" />
                             <span>Trash Bin</span>
                         </a>
                     @endif
@@ -166,7 +166,7 @@
             <div class="p-4 border-t border-slate-800 bg-slate-950/50">
                 <!-- Offline Sync Button -->
                 <button id="offline-sync-badge" onclick="window.offlineSyncManager.syncNow()" class="w-full mb-3 hidden items-center justify-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-semibold py-2 px-3 rounded-lg hover:bg-amber-500/30 transition-all">
-                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5 animate-spin"></i>
+                    <x-lucide-refresh-cw class="w-3.5 h-3.5 animate-spin" />
                     <span><span id="offline-sync-count">0</span> Catches Queued (Sync Now)</span>
                 </button>
 
@@ -174,13 +174,13 @@
                     <div class="flex items-center justify-between">
                         <a href="{{ url('/profile/edit') }}" title="Account Preferences & Password" class="flex items-center gap-3 group min-w-0">
                             <div class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center text-slate-300 group-hover:border-teal-500/50 group-hover:bg-slate-800/80 transition-colors shrink-0">
-                                <i data-lucide="user" class="w-5 h-5 text-teal-400"></i>
+                                <x-lucide-user class="w-5 h-5 text-teal-400" />
                             </div>
                             <div class="overflow-hidden">
                                 <span class="font-medium text-white text-sm block truncate group-hover:text-teal-300 transition-colors">{{ Auth::user()->name }}</span>
                                 <span class="text-xs text-slate-400 capitalize block flex items-center gap-1">
                                     <span>{{ Auth::user()->type ?? 'Angler' }}</span>
-                                    <i data-lucide="settings" class="w-3 h-3 text-slate-500 group-hover:text-teal-400 transition-colors"></i>
+                                    <x-lucide-settings class="w-3 h-3 text-slate-500 group-hover:text-teal-400 transition-colors" />
                                 </span>
                             </div>
                         </a>
@@ -188,19 +188,19 @@
                         <div class="flex items-center gap-1 shrink-0">
                             @if(Auth()->user()->type === "admin")
                                 <a href="/admin" title="Admin Portal" class="relative p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-                                    <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+                                    <x-lucide-shield-alert class="w-4 h-4 text-amber-400" />
                                     @if(Auth::user()->unreadNotifications()->count() > 0 || \Fishinglog\Models\User::doesntHave('angler')->count() > 0)
                                         <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-slate-900 animate-pulse"></span>
                                     @endif
                                 </a>
                             @endif
                             <a href="{{ url('/profile/edit') }}" title="User Account Settings" class="p-1.5 rounded-lg text-slate-400 hover:text-teal-300 hover:bg-slate-800 transition-colors">
-                                <i data-lucide="settings" class="w-4 h-4"></i>
+                                <x-lucide-settings class="w-4 h-4" />
                             </a>
                             <a href="{{ route('logout') }}" title="Logout"
                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                                class="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors">
-                                <i data-lucide="log-out" class="w-4 h-4"></i>
+                                <x-lucide-log-out class="w-4 h-4" />
                             </a>
                         </div>
                     </div>
@@ -220,7 +220,7 @@
         <header class="lg:hidden bg-slate-900 text-white border-b border-slate-800 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
             <a href="{{ url('/') }}" class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-lg bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center">
-                    <i data-lucide="anchor" class="w-4 h-4"></i>
+                    <x-lucide-anchor class="w-4 h-4" />
                 </div>
                 <span class="font-bold text-white tracking-wide text-sm">Fishing Log</span>
             </a>
@@ -229,24 +229,24 @@
                 @auth
                     @if(Auth::user()->isAdmin())
                         <a href="{{ route('admin') }}" class="relative p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors" title="Admin Portal">
-                            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+                            <x-lucide-shield-alert class="w-4 h-4 text-amber-400" />
                             @if(Auth::user()->unreadNotifications()->count() > 0 || \Fishinglog\Models\User::doesntHave('angler')->count() > 0)
                                 <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-slate-900 animate-pulse"></span>
                             @endif
                         </a>
                     @endif
                     <a href="{{ route('search') }}" class="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors" title="Search">
-                        <i data-lucide="search" class="w-4 h-4"></i>
+                        <x-lucide-search class="w-4 h-4" />
                     </a>
                     <a href="{{ url('/record/quick') }}" class="flex items-center gap-1 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold py-1.5 px-3 rounded-lg shadow-sm">
-                        <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                        <x-lucide-zap class="w-3.5 h-3.5" />
                         <span>Quick Catch</span>
                     </a>
                 @endauth
 
                 <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none">
-                    <i data-lucide="menu" class="w-5 h-5" x-show="!mobileMenuOpen"></i>
-                    <i data-lucide="x" class="w-5 h-5" x-show="mobileMenuOpen" style="display: none;"></i>
+                    <span x-show="!mobileMenuOpen"><x-lucide-menu class="w-5 h-5" /></span>
+                    <span x-show="mobileMenuOpen" style="display: none;"><x-lucide-x class="w-5 h-5" /></span>
                 </button>
             </div>
         </header>
@@ -262,38 +262,38 @@
              class="lg:hidden bg-slate-900 border-b border-slate-800 text-slate-300 p-4 space-y-3 z-30" style="display: none;">
             @auth
                 <a href="{{ url('/profile') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
-                    <i data-lucide="layout-dashboard" class="w-4 h-4 text-teal-400"></i> Dashboard
+                    <x-lucide-layout-dashboard class="w-4 h-4 text-teal-400" /> Dashboard
                 </a>
                 <a href="{{ url('/map/explorer') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
-                    <i data-lucide="compass" class="w-4 h-4 text-teal-400"></i> Map Explorer
+                    <x-lucide-compass class="w-4 h-4 text-teal-400" /> Map Explorer
                 </a>
                 <a href="{{ url('/map/offline') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
-                    <i data-lucide="map" class="w-4 h-4 text-teal-400"></i> Offline Maps
+                    <x-lucide-map class="w-4 h-4 text-teal-400" /> Offline Maps
                 </a>
                 <a href="{{ url('/record') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
-                    <i data-lucide="fish" class="w-4 h-4 text-teal-400"></i> Catches Log
+                    <x-lucide-fish class="w-4 h-4 text-teal-400" /> Catches Log
                 </a>
                 <a href="{{ url('/fish') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
-                    <i data-lucide="dna" class="w-4 h-4 text-emerald-400"></i> Fish & Species
+                    <x-lucide-dna class="w-4 h-4 text-emerald-400" /> Fish & Species
                 </a>
                 <a href="{{ url('/expedition') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
-                    <i data-lucide="ship" class="w-4 h-4 text-teal-400"></i> Expeditions
+                    <x-lucide-ship class="w-4 h-4 text-teal-400" /> Expeditions
                 </a>
                 <a href="{{ url('/lake') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
-                    <i data-lucide="waves" class="w-4 h-4 text-teal-400"></i> Lakes
+                    <x-lucide-waves class="w-4 h-4 text-teal-400" /> Lakes
                 </a>
                 <a href="{{ url('/fishing-zone') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
-                    <i data-lucide="shield" class="w-4 h-4 text-indigo-400"></i> License Zones (FMZs)
+                    <x-lucide-shield class="w-4 h-4 text-indigo-400" /> License Zones (FMZs)
                 </a>
                 <a href="{{ url('/lure') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
-                    <i data-lucide="fishing-hook" class="w-4 h-4 text-teal-400"></i> Lures
+                    <x-lucide-fishing-hook class="w-4 h-4 text-teal-400" /> Lures
                 </a>
 
                 @if(Auth::user()->isAdmin())
                     <div class="pt-3 border-t border-slate-800 space-y-1">
                         <div class="px-3 flex items-center justify-between">
                             <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                                <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-400"></i> Admin Console
+                                <x-lucide-shield class="w-3.5 h-3.5 text-amber-400" /> Admin Console
                             </span>
                             @if(Auth::user()->unreadNotifications()->count() > 0 || \Fishinglog\Models\User::doesntHave('angler')->count() > 0)
                                 <span class="px-1.5 py-0.2 bg-amber-500 text-slate-950 font-black text-[10px] rounded-full">
@@ -303,7 +303,7 @@
                         </div>
                         <a href="{{ route('admin') }}" class="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800">
                             <div class="flex items-center gap-3">
-                                <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i> Admin Overview
+                                <x-lucide-shield-alert class="w-4 h-4 text-amber-400" /> Admin Overview
                             </div>
                             @if(Auth::user()->unreadNotifications()->count() > 0)
                                 <span class="px-1.5 py-0.2 bg-amber-400 text-slate-950 font-bold text-[10px] rounded-full">{{ Auth::user()->unreadNotifications()->count() }}</span>
@@ -311,14 +311,14 @@
                         </a>
                         <a href="{{ route('admin.users') }}" class="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800">
                             <div class="flex items-center gap-3">
-                                <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i> User Accounts & Anglers
+                                <x-lucide-user-check class="w-4 h-4 text-amber-400" /> User Accounts & Anglers
                             </div>
                             @if(\Fishinglog\Models\User::doesntHave('angler')->count() > 0)
                                 <span class="px-1.5 py-0.2 bg-amber-400 text-slate-950 font-bold text-[10px] rounded-full">{{ \Fishinglog\Models\User::doesntHave('angler')->count() }}</span>
                             @endif
                         </a>
                         <a href="{{ route('admin.trash') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-amber-300 hover:bg-slate-800">
-                            <i data-lucide="trash-2" class="w-4 h-4 text-amber-400"></i> Trash Bin
+                            <x-lucide-trash-2 class="w-4 h-4 text-amber-400" /> Trash Bin
                         </a>
                     </div>
                 @endif
@@ -349,7 +349,7 @@
                     <div class="mb-6 bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 text-slate-950 rounded-2xl p-5 shadow-xl border-2 border-amber-300 flex flex-col sm:flex-row items-center justify-between gap-4" role="alert">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-slate-950/15 border border-slate-950/20 text-slate-950 flex items-center justify-center shrink-0 shadow-inner">
-                                <i data-lucide="trophy" class="w-7 h-7 text-slate-950 animate-bounce"></i>
+                                <x-lucide-trophy class="w-7 h-7 text-slate-950 animate-bounce" />
                             </div>
                             <div>
                                 <h3 class="text-base font-extrabold tracking-tight text-slate-950 flex items-center gap-2">
@@ -379,22 +379,22 @@
         @auth
         <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 text-slate-400 flex items-center justify-around py-2 px-3 z-40 shadow-2xl">
             <a href="{{ url('/profile') }}" class="flex flex-col items-center gap-1 text-[10px] font-medium {{ Request::is('profile*') ? 'text-teal-400 font-semibold' : 'hover:text-slate-200' }}">
-                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                <x-lucide-layout-dashboard class="w-5 h-5" />
                 <span>Stats</span>
             </a>
             <a href="{{ url('/map/explorer') }}" class="flex flex-col items-center gap-1 text-[10px] font-medium {{ Request::is('map/explorer*') ? 'text-teal-400 font-semibold' : 'hover:text-slate-200' }}">
-                <i data-lucide="compass" class="w-5 h-5"></i>
+                <x-lucide-compass class="w-5 h-5" />
                 <span>Map</span>
             </a>
             <a href="{{ url('/record/quick') }}" class="flex flex-col items-center justify-center w-11 h-11 bg-gradient-to-tr from-teal-600 to-teal-400 text-white rounded-full -mt-5 shadow-lg shadow-teal-950/60 border-2 border-slate-900 active:scale-95 transition-transform">
-                <i data-lucide="plus" class="w-6 h-6"></i>
+                <x-lucide-plus class="w-6 h-6" />
             </a>
             <a href="{{ url('/record') }}" class="flex flex-col items-center gap-1 text-[10px] font-medium {{ Request::is('record') ? 'text-teal-400 font-semibold' : 'hover:text-slate-200' }}">
-                <i data-lucide="fish" class="w-5 h-5"></i>
+                <x-lucide-fish class="w-5 h-5" />
                 <span>Catches</span>
             </a>
             <a href="{{ url('/expedition') }}" class="flex flex-col items-center gap-1 text-[10px] font-medium {{ Request::is('expedition*') ? 'text-teal-400 font-semibold' : 'hover:text-slate-200' }}">
-                <i data-lucide="ship" class="w-5 h-5"></i>
+                <x-lucide-ship class="w-5 h-5" />
                 <span>Expeditions</span>
             </a>
         </nav>

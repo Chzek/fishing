@@ -6,7 +6,7 @@
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-sm border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
-                <i data-lucide="map" class="w-5 h-5"></i>
+                <x-lucide-map class="w-5 h-5" />
             </div>
             <div>
                 <h1 class="text-xl font-bold text-white tracking-tight">Offline Map Region Downloader</h1>
@@ -30,7 +30,7 @@
         <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div class="space-y-2">
                 <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <i data-lucide="trees" class="w-4 h-4 text-teal-600"></i>
+                    <x-lucide-trees class="w-4 h-4 text-teal-600" />
                     <span>Wawa, Hawk Junction & White River Region</span>
                 </h2>
                 <p class="text-xs text-slate-600">
@@ -44,7 +44,7 @@
             </div>
 
             <button id="btn-download-wawa" onclick="downloadWawaRegion()" class="w-full md:w-auto shrink-0 py-3 px-5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow-md shadow-teal-900/10 transition-all flex items-center justify-center gap-2">
-                <i data-lucide="download" class="w-4 h-4"></i>
+                <x-lucide-download class="w-4 h-4" />
                 <span>Download Wawa Region Pack (~55 MB)</span>
             </button>
         </div>
@@ -53,11 +53,11 @@
         <div class="bg-slate-900 text-slate-200 rounded-2xl p-5 border border-slate-800 space-y-4">
             <div class="flex items-center justify-between">
                 <h3 class="font-bold text-sm text-white flex items-center gap-2">
-                    <i data-lucide="hard-drive" class="w-4 h-4 text-teal-400"></i>
+                    <x-lucide-hard-drive class="w-4 h-4 text-teal-400" />
                     <span>Offline Tile Storage Status</span>
                 </h3>
                 <button onclick="clearTileCache()" class="text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 px-3 py-1 rounded-lg border border-rose-500/30 transition-colors flex items-center gap-1">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    <x-lucide-trash-2 class="w-3.5 h-3.5" />
                     <span>Clear Cache</span>
                 </button>
             </div>
@@ -81,7 +81,7 @@
         <!-- Interactive Region Preview Map Card -->
         <div class="space-y-2">
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                <i data-lucide="layers" class="w-3.5 h-3.5 text-teal-600"></i>
+                <x-lucide-layers class="w-3.5 h-3.5 text-teal-600" />
                 <span>Map Coverage Preview</span>
             </h3>
             <div class="rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">

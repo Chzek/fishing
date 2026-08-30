@@ -60,7 +60,7 @@
                     </h3>
                     @if($showLake && $record->lake)
                         <div class="text-xs text-slate-500 font-medium flex items-center gap-1 mt-0.5">
-                            <i data-lucide="map-pin" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                            <x-lucide-map-pin class="w-3 h-3 text-slate-400 shrink-0" />
                             <a href="{{ url('/lake/' . $record->lakes_id) }}" class="hover:text-teal-600 truncate">
                                 {{ $lakeName }}
                             </a>
@@ -84,7 +84,7 @@
 
         <a href="{{ url('/record/' . $record->id) }}" class="text-[11px] font-bold text-teal-600 hover:text-teal-700 hover:underline shrink-0 flex items-center gap-0.5">
             <span>Dossier</span>
-            <i data-lucide="chevron-right" class="w-3 h-3"></i>
+            <x-lucide-chevron-right class="w-3 h-3" />
         </a>
     </div>
 </div>

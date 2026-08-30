@@ -46,6 +46,6 @@
     @if($avatarUrl)
         <img src="{{ $avatarUrl }}" alt="{{ $name }}" class="w-full h-full object-cover rounded-full transition-transform duration-200 hover:scale-110" />
     @else
-        <i data-lucide="fish" class="w-3/5 h-3/5 shrink-0 text-slate-300"></i>
+        <x-lucide-fish class="w-3/5 h-3/5 shrink-0 text-slate-300" />
     @endif
 </div>

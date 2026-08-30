@@ -15,7 +15,7 @@
         <div class="flex items-start justify-between gap-3">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center shrink-0 group-hover:bg-teal-600 group-hover:text-white transition-colors duration-200 shadow-2xs">
-                    <i data-lucide="waves" class="w-5 h-5"></i>
+                    <x-lucide-waves class="w-5 h-5" />
                 </div>
                 <div>
                     <h3 class="font-bold text-slate-900 text-base tracking-tight group-hover:text-teal-600 transition-colors">
@@ -38,7 +38,7 @@
 
         @if($showCoordinates && $hasGeo)
             <div class="flex items-center gap-2 text-xs text-slate-500 font-mono bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-teal-600 shrink-0"></i>
+                <x-lucide-map-pin class="w-3.5 h-3.5 text-teal-600 shrink-0" />
                 <span>{{ number_format($lake->latitude, 4) }}, {{ number_format($lake->longitude, 4) }}</span>
             </div>
         @endif

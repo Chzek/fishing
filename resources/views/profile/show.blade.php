@@ -4,7 +4,7 @@
 <div class="space-y-6">
     @if (session('status'))
         <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-xl p-4 flex items-center gap-3 shadow-sm" role="alert">
-            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-500 shrink-0"></i>
+            <x-lucide-check-circle class="w-5 h-5 text-emerald-500 shrink-0" />
             <span>{{ session('status') }}</span>
         </div>
     @endif
@@ -16,19 +16,19 @@
                 <div class="relative">
                     <x-anglerAvatar :angler="$angler" size="xl" />
                     <div class="absolute -bottom-1 -right-1 bg-teal-500 text-white rounded-full p-1 shadow">
-                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                        <x-lucide-shield-check class="w-3.5 h-3.5" />
                     </div>
                 </div>
                 <div>
                     <h1 class="text-2xl font-extrabold text-white tracking-tight flex items-center justify-center md:justify-start gap-2">
                         <span>{{ $angler->firstName }} {{ $angler->lastName }}</span>
                         <a href="/angler/{{ $angler->id }}/edit" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit Angler Profile">
-                            <i data-lucide="edit-3" class="w-4 h-4 text-teal-400"></i>
+                            <x-lucide-edit-3 class="w-4 h-4 text-teal-400" />
                         </a>
                     </h1>
                     <p class="text-xs font-medium text-teal-400 mt-1 flex items-center justify-center md:justify-start gap-1.5">
 
-                        <i data-lucide="anchor" class="w-3.5 h-3.5 text-teal-400"></i>
+                        <x-lucide-anchor class="w-3.5 h-3.5 text-teal-400" />
                         <span>Registered Angler Logbook & Telemetry</span>
                     </p>
                     @if($angler->bio)
@@ -39,7 +39,7 @@
 
             <div class="flex items-center gap-3 shrink-0">
                 <a href="{{ url('/record/quick') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-lg shadow-teal-950/40 transition-all">
-                    <i data-lucide="zap" class="w-4 h-4 text-teal-200"></i>
+                    <x-lucide-zap class="w-4 h-4 text-teal-200" />
                     <span>Quick Catch</span>
                 </a>
             </div>
@@ -59,7 +59,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 flex items-center justify-center shrink-0">
-                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <x-lucide-bell class="w-5 h-5" />
                         </div>
                         <div>
                             <h2 class="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
@@ -81,7 +81,7 @@
                     @foreach($unreadNotifications as $notification)
                         <div class="flex items-center justify-between text-xs text-slate-700 pt-2 gap-3">
                             <div class="flex items-center gap-2.5">
-                                <i data-lucide="trophy" class="w-4 h-4 text-amber-500 shrink-0"></i>
+                                <x-lucide-trophy class="w-4 h-4 text-amber-500 shrink-0" />
                                 <div>
                                     <div class="font-bold text-slate-900">{{ $notification->data['title'] ?? ($notification->data['type'] ?? 'Notification') }}</div>
                                     <div class="text-slate-600 mt-0.5">{{ $notification->data['message'] ?? 'You have a new update.' }}</div>
@@ -110,7 +110,7 @@
         <div class="space-y-4">
             <div class="flex items-center justify-between">
                 <h2 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                    <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
+                    <x-lucide-trophy class="w-5 h-5 text-amber-500" />
                     <span>Personal Best Trophies</span>
                 </h2>
             </div>
@@ -135,7 +135,7 @@
                                 <div class="text-xs font-bold text-teal-700 truncate">{{ $personalBest['byLength']->fishBreed->name ?? 'Fish' }}</div>
                                 <div class="pt-2 border-t border-amber-100/80 flex items-center justify-between text-xs text-slate-600">
                                     <span class="flex items-center gap-1 truncate">
-                                        <i data-lucide="map-pin" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                                        <x-lucide-map-pin class="w-3 h-3 text-slate-400 shrink-0" />
                                         <span class="truncate font-medium">{{ $personalBest['byLength']->lake->name ?? 'Lake' }}</span>
                                     </span>
                                     <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $personalBest['byLength']->caught }}</span>
@@ -168,7 +168,7 @@
                                 <div class="text-xs font-bold text-sky-700 truncate">{{ $personalBest['byWeight']->fishBreed->name ?? 'Fish' }}</div>
                                 <div class="pt-2 border-t border-sky-100/80 flex items-center justify-between text-xs text-slate-600">
                                     <span class="flex items-center gap-1 truncate">
-                                        <i data-lucide="map-pin" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                                        <x-lucide-map-pin class="w-3 h-3 text-slate-400 shrink-0" />
                                         <span class="truncate font-medium">{{ $personalBest['byWeight']->lake->name ?? 'Lake' }}</span>
                                     </span>
                                     <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $personalBest['byWeight']->caught }}</span>
@@ -195,7 +195,7 @@
                             <div class="text-xl font-extrabold text-slate-900 truncate tracking-tight">{{ $personalBest['lakeWithMostCatches']->name }}</div>
                             <div class="text-xs font-bold text-teal-700">Most Successful Angling Water</div>
                             <div class="pt-2 border-t border-teal-100/80 flex items-center gap-1.5 text-xs text-slate-600">
-                                <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-teal-600"></i>
+                                <x-lucide-check-circle-2 class="w-3.5 h-3.5 text-teal-600" />
                                 <span class="font-medium">High catch probability location</span>
                             </div>
                         </div>
@@ -214,7 +214,7 @@
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div class="flex items-center gap-2.5">
                         <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0 border border-amber-500/20">
-                            <i data-lucide="award" class="w-4 h-4"></i>
+                            <x-lucide-award class="w-4 h-4" />
                         </div>
                         <div>
                             <h3 class="text-sm font-bold text-slate-900 tracking-tight">Species Personal Bests (PB)</h3>
@@ -236,7 +236,7 @@
                                     <span class="text-xs font-black text-slate-900 font-mono bg-white px-1.5 py-0.5 rounded border border-slate-200 shadow-2xs">{{ number_format($pb->length, 1) }}"</span>
                                 </div>
                                 <div class="text-[11px] text-slate-500 truncate mt-0.5 flex items-center gap-1">
-                                    <i data-lucide="map-pin" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                                    <x-lucide-map-pin class="w-3 h-3 text-slate-400 shrink-0" />
                                     <span class="truncate">{{ $pb->lake->name ?? 'Waterbody' }}</span>
                                 </div>
                             </div>
@@ -252,7 +252,7 @@
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
                 <div class="flex items-center justify-between">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                        <i data-lucide="ruler" class="w-3.5 h-3.5 text-teal-600"></i> Lifetime Production
+                        <x-lucide-ruler class="w-3.5 h-3.5 text-teal-600" /> Lifetime Production
                     </span>
                     <span class="text-xs font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">Production</span>
                 </div>
@@ -273,7 +273,7 @@
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
                 <div class="flex items-center justify-between">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                        <i data-lucide="fishing-hook" class="w-3.5 h-3.5 text-amber-500"></i> MVP Go-To Lure
+                        <x-lucide-fishing-hook class="w-3.5 h-3.5 text-amber-500" /> MVP Go-To Lure
                     </span>
                     <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">Tackle</span>
                 </div>
@@ -295,7 +295,7 @@
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
                 <div class="flex items-center justify-between">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                        <i data-lucide="heart" class="w-3.5 h-3.5 text-emerald-500"></i> C&R Conservation
+                        <x-lucide-heart class="w-3.5 h-3.5 text-emerald-500" /> C&R Conservation
                     </span>
                     <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Conservation</span>
                 </div>
@@ -314,7 +314,7 @@
             <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
                 <div class="flex items-center justify-between">
                     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                        <i data-lucide="calendar" class="w-3.5 h-3.5 text-sky-500"></i> Peak Month
+                        <x-lucide-calendar class="w-3.5 h-3.5 text-sky-500" /> Peak Month
                     </span>
                     <span class="text-xs font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">Season</span>
                 </div>
@@ -338,7 +338,7 @@
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                        <i data-lucide="waves" class="w-4 h-4 text-teal-600"></i>
+                        <x-lucide-waves class="w-4 h-4 text-teal-600" />
                         <span>Top Fished Waters</span>
                     </h2>
                     <span class="text-[11px] text-slate-400 font-mono font-semibold">{{ count($topWaters) }} Waters</span>
@@ -377,7 +377,7 @@
                 <div>
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                         <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                            <i data-lucide="pie-chart" class="w-4 h-4 text-teal-600"></i>
+                            <x-lucide-pie-chart class="w-4 h-4 text-teal-600" />
                             <span>Angler Species Ratio</span>
                         </h2>
                         <span class="text-[11px] text-slate-400 font-mono font-semibold">{{ count($speciesDistribution) }} Species</span>
@@ -461,7 +461,7 @@
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
-                    <i data-lucide="list" class="w-6 h-6"></i>
+                    <x-lucide-list class="w-6 h-6" />
                 </div>
                 <div>
                     <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
@@ -474,12 +474,12 @@
 
             <a href="{{ url('/record/directory') }}?angler={{ $angler->id }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all shrink-0">
                 <span>View Full Logbook</span>
-                <i data-lucide="arrow-right" class="w-4 h-4 text-teal-400"></i>
+                <x-lucide-arrow-right class="w-4 h-4 text-teal-400" />
             </a>
         </div>
     @else
         <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-6 text-center space-y-3 shadow-sm">
-            <i data-lucide="alert-triangle" class="w-8 h-8 text-amber-500 mx-auto"></i>
+            <x-lucide-alert-triangle class="w-8 h-8 text-amber-500 mx-auto" />
             <h3 class="font-bold text-base">User Not Associated with Angler Record</h3>
             <p class="text-xs text-amber-700 max-w-md mx-auto">Your account is not linked to an Angler profile. Please contact your system administrator to associate your account.</p>
         </div>

@@ -29,6 +29,16 @@
         'indigo' => 'text-indigo-600',
         default => 'text-teal-600',
     };
+
+    $safeIcon = match ($icon) {
+        'hook' => 'fishing-hook',
+        default => $icon,
+    };
+
+    $safeSubtextIcon = match ($subtextIcon) {
+        'hook' => 'fishing-hook',
+        default => $subtextIcon,
+    };
 @endphp
 
 <div {{ $attributes->merge(['class' => 'bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between space-y-0']) }}>
@@ -37,8 +47,8 @@
         <span class="text-3xl font-black text-slate-900 font-mono tracking-tight block">{{ is_numeric($value) ? number_format($value) : $value }}</span>
         @if($subtext)
             <span class="text-[11px] font-semibold mt-1 inline-flex items-center gap-1 {{ $subtextColor }}">
-                @if($subtextIcon)
-                    <i data-lucide="{{ $subtextIcon }}" class="w-3 h-3"></i>
+                @if($safeSubtextIcon)
+                    <x-dynamic-component :component="'lucide-' . $safeSubtextIcon" class="w-3 h-3" />
                 @endif
                 <span>{{ $subtext }}</span>
             </span>
@@ -50,9 +60,9 @@
         @endif
     </div>
 
-    @if($icon)
+    @if($safeIcon)
         <div class="w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0 shadow-2xs {{ $colorClasses }}">
-            <i data-lucide="{{ $icon }}" class="w-6 h-6"></i>
+            <x-dynamic-component :component="'lucide-' . $safeIcon" class="w-6 h-6" />
         </div>
     @endif
 </div>

@@ -6,7 +6,7 @@
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
             <div class="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0 shadow-inner">
-                <i data-lucide="shield-check" class="w-6 h-6"></i>
+                <x-lucide-shield-check class="w-6 h-6" />
             </div>
             <div>
                 <h1 class="text-2xl font-black text-white tracking-tight flex items-center gap-2">
@@ -19,11 +19,11 @@
 
         <div class="flex items-center gap-2">
             <a href="{{ route('admin.trash') }}" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
-                <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-400"></i>
+                <x-lucide-trash-2 class="w-3.5 h-3.5 text-rose-400" />
                 <span>Trash Archive</span>
             </a>
             <a href="{{ url('/admin/sync') }}" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5">
-                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <x-lucide-refresh-cw class="w-3.5 h-3.5" />
                 <span>NAS / Laptop Sync</span>
             </a>
         </div>
@@ -34,7 +34,7 @@
         <div class="bg-slate-900 border border-teal-500/40 rounded-2xl p-5 text-white space-y-4 shadow-xl">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                 <div class="flex items-center gap-2 text-teal-400 font-bold text-sm">
-                    <i data-lucide="check-circle" class="w-4 h-4 text-teal-400"></i>
+                    <x-lucide-check-circle class="w-4 h-4 text-teal-400" />
                     <span>Signed Invite Link Generated Successfully</span>
                 </div>
                 <span class="text-[11px] font-mono bg-teal-500/10 text-teal-300 border border-teal-500/30 px-2 py-0.5 rounded-full">
@@ -47,14 +47,14 @@
                 <div class="space-y-1.5">
                     <div class="flex items-center justify-between text-xs">
                         <span class="font-bold text-slate-300 flex items-center gap-1.5">
-                            <i data-lucide="server" class="w-3.5 h-3.5 text-teal-400"></i> Network / NAS Server URL:
+                            <x-lucide-server class="w-3.5 h-3.5 text-teal-400" /> Network / NAS Server URL:
                         </span>
                         <span class="text-[10px] text-teal-400/90 font-medium">Recommended for anglers on WiFi / Home Network</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <input type="text" id="invite-url-nas" readonly value="{{ session('invite_url_nas') }}" class="w-full h-10 px-3.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs font-mono text-teal-300 focus:outline-none select-all">
                         <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('invite-url-nas').value); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy NAS Link', 2000)" class="h-10 px-4 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow transition-colors shrink-0 cursor-pointer flex items-center gap-1.5">
-                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            <x-lucide-copy class="w-3.5 h-3.5" />
                             <span>Copy NAS Link</span>
                         </button>
                     </div>
@@ -66,14 +66,14 @@
                 <div class="space-y-1.5 pt-1">
                     <div class="flex items-center justify-between text-xs">
                         <span class="font-bold text-slate-300 flex items-center gap-1.5">
-                            <i data-lucide="laptop" class="w-3.5 h-3.5 text-slate-400"></i> Local Machine URL:
+                            <x-lucide-laptop class="w-3.5 h-3.5 text-slate-400" /> Local Machine URL:
                         </span>
                         <span class="text-[10px] text-slate-400">For field laptop direct testing</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <input type="text" id="invite-url-local" readonly value="{{ session('invite_url_local') }}" class="w-full h-9 px-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-xs font-mono text-slate-300 focus:outline-none select-all">
                         <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('invite-url-local').value); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy Local Link', 2000)" class="h-9 px-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors shrink-0 cursor-pointer flex items-center gap-1.5">
-                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            <x-lucide-copy class="w-3.5 h-3.5" />
                             <span>Copy Local Link</span>
                         </button>
                     </div>
@@ -97,7 +97,7 @@
         <div class="bg-amber-50/80 rounded-2xl p-4 sm:p-5 border border-amber-200/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div class="flex items-center gap-3.5">
                 <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 flex items-center justify-center shrink-0">
-                    <i data-lucide="bell" class="w-5 h-5"></i>
+                    <x-lucide-bell class="w-5 h-5" />
                 </div>
                 <div>
                     <h3 class="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
@@ -110,7 +110,7 @@
             <form action="{{ route('admin.notifications.mark_read') }}" method="POST" class="shrink-0">
                 @csrf
                 <button type="submit" class="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200/80 shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer">
-                    <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                    <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
                     <span>Dismiss Notifications</span>
                 </button>
             </form>
@@ -124,7 +124,7 @@
         <!-- Email Invitation Card -->
         <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-3">
             <div class="flex items-center gap-2 border-b border-slate-100 pb-2.5">
-                <i data-lucide="mail-plus" class="w-4 h-4 text-teal-600"></i>
+                <x-lucide-mail-plus class="w-4 h-4 text-teal-600" />
                 <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider">Email Signed Invitation (Home Mode)</h3>
             </div>
             <p class="text-xs text-slate-500">Generates a secure signed registration URL valid for 7 days to email an angler.</p>
@@ -135,7 +135,7 @@
                     <input type="email" name="email" required placeholder="Angler Email Address" class="h-9 px-3 rounded-xl border border-slate-200 text-xs bg-slate-50">
                 </div>
                 <button type="submit" class="w-full py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
-                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    <x-lucide-send class="w-3.5 h-3.5" />
                     <span>Generate Signed Invite</span>
                 </button>
             </form>
@@ -144,7 +144,7 @@
         <!-- Canada Field Offline Quick-Add Card -->
         <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm space-y-3">
             <div class="flex items-center gap-2 border-b border-slate-100 pb-2.5">
-                <i data-lucide="user-plus" class="w-4 h-4 text-amber-600"></i>
+                <x-lucide-user-plus class="w-4 h-4 text-amber-600" />
                 <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider">Canada Offline Quick-Add (Field Mode)</h3>
             </div>
             <p class="text-xs text-slate-500">Create an Angler account locally without internet. Syncs upstream to NAS when returning home.</p>
@@ -156,7 +156,7 @@
                     <input type="password" name="password" required placeholder="Temp Password" class="h-9 px-3 rounded-xl border border-slate-200 text-xs bg-slate-50">
                 </div>
                 <button type="submit" class="w-full py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center justify-center gap-1.5 cursor-pointer">
-                    <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                    <x-lucide-user-plus class="w-3.5 h-3.5" />
                     <span>Create Offline Angler Account</span>
                 </button>
             </form>
@@ -167,7 +167,7 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <i data-lucide="user-check" class="w-4 h-4 text-teal-600"></i> Registered User Accounts
+                <x-lucide-user-check class="w-4 h-4 text-teal-600" /> Registered User Accounts
             </h2>
             <span class="text-xs text-slate-500 font-mono">{{ count($users) }} Account(s)</span>
         </div>

@@ -6,12 +6,12 @@
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-2xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
-                <i data-lucide="waves" class="w-6 h-6"></i>
+                <x-lucide-waves class="w-6 h-6" />
             </div>
             <div>
                 <h1 class="text-2xl font-extrabold text-white tracking-tight">{{ $lake->name }}</h1>
                 <p class="text-xs font-medium text-teal-400 mt-1 flex items-center gap-1.5">
-                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-teal-400"></i>
+                    <x-lucide-map-pin class="w-3.5 h-3.5 text-teal-400" />
                     <span>Canadian Angling Waterbody & Telemetry</span>
                 </p>
             </div>
@@ -19,18 +19,18 @@
 
         <div class="flex flex-wrap items-center gap-2.5 shrink-0">
             <a href="/lake/{{ $lake->id }}/visits" class="px-4 py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-xs rounded-xl shadow-lg shadow-teal-950/40 transition-all flex items-center gap-1.5">
-                <i data-lucide="calendar" class="w-4 h-4 text-teal-200"></i>
+                <x-lucide-calendar class="w-4 h-4 text-teal-200" />
                 <span>Visits Log</span>
             </a>
             <a href="/lake/{{ $lake->id }}/edit" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
-                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                <x-lucide-edit-3 class="w-3.5 h-3.5" />
                 <span>Edit</span>
             </a>
             <form action="/lake/{{ $lake->id }}" method="POST" onsubmit="return confirm('Are you sure you want to remove this lake?')">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="px-3.5 py-2.5 bg-rose-950/80 hover:bg-rose-900 text-rose-300 font-semibold text-xs rounded-xl border border-rose-800 transition-colors flex items-center gap-1.5 cursor-pointer">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-400"></i>
+                    <x-lucide-trash-2 class="w-3.5 h-3.5 text-rose-400" />
                     <span>Delete</span>
                 </button>
             </form>
@@ -45,26 +45,26 @@
         <div class="flex flex-wrap items-center gap-2 text-xs">
             @if($lake->fishingZone)
                 <a href="{{ url('/fishing-zone/' . $lake->fishingZone->id) }}" class="bg-indigo-50 text-indigo-800 border border-indigo-200 hover:bg-indigo-100 px-3 py-1.5 rounded-xl font-semibold transition-colors flex items-center gap-1.5 shadow-2xs">
-                    <i data-lucide="shield" class="w-3.5 h-3.5 text-indigo-600"></i>
+                    <x-lucide-shield class="w-3.5 h-3.5 text-indigo-600" />
                     <span>Zone: <strong class="font-mono">{{ $lake->fishingZone->code }}</strong> — {{ $lake->fishingZone->name }}</span>
-                    <i data-lucide="arrow-up-right" class="w-3 h-3 text-indigo-500"></i>
+                    <x-lucide-arrow-up-right class="w-3 h-3 text-indigo-500" />
                 </a>
             @endif
             @if($lake->structure)
                 <span class="bg-teal-50 text-teal-800 border border-teal-200 px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1 shadow-2xs">
-                    <i data-lucide="layers" class="w-3.5 h-3.5 text-teal-600"></i>
+                    <x-lucide-layers class="w-3.5 h-3.5 text-teal-600" />
                     <span>Bottom Cover: <strong>{{ $lake->structure }}</strong></span>
                 </span>
             @endif
             @if($lake->max_depth)
                 <span class="bg-slate-100 text-slate-800 border border-slate-200 px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1 shadow-2xs">
-                    <i data-lucide="ruler" class="w-3.5 h-3.5 text-slate-600"></i>
+                    <x-lucide-ruler class="w-3.5 h-3.5 text-slate-600" />
                     <span>Max Depth: <strong>{{ $lake->max_depth }} ft</strong></span>
                 </span>
             @endif
             @if($lake->latitude && $lake->longitude)
                 <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1 shadow-2xs font-mono">
-                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-600"></i>
+                    <x-lucide-map-pin class="w-3.5 h-3.5 text-emerald-600" />
                     <span>GPS: <strong>{{ number_format($lake->latitude, 4) }}°N, {{ number_format($lake->longitude, 4) }}°W</strong></span>
                 </span>
             @endif
@@ -79,11 +79,11 @@
                 <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Total Production</span>
                 <span class="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1 block">{{ number_format($count) }}</span>
                 <span class="text-[11px] text-teal-600 font-semibold mt-1 inline-flex items-center gap-1">
-                    <i data-lucide="calendar" class="w-3 h-3"></i> {{ $visits }} Visit(s) • {{ $anglers }} Angler(s)
+                    <x-lucide-calendar class="w-3 h-3" /> {{ $visits }} Visit(s) • {{ $anglers }} Angler(s)
                 </span>
             </div>
             <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
-                <i data-lucide="fish" class="w-6 h-6"></i>
+                <x-lucide-fish class="w-6 h-6" />
             </div>
         </div>
 
@@ -104,7 +104,7 @@
                     <div class="text-xs font-bold text-teal-700">{{ $longest->fishBreed->name ?? 'Fish' }}</div>
                     <div class="pt-2 border-t border-amber-100/80 flex items-center justify-between text-xs text-slate-600">
                         <span class="flex items-center gap-1 truncate">
-                            <i data-lucide="user" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                            <x-lucide-user class="w-3 h-3 text-slate-400 shrink-0" />
                             <span class="truncate font-medium">{{ $longest->angler->full_name ?? 'Angler' }}</span>
                         </span>
                         <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $longest->caught }}</span>
@@ -134,7 +134,7 @@
                     <div class="text-xs font-bold text-teal-700">{{ $fattest->fishBreed->name ?? 'Fish' }}</div>
                     <div class="pt-2 border-t border-sky-100/80 flex items-center justify-between text-xs text-slate-600">
                         <span class="flex items-center gap-1 truncate">
-                            <i data-lucide="user" class="w-3 h-3 text-slate-400 shrink-0"></i>
+                            <x-lucide-user class="w-3 h-3 text-slate-400 shrink-0" />
                             <span class="truncate font-medium">{{ $fattest->angler->full_name ?? 'Angler' }}</span>
                         </span>
                         <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $fattest->caught }}</span>
@@ -153,7 +153,7 @@
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-3">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                 <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                    <i data-lucide="compass" class="w-4 h-4 text-teal-600"></i>
+                    <x-lucide-compass class="w-4 h-4 text-teal-600" />
                     <span>Location & Topographic Map</span>
                 </h2>
                 @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
@@ -184,7 +184,7 @@
     @if(isset($stats) && count($stats) > 0)
         <div class="space-y-4">
             <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                <i data-lucide="fish" class="w-4.5 h-4.5 text-teal-600"></i>
+                <x-lucide-fish class="w-4.5 h-4.5 text-teal-600" />
                 <span>Species Statistics</span>
             </h2>
 
@@ -193,7 +193,7 @@
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-3">
                         <h3 class="font-bold text-slate-900 text-sm border-b border-slate-100 pb-2 flex items-center justify-between">
                             <span class="flex items-center gap-2">
-                                <i data-lucide="dna" class="w-4 h-4 text-emerald-600"></i>
+                                <x-lucide-dna class="w-4 h-4 text-emerald-600" />
                                 <span>{{ $stat->fishBreed->name }}</span>
                             </span>
                             <span class="bg-teal-50 text-teal-700 font-mono text-xs font-bold px-2.5 py-0.5 rounded-full border border-teal-200">{{ $stat->cnt }} Total</span>
@@ -225,7 +225,7 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
-                <i data-lucide="book-open" class="w-6 h-6"></i>
+                <x-lucide-book-open class="w-6 h-6" />
             </div>
             <div>
                 <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
@@ -238,7 +238,7 @@
 
         <a href="{{ url('/record/directory') }}?lake={{ $lake->id }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all shrink-0">
             <span>View Lake Catches</span>
-            <i data-lucide="arrow-right" class="w-4 h-4 text-teal-400"></i>
+            <x-lucide-arrow-right class="w-4 h-4 text-teal-400" />
         </a>
     </div>
 </div>

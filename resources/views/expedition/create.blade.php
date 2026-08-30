@@ -6,7 +6,7 @@
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-600 flex items-center justify-center shrink-0">
-                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    <x-lucide-plus-circle class="w-5 h-5" />
                 </div>
                 <div>
                     <h1 class="text-xl font-bold text-slate-900 tracking-tight">Create Expedition Trip</h1>

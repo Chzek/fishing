@@ -24,7 +24,7 @@
             <div class="flex items-center gap-3">
                 @if($icon)
                     <div class="w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 {{ $iconColorClasses }}">
-                        <i data-lucide="{{ $icon }}" class="w-4 h-4"></i>
+                        <x-dynamic-component :component="'lucide-' . $icon" class="w-4 h-4" />
                     </div>
                 @endif
                 <div>

@@ -113,15 +113,15 @@
             {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold shadow-2xs transition-all hover:scale-102 cursor-help select-none ' . $tempBorderClass]) }} 
             title="{{ $tooltipText }}"
         >
-            <i data-lucide="{{ $config['icon'] }}" class="w-3.5 h-3.5 {{ $config['color'] }} shrink-0"></i>
+            <x-dynamic-component :component="'lucide-' . $config['icon']" class="w-3.5 h-3.5 {{ $config['color'] }} shrink-0" />
             <span class="font-mono font-extrabold text-slate-900">{{ round($airTemp, 0) }}°F</span>
-            <i data-lucide="{{ $trendBadge['icon'] }}" class="w-3 h-3 {{ $trendBadge['color'] }} shrink-0"></i>
+            <x-dynamic-component :component="'lucide-' . $trendBadge['icon']" class="w-3 h-3 {{ $trendBadge['color'] }} shrink-0" />
         </span>
     @else
         <!-- Full Temperature-Colored Weather Badge -->
         <div class="inline-flex items-center gap-1.5 flex-wrap">
             <div {{ $attributes->merge(['class' => 'inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium shadow-2xs ' . $tempBorderClass]) }}>
-                <i data-lucide="{{ $config['icon'] }}" class="w-3.5 h-3.5 {{ $config['color'] }} shrink-0"></i>
+                <x-dynamic-component :component="'lucide-' . $config['icon']" class="w-3.5 h-3.5 {{ $config['color'] }} shrink-0" />
                 @if($showEmoji)
                     <span class="text-xs">{{ $config['emoji'] }}</span>
                 @endif

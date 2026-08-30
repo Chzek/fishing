@@ -12,7 +12,7 @@
             <!-- Title & Active View Badge -->
             <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                 <div class="w-8 h-8 rounded-xl bg-teal-500/15 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
-                    <i data-lucide="compass" class="w-4 h-4"></i>
+                    <x-lucide-compass class="w-4 h-4" />
                 </div>
                 <div class="min-w-0">
                     <h1 class="text-xs sm:text-sm font-bold text-white tracking-tight flex items-center gap-1.5 truncate">
@@ -26,14 +26,14 @@
             <div class="flex items-center gap-1.5 shrink-0">
                 <!-- Mobile Filter Toggle Button (lg:hidden) -->
                 <button type="button" id="mobile-filter-toggle-btn" onclick="toggleMobileFilters()" class="lg:hidden h-8 px-2.5 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors flex items-center gap-1.5">
-                    <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-teal-400"></i>
+                    <x-lucide-sliders-horizontal class="w-3.5 h-3.5 text-teal-400" />
                     <span>Filters</span>
                     <span id="mobile-filter-count-badge" class="hidden px-1.5 py-0.2 bg-teal-400 text-slate-950 font-black text-[10px] rounded-full">0</span>
                 </button>
 
                 <!-- Reset Button -->
                 <button type="button" onclick="resetExplorerFilters()" class="h-8 px-2.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition-colors flex items-center gap-1">
-                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <x-lucide-rotate-ccw class="w-3.5 h-3.5 text-slate-400" />
                     <span class="hidden sm:inline">Reset</span>
                 </button>
             </div>
@@ -159,12 +159,12 @@
                 <span id="drawer-lake-sub" class="text-xs text-teal-400 font-medium">Lake Catch Analytics</span>
             </div>
             <button type="button" onclick="closeLakeDrawer()" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-                <i data-lucide="x" class="w-5 h-5"></i>
+                <x-lucide-x class="w-5 h-5" />
             </button>
         </div>
 
         <div id="drawer-loading" class="text-center py-12">
-            <i data-lucide="loader-2" class="w-8 h-8 text-teal-400 animate-spin mx-auto"></i>
+            <x-lucide-loader-2 class="w-8 h-8 text-teal-400 animate-spin mx-auto" />
             <p class="mt-2 text-xs text-slate-400">Loading lake analytics...</p>
         </div>
 
@@ -195,7 +195,7 @@
             <!-- Record Highlights (Longest & Fattest) -->
             <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 border border-amber-500/30 space-y-2">
                 <div class="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
-                    <i data-lucide="trophy" class="w-4 h-4"></i>
+                    <x-lucide-trophy class="w-4 h-4" />
                     <span>Lake Trophy Records</span>
                 </div>
                 <div class="grid grid-cols-2 gap-3 pt-2 text-center border-t border-slate-700/60">
@@ -215,7 +215,7 @@
             <!-- Species Catch Breakdown List -->
             <div class="bg-slate-800/60 rounded-xl border border-slate-700/50 overflow-hidden">
                 <div class="px-4 py-2.5 bg-slate-800 border-b border-slate-700/60 font-bold text-xs text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="fish" class="w-3.5 h-3.5 text-teal-400"></i>
+                    <x-lucide-fish class="w-3.5 h-3.5 text-teal-400" />
                     <span>Species Breakdown</span>
                 </div>
                 <ul id="drawer-species-list" class="divide-y divide-slate-700/50 text-xs">
@@ -226,7 +226,7 @@
             <!-- Top Producing Lures -->
             <div class="bg-slate-800/60 rounded-xl border border-slate-700/50 overflow-hidden">
                 <div class="px-4 py-2.5 bg-slate-800 border-b border-slate-700/60 font-bold text-xs text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="fishing-hook" class="w-3.5 h-3.5 text-teal-400"></i>
+                    <x-lucide-fishing-hook class="w-3.5 h-3.5 text-teal-400" />
                     <span>Top Producing Lures</span>
                 </div>
                 <ul id="drawer-lures-list" class="divide-y divide-slate-700/50 text-xs">
@@ -237,12 +237,12 @@
             <!-- Quick Action Buttons -->
             <div class="grid grid-cols-2 gap-3 pt-2">
                 <a id="drawer-quick-catch-btn" href="#" class="py-2.5 px-3 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl text-center shadow transition-colors flex items-center justify-center gap-1">
-                    <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                    <x-lucide-zap class="w-3.5 h-3.5" />
                     <span>Quick Catch</span>
                 </a>
                 <a id="drawer-full-log-btn" href="#" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs rounded-xl text-center transition-colors flex items-center justify-center gap-1">
                     <span>Full Log</span>
-                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                    <x-lucide-external-link class="w-3.5 h-3.5" />
                 </a>
             </div>
         </div>

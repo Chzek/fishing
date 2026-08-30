@@ -37,6 +37,6 @@
 @endphp
 
 <span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold border shadow-xs ' . $badge['class']]) }} title="Prime Fishing Window (4-9 PM) Barometric Pressure Movement">
-    <i data-lucide="{{ $badge['icon'] }}" class="w-3.5 h-3.5 {{ $badge['iconColor'] }} shrink-0"></i>
+    <x-dynamic-component :component="'lucide-' . $badge['icon']" class="w-3.5 h-3.5 {{ $badge['iconColor'] }} shrink-0" />
     <span>{{ $badge['label'] }}</span>
 </span>

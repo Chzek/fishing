@@ -27,7 +27,7 @@
 
         <div class="space-y-2 pointer-events-none">
             <div class="w-10 h-10 rounded-xl bg-white text-slate-400 group-hover:text-teal-600 group-hover:bg-teal-50 shadow-xs border border-slate-200/80 group-hover:border-teal-200 flex items-center justify-center mx-auto transition-colors">
-                <i data-lucide="camera" class="w-5 h-5"></i>
+                <x-lucide-camera class="w-5 h-5" />
             </div>
             <div>
                 <p class="text-xs font-bold text-slate-700 group-hover:text-teal-900">

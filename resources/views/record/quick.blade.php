@@ -6,7 +6,7 @@
     <div class="bg-slate-900 text-white rounded-2xl p-5 shadow-md border border-slate-800 flex items-center justify-between">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
-                <i data-lucide="zap" class="w-5 h-5"></i>
+                <x-lucide-zap class="w-5 h-5" />
             </div>
             <div>
                 <h1 class="font-bold text-white text-lg tracking-tight leading-tight">Boat Quick Catch Log</h1>
@@ -32,7 +32,7 @@
             <!-- GPS Status Banner -->
             <div id="gps-status-box" class="flex items-center justify-between px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
                 <div class="flex items-center gap-2 text-slate-600">
-                    <i data-lucide="map-pin" class="w-4 h-4 text-teal-600 shrink-0"></i>
+                    <x-lucide-map-pin class="w-4 h-4 text-teal-600 shrink-0" />
                     <span id="gps-status-text" class="font-medium">Device Pinpoint GPS: Searching...</span>
                 </div>
                 <button type="button" onclick="acquireQuickGPS()" class="text-[11px] font-bold text-teal-600 hover:text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">Re-query</button>
@@ -126,7 +126,7 @@
                     <label class="flex items-center gap-3 cursor-pointer p-3 rounded-xl border border-emerald-100 bg-emerald-50/60 hover:bg-emerald-50 transition-colors">
                         <input type="checkbox" id="released" name="released" value="1" class="w-5 h-5 rounded text-emerald-600 focus:ring-emerald-500 border-emerald-300" checked>
                         <div class="flex items-center gap-2">
-                            <i data-lucide="heart" class="w-4 h-4 text-emerald-600"></i>
+                            <x-lucide-heart class="w-4 h-4 text-emerald-600" />
                             <span class="text-sm font-bold text-emerald-800">Released Catch</span>
                         </div>
                     </label>
@@ -136,7 +136,7 @@
             <!-- Submit Action -->
             <div class="pt-4">
                 <button type="submit" id="saveCatchBtn" class="w-full py-4 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-base rounded-xl shadow-lg shadow-teal-900/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                    <i data-lucide="save" class="w-5 h-5"></i>
+                    <x-lucide-save class="w-5 h-5" />
                     <span>Save Catch Log</span>
                 </button>
             </div>
@@ -151,10 +151,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const netStatus = document.getElementById('network-status');
     const updateNetStatus = () => {
         if (navigator.onLine) {
-            netStatus.innerHTML = '<i data-lucide="wifi" class="w-3.5 h-3.5 text-emerald-400"></i> Online (Cabin)';
+            netStatus.innerHTML = '<x-lucide-wifi class="w-3.5 h-3.5 text-emerald-400" /> Online (Cabin)';
             netStatus.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
         } else {
-            netStatus.innerHTML = '<i data-lucide="wifi-off" class="w-3.5 h-3.5 text-amber-400"></i> Offline (Boat Mode)';
+            netStatus.innerHTML = '<x-lucide-wifi-off class="w-3.5 h-3.5 text-amber-400" /> Offline (Boat Mode)';
             netStatus.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30';
         }
         if (window.initLucideIcons) window.initLucideIcons();

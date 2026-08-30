@@ -6,7 +6,7 @@
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
             <div class="w-12 h-12 rounded-2xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
-                <i data-lucide="shield-check" class="w-6 h-6"></i>
+                <x-lucide-shield-check class="w-6 h-6" />
             </div>
             <div>
                 <h1 class="text-xl font-bold text-white tracking-tight">System Administration Console</h1>
@@ -16,11 +16,11 @@
 
         <div class="flex items-center gap-3">
             <a href="{{ route('admin.users') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors">
-                <i data-lucide="users" class="w-4 h-4"></i>
+                <x-lucide-users class="w-4 h-4" />
                 <span>User Account Linking</span>
             </a>
             <a href="{{ route('admin.trash') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-colors">
-                <i data-lucide="trash-2" class="w-4 h-4 text-rose-400"></i>
+                <x-lucide-trash-2 class="w-4 h-4 text-rose-400" />
                 <span>Trash Bin ({{ $trashedCount }})</span>
             </a>
         </div>
@@ -44,7 +44,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div class="flex items-center gap-3.5">
                     <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 flex items-center justify-center shrink-0">
-                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <x-lucide-bell class="w-5 h-5" />
                     </div>
                     <div>
                         <h2 class="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
@@ -59,7 +59,7 @@
 
                 <div class="flex items-center gap-2 shrink-0">
                     <a href="{{ route('admin.users') }}" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 cursor-pointer">
-                        <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                        <x-lucide-user-check class="w-3.5 h-3.5" />
                         <span>Pair in User Accounts →</span>
                     </a>
                     <form action="{{ route('admin.notifications.mark_read') }}" method="POST">
@@ -76,7 +76,7 @@
                 @foreach($unreadNotifications as $notification)
                     <div class="flex items-center justify-between text-xs text-slate-700 pt-2">
                         <div class="flex items-center gap-2">
-                            <i data-lucide="user-plus" class="w-3.5 h-3.5 text-teal-600 shrink-0"></i>
+                            <x-lucide-user-plus class="w-3.5 h-3.5 text-teal-600 shrink-0" />
                             <span class="font-medium text-slate-800">{{ $notification->data['message'] ?? 'New user registered.' }}</span>
                             <span class="text-[10px] text-slate-500 font-mono">({{ $notification->created_at->diffForHumans() }})</span>
                         </div>
@@ -94,7 +94,7 @@
         <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                    <i data-lucide="user-x" class="w-4 h-4"></i>
+                    <x-lucide-user-x class="w-4 h-4" />
                 </div>
                 <div>
                     <h3 class="text-xs font-bold text-white">Unlinked Registered Accounts ({{ $unlinkedUsersCount }})</h3>
@@ -113,7 +113,7 @@
         <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col justify-between space-y-4">
             <div class="space-y-1">
                 <div class="flex items-center gap-2">
-                    <i data-lucide="refresh-cw" class="w-5 h-5 text-teal-400"></i>
+                    <x-lucide-refresh-cw class="w-5 h-5 text-teal-400" />
                     <h2 class="text-base font-bold text-white">{{ $syncTargetName === 'Laptop' ? 'Field Laptop Two-Way Sync Engine' : 'Synology NAS Two-Way Sync Engine' }}</h2>
                 </div>
                 <p class="text-xs text-slate-300">
@@ -139,7 +139,7 @@
                                 class="group inline-flex items-center gap-1.5 focus:outline-hidden text-left cursor-pointer">
                             <span class="text-slate-400">Pending Outbox:</span>
                             <strong class="text-amber-400 font-bold border-b border-dotted border-amber-400/60 group-hover:text-amber-300 group-hover:border-amber-300 transition-colors">{{ $pendingSyncCount }} item(s)</strong>
-                            <i data-lucide="info" class="w-3.5 h-3.5 text-amber-400/80 group-hover:text-amber-300 transition-colors"></i>
+                            <x-lucide-info class="w-3.5 h-3.5 text-amber-400/80 group-hover:text-amber-300 transition-colors" />
                         </button>
 
                         <!-- Alpine Popover Card -->
@@ -154,7 +154,7 @@
                              class="absolute z-30 left-0 bottom-full mb-2 w-64 bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-xl shadow-2xl p-3 text-xs text-slate-200">
                             <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
                                 <span class="font-bold text-slate-100 flex items-center gap-1.5">
-                                    <i data-lucide="layers" class="w-3.5 h-3.5 text-teal-400"></i>
+                                    <x-lucide-layers class="w-3.5 h-3.5 text-teal-400" />
                                     Outbox by Model
                                 </span>
                                 <span class="text-[10px] font-mono bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-bold">
@@ -178,7 +178,7 @@
                                 </div>
                             @else
                                 <div class="text-slate-400 text-center py-2 flex items-center justify-center gap-1.5">
-                                    <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                    <x-lucide-check-circle class="w-3.5 h-3.5 text-emerald-400" />
                                     <span>All models up to date</span>
                                 </div>
                             @endif
@@ -193,7 +193,7 @@
                 <form action="{{ route('admin.sync.trigger') }}" method="POST" class="w-full">
                     @csrf
                     <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all cursor-pointer">
-                        <i data-lucide="cloud-sync" class="w-4 h-4"></i>
+                        <x-lucide-cloud-sync class="w-4 h-4" />
                         <span>Sync Now with {{ $syncTargetName }}</span>
                     </button>
                 </form>
@@ -201,14 +201,14 @@
                     <form action="{{ route('admin.sync.baseline') }}" method="POST" onsubmit="return confirm('Perform a Full Baseline Pull from {{ $syncTargetName }}? This will pull and reconcile all records regardless of timestamps.');">
                         @csrf
                         <button type="submit" title="Pull and reconcile all records from {{ $syncTargetName }} from scratch" class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 font-bold text-[11px] rounded-xl transition-all cursor-pointer shadow-sm">
-                            <i data-lucide="cloud-download" class="w-3.5 h-3.5 text-teal-400"></i>
+                            <x-lucide-cloud-download class="w-3.5 h-3.5 text-teal-400" />
                             <span>Baseline Pull</span>
                         </button>
                     </form>
                     <form action="{{ route('admin.sync.mark_synced') }}" method="POST" onsubmit="return confirm('Mark all local records as synced? Use this if your records are already identical on {{ $syncTargetName }} and you wish to clear pending outbox status.');">
                         @csrf
                         <button type="submit" title="Mark all local records as synced without pushing/pulling" class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800/60 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/80 font-semibold text-[11px] rounded-xl transition-all cursor-pointer shadow-sm">
-                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+                            <x-lucide-check-circle-2 class="w-3.5 h-3.5 text-emerald-400" />
                             <span>Mark Synced</span>
                         </button>
                     </form>
@@ -222,7 +222,7 @@
             <div class="space-y-1">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <i data-lucide="cloud-sun" class="w-5 h-5 text-sky-400"></i>
+                        <x-lucide-cloud-sun class="w-5 h-5 text-sky-400" />
                         <h2 class="text-base font-bold text-white">Weather Telemetry Sync Engine</h2>
                     </div>
                     <span class="text-xs font-mono font-bold text-sky-300 bg-sky-950/80 px-2.5 py-0.5 rounded-full border border-sky-800">
@@ -246,7 +246,7 @@
             <form action="{{ route('admin.weather.sync') }}" method="POST">
                 @csrf
                 <button type="submit" class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all shrink-0 cursor-pointer">
-                    <i data-lucide="cloud-download" class="w-4 h-4"></i>
+                    <x-lucide-cloud-download class="w-4 h-4" />
                     <span>Issue Weather Sync Now</span>
                 </button>
             </form>
@@ -257,7 +257,7 @@
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <i data-lucide="activity" class="w-5 h-5 text-purple-400"></i>
+                        <x-lucide-activity class="w-5 h-5 text-purple-400" />
                         <h2 class="text-base font-bold text-white">Laravel Pulse Telemetry</h2>
                     </div>
                     <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 font-mono">
@@ -268,13 +268,13 @@
                     Real-time server performance telemetry, slow queries, job queues, outdated composer packages, and system resource monitors.
                 </p>
                 <div class="pt-1 flex items-center gap-2 text-xs text-purple-300/80 font-mono">
-                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-purple-400"></i>
+                    <x-lucide-shield-check class="w-3.5 h-3.5 text-purple-400" />
                     <span>Restricted to Authorized Administrators</span>
                 </div>
             </div>
 
             <a href="{{ url('/pulse') }}" class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow-lg transition-all shrink-0 cursor-pointer">
-                <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                <x-lucide-bar-chart-3 class="w-4 h-4" />
                 <span>Open Pulse Dashboard →</span>
             </a>
         </div>

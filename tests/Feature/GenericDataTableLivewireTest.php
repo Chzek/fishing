@@ -36,7 +36,7 @@ class GenericDataTableLivewireTest extends TestCase
         ->assertSee('Wawa Lake')
         ->assertSee('Davies Lake')
         ->assertSee('text-emerald-600')
-        ->assertSee('map-pin-off');
+        ->assertSee('No GPS Coordinates');
     }
 
     #[Test]

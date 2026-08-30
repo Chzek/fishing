@@ -6,19 +6,19 @@
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
             <div class="w-12 h-12 rounded-2xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
-                <i data-lucide="ship" class="w-6 h-6"></i>
+                <x-lucide-ship class="w-6 h-6" />
             </div>
             <div>
                 <h1 class="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
                     <span>{{ $expedition->description }}</span>
                     @if(view()->exists('expedition.edit'))
                         <a href="/expedition/{{ $expedition->id }}/edit" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit Expedition">
-                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            <x-lucide-edit-3 class="w-4 h-4" />
                         </a>
                     @endif
                 </h1>
                 <p class="text-xs text-teal-400 font-medium mt-1 flex items-center gap-2">
-                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                    <x-lucide-calendar class="w-3.5 h-3.5" />
                     <span>{{ $expedition->start }} &mdash; {{ $expedition->finish }}</span>
                     <span>•</span>
                     <span class="font-bold text-white font-mono">{{ $totalRecords }} Total Catches</span>
@@ -33,7 +33,7 @@
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="px-3 py-2 bg-rose-950/80 hover:bg-rose-900 text-rose-300 font-semibold text-xs rounded-xl border border-rose-800 transition-colors flex items-center gap-1.5 cursor-pointer">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-400"></i>
+                    <x-lucide-trash-2 class="w-3.5 h-3.5 text-rose-400" />
                     <span>Delete</span>
                 </button>
             </form>
@@ -160,7 +160,7 @@
             <div>
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                        <i data-lucide="trending-up" class="w-4 h-4 text-teal-600"></i>
+                        <x-lucide-trending-up class="w-4 h-4 text-teal-600" />
                         <span>Daily Catch Cadence</span>
                     </h2>
                     <span class="text-[11px] text-slate-400 font-mono font-semibold">Fish Per Day</span>
@@ -227,7 +227,7 @@
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4 flex flex-col justify-between">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                    <i data-lucide="pie-chart" class="w-4 h-4 text-teal-600"></i>
+                    <x-lucide-pie-chart class="w-4 h-4 text-teal-600" />
                     <span>Species Breakdown</span>
                 </h2>
                 <span class="text-[11px] text-slate-400 font-mono font-semibold">{{ count($speciesDistribution) }} Species</span>
@@ -310,7 +310,7 @@
             <div>
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                        <i data-lucide="award" class="w-4 h-4 text-amber-500"></i>
+                        <x-lucide-award class="w-4 h-4 text-amber-500" />
                         <span>Trip Crew Leaderboard</span>
                     </h2>
                     @if(view()->exists('expedition.crew.create'))
@@ -352,7 +352,7 @@
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-3">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <i data-lucide="map-pin" class="w-4 h-4 text-teal-600"></i>
+                <x-lucide-map-pin class="w-4 h-4 text-teal-600" />
                 <span>Expedition Catch & Visited Waterbodies Map</span>
             </h2>
             <span class="text-slate-500 font-mono text-xs font-semibold">
@@ -366,12 +366,12 @@
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h2 class="font-bold text-slate-900 text-base flex items-center gap-2">
-                <i data-lucide="message-square" class="w-4 h-4 text-teal-600"></i>
+                <x-lucide-message-square class="w-4 h-4 text-teal-600" />
                 <span>Trip Journal & Posts</span>
             </h2>
             @if(view()->exists('expedition.post.create'))
                 <a href="/post/create?expeditions_id={{ $expedition->id }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl shadow transition-colors">
-                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                    <x-lucide-plus class="w-3.5 h-3.5" />
                     <span>Post Update</span>
                 </a>
             @endif
@@ -406,7 +406,7 @@
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
-                    <i data-lucide="camera" class="w-4 h-4"></i>
+                    <x-lucide-camera class="w-4 h-4" />
                 </div>
                 <div>
                     <h2 class="font-bold text-slate-900 text-base tracking-tight">Trip Scrapbook & Photo Gallery</h2>
@@ -415,7 +415,7 @@
             </div>
 
             <button type="button" onclick="document.getElementById('expedition-upload-card').classList.toggle('hidden')" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 cursor-pointer">
-                <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                <x-lucide-upload class="w-3.5 h-3.5" />
                 <span>Add Trip Photos</span>
             </button>
         </div>
@@ -497,7 +497,7 @@
         @else
             <div class="text-center py-10 border-2 border-dashed border-slate-100 rounded-2xl space-y-2">
                 <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
-                    <i data-lucide="image" class="w-5 h-5"></i>
+                    <x-lucide-image class="w-5 h-5" />
                 </div>
                 <p class="text-xs text-slate-500 font-medium">No trip photos uploaded yet.</p>
                 <p class="text-[11px] text-slate-400">Capture the memories from the boat and build your trip scrapbook.</p>
@@ -509,7 +509,7 @@
     @if(count($records) > 0)
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
             <h2 class="font-bold text-slate-900 text-base flex items-center gap-2 border-b border-slate-100 pb-3">
-                <i data-lucide="fish" class="w-4 h-4 text-teal-600"></i>
+                <x-lucide-fish class="w-4 h-4 text-teal-600" />
                 <span>Expedition Catches Log</span>
             </h2>
 

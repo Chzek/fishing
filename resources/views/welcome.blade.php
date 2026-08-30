@@ -16,7 +16,7 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center shadow-sm">
-                    <i data-lucide="anchor" class="w-4 h-4"></i>
+                    <x-lucide-anchor class="w-4 h-4" />
                 </div>
                 <span class="font-extrabold text-white tracking-tight text-lg">Fishing Logbook</span>
             </div>
@@ -25,7 +25,7 @@
                 @if (Route::has('login'))
                     @auth
                         <a href="{{ url('/profile') }}" class="inline-flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold py-2 px-4 rounded-xl shadow transition-colors">
-                            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                            <x-lucide-layout-dashboard class="w-4 h-4" />
                             <span>Angler Dashboard</span>
                         </a>
                     @else

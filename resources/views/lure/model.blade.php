@@ -6,7 +6,7 @@
     <div class="bg-slate-900 text-white rounded-2xl p-6 sm:p-7 border border-slate-800 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-4">
             <div class="w-14 h-14 rounded-2xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
-                <i data-lucide="target" class="w-7 h-7"></i>
+                <x-lucide-target class="w-7 h-7" />
             </div>
             <div>
                 <div class="flex items-center gap-2">
@@ -31,7 +31,7 @@
 
     <!-- Model Telemetry KPIs -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <x-kpiMetric label="Combined Model Catches" :value="$totalCatches" icon="hook" color="teal" subtext="Across All Color & Size Variants" />
+        <x-kpiMetric label="Combined Model Catches" :value="$totalCatches" icon="fishing-hook" color="teal" subtext="Across All Color & Size Variants" />
         <x-kpiMetric label="Top Target Species" :value="$topSpeciesName" icon="fish" color="emerald" subtext="Most Landed Species" />
         <x-kpiMetric label="#1 Productive Color" :value="$topColorName" icon="target" color="amber" subtext="Top Striking Color Variant" />
     </div>
@@ -40,7 +40,7 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <i data-lucide="layers" class="w-4 h-4 text-teal-600"></i>
+                <x-lucide-layers class="w-4 h-4 text-teal-600" />
                 <span>Color Variant Performance Breakdown</span>
             </h2>
             <span class="text-xs text-slate-400 font-mono">{{ $variants->count() }} Variant(s)</span>
@@ -79,7 +79,7 @@
                                         Variant Specs →
                                     </a>
                                     <a href="/lure/{{ $variant->id }}/edit" title="Edit Lure Variant" class="p-1 text-slate-400 hover:text-teal-600 transition-colors">
-                                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                        <x-lucide-edit-3 class="w-4 h-4" />
                                     </a>
                                 </div>
                             </td>
@@ -95,7 +95,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
             <div>
                 <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                    <i data-lucide="history" class="w-4 h-4 text-teal-600"></i>
+                    <x-lucide-history class="w-4 h-4 text-teal-600" />
                     <span>Catches Landed on {{ $modelName }}</span>
                 </h2>
                 <p class="text-xs text-slate-500">All logbook entries landed using any {{ $modelName }} variant</p>
@@ -139,7 +139,7 @@
                                 <td class="py-3.5 px-4 text-right">
                                     <a href="/record/show/{{ $catch->id }}" class="px-2.5 py-1.5 bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-700 font-bold text-[11px] rounded-lg border border-slate-200 transition-colors inline-flex items-center gap-1">
                                         <span>Dossier</span>
-                                        <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                                        <x-lucide-arrow-right class="w-3 h-3" />
                                     </a>
                                 </td>
                             </tr>

@@ -8,7 +8,7 @@
         <div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm flex flex-col items-center justify-center relative min-h-[240px] lg:min-h-[280px]">
             <div class="absolute top-3.5 left-3.5 flex items-center gap-2">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 border border-slate-200 text-slate-800 text-xs font-bold rounded-xl shadow-xs">
-                    <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-500"></i>
+                    <x-lucide-layers class="w-3.5 h-3.5 text-slate-500" />
                     <span>{{ $fish->family?->name ? $fish->family->name . ' Family' : 'Taxonomy' }}</span>
                 </span>
             </div>
@@ -19,7 +19,7 @@
                 @else
                     <div class="text-center space-y-2 py-8">
                         <div class="w-16 h-16 rounded-2xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center mx-auto">
-                            <i data-lucide="fish" class="w-8 h-8"></i>
+                            <x-lucide-fish class="w-8 h-8" />
                         </div>
                         <span class="text-xs text-slate-400 font-medium block">No biological photo uploaded</span>
                     </div>
@@ -41,11 +41,11 @@
 
                     <div class="flex items-center gap-2">
                         <a href="/fish" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1">
-                            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                            <x-lucide-arrow-left class="w-3.5 h-3.5" />
                             <span>Field Guide</span>
                         </a>
                         <a href="/fish/breed/{{ $fish->id }}/edit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1">
-                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                            <x-lucide-edit-3 class="w-3.5 h-3.5" />
                             <span>Edit</span>
                         </a>
                     </div>
@@ -66,7 +66,7 @@
                 <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 space-y-1">
                     <div class="flex items-center justify-between text-slate-400">
                         <span class="text-[10px] font-bold uppercase tracking-wider">Total Catches</span>
-                        <i data-lucide="hook" class="w-3.5 h-3.5 text-teal-400"></i>
+                        <x-lucide-fish class="w-3.5 h-3.5 text-teal-400" />
                     </div>
                     <span class="text-2xl font-black text-white block font-mono">{{ number_format($count) }}</span>
                     <span class="text-[10px] text-slate-400 block">Logged across all waters</span>
@@ -75,7 +75,7 @@
                 <div class="bg-gradient-to-br from-slate-800 to-slate-800/90 rounded-xl p-3 border border-amber-500/30 space-y-1">
                     <div class="flex items-center justify-between text-amber-300">
                         <span class="text-[10px] font-bold uppercase tracking-wider">Max Length Record</span>
-                        <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-400"></i>
+                        <x-lucide-trophy class="w-3.5 h-3.5 text-amber-400" />
                     </div>
                     <span class="text-2xl font-black text-amber-300 block font-mono">
                         {{ $longest ? number_format($longest, 1) . '"' : '—' }}
@@ -88,7 +88,7 @@
                 <div class="bg-gradient-to-br from-slate-800 to-slate-800/90 rounded-xl p-3 border border-amber-500/30 space-y-1">
                     <div class="flex items-center justify-between text-amber-300">
                         <span class="text-[10px] font-bold uppercase tracking-wider">Max Weight Record</span>
-                        <i data-lucide="award" class="w-3.5 h-3.5 text-amber-400"></i>
+                        <x-lucide-award class="w-3.5 h-3.5 text-amber-400" />
                     </div>
                     <span class="text-2xl font-black text-amber-300 block font-mono">
                         {{ $fattest ? number_format($fattest, 1) . ' lbs.' : '—' }}
@@ -105,7 +105,7 @@
                     href="/record/quick?fish_breed_id={{ $fish->id }}" 
                     class="px-4 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
                 >
-                    <i data-lucide="plus-circle" class="w-4 h-4 text-slate-950"></i>
+                    <x-lucide-plus-circle class="w-4 h-4 text-slate-950" />
                     <span>Log Catch for {{ $fish->name }}</span>
                 </a>
 
@@ -122,7 +122,7 @@
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="target" class="w-4 h-4 text-teal-600"></i>
+                    <x-lucide-target class="w-4 h-4 text-teal-600" />
                     <span>Productive Lures & Colors</span>
                 </h3>
                 <span class="text-[10px] font-semibold text-slate-400 font-mono">{{ $topLures->count() }} Types</span>
@@ -168,7 +168,7 @@
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="trophy" class="w-4 h-4 text-amber-500"></i>
+                    <x-lucide-trophy class="w-4 h-4 text-amber-500" />
                     <span>Species Angler Leaderboard</span>
                 </h3>
                 <span class="text-[10px] font-semibold text-slate-400 font-mono">Top Anglers</span>
@@ -210,7 +210,7 @@
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
-                    <i data-lucide="thermometer-sun" class="w-4 h-4 text-sky-600"></i>
+                    <x-lucide-thermometer-sun class="w-4 h-4 text-sky-600" />
                     <span>Seasonal & Weather Triggers</span>
                 </h3>
                 <span class="text-[10px] font-semibold text-slate-400 font-mono">Telemetry</span>
@@ -220,7 +220,7 @@
             @if(isset($weatherTelemetry) && $weatherTelemetry->avg_temp)
                 <div class="bg-sky-50 border border-sky-100 rounded-xl p-2 text-xs flex items-center justify-between">
                     <span class="text-[11px] font-bold text-sky-900 flex items-center gap-1.5">
-                        <i data-lucide="thermometer" class="w-3.5 h-3.5 text-sky-600"></i>
+                        <x-lucide-thermometer class="w-3.5 h-3.5 text-sky-600" />
                         <span>Productive Water Temp Range</span>
                     </span>
                     <span class="font-mono font-bold text-sky-900 text-xs">
@@ -257,7 +257,7 @@
                 <div class="pt-4 border-t border-slate-100 space-y-2">
                     <div class="flex items-center justify-between">
                         <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                            <i data-lucide="cloud-lightning" class="w-3.5 h-3.5 text-indigo-500"></i>
+                            <x-lucide-cloud-lightning class="w-3.5 h-3.5 text-indigo-500" />
                             <span>Productive Weather Triggers</span>
                         </span>
                         <span class="text-[10px] text-slate-400 font-mono font-semibold">{{ $activeWeatherStats->count() }} Productive</span>
@@ -281,7 +281,7 @@
                                 };
                             @endphp
                             <div class="flex-1 max-w-[60px] flex flex-col items-center gap-1 h-full justify-end group relative" title="{{ $ws['key'] }}: {{ $ws['count'] }} catches">
-                                <i data-lucide="{{ $iconConfig['icon'] }}" class="w-3.5 h-3.5 {{ $iconConfig['color'] }} shrink-0"></i>
+                                <x-dynamic-component :component="'lucide-' . $iconConfig['icon']" class="w-3.5 h-3.5 {{ $iconConfig['color'] }} shrink-0" />
                                 <span class="text-[10px] font-bold font-mono text-indigo-600">
                                     {{ $ws['count'] }}
                                 </span>
@@ -306,7 +306,7 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
             <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <i data-lucide="waves" class="w-4 h-4 text-teal-600"></i>
+                <x-lucide-waves class="w-4 h-4 text-teal-600" />
                 <span>Documented Lake Distribution for {{ $fish->name }}</span>
             </h2>
             <span class="text-xs text-slate-500 font-mono">{{ count($lakes) }} Waterbody Location(s)</span>
@@ -333,7 +333,7 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-600 flex items-center justify-center shrink-0 shadow-inner">
-                <i data-lucide="book-open" class="w-6 h-6"></i>
+                <x-lucide-book-open class="w-6 h-6" />
             </div>
             <div>
                 <h3 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
@@ -351,7 +351,7 @@
         <div class="shrink-0 w-full md:w-auto">
             <a href="{{ url('/record/directory?species=' . $fish->id) }}" class="w-full md:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center justify-center gap-2 cursor-pointer">
                 <span>Open Logbook Directory</span>
-                <i data-lucide="arrow-right" class="w-4 h-4 text-teal-400"></i>
+                <x-lucide-arrow-right class="w-4 h-4 text-teal-400" />
             </a>
         </div>
     </div>

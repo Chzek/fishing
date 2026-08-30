@@ -6,12 +6,12 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
         <form action="{{ route('search') }}" method="GET" class="flex flex-col sm:flex-row items-center gap-3">
             <div class="relative flex-1 flex items-center w-full">
-                <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-3.5 pointer-events-none shrink-0"></i>
+                <x-lucide-search class="w-5 h-5 text-slate-400 absolute left-3.5 pointer-events-none shrink-0" />
                 <input type="text" name="q" value="{{ $query }}" placeholder="Type a command or search term (e.g., 'New Angler', 'Wawa', 'Walleye')..."
                     class="w-full h-11 pl-12 pr-4 text-sm rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 font-medium">
             </div>
             <button type="submit" class="w-full sm:w-auto h-11 px-6 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors flex items-center justify-center gap-2 shrink-0">
-                <i data-lucide="search" class="w-4 h-4"></i>
+                <x-lucide-search class="w-4 h-4" />
                 <span>Search</span>
             </button>
         </form>
@@ -29,7 +29,7 @@
         @if(count($matchedActions) > 0)
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
                 <h2 class="font-bold text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
+                    <x-lucide-zap class="w-4 h-4 text-amber-500" />
                     <span>Quick Command Actions</span>
                 </h2>
 
@@ -37,7 +37,7 @@
                     @foreach($matchedActions as $action)
                         <a href="{{ $action['url'] }}" class="flex items-center gap-3.5 p-3.5 rounded-xl border border-slate-200/80 hover:border-teal-500/40 bg-slate-50/50 hover:bg-slate-50 transition-all group">
                             <div class="w-9 h-9 rounded-xl bg-teal-500/10 text-teal-600 border border-teal-500/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                                <i data-lucide="{{ $action['icon'] }}" class="w-4 h-4"></i>
+                                <x-dynamic-component :component="'lucide-' . $action['icon']" class="w-4 h-4" />
                             </div>
                             <div class="overflow-hidden">
                                 <span class="font-bold text-slate-900 text-xs block group-hover:text-teal-700 transition-colors">{{ $action['title'] }}</span>
@@ -53,7 +53,7 @@
         @if($anglers->count() > 0)
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
                 <h2 class="font-bold text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <i data-lucide="users" class="w-4 h-4 text-teal-600"></i>
+                    <x-lucide-users class="w-4 h-4 text-teal-600" />
                     <span>Anglers & Crew ({{ $anglers->count() }})</span>
                 </h2>
 
@@ -75,7 +75,7 @@
         @if($lakes->count() > 0)
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
                 <h2 class="font-bold text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <i data-lucide="waves" class="w-4 h-4 text-teal-600"></i>
+                    <x-lucide-waves class="w-4 h-4 text-teal-600" />
                     <span>Lakes & Waterbodies ({{ $lakes->count() }})</span>
                 </h2>
 
@@ -84,7 +84,7 @@
                         <a href="/lake/{{ $lake->id }}" class="flex items-center justify-between p-3.5 rounded-xl border border-slate-200/80 hover:border-teal-500/40 bg-slate-50/50 hover:bg-slate-50 transition-all group">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-xl bg-sky-500/10 text-sky-600 border border-sky-500/20 flex items-center justify-center shrink-0">
-                                    <i data-lucide="map-pin" class="w-4 h-4"></i>
+                                    <x-lucide-map-pin class="w-4 h-4" />
                                 </div>
                                 <div>
                                     <span class="font-bold text-slate-900 text-xs block group-hover:text-teal-700 transition-colors">{{ $lake->name }}</span>
@@ -102,7 +102,7 @@
         @if($fishBreeds->count() > 0)
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
                 <h2 class="font-bold text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <i data-lucide="fish" class="w-4 h-4 text-teal-600"></i>
+                    <x-lucide-fish class="w-4 h-4 text-teal-600" />
                     <span>Fish Species ({{ $fishBreeds->count() }})</span>
                 </h2>
 
@@ -110,7 +110,7 @@
                     @foreach($fishBreeds as $breed)
                         <a href="/fish/{{ $breed->id }}" class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200/80 hover:border-teal-500/40 bg-slate-50/50 hover:bg-slate-50 transition-all group">
                             <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center justify-center shrink-0">
-                                <i data-lucide="fish" class="w-4 h-4"></i>
+                                <x-lucide-fish class="w-4 h-4" />
                             </div>
                             <div>
                                 <span class="font-bold text-slate-900 text-xs block group-hover:text-teal-700 transition-colors">{{ $breed->name }}</span>
@@ -126,7 +126,7 @@
         @if($lures->count() > 0)
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
                 <h2 class="font-bold text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <i data-lucide="fishing-hook" class="w-4 h-4 text-teal-600"></i>
+                    <x-lucide-fishing-hook class="w-4 h-4 text-teal-600" />
                     <span>Tacklebox ({{ $lures->count() }})</span>
                 </h2>
 
@@ -136,7 +136,7 @@
                     @foreach($lures as $lure)
                         <a href="/lure/{{ $lure->id }}" class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200/80 hover:border-teal-500/40 bg-slate-50/50 hover:bg-slate-50 transition-all group">
                             <div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-600 border border-indigo-500/20 flex items-center justify-center shrink-0">
-                                <i data-lucide="fishing-hook" class="w-4 h-4"></i>
+                                <x-lucide-fishing-hook class="w-4 h-4" />
                             </div>
                             <div>
                                 <span class="font-bold text-slate-900 text-xs block group-hover:text-teal-700 transition-colors">{{ $lure->name }}</span>
@@ -152,7 +152,7 @@
         @if($records->count() > 0)
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
                 <h2 class="font-bold text-slate-900 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3">
-                    <i data-lucide="history" class="w-4 h-4 text-teal-600"></i>
+                    <x-lucide-history class="w-4 h-4 text-teal-600" />
                     <span>Catches Logged ({{ $records->count() }})</span>
                 </h2>
 
@@ -161,7 +161,7 @@
                         <a href="/record/{{ $record->id }}" class="p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors group">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-700 flex items-center justify-center font-bold text-xs">
-                                    <i data-lucide="fish" class="w-4 h-4"></i>
+                                    <x-lucide-fish class="w-4 h-4" />
                                 </div>
                                 <div>
                                     <span class="font-bold text-slate-900 text-xs block group-hover:text-teal-700 transition-colors">
@@ -172,7 +172,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-teal-600 transition-colors"></i>
+                            <x-lucide-chevron-right class="w-4 h-4 text-slate-400 group-hover:text-teal-600 transition-colors" />
                         </a>
                     @endforeach
                 </div>
@@ -182,12 +182,12 @@
     @elseif(!empty($query))
         <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-200/80 space-y-3">
             <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center mx-auto">
-                <i data-lucide="search-x" class="w-6 h-6"></i>
+                <x-lucide-search-x class="w-6 h-6" />
             </div>
             <h3 class="text-base font-bold text-slate-900">No Matches Found for "{{ $query }}"</h3>
             <p class="text-xs text-slate-500 max-w-sm mx-auto">Try searching for a different species name, lake location, crew member, or action command like "New Angler".</p>
             <a href="{{ route('search') }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200 transition-colors">
-                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                <x-lucide-rotate-ccw class="w-3.5 h-3.5" />
                 <span>Reset Search</span>
             </a>
         </div>

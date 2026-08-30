@@ -21,11 +21,11 @@
             <div class="shrink-0">
                 @if($record->released)
                     <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 text-xs font-bold px-3 py-1 rounded-full border border-amber-200">
-                        <i data-lucide="waves" class="w-3.5 h-3.5 text-amber-500"></i> Released
+                        <x-lucide-waves class="w-3.5 h-3.5 text-amber-500" /> Released
                     </span>
                 @else
                     <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200">
-                        <i data-lucide="utensils" class="w-3.5 h-3.5 text-emerald-500"></i> Kept
+                        <x-lucide-utensils class="w-3.5 h-3.5 text-emerald-500" /> Kept
                     </span>
                 @endif
             </div>
@@ -40,7 +40,7 @@
                     
                     <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/80 via-slate-950/40 to-transparent p-4 flex items-center justify-between text-white">
                         <span class="text-xs font-semibold drop-shadow-sm flex items-center gap-1.5">
-                            <i data-lucide="camera" class="w-4 h-4 text-teal-400"></i>
+                            <x-lucide-camera class="w-4 h-4 text-teal-400" />
                             <span>Catch Photo ({{ $record->photos->count() }} attached)</span>
                         </span>
 
@@ -50,7 +50,7 @@
                                     <form action="{{ route('photos.avatar', $primary) }}" method="POST" class="inline" onsubmit="return confirm('Use this catch photo as your profile avatar?')">
                                         @csrf
                                         <button type="submit" class="px-3 py-1.5 bg-teal-500/90 hover:bg-teal-400 text-slate-950 text-[11px] font-bold rounded-xl shadow backdrop-blur-xs transition flex items-center gap-1 cursor-pointer">
-                                            <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                                            <x-lucide-user-check class="w-3.5 h-3.5" />
                                             <span>Set as Avatar</span>
                                         </button>
                                     </form>
@@ -90,7 +90,7 @@
 
         @if($record->temperature)
             <div class="p-4 rounded-xl bg-teal-50/60 border border-teal-200/80 flex items-center gap-3">
-                <i data-lucide="thermometer" class="w-5 h-5 text-teal-600 shrink-0"></i>
+                <x-lucide-thermometer class="w-5 h-5 text-teal-600 shrink-0" />
                 <div class="text-xs text-teal-900 font-medium">
                     <strong>Water Temperature:</strong> {{ $record->temperature }}°F (Logged on boat)
                 </div>
@@ -102,7 +102,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
-                            <i data-lucide="cloud-sun" class="w-5 h-5"></i>
+                            <x-lucide-cloud-sun class="w-5 h-5" />
                         </div>
                         <div>
                             <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Environmental Telemetry</span>
@@ -152,14 +152,14 @@
         <div class="flex items-center justify-between pt-4 border-t border-slate-100">
             <div class="flex items-center gap-2">
                 <a href='/record/{{ $record->id }}/edit' class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors">
-                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    <x-lucide-edit-3 class="w-4 h-4" />
                     <span>Edit Record</span>
                 </a>
                 <form action="/record/{{ $record->id }}" method="POST" onsubmit="return confirm('Are you sure you want to remove this catch record?')">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 font-bold text-xs rounded-xl transition-colors cursor-pointer">
-                        <i data-lucide="trash-2" class="w-4 h-4 text-rose-500"></i>
+                        <x-lucide-trash-2 class="w-4 h-4 text-rose-500" />
                         <span>Delete</span>
                     </button>
                 </form>

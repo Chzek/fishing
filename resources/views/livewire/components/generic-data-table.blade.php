@@ -1,11 +1,11 @@
-<div x-data="dataTable({ tableId: '{{ str_replace('\\', '_', $modelClass) }}', defaultDensity: 'normal' })" x-effect="$nextTick(() => { if (window.initLucideIcons) window.initLucideIcons(); })" class="space-y-4">
+<div x-data="dataTable({ tableId: '{{ str_replace('\\', '_', $modelClass) }}', defaultDensity: 'normal' })" class="space-y-4">
     <!-- Livewire Interactive Toolbar styled with x-table.wrapper design system -->
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
         <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
             <!-- Database Search Input -->
             <div class="inline-flex items-center flex-1 min-w-[200px] max-w-md shadow-2xs rounded-lg">
                 <div class="relative flex-1">
-                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    <x-lucide-search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input 
                         type="text" 
                         wire:model.live.debounce.300ms="search" 
@@ -19,7 +19,7 @@
                             class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
                             title="Clear search"
                         >
-                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                            <x-lucide-x class="w-3.5 h-3.5" />
                         </button>
                     @endif
                 </div>
@@ -72,7 +72,7 @@
                                 type="button" 
                                 class="h-9 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 hover:bg-slate-50 focus:ring-2 focus:ring-teal-500/20 flex items-center gap-2 transition-all cursor-pointer shadow-xs"
                             >
-                                <i data-lucide="calendar" class="w-3.5 h-3.5 text-teal-600"></i>
+                                <x-lucide-calendar class="w-3.5 h-3.5 text-teal-600" />
                                 <span>
                                     @switch($activePreset)
                                         @case('today') Today @break
@@ -85,7 +85,7 @@
                                         @default All Dates
                                     @endswitch
                                 </span>
-                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': open }"></i>
+                                <x-lucide-chevron-down class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" ::class="{ 'rotate-180': open }" />
                             </button>
 
                             <!-- Floating Tailwind Popover Card -->
@@ -108,11 +108,11 @@
                                     class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ empty($activePreset) ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
                                 >
                                     <div class="flex items-center gap-2">
-                                        <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <x-lucide-layers class="w-3.5 h-3.5 text-slate-400" />
                                         <span>All Dates</span>
                                     </div>
                                     @if(empty($activePreset))
-                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
                                     @endif
                                 </button>
 
@@ -122,11 +122,11 @@
                                     class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'today' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
                                 >
                                     <div class="flex items-center gap-2">
-                                        <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <x-lucide-clock class="w-3.5 h-3.5 text-slate-400" />
                                         <span>Today</span>
                                     </div>
                                     @if($activePreset === 'today')
-                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
                                     @endif
                                 </button>
 
@@ -136,11 +136,11 @@
                                     class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'yesterday' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
                                 >
                                     <div class="flex items-center gap-2">
-                                        <i data-lucide="history" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <x-lucide-history class="w-3.5 h-3.5 text-slate-400" />
                                         <span>Yesterday</span>
                                     </div>
                                     @if($activePreset === 'yesterday')
-                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
                                     @endif
                                 </button>
 
@@ -150,11 +150,11 @@
                                     class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'this_week' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
                                 >
                                     <div class="flex items-center gap-2">
-                                        <i data-lucide="calendar-days" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <x-lucide-calendar-days class="w-3.5 h-3.5 text-slate-400" />
                                         <span>Last 7 Days</span>
                                     </div>
                                     @if($activePreset === 'this_week')
-                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
                                     @endif
                                 </button>
 
@@ -164,11 +164,11 @@
                                     class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'this_month' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
                                 >
                                     <div class="flex items-center gap-2">
-                                        <i data-lucide="calendar-range" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <x-lucide-calendar-range class="w-3.5 h-3.5 text-slate-400" />
                                         <span>This Month (30 Days)</span>
                                     </div>
                                     @if($activePreset === 'this_month')
-                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
                                     @endif
                                 </button>
 
@@ -178,11 +178,11 @@
                                     class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'this_season' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
                                 >
                                     <div class="flex items-center gap-2">
-                                        <i data-lucide="sun" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <x-lucide-sun class="w-3.5 h-3.5 text-slate-400" />
                                         <span>This Season ({{ date('Y') }})</span>
                                     </div>
                                     @if($activePreset === 'this_season')
-                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
                                     @endif
                                 </button>
 
@@ -192,11 +192,11 @@
                                     class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'last_season' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
                                 >
                                     <div class="flex items-center gap-2">
-                                        <i data-lucide="snowflake" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <x-lucide-snowflake class="w-3.5 h-3.5 text-slate-400" />
                                         <span>Last Season ({{ date('Y') - 1 }})</span>
                                     </div>
                                     @if($activePreset === 'last_season')
-                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
                                     @endif
                                 </button>
 
@@ -208,11 +208,11 @@
                                     class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'custom' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
                                 >
                                     <div class="flex items-center gap-2">
-                                        <i data-lucide="sliders" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <x-lucide-sliders class="w-3.5 h-3.5 text-slate-400" />
                                         <span>Custom Range...</span>
                                     </div>
                                     @if($activePreset === 'custom')
-                                        <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i>
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
                                     @endif
                                 </button>
                             </div>
@@ -272,9 +272,7 @@
             <div class="flex items-center gap-1.5 text-slate-500 font-medium font-mono text-[11px] bg-white px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-2xs">
                 <span class="w-2 h-2 rounded-full {{ ($search || $family) ? 'bg-amber-400' : 'bg-teal-500' }}"></span>
                 <span>{{ number_format($totalCount) }} {{ $itemName }}</span>
-            </div>
-
-            <!-- Column Visibility Picker -->
+            </div>            <!-- Column Visibility Picker -->
             <div class="relative" x-data="{ open: false }">
                 <button 
                     type="button" 
@@ -282,7 +280,7 @@
                     class="h-8 px-2.5 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-lg border border-slate-200/80 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
                     title="Toggle columns"
                 >
-                    <i data-lucide="columns-3" class="w-3.5 h-3.5 text-slate-500"></i>
+                    <x-lucide-columns-3 class="w-3.5 h-3.5 text-slate-500" />
                     <span class="hidden md:inline">Columns</span>
                 </button>
 
@@ -348,23 +346,23 @@
                             <div 
                                 x-data="{ open: false }" 
                                 @mouseenter="open = true" 
-                                @mouseleave="open = false"
+                                @mouseleave="open = false" 
                                 class="relative inline-flex items-center gap-1.5 {{ $align === 'center' ? 'justify-center' : ($align === 'right' ? 'justify-end' : 'justify-start') }} hover:text-teal-600"
                             >
                                 <span>{{ $col['label'] }}</span>
                                 @if($colKey === 'dailyWeather' || ($col['type'] ?? '') === 'weather_badge')
-                                    <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 hover:text-teal-500 shrink-0 transition-colors cursor-help"></i>
+                                    <x-lucide-info class="w-3.5 h-3.5 text-slate-400 hover:text-teal-500 shrink-0 transition-colors cursor-help" />
 
                                     <!-- Alpine.js Floating Temperature Legend Popover Card -->
                                     <div 
-                                        x-show="open"
-                                        x-transition:enter="transition ease-out duration-150"
-                                        x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
-                                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                                        x-transition:leave="transition ease-in duration-100"
-                                        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                                        x-transition:leave-end="opacity-0 -translate-y-1 scale-95"
-                                        x-cloak
+                                        x-show="open" 
+                                        x-transition:enter="transition ease-out duration-150" 
+                                        x-transition:enter-start="opacity-0 -translate-y-1 scale-95" 
+                                        x-transition:enter-end="opacity-100 translate-y-0 scale-100" 
+                                        x-transition:leave="transition ease-in duration-100" 
+                                        x-transition:leave-start="opacity-100 translate-y-0 scale-100" 
+                                        x-transition:leave-end="opacity-0 -translate-y-1 scale-95" 
+                                        x-cloak 
                                         class="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-50 p-3.5 bg-slate-900/95 backdrop-blur-md text-white rounded-2xl shadow-2xl border border-slate-700/90 w-64 pointer-events-none flex flex-col gap-2.5"
                                     >
                                         <!-- Arrow Pointer -->
@@ -373,7 +371,7 @@
                                         <!-- Popover Header -->
                                         <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
                                             <div class="flex items-center gap-1.5">
-                                                <i data-lucide="thermometer" class="w-3.5 h-3.5 text-teal-400"></i>
+                                                <x-lucide-thermometer class="w-3.5 h-3.5 text-teal-400" />
                                                 <span class="text-xs font-bold text-white tracking-wide">Temperature Scale</span>
                                             </div>
                                             <span class="text-[9px] font-mono text-slate-400 uppercase font-semibold">10°F Brackets</span>
@@ -420,7 +418,7 @@
                             >
                                 @if($type === 'expedition_desc')
                                     <div class="flex items-center gap-2 font-bold text-slate-900">
-                                        <i data-lucide="ship" class="w-4 h-4 text-teal-600 shrink-0"></i>
+                                        <x-lucide-ship class="w-4 h-4 text-teal-600 shrink-0" />
                                         <a href="{{ url('/expedition/' . $record->id) }}" class="hover:text-teal-600 hover:underline">
                                             {{ $val ?? '—' }}
                                         </a>
@@ -428,9 +426,9 @@
                                 @elseif($type === 'lake_name')
                                     <div class="flex items-center gap-2 font-bold text-slate-900">
                                         @if(!empty($record->latitude) && !empty($record->longitude) && (float)$record->latitude != 0.0 && (float)$record->longitude != 0.0)
-                                            <i data-lucide="map-pin" class="w-4 h-4 text-emerald-600 shrink-0" title="GPS Coordinates: {{ $record->latitude }}, {{ $record->longitude }}"></i>
+                                            <x-lucide-map-pin class="w-4 h-4 text-emerald-600 shrink-0" title="GPS Coordinates: {{ $record->latitude }}, {{ $record->longitude }}" />
                                         @else
-                                            <i data-lucide="map-pin-off" class="w-4 h-4 text-slate-400 shrink-0" title="No GPS Coordinates"></i>
+                                            <x-lucide-map-pin-off class="w-4 h-4 text-slate-400 shrink-0" title="No GPS Coordinates" />
                                         @endif
                                         <a href="{{ url('/lake/' . $record->id) }}" class="hover:text-teal-600 hover:underline">
                                             {{ $val ?? '—' }}
@@ -478,7 +476,7 @@
                                 @elseif($type === 'user_role')
                                     @if($record->isAdmin())
                                         <span class="inline-flex items-center gap-1 text-[11px] font-bold text-teal-800 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200">
-                                            <i data-lucide="shield" class="w-3.5 h-3.5 text-teal-600"></i> Administrator
+                                            <x-lucide-shield class="w-3.5 h-3.5 text-teal-600" /> Administrator
                                         </span>
                                     @else
                                         <span class="text-[11px] font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
@@ -592,36 +590,36 @@
                                 @elseif($type === 'release_status' || $colKey === 'released')
                                     @if($val)
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs">
-                                            <i data-lucide="rotate-ccw" class="w-3 h-3 text-amber-600"></i>
+                                            <x-lucide-rotate-ccw class="w-3 h-3 text-amber-600" />
                                             <span>Released</span>
                                         </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs">
-                                            <i data-lucide="shopping-bag" class="w-3 h-3 text-emerald-600"></i>
+                                            <x-lucide-shopping-bag class="w-3 h-3 text-emerald-600" />
                                             <span>Kept</span>
                                         </span>
                                     @endif
                                 @elseif($type === 'boolean')
                                     @if($val)
                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                            <i data-lucide="check" class="w-3 h-3 text-emerald-600"></i>
+                                            <x-lucide-check class="w-3 h-3 text-emerald-600" />
                                             <span>Yes</span>
                                         </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
-                                            <i data-lucide="x" class="w-3 h-3 text-slate-400"></i>
+                                            <x-lucide-x class="w-3 h-3 text-slate-400" />
                                             <span>No</span>
                                         </span>
                                     @endif
                                 @elseif($type === 'badge')
                                     @if($val === 1 || $val === '1' || $val === true)
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs">
-                                            <i data-lucide="rotate-ccw" class="w-3 h-3 text-amber-600"></i>
+                                            <x-lucide-rotate-ccw class="w-3 h-3 text-amber-600" />
                                             <span>Released</span>
                                         </span>
                                     @elseif($val === 0 || $val === '0' || $val === false)
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs">
-                                            <i data-lucide="shopping-bag" class="w-3 h-3 text-emerald-600"></i>
+                                            <x-lucide-shopping-bag class="w-3 h-3 text-emerald-600" />
                                             <span>Kept</span>
                                         </span>
                                     @else
@@ -702,10 +700,10 @@
                                 @elseif($tbl === 'fish_breeds')
                                     <div class="flex items-center justify-end gap-1.5">
                                         <a href="{{ url('/fish/' . $record->id) }}" class="p-1.5 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="View Dossier">
-                                            <i data-lucide="eye" class="w-4 h-4"></i>
+                                            <x-lucide-eye class="w-4 h-4" />
                                         </a>
                                         <a href="{{ url('/fish/breed/' . $record->id . '/edit') }}" class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors" title="Edit Species">
-                                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                            <x-lucide-edit-3 class="w-4 h-4" />
                                         </a>
                                     </div>
                                 @elseif($tbl === 'users')
@@ -728,7 +726,7 @@
                 @empty
                     <tr>
                         <td colspan="{{ count($columns) + 1 }}" class="py-8 px-4 text-center">
-                            <x-emptyState icon="database-off" title="No Records Found" description="No entries match your current search and filter criteria." />
+                            <x-emptyState icon="database" title="No Records Found" description="No entries match your current search and filter criteria." />
                         </td>
                     </tr>
                 @endforelse
