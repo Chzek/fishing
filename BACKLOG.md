@@ -55,6 +55,29 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 - **Impact**: Low - Regulatory Usability
 - **Description**: Provide a simple manual review UI for anglers to inspect and verify specific lake exceptions and sanctuary rules directly against official MNR regulation guides when reviewing individual waterbody pages.
 
+### 6.5 Fish Breed Avatars & Species Vector Artwork Asset Library (`seasoned-angler-advisor` & `ui-ux-auditor`)
+- **Status**: Backlog (P1 Recommended)
+- **Impact**: Medium-High (Visual Density, Directory Recognition & Dossier Branding)
+- **Description**: Produce, curate, and optimize high-resolution species vector/PNG avatar assets in `public/images/fish/avatars/` for all freshwater fish breeds (Walleye, Northern Pike, Smallmouth/Largemouth Bass, Lake Trout, Brook Trout, Muskellunge, Yellow Perch, Crappie, etc.):
+  - Ensure standardized circular bounding, transparent background, and taxonomic family accent ring contrast in [`fishAvatar.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/fishAvatar.blade.php).
+  - Verify seamless rendering across Catch Logbook, Species Directory (`/fish`), Brag Board MVP cards, and Quick Catch logger dropdowns.
+
+---
+
+## 📦 Laravel & Livewire Ecosystem Package Roadmap
+
+Evaluated packages recommended for integration to boost developer velocity, runtime efficiency, and domain feature capabilities:
+
+| Package | Category | Primary Benefit | Recommended Priority |
+| :--- | :--- | :--- | :--- |
+| [`blade-ui-kit/blade-lucide-icons`](https://github.com/blade-ui-kit/blade-lucide-icons) | Blade / UI | Server-rendered Lucide icons (`<x-lucide-fish />`) eliminating JS DOM injection delays & SVG duplication. | **P1 (Immediate)** |
+| [`spatie/laravel-backup`](https://github.com/spatie/laravel-backup) | DB Safety / DevOps | Automated, scheduled timestamped database and media directory backups to `database/backups/` & NAS. | **P1 (Immediate)** |
+| [`larastan/larastan`](https://github.com/larastan/larastan) *(dev)* | Static Analysis | Strict level typing, Eloquent relationship validation, and null safety checks across all 13 models & services. | **P1 (Immediate)** |
+| [`matanyadaev/laravel-eloquent-spatial`](https://github.com/matanyadaev/laravel-eloquent-spatial) | GIS / Mapping | Native MySQL 8 spatial geometry (`Point`, `Polygon`) with distance scopes (`whereDistance`) for Leaflet waypoint radius queries. | **P2 (Map Feature)** |
+| [`spatie/laravel-simple-excel`](https://github.com/spatie/laravel-simple-excel) | Data Export | Zero-overhead streaming CSV/XLSX export for annual Catch Logbooks and Expedition summary sheets. | **P2 (Feature-driven)** |
+| [`livewire/volt`](https://github.com/livewire/volt) | Livewire DX | Single-file reactive components for lightweight boat widgets (Barometer Telemetry, species badges). | **P3 (DX)** |
+| [`laravel/boost`](https://github.com/laravel/boost) *(dev)* | AI Tooling / MCP | Optional MCP server for IDEs (Cursor/Claude Code); requires Sail container wrapper configuration. | **P3 (Optional)** |
+
 ---
 
 ## 🧩 Reusable Livewire 3 Component Architecture Roadmap (`livewire-architect` & `laravel-architect`)
