@@ -224,10 +224,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const catchData = {
             client_id: window.offlineSyncManager ? window.offlineSyncManager.generateUUID() : null,
-            anglers_id: parseInt(form.anglers_id.value),
-            lakes_id: parseInt(form.lakes_id.value),
-            fish_breeds_id: parseInt(form.fish_breeds_id.value),
-            lures_id: form.lures_id.value ? parseInt(form.lures_id.value) : null,
+            anglers_id: form.anglers_id.value,
+            lakes_id: form.lakes_id.value,
+            fish_breeds_id: form.fish_breeds_id.value,
+            lures_id: form.lures_id.value ? form.lures_id.value : null,
             length: parseFloat(form.length.value),
             weight: form.weight.value ? parseFloat(form.weight.value) : null,
             latitude: latVal,
