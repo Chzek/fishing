@@ -505,6 +505,50 @@
                                     @else
                                         <span class="text-slate-400 text-xs italic">Unlinked</span>
                                     @endif
+                                @elseif($type === 'admin_user_actions')
+                                    @php
+                                        static $allAnglers = null;
+                                        if ($allAnglers === null) {
+                                            $allAnglers = \Fishinglog\Models\Angler::orderBy('lastName', 'asc')->get();
+                                        }
+                                    @endphp
+                                    <div class="flex items-center justify-end gap-2">
+                                        <!-- Link / Relate Angler Dropdown Form -->
+                                        <form action="{{ route('admin.users.link') }}" method="POST" class="flex items-center gap-1.5">
+                                            @csrf
+                                            <input type="hidden" name="user_id" value="{{ $record->id }}">
+                                            <select name="angler_id" class="h-8 px-2 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                                                <option value="">Unlink Angler...</option>
+                                                @foreach($allAnglers as $ang)
+                                                    <option value="{{ $ang->id }}" {{ $record->angler && $record->angler->id == $ang->id ? 'selected' : '' }}>
+                                                        {{ $ang->fullName }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <button type="submit" class="h-8 px-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors cursor-pointer" title="Assign Angler Profile">
+                                                Assign
+                                            </button>
+                                        </form>
+
+                                        <!-- Toggle Admin Privileges -->
+                                        @if(auth()->id() !== $record->id)
+                                            <form action="{{ route('admin.users.toggle-admin', $record) }}" method="POST" onsubmit="return confirm('Change admin privileges for {{ $record->name }}?')">
+                                                @csrf
+                                                <button type="submit" class="h-8 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200 transition-colors cursor-pointer">
+                                                    {{ $record->isAdmin() ? 'Demote' : 'Make Admin' }}
+                                                </button>
+                                            </form>
+
+                                            <!-- Delete User Account -->
+                                            <form action="{{ route('admin.users.delete', $record) }}" method="POST" onsubmit="return confirm('Are you sure you want to PERMANENTLY remove user account {{ $record->name }}?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="h-8 px-2.5 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 font-bold text-xs rounded-xl transition-colors cursor-pointer" title="Delete User">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 @elseif($type === 'lake_link')
                                     <a href="{{ $record->lake ? url('/lake/' . $record->lake->id) : '#' }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
                                         {{ $record->lake?->name ?? ($val ?? '—') }}

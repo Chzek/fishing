@@ -180,6 +180,7 @@
                 ['key' => 'email', 'label' => 'Email / Verification', 'type' => 'user_email', 'sortable' => true, 'searchable' => true],
                 ['key' => 'type', 'label' => 'Role Privileges', 'type' => 'user_role', 'sortable' => true],
                 ['key' => 'angler.lastName', 'label' => 'Associated Angler Profile', 'type' => 'angler_name', 'sortable' => true, 'sortKey' => 'angler'],
+                ['key' => 'actions', 'label' => 'Relate Angler / Actions', 'type' => 'admin_user_actions', 'align' => 'right'],
             ],
             'searchPlaceholder' => 'Quick filter users by name, email, or role...',
             'itemName' => 'users',
