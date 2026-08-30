@@ -83,5 +83,8 @@ class OfflineSyncApiTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Boat Quick Catch Log');
+        $response->assertDontSee('parseInt(form.anglers_id.value)');
+        $response->assertDontSee('parseInt(form.lakes_id.value)');
+        $response->assertDontSee('parseInt(form.fish_breeds_id.value)');
     }
 }
