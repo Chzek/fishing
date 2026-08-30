@@ -52,12 +52,8 @@
                 </div>
                 
                 <div class="space-y-1.5">
-                    <label for="lures_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lure / Bait</label>
-                    <select id="lures_id" name="lures_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
-                        @foreach($lures as $val => $label)
-                            <option value="{{ $val }}" {{ (old('lures_id', $record->lures_id) == $val) ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
+                    <label for="lures_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lure / Bait (Optional)</label>
+                    <livewire:ui.lure-selector name="lures_id" :selected-id="old('lures_id', $record->lures_id)" />
                 </div>
             </div>
 

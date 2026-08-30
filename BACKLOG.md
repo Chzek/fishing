@@ -8,17 +8,12 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### 🔥 Priority 1 (P1): High-Impact Usability & Reliability
 
-#### 1. Searchable Autocomplete Lure & Tackle Selector (`@livewire('ui.lure-selector')`)
-- **Agents**: `livewire-architect` & `ui-ux-auditor`
-- **Impact**: **High** (Boat Usability & Quick Catch UX)
-- **Description**: Build a reusable Livewire autocomplete selector with lure thumbnails, manufacturer badges, 2-tier category grouping (*Crankbaits $\rightarrow$ Rapala Shad Rap*), and instant search for Quick Catch (`/record/quick`) and Standard Logger (`/record/create`). Eliminates cumbersome native HTML select dropdowns on outdoor mobile/tablet screens.
-
-#### 2. Automated Database & Media Backup Package (`spatie/laravel-backup`)
+#### 1. Automated Database & Media Backup Package (`spatie/laravel-backup`)
 - **Agents**: `laravel-architect` & `nas-sync-architect`
 - **Impact**: **High** (Database Safety & Disaster Recovery)
 - **Description**: Integrate `spatie/laravel-backup` via Sail with scheduled, timestamped MySQL and `storage/app/public` media snapshots to `database/backups/` and the Synology NAS.
 
-#### 3. Playwright Interactive E2E Front-End Test Suite Expansion (`playwright-e2e-tester`)
+#### 2. Playwright Interactive E2E Front-End Test Suite Expansion (`playwright-e2e-tester`)
 - **Agents**: `playwright-e2e-tester` & `phpunit-test-architect`
 - **Impact**: **High** (Regression Prevention)
 - **Description**: Expand Playwright E2E browser tests to cover high-density interactive UI components:
@@ -30,24 +25,24 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### 🚀 Priority 2 (P2): Angling Experience & Reactive Workflows
 
-#### 4. Global Quick Catch Slide-Over Drawer Modal (`@livewire('modals.quick-catch-modal')`)
+#### 3. Global Quick Catch Slide-Over Drawer Modal (`@livewire('modals.quick-catch-modal')`)
 - **Agents**: `livewire-architect` & `ui-ux-auditor`
 - **Impact**: **High** (1-Tap Catch Logging Anywhere)
 - **Description**: Extract a slide-over modal component triggered from any page (Top Nav, Map Explorer `/map`, or Expedition Trip view) via `$dispatch('open-quick-catch')`, allowing anglers to log a catch without leaving their active map or trip dossier.
 
-#### 5. Interactive Tacklebox Category Trays & Color Variant Grid (`@livewire('tacklebox.lure-catalog')`)
+#### 4. Interactive Tacklebox Category Trays & Color Variant Grid (`@livewire('tacklebox.lure-catalog')`)
 - **Agents**: `livewire-architect` & `seasoned-angler-advisor`
 - **Impact**: **Medium-High** (Sub-second Tray Expansion)
 - **Description**: Reusable Livewire catalog components for 2-Tier Category Trays, expanding lure model accordions, and inline color variant management.
 
-#### 6. Species Dossier Recommended Tackle Badging & Quick Catch Shortcuts (`seasoned-angler-advisor` & `ui-ux-auditor`)
+#### 5. Species Dossier Recommended Tackle Badging & Quick Catch Shortcuts (`seasoned-angler-advisor` & `ui-ux-auditor`)
 - **Agents**: `seasoned-angler-advisor` & `ui-ux-auditor`
 - **Impact**: **Medium** (Usability & Angling Knowledge)
 - **Description**: Enrich species dossier pages (`/fish/{id}`) and boat Quick Catch logger:
   - Display top-producing tackle pairing badges (e.g., *"Top Lure for Walleye: Rapala Shad Rap"*).
   - Add target species quick-filter shortcuts on the boat Quick Catch logger form.
 
-#### 7. Waterbody Regulations & Exceptions Review Framework (`seasoned-angler-advisor`)
+#### 6. Waterbody Regulations & Exceptions Review Framework (`seasoned-angler-advisor`)
 - **Agents**: `seasoned-angler-advisor`
 - **Impact**: **Medium** (Regulatory Usability)
 - **Description**: Provide a structured UI for anglers to inspect and verify specific lake exceptions and sanctuary rules directly against official FMZ regulation guides when reviewing individual waterbody pages.
@@ -56,22 +51,22 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### ⚙️ Priority 3 (P3): Infrastructure, Sync & Optimization
 
-#### 8. NAS Sync Base64 Media Payload Chunking (`nas-sync-architect`)
+#### 7. NAS Sync Base64 Media Payload Chunking (`nas-sync-architect`)
 - **Agents**: `nas-sync-architect`
 - **Impact**: **Medium** (NAS Sync RAM Optimization)
 - **Description**: Enhance [`NasSyncService.php`](file:///home/gmroczek/git/fishing/app/Services/NasSyncService.php) photo payload synchronization to stream binary media files in multipart chunks instead of loading large base64 strings into PHP RAM during bulk catch syncs.
 
-#### 9. Static Analysis & Strict Typing Auditing (`larastan/larastan`)
+#### 8. Static Analysis & Strict Typing Auditing (`larastan/larastan`)
 - **Agents**: `laravel-architect` & `phpunit-test-architect`
 - **Impact**: **Medium** (Type Safety & Code Quality)
 - **Description**: Configure PHPStan / Larastan at Level 5+ to guarantee strict typing, Eloquent relationship validation, and null-safety across all 13 models, services, and Action classes.
 
-#### 10. Live Weather & Telemetry Barometer Widget (`@livewire('widgets.weather-telemetry')`)
+#### 9. Live Weather & Telemetry Barometer Widget (`@livewire('widgets.weather-telemetry')`)
 - **Agents**: `livewire-architect` & `seasoned-angler-advisor`
 - **Impact**: **Medium** (Real-Time Weather Signals)
 - **Description**: Reactive weather widget that auto-fetches or updates live barometric pressure trends, wind velocity/direction, and surface water temp when selecting lakes during catch logging.
 
-#### 11. Catch Logbook CSV / Excel Streaming Export (`spatie/laravel-simple-excel`)
+#### 10. Catch Logbook CSV / Excel Streaming Export (`spatie/laravel-simple-excel`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Low-Medium** (Data Portability)
 - **Description**: Zero-overhead streaming CSV/XLSX export for annual Catch Logbooks and Expedition summary sheets.
@@ -94,20 +89,24 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🏆 Completed Milestones (Merged into `master`)
 
-1. **Blade Lucide Icon Native Migration (`mallardduck/blade-lucide-icons`)**:
+1. **Searchable Autocomplete Lure & Tackle Selector (`@livewire('ui.lure-selector')`)**:
+   - Built a reactive Livewire 3 autocomplete component with real-time debounced query filtering, category pill headers, 2-tier grouped tackle lists, manufacturer badges, technical specs, and verified catch stats.
+   - Replaced static HTML select dropdowns in Standard Catch Logger (`/record/create`), Edit Catch (`/record/{id}/edit`), and boat Quick Catch (`/record/quick`).
+   - Covered with PHPUnit Feature tests (`tests/Feature/LureSelectorLivewireTest.php`) and Playwright E2E browser tests (`tests/e2e/lure-selector.spec.js`).
+2. **Blade Lucide Icon Native Migration (`mallardduck/blade-lucide-icons`)**:
    - Replaced all runtime client-side JavaScript icon injection (`<i data-lucide="...">` + `createIcons()`) across 72 Blade templates with server-rendered `<x-lucide-...>` and `<x-dynamic-component :component="'lucide-' . $icon" />` tags.
    - Stripped client-side JS bundle overhead, removed Livewire DOM morph and SPA navigation re-scan event listeners, eliminating icon flickering and layout shifts.
-2. **Complete 18-Species Fish Avatar Library & Prompt Architecture**:
+3. **Complete 18-Species Fish Avatar Library & Prompt Architecture**:
    - Generated high-resolution vector artwork with cel-shading and unified slate-blue badge styling for all 18 freshwater species in [`public/images/fish/avatars/`](file:///home/gmroczek/git/fishing/public/images/fish/avatars/).
    - Documented master style guide and prompts in [`public/images/fish/avatars/PROMPTS.md`](file:///home/gmroczek/git/fishing/public/images/fish/avatars/PROMPTS.md).
    - Removed legacy `.svg` files and integrated `<x-fishAvatar>` across Species Index, Catches Directory, User & Angler Profile Personal Bests, and Admin Portal.
-3. **Species Dossier Direct Catch Directory Banner**:
+4. **Species Dossier Direct Catch Directory Banner**:
    - Replaced redundant recent catch cards on [`/fish/{id}`](file:///home/gmroczek/git/fishing/resources/views/fish/show.blade.php) with an interactive **Catches Logbook Directory** banner link pre-filtered to the species.
-4. **Admin User-Angler Linking & Account Management**:
+5. **Admin User-Angler Linking & Account Management**:
    - Added `admin_user_actions` column to `GenericDataTable` allowing administrators to pair registered users to Angler profiles, toggle admin roles, and manage accounts.
-5. **App-Wide Generic Livewire 3 Data Table (`@livewire('components.generic-data-table')`)**:
+6. **App-Wide Generic Livewire 3 Data Table (`@livewire('components.generic-data-table')`)**:
    - Created unified data table with dynamic columns, instant search, multi-column Shift-click sorting, relation counts, soft-delete views, and custom query scopes across Lakes, Anglers, Catches, Expeditions, Trash, and Admin Users.
-6. **Controller Refactoring into Action Classes & Domain Services**:
+7. **Controller Refactoring into Action Classes & Domain Services**:
    - Extracted business logic from fat controllers into single-responsibility Action classes and Domain Services ([`CreateLureVariantAction`](file:///home/gmroczek/git/fishing/app/Actions/Lures/CreateLureVariantAction.php), [`ExpeditionAnalyticsService`](file:///home/gmroczek/git/fishing/app/Services/ExpeditionAnalyticsService.php)).
-7. **Expedition & Species Dossier Query Optimization**:
+8. **Expedition & Species Dossier Query Optimization**:
    - Eliminated N+1 queries across trip dashboards, lake distribution tables, and monthly telemetry charts.
