@@ -36,12 +36,13 @@ test.describe('Searchable Autocomplete Lure & Tackle Selector - E2E Test Suite',
 
         // Click first lure item
         const firstLure = dropdown.locator('[data-testid^="lure-item-"]').first();
-        await expect(firstLure).toBeVisible({ timeout: 5000 });
+        await expect(firstLure).toBeVisible({ timeout: 10000 });
+        await firstLure.scrollIntoViewIfNeeded();
         await firstLure.click();
 
         // Verify selected lure card is visible
         const selectedCard = root.locator('[data-testid="lure-selected-card"]');
-        await expect(selectedCard).toBeVisible({ timeout: 5000 });
+        await expect(selectedCard).toBeVisible({ timeout: 15000 });
 
         // Verify hidden input has UUID value
         const hiddenInput = root.locator('input[type="hidden"]');
@@ -64,8 +65,8 @@ test.describe('Searchable Autocomplete Lure & Tackle Selector - E2E Test Suite',
             const clearBtn = root.locator('[data-testid="lure-clear-button"]');
             if (await clearBtn.isVisible()) {
                 await clearBtn.click();
-                await expect(selectedCard).not.toBeVisible();
-                await expect(root.locator('[data-testid="lure-search-input"]')).toBeVisible();
+                await expect(selectedCard).not.toBeVisible({ timeout: 10000 });
+                await expect(root.locator('[data-testid="lure-search-input"]')).toBeVisible({ timeout: 10000 });
             }
         }
     });

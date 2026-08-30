@@ -22,3 +22,4 @@ public/json/ontario-fmz-boundaries.geojson
 public/json/ontario-fmz-boundaries.json
 test-results/
 playwright-report/
+playwright/.auth/

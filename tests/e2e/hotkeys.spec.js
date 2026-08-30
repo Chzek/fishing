@@ -2,9 +2,12 @@ import { test, expect } from '@playwright/test';
 import { ensureAuthenticated } from './helpers.js';
 
 test.describe('Global Navigation & Shortcuts', () => {
-    test('search route redirects unauthenticated users to login', async ({ page }) => {
+    test('search route redirects unauthenticated users to login', async ({ browser }) => {
+        const guestContext = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+        const page = await guestContext.newPage();
         await page.goto('/search');
         await expect(page).toHaveURL(/.*login.*/);
+        await guestContext.close();
     });
 
     test('loads application layout and header elements', async ({ page }) => {

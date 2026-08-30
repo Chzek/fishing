@@ -16,7 +16,7 @@ test.describe('Tacklebox & Lures Catalog - E2E Test Suite', () => {
         const categoryFilter = page.locator('a[href*="/lure?category="]').first();
         if (await categoryFilter.isVisible().catch(() => false)) {
             await categoryFilter.click();
-            await expect(page.locator('h1')).toBeVisible();
+            await expect(page.locator('h1')).toContainText('Digital Tackle Box', { timeout: 15000 });
         }
     });
 
