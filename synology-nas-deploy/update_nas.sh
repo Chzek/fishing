@@ -75,6 +75,9 @@ fi
 
 # 3. Execute Laravel optimization & migration commands
 if command -v docker >/dev/null 2>&1 && $DOCKER_CMD ps --format '{{.Names}}' | grep -q "^fishinglog_app$"; then
+    echo "--> Installing / updating Composer dependencies inside container..."
+    $DOCKER_CMD exec fishinglog_app composer install --no-dev --optimize-autoloader --no-interaction
+
     echo "--> Running optimization and migrations inside fishinglog_app container..."
     $DOCKER_CMD exec fishinglog_app php artisan optimize:clear
     $DOCKER_CMD exec fishinglog_app php artisan migrate --force
@@ -84,6 +87,10 @@ if command -v docker >/dev/null 2>&1 && $DOCKER_CMD ps --format '{{.Names}}' | g
     $DOCKER_CMD exec fishinglog_app php artisan view:clear
     $DOCKER_CMD exec fishinglog_app chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 elif [ -f "artisan" ]; then
+    if command -v composer >/dev/null 2>&1; then
+        echo "--> Installing / updating Composer dependencies locally..."
+        composer install --no-dev --optimize-autoloader --no-interaction
+    fi
     echo "--> Running optimization commands in local environment..."
     php artisan optimize:clear
     php artisan migrate --force
