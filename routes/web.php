@@ -138,9 +138,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::prefix('family')->group(function () {
             Route::get('/create', [FishFamilyController::class, 'create']);
-            Route::get('/{fishFamily}/edit', [FishFamilyController::class, 'edit']);
             Route::post('/', [FishFamilyController::class, 'store']);
-            Route::put('/', [FishFamilyController::class, 'update']);
         });
     });
 
@@ -197,18 +195,13 @@ Route::group(['middleware' => 'auth'], function () {
     // Crew routes
     Route::prefix('crew')->group(function () {
         Route::get('/create', [CrewController::class, 'create']);
-        Route::get('/{crew}/edit', [CrewController::class, 'edit']);
         Route::post('/', [CrewController::class, 'store']);
-        Route::put('/', [CrewController::class, 'update']);
     });
 
     // Post routes
     Route::prefix('post')->group(function () {
         Route::get('/create', [PostController::class, 'create']);
-        Route::get('/{post}', [PostController::class, 'show']);
-        Route::get('/{post}/edit', [PostController::class, 'edit']);
         Route::post('/', [PostController::class, 'store']);
-        Route::put('/', [PostController::class, 'update']);
     });
 
     // Photo management routes

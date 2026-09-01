@@ -2,10 +2,12 @@
 
 namespace Fishinglog\Http\Controllers\Api\v1;
 
+use Fishinglog\Actions\Records\CreateCatchRecordAction;
 use Fishinglog\Http\Controllers\Controller;
 use Fishinglog\Http\Requests\StoreRecordRequest;
 use Fishinglog\Http\Resources\RecordResource;
 use Fishinglog\Models\Record;
+use Fishinglog\Services\WeatherTelemetryService;
 use Illuminate\Http\Request;
 
 class RecordApiController extends Controller
@@ -26,7 +28,7 @@ class RecordApiController extends Controller
         return new RecordResource($record);
     }
 
-    public function store(StoreRecordRequest $request, \Fishinglog\Services\WeatherTelemetryService $weatherService)
+    public function store(StoreRecordRequest $request, WeatherTelemetryService $weatherService, CreateCatchRecordAction $createRecordAction)
     {
         // 1. Check idempotency by Client UUID
         if ($request->filled('client_id')) {
@@ -50,8 +52,8 @@ class RecordApiController extends Controller
                 ->additional(['status' => 'duplicate_ignored']);
         }
 
-        // 3. Create new record
-        $record = Record::create($request->validated());
+        // 3. Create new record via Action
+        $record = $createRecordAction->execute($request->validated());
 
         // 4. Attempt weather telemetry lookup (gracefully succeeds offline)
         if ($record->lake) {

@@ -2,6 +2,7 @@
 
 namespace Fishinglog\Http\Controllers;
 
+use Fishinglog\Actions\Media\ProcessPhotoUploadAction;
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\Expedition;
 use Fishinglog\Models\Photo;
@@ -15,7 +16,7 @@ class PhotoController extends Controller
     /**
      * Store batch uploaded photos for a polymorphic entity (Expedition or Record).
      */
-    public function store(Request $request)
+    public function store(Request $request, ProcessPhotoUploadAction $photoUploadAction)
     {
         $request->validate([
             'photoable_type' => 'required|string|in:record,expedition,angler',
@@ -38,21 +39,15 @@ class PhotoController extends Controller
         $hasExistingPhotos = $entity->photos()->count() > 0;
 
         foreach ($request->file('photos') as $index => $file) {
-            $extension = $file->getClientOriginalExtension() ?: 'jpg';
-            $filename = Str::uuid() . '.' . $extension;
             $folder = 'photos/' . Str::plural($request->photoable_type);
-            $path = $file->storeAs($folder, $filename, 'public');
-
-            $photo = Photo::create([
-                'photoable_type' => $modelClass,
-                'photoable_id' => $entity->id,
-                'path' => $path,
-                'original_name' => $file->getClientOriginalName(),
-                'caption' => $request->caption,
-                'is_cover' => (!$hasExistingPhotos && $index === 0),
-                'user_id' => auth()->id(),
-                'sync_status' => 'pending_upstream',
-            ]);
+            $photo = $photoUploadAction->execute(
+                target: $entity,
+                file: $file,
+                folder: $folder,
+                isCover: (!$hasExistingPhotos && $index === 0),
+                caption: $request->caption,
+                userId: auth()->id()
+            );
 
             $savedPhotos[] = $photo;
         }

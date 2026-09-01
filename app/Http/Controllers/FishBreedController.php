@@ -11,16 +11,6 @@ use Illuminate\Http\Request;
 class FishBreedController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -61,17 +51,6 @@ class FishBreedController extends Controller
         $breed->save();
 
         return redirect('/fish');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \Fishinglog\Models\FishBreed  $fishBreed
-     * @return \Illuminate\Http\Response
-     */
-    public function show(FishBreed $fishBreed)
-    {
-        //
     }
 
     /**
@@ -188,19 +167,5 @@ class FishBreedController extends Controller
 
         // Fallback standard storage
         $file->storeAs(dirname($relativeStoragePath), basename($relativeStoragePath), 'public');
-    }
-
-
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \Fishinglog\Models\FishBreed  $fishBreed
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(FishBreed $fishBreed)
-    {
-        //
     }
 }

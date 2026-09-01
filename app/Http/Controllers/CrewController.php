@@ -11,16 +11,6 @@ use Illuminate\Http\Request;
 class CrewController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
      * Show the form for creating a new resource.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -53,50 +43,5 @@ class CrewController extends Controller
         $crew->save();
 
         return redirect('/expedition/' . $request->expeditions_id);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \Fishinglog\Models\Crew  $crew
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Crew $crew)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \Fishinglog\Models\Crew  $crew
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Crew $crew)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Fishinglog\Http\Requests\UpdateCrewRequest  $request
-     * @param  \Fishinglog\Models\Crew  $crew
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateCrewRequest $request, Crew $crew)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \Fishinglog\Models\Crew  $crew
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Crew $crew)
-    {
-        //
     }
 }

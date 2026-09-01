@@ -17,7 +17,8 @@ use Fishinglog\Pipes\Filters\FilterByName;
 use Fishinglog\Pipes\Filters\FilterByRecordsCount;
 use Fishinglog\Pipes\Filters\FilterBySearch;
 use Fishinglog\Pipes\Filters\SortBy;
-use Fishinglog\Notifications\RecordCreated;
+use Fishinglog\Actions\Records\CreateCatchRecordAction;
+use Fishinglog\Actions\Media\ProcessPhotoUploadAction;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Pipeline\Pipeline;
@@ -391,23 +392,9 @@ class RecordController extends Controller
      * @param  \Fishinglog\Http\Requests\StoreRecordRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreRecordRequest $request)
+    public function store(StoreRecordRequest $request, CreateCatchRecordAction $createRecordAction, ProcessPhotoUploadAction $photoUploadAction)
     {
-        $record = new Record;
-        $record->client_id = $request->client_id;
-        $record->anglers_id = $request->anglers_id;
-        $record->lakes_id = $request->lakes_id;
-        $record->fish_breeds_id = $request->fish_breeds_id;
-        $record->lures_id = $request->lures_id;
-        $record->weight = $request->weight;
-        $record->length = $request->length;
-        $record->temperature = $request->temperature;
-        $record->latitude = $request->latitude;
-        $record->longitude = $request->longitude;
-        $record->released = $request->released;
-        $record->caught = $request->caught;
-
-        $record->save();
+        $record = $createRecordAction->execute($request->validated());
 
         // Check if this catch achieves a Personal Best or Trophy milestone
         try {
@@ -428,25 +415,15 @@ class RecordController extends Controller
             \Illuminate\Support\Facades\Log::warning('Failed to evaluate trophy milestone: ' . $e->getMessage());
         }
 
-
-
-
         // Handle optional uploaded photos
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $index => $file) {
-                $extension = $file->getClientOriginalExtension() ?: 'jpg';
-                $filename = Str::uuid() . '.' . $extension;
-                $path = $file->storeAs('photos/records', $filename, 'public');
-
-                Photo::create([
-                    'photoable_type' => Record::class,
-                    'photoable_id' => $record->id,
-                    'path' => $path,
-                    'original_name' => $file->getClientOriginalName(),
-                    'is_cover' => ($index === 0),
-                    'user_id' => auth()->id(),
-                    'sync_status' => 'pending_upstream',
-                ]);
+                $photoUploadAction->execute(
+                    target: $record,
+                    file: $file,
+                    folder: 'photos/records',
+                    isCover: ($index === 0)
+                );
             }
         }
 
