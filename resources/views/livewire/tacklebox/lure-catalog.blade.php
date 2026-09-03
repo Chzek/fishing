@@ -148,7 +148,7 @@
         @endif
 
         <!-- Category Tray Lure Profile Switcher (Concept 2 Silhouette Tray Navigation) -->
-        <div class="space-y-2 pt-3 border-t border-slate-800/80">
+        <div class="space-y-2.5 pt-3 border-t border-slate-800/80">
             <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400">
                 <span class="flex items-center gap-1.5">
                     <x-lucide-layers class="w-3.5 h-3.5 text-teal-400" />
@@ -157,48 +157,48 @@
                 <span class="font-mono text-slate-400">Showing {{ $matchedCount }} Tackle Items</span>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-2 pt-1">
-                <!-- All Categories Tab -->
+            <!-- Tactical Vector Lure Category Cards (Concept 2 Presentation) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-11 gap-2 pt-1">
+                <!-- All Trays Card -->
+                @php $isAllActive = $selectedCategory === 'all'; @endphp
                 <button 
                     type="button" 
                     wire:click="setCategory('all')" 
-                    class="p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-2.5 {{ $selectedCategory === 'all' ? 'bg-teal-500/20 border-teal-500/50 text-white shadow-sm ring-1 ring-teal-500/30' : 'bg-slate-950/60 border-slate-800/80 text-slate-300 hover:bg-slate-800 hover:border-slate-700' }}"
+                    class="group p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-1.5 relative overflow-hidden {{ $isAllActive ? 'bg-gradient-to-b from-teal-500/25 via-slate-900 to-slate-950 border-teal-400 shadow-lg shadow-teal-500/20 ring-1 ring-teal-400/50' : 'bg-slate-950/70 border-slate-800/90 hover:border-slate-700 hover:bg-slate-900/90 text-slate-300' }}"
                 >
-                    <div class="w-7 h-7 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center shrink-0">
-                        <x-lucide-layers class="w-4 h-4" />
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 {{ $isAllActive ? 'bg-teal-500/30 text-teal-300 ring-1 ring-teal-400/40' : 'bg-slate-900 text-slate-400 group-hover:text-teal-400 group-hover:bg-slate-800' }}">
+                        <x-lureCategoryIcon category="all" :active="$isAllActive" class="w-6 h-6" />
                     </div>
-                    <div class="min-w-0">
-                        <div class="font-bold text-xs truncate">All Trays</div>
-                        <div class="text-[10px] text-slate-400 font-mono">{{ $totalTackleCount }} items</div>
+                    <div class="w-full">
+                        <div class="font-extrabold text-xs tracking-tight truncate {{ $isAllActive ? 'text-white' : 'text-slate-200' }}">All Trays</div>
+                        <div class="text-[10px] font-mono mt-0.5 {{ $isAllActive ? 'text-teal-300 font-bold' : 'text-slate-400' }}">{{ $totalTackleCount }} items</div>
                     </div>
+                    @if($isAllActive)
+                        <div class="absolute bottom-0 inset-x-3 h-0.5 bg-teal-400 rounded-full shadow-sm shadow-teal-400"></div>
+                    @endif
                 </button>
 
+                <!-- Category Silhouette Pills -->
                 @foreach($this->standardCategories as $cat)
                     @php
                         $catCount = $categoryCounts->get($cat, 0);
-                        $catIcon = match(strtolower((string) $cat)) {
-                            'crankbait', 'jerkbait' => 'target',
-                            'soft plastic', 'swimbait' => 'disc',
-                            'inline spinner', 'spinnerbait' => 'sun',
-                            'jig' => 'anchor',
-                            'spoon' => 'sparkles',
-                            'topwater' => 'cloud-sun',
-                            default => 'box',
-                        };
                         $isActive = $selectedCategory === $cat;
                     @endphp
                     <button 
                         type="button" 
                         wire:click="setCategory('{{ $cat }}')" 
-                        class="p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-2.5 {{ $isActive ? 'bg-teal-500/20 border-teal-500/50 text-white shadow-sm ring-1 ring-teal-500/30' : 'bg-slate-950/60 border-slate-800/80 text-slate-300 hover:bg-slate-800 hover:border-slate-700' }}"
+                        class="group p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-1.5 relative overflow-hidden {{ $isActive ? 'bg-gradient-to-b from-teal-500/25 via-slate-900 to-slate-950 border-teal-400 shadow-lg shadow-teal-500/20 ring-1 ring-teal-400/50' : 'bg-slate-950/70 border-slate-800/90 hover:border-slate-700 hover:bg-slate-900/90 text-slate-300' }}"
                     >
-                        <div class="w-7 h-7 rounded-lg {{ $isActive ? 'bg-teal-400 text-slate-950 font-bold' : 'bg-slate-800 text-teal-400' }} flex items-center justify-center shrink-0">
-                            <x-dynamic-component :component="'lucide-' . $catIcon" class="w-3.5 h-3.5" />
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 {{ $isActive ? 'bg-teal-500/30 text-teal-300 ring-1 ring-teal-400/40' : 'bg-slate-900 text-slate-400 group-hover:text-teal-400 group-hover:bg-slate-800' }}">
+                            <x-lureCategoryIcon :category="$cat" :active="$isActive" class="w-6 h-6" />
                         </div>
-                        <div class="min-w-0">
-                            <div class="font-bold text-xs truncate">{{ $cat }}</div>
-                            <div class="text-[10px] text-slate-400 font-mono">{{ $catCount }} item{{ $catCount === 1 ? '' : 's' }}</div>
+                        <div class="w-full">
+                            <div class="font-extrabold text-xs tracking-tight truncate {{ $isActive ? 'text-white' : 'text-slate-200' }}">{{ $cat }}</div>
+                            <div class="text-[10px] font-mono mt-0.5 {{ $isActive ? 'text-teal-300 font-bold' : 'text-slate-400' }}">{{ $catCount }} item{{ $catCount === 1 ? '' : 's' }}</div>
                         </div>
+                        @if($isActive)
+                            <div class="absolute bottom-0 inset-x-3 h-0.5 bg-teal-400 rounded-full shadow-sm shadow-teal-400"></div>
+                        @endif
                     </button>
                 @endforeach
             </div>
@@ -241,16 +241,6 @@
                     $isCategoryOpen = $openCategories[$categoryName] ?? true;
                     $categoryTotalVariants = $modelsGroup->flatten(1)->count();
                     $categoryTotalCatches = $modelsGroup->flatten(1)->sum('records_count');
-
-                    $catIcon = match(strtolower((string) $categoryName)) {
-                        'crankbait', 'jerkbait' => 'target',
-                        'soft plastic', 'swimbait' => 'disc',
-                        'inline spinner', 'spinnerbait' => 'sun',
-                        'jig' => 'anchor',
-                        'spoon' => 'sparkles',
-                        'topwater' => 'cloud-sun',
-                        default => 'box',
-                    };
                 @endphp
 
                 <!-- TIER 1: CATEGORY TRAY CONTAINER -->
@@ -263,7 +253,7 @@
                     >
                         <div class="flex items-center gap-3.5">
                             <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-300 flex items-center justify-center shrink-0">
-                                <x-dynamic-component :component="'lucide-' . $catIcon" class="w-5 h-5" />
+                                <x-lureCategoryIcon :category="$categoryName" :active="true" class="w-6 h-6" />
                             </div>
                             <div>
                                 <h2 class="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2.5">
