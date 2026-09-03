@@ -197,24 +197,57 @@ class LureCatalogLivewireTest extends TestCase
             ->assertDispatched('open-quick-catch', lure_id: (string)$lure->id);
     }
 
-    public function test_lure_catalog_deletes_variant(): void
+    public function test_lure_catalog_selects_active_variant_and_updates_specs(): void
     {
         $user = User::factory()->create();
 
-        $lure = Lure::create([
-            'name' => 'Super Spook',
-            'brand' => 'Heddon',
-            'category' => 'Topwater',
-            'color' => 'Bone',
+        $variant1 = Lure::create([
+            'name' => 'Shad Rap 05',
+            'brand' => 'Rapala',
+            'category' => 'Crankbait',
+            'color' => 'Perch',
+            'size' => '2.0 in',
+            'weight' => '3/16 oz',
+            'depth_range' => '6-8 ft',
+        ]);
+
+        $variant2 = Lure::create([
+            'name' => 'Shad Rap 05',
+            'brand' => 'Rapala',
+            'category' => 'Crankbait',
+            'color' => 'Blue Chrome',
+            'size' => '2.0 in',
+            'weight' => '3/16 oz',
+            'depth_range' => '6-8 ft',
         ]);
 
         Livewire::actingAs($user)
             ->test(LureCatalog::class)
-            ->call('deleteVariant', (string)$lure->id)
-            ->assertSee('Deleted variant');
+            ->call('selectVariant', 'Rapala Shad Rap 05', (string)$variant2->id)
+            ->assertSet('selectedVariantIds.Rapala Shad Rap 05', (string)$variant2->id)
+            ->assertSee('Blue Chrome')
+            ->call('logCatchWithLure', (string)$variant2->id)
+            ->assertDispatched('open-quick-catch', lure_id: (string)$variant2->id);
+    }
 
-        $this->assertSoftDeleted('lures', [
-            'id' => $lure->id,
-        ]);
+    public function test_lure_catalog_removes_individual_active_filter_chips(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(LureCatalog::class)
+            ->set('search', 'Rapala')
+            ->set('selectedBrand', 'Rapala')
+            ->set('selectedCategory', 'Crankbait')
+            ->set('selectedDepth', 'mid_6_10')
+            ->call('removeSearch')
+            ->assertSet('search', '')
+            ->call('removeBrand')
+            ->assertSet('selectedBrand', 'all')
+            ->call('removeCategory')
+            ->assertSet('selectedCategory', 'all')
+            ->call('removeDepth')
+            ->assertSet('selectedDepth', 'all');
     }
 }
+

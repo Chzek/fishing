@@ -29,6 +29,13 @@ class LureCatalog extends Component
      */
     public array $openModels = [];
 
+    /**
+     * Active selected variant ID per model key.
+     *
+     * @var array<string, string>
+     */
+    public array $selectedVariantIds = [];
+
     public bool $allExpanded = true;
 
     // Inline Add Colorway Variant Modal State
@@ -108,12 +115,37 @@ class LureCatalog extends Component
         $this->selectedBrand = $brand;
     }
 
+    public function removeSearch(): void
+    {
+        $this->search = '';
+    }
+
+    public function removeCategory(): void
+    {
+        $this->selectedCategory = 'all';
+    }
+
+    public function removeDepth(): void
+    {
+        $this->selectedDepth = 'all';
+    }
+
+    public function removeBrand(): void
+    {
+        $this->selectedBrand = 'all';
+    }
+
     public function resetFilters(): void
     {
         $this->search = '';
         $this->selectedCategory = 'all';
         $this->selectedDepth = 'all';
         $this->selectedBrand = 'all';
+    }
+
+    public function selectVariant(string $modelKey, string $variantId): void
+    {
+        $this->selectedVariantIds[$modelKey] = $variantId;
     }
 
     public function logCatchWithLure(string $lureId): void
