@@ -16,3 +16,19 @@ use Illuminate\Foundation\Inspiring;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->describe('Display an inspiring quote');
+
+/*
+|--------------------------------------------------------------------------
+| Console Schedule
+|--------------------------------------------------------------------------
+|
+| Automated backups and maintenance are scheduled to execute in Production
+| (Synology NAS). Local development remains unburdened by background crons.
+|
+*/
+if (app()->isProduction()) {
+    \Illuminate\Support\Facades\Schedule::command('backup:clean')->dailyAt('01:00');
+    \Illuminate\Support\Facades\Schedule::command('backup:run --only-db')->dailyAt('02:00');
+    \Illuminate\Support\Facades\Schedule::command('backup:run')->weeklyOn(0, '03:00');
+}
+

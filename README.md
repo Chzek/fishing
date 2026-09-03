@@ -134,16 +134,42 @@ Run headed mode for visual browser debugging:
 > [!CAUTION]
 > This application runs against a live/shared database environment. **NEVER** execute destructive schema commands (`migrate:fresh`, `migrate:reset`, `migrate:refresh`, or `db:wipe`) without explicit confirmation.
 
-Before executing schema migrations or bulk data operations, always create a timestamped database backup:
+Automated disaster recovery and retention management is powered by **`spatie/laravel-backup`**.
 
-### 📦 Creating a Timestamped Database Backup
-```bash
-./vendor/bin/sail exec -T mysql bash -c 'mysqldump --no-tablespaces -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE' > "database/backups/backup_$(date +%Y%m%d_%H%M%S).sql"
-```
+### 🛠️ Artisan Backup Commands (via Laravel Sail)
+
+| Action | Command |
+| :--- | :--- |
+| **Run Database Backup Only** | `./vendor/bin/sail artisan backup:run --only-db` |
+| **Run Full Backup (DB + Media)** | `./vendor/bin/sail artisan backup:run` |
+| **Rotate & Clean Expired Backups** | `./vendor/bin/sail artisan backup:clean` |
+| **List Backups & Storage Status** | `./vendor/bin/sail artisan backup:list` |
+| **Check Backup Health & Age** | `./vendor/bin/sail artisan backup:monitor` |
+
+### 🔄 Multi-Tier Retention Strategy
+Configured in [`config/backup.php`](file:///home/gmroczek/git/fishing/config/backup.php):
+* **7 Days**: Keeps all created snapshots.
+* **30 Days**: Keeps 1 daily snapshot per day.
+* **8 Weeks**: Keeps 1 weekly snapshot per week.
+* **12 Months**: Keeps 1 monthly snapshot per month.
+* **2 Years**: Keeps 1 yearly snapshot per year.
+* **Storage Quota**: Automatically deletes oldest archives if total backup size exceeds **5,000 MB (5 GB)**.
+
+### ⏰ Production Scheduling & NAS Deployment
+* **Automated Crons (Production Only)**:
+  * `01:00 Daily`: `backup:clean` (rotates expired archives)
+  * `02:00 Daily`: `backup:run --only-db` (database snapshot)
+  * `03:00 Sundays`: `backup:run` (full DB + `storage/app/public` photos)
+* **Pre-Deployment Safety Hook**: `synology-nas-deploy/update_nas.sh` automatically creates an instant pre-migration database snapshot before executing `php artisan migrate --force`.
 
 ### 📥 Restoring a Database Backup
+To restore a database dump from an archive in `storage/app/backups/`:
 ```bash
-./vendor/bin/sail exec -T mysql bash -c 'mysql -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE' < database/backups/backup_YYYYMMDD_HHMMSS.sql
+# Extract the SQL dump from the backup zip
+unzip storage/app/backups/fishing_backup_YYYY-MM-DD-HH-MM-SS.zip "db-dumps/mysql-fishing.sql" -d /tmp/
+
+# Import into MySQL via Sail
+./vendor/bin/sail exec -T mysql bash -c 'mysql -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE' < /tmp/db-dumps/mysql-fishing.sql
 ```
 
 ---

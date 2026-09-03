@@ -80,6 +80,8 @@ if command -v docker >/dev/null 2>&1 && $DOCKER_CMD ps --format '{{.Names}}' | g
 
     echo "--> Running optimization and migrations inside fishinglog_app container..."
     $DOCKER_CMD exec fishinglog_app php artisan optimize:clear
+    echo "--> Creating pre-migration safety database backup..."
+    $DOCKER_CMD exec fishinglog_app php artisan backup:run --only-db --disable-notifications 2>/dev/null || true
     $DOCKER_CMD exec fishinglog_app php artisan migrate --force
     $DOCKER_CMD exec fishinglog_app php artisan storage:link 2>/dev/null || true
     $DOCKER_CMD exec fishinglog_app php artisan config:clear
@@ -93,6 +95,8 @@ elif [ -f "artisan" ]; then
     fi
     echo "--> Running optimization commands in local environment..."
     php artisan optimize:clear
+    echo "--> Creating pre-migration safety database backup..."
+    php artisan backup:run --only-db --disable-notifications 2>/dev/null || true
     php artisan migrate --force
     php artisan storage:link 2>/dev/null || true
     php artisan config:clear

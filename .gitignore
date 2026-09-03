@@ -23,3 +23,7 @@ public/json/ontario-fmz-boundaries.json
 test-results/
 playwright-report/
 playwright/.auth/
+/storage/app/backups/*
+!/storage/app/backups/.gitignore
+/storage/app/backup-temp/
+
