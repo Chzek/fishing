@@ -12,11 +12,29 @@ test.describe('Tacklebox & Lures Catalog - E2E Test Suite', () => {
         await expect(page.locator('span:has-text("Catches Landed on Tackle")').first()).toBeVisible();
     });
 
-    test('category filter pills switch active category filter', async ({ page }) => {
-        const categoryFilter = page.locator('a[href*="/lure?category="]').first();
-        if (await categoryFilter.isVisible().catch(() => false)) {
-            await categoryFilter.click();
-            await expect(page.locator('h1')).toContainText('Digital Tackle Box', { timeout: 15000 });
+    test('category filter pills switch active category filter dynamically', async ({ page }) => {
+        const crankbaitPill = page.locator('button:has-text("Crankbait")').first();
+        if (await crankbaitPill.isVisible().catch(() => false)) {
+            await crankbaitPill.click();
+            await expect(page.locator('h2:has-text("Crankbait Tray")')).toBeVisible({ timeout: 5000 });
+        }
+    });
+
+    test('search input filters models dynamically with debouncing', async ({ page }) => {
+        const searchInput = page.locator('input[placeholder*="Search tackle"]');
+        await expect(searchInput).toBeVisible();
+        await searchInput.fill('Rapala');
+        await page.waitForTimeout(500);
+
+        // Verify filtered results or tray banner
+        await expect(page.locator('text=Filtered By:').first()).toBeVisible({ timeout: 5000 });
+    });
+
+    test('log catch button on variant opens Global Quick Catch drawer modal', async ({ page }) => {
+        const logCatchBtn = page.locator('button:has-text("Log Catch")').first();
+        if (await logCatchBtn.isVisible().catch(() => false)) {
+            await logCatchBtn.click();
+            await expect(page.locator('h2:has-text("Quick Catch Logger")')).toBeVisible({ timeout: 5000 });
         }
     });
 
@@ -31,7 +49,6 @@ test.describe('Tacklebox & Lures Catalog - E2E Test Suite', () => {
     });
 
     test('lure model telemetry page renders performance breakdown', async ({ page }) => {
-        // Find a model link from the table
         const modelLink = page.locator('a[href*="/lure/model/"]').first();
         if (await modelLink.isVisible().catch(() => false)) {
             await modelLink.click();

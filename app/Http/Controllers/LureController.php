@@ -16,69 +16,9 @@ class LureController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index(\Illuminate\Pipeline\Pipeline $pipeline, Request $request)
+    public function index(Request $request)
     {
-        $query = Lure::query()->withCount('records');
-
-        $activeCategory = $request->query('category', 'all');
-
-        if ($activeCategory !== 'all' && !empty($activeCategory)) {
-            $query->where('category', $activeCategory);
-        }
-
-        if (!$request->has('sort_by')) {
-            $query->orderBy('name', 'asc');
-        }
-
-        $allLures = $query->get();
-
-        // 2-Tier Nesting: Category -> Lure Model (Brand + Name) -> Color Variants
-        $nestedTackle = $allLures->groupBy(function ($item) {
-            return $item->category ?: 'Other';
-        })->map(function ($categoryLures) {
-            return $categoryLures->groupBy(function ($item) {
-                $brandPrefix = $item->brand ? trim($item->brand) . ' ' : '';
-                return $brandPrefix . trim($item->name);
-            });
-        });
-
-        // Distinct category counts for Digital Tackle Box tabs
-        $categoriesList = [
-            'Crankbait',
-            'Soft Plastic',
-            'Swimbait',
-            'Inline Spinner',
-            'Spinnerbait',
-            'Jig',
-            'Spoon',
-            'Topwater',
-            'Fly',
-            'Other',
-        ];
-
-        $categoryCounts = Lure::select('category', DB::raw('count(*) as count'))
-            ->groupBy('category')
-            ->pluck('count', 'category');
-
-        $totalTackleCount = Lure::count();
-        $totalCatchesOnTackle = DB::table('records')->whereNotNull('lures_id')->whereNull('deleted_at')->count();
-
-        $topCategory = Lure::select('category', DB::raw('count(*) as count'))
-            ->whereNotNull('category')
-            ->groupBy('category')
-            ->orderByDesc('count')
-            ->first();
-
-        return view('lure.index', [
-            'allLures' => $allLures,
-            'nestedTackle' => $nestedTackle,
-            'activeCategory' => $activeCategory,
-            'categoriesList' => $categoriesList,
-            'categoryCounts' => $categoryCounts,
-            'totalTackleCount' => $totalTackleCount,
-            'totalCatchesOnTackle' => $totalCatchesOnTackle,
-            'topCategoryName' => $topCategory ? $topCategory->category : 'Tackle Box',
-        ]);
+        return view('lure.index');
     }
 
     /**
