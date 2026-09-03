@@ -61,10 +61,10 @@
 
             <!-- Quick Catch Primary Action Button -->
             <div class="px-4 pt-2 pb-2">
-                <a href="{{ url('/record/quick') }}" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-semibold py-2.5 px-4 rounded-xl shadow-lg shadow-teal-900/30 hover:shadow-teal-800/40 transition-all duration-200 group">
+                <button type="button" @click="$dispatch('open-quick-catch')" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-semibold py-2.5 px-4 rounded-xl shadow-lg shadow-teal-900/30 hover:shadow-teal-800/40 transition-all duration-200 group cursor-pointer">
                     <x-lucide-zap class="w-4 h-4 text-teal-200 group-hover:scale-110 transition-transform" />
                     <span>Quick Catch</span>
-                </a>
+                </button>
             </div>
             @endauth
 
@@ -238,10 +238,10 @@
                     <a href="{{ route('search') }}" class="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors" title="Search">
                         <x-lucide-search class="w-4 h-4" />
                     </a>
-                    <a href="{{ url('/record/quick') }}" class="flex items-center gap-1 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold py-1.5 px-3 rounded-lg shadow-sm">
+                    <button type="button" @click="$dispatch('open-quick-catch')" class="flex items-center gap-1 bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold py-1.5 px-3 rounded-lg shadow-sm cursor-pointer">
                         <x-lucide-zap class="w-3.5 h-3.5" />
                         <span>Quick Catch</span>
-                    </a>
+                    </button>
                 @endauth
 
                 <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none">
@@ -386,9 +386,9 @@
                 <x-lucide-compass class="w-5 h-5" />
                 <span>Map</span>
             </a>
-            <a href="{{ url('/record/quick') }}" class="flex flex-col items-center justify-center w-11 h-11 bg-gradient-to-tr from-teal-600 to-teal-400 text-white rounded-full -mt-5 shadow-lg shadow-teal-950/60 border-2 border-slate-900 active:scale-95 transition-transform">
+            <button type="button" @click="$dispatch('open-quick-catch')" class="flex flex-col items-center justify-center w-11 h-11 bg-gradient-to-tr from-teal-600 to-teal-400 text-white rounded-full -mt-5 shadow-lg shadow-teal-950/60 border-2 border-slate-900 active:scale-95 transition-transform cursor-pointer" title="Quick Catch">
                 <x-lucide-plus class="w-6 h-6" />
-            </a>
+            </button>
             <a href="{{ url('/record') }}" class="flex flex-col items-center gap-1 text-[10px] font-medium {{ Request::is('record') ? 'text-teal-400 font-semibold' : 'hover:text-slate-200' }}">
                 <x-lucide-fish class="w-5 h-5" />
                 <span>Catches</span>
@@ -401,6 +401,11 @@
         @endauth
     </div>
 
+    @auth
+        <!-- Global Quick Catch Slide-over Modal -->
+        <livewire:modals.quick-catch-modal />
+    @endauth
+
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -409,6 +414,15 @@
                     .catch((err) => console.log('Service Worker registration failed:', err));
             });
         }
+
+        // Global hotkey: Alt + C or Q (when outside input) to trigger Quick Catch modal
+        document.addEventListener('keydown', (e) => {
+            if ((e.altKey && (e.key === 'c' || e.key === 'C')) || 
+                ((e.key === 'q' || e.key === 'Q') && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName) && !e.ctrlKey && !e.metaKey && !e.altKey)) {
+                e.preventDefault();
+                window.Livewire?.dispatch('open-quick-catch');
+            }
+        });
     </script>
     @yield('scripts')
     <!-- Livewire 3 Scripts -->

@@ -8,24 +8,19 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### 🚀 Priority 2 (P2): Angling Experience & Reactive Workflows
 
-#### 2. Global Quick Catch Slide-Over Drawer Modal (`@livewire('modals.quick-catch-modal')`)
-- **Agents**: `livewire-architect` & `ui-ux-auditor`
-- **Impact**: **High** (1-Tap Catch Logging Anywhere)
-- **Description**: Extract a slide-over modal component triggered from any page (Top Nav, Map Explorer `/map`, or Expedition Trip view) via `$dispatch('open-quick-catch')`, allowing anglers to log a catch without leaving their active map or trip dossier.
-
-#### 3. Interactive Tacklebox Category Trays & Color Variant Grid (`@livewire('tacklebox.lure-catalog')`)
+#### 2. Interactive Tacklebox Category Trays & Color Variant Grid (`@livewire('tacklebox.lure-catalog')`)
 - **Agents**: `livewire-architect` & `seasoned-angler-advisor`
 - **Impact**: **Medium-High** (Sub-second Tray Expansion)
 - **Description**: Reusable Livewire catalog components for 2-Tier Category Trays, expanding lure model accordions, and inline color variant management.
 
-#### 4. Species Dossier Recommended Tackle Badging & Quick Catch Shortcuts (`seasoned-angler-advisor` & `ui-ux-auditor`)
+#### 3. Species Dossier Recommended Tackle Badging & Quick Catch Shortcuts (`seasoned-angler-advisor` & `ui-ux-auditor`)
 - **Agents**: `seasoned-angler-advisor` & `ui-ux-auditor`
 - **Impact**: **Medium** (Usability & Angling Knowledge)
 - **Description**: Enrich species dossier pages (`/fish/{id}`) and boat Quick Catch logger:
   - Display top-producing tackle pairing badges (e.g., *"Top Lure for Walleye: Rapala Shad Rap"*).
   - Add target species quick-filter shortcuts on the boat Quick Catch logger form.
 
-#### 5. Waterbody Regulations & Exceptions Review Framework (`seasoned-angler-advisor`)
+#### 4. Waterbody Regulations & Exceptions Review Framework (`seasoned-angler-advisor`)
 - **Agents**: `seasoned-angler-advisor`
 - **Impact**: **Medium** (Regulatory Usability)
 - **Description**: Provide a structured UI for anglers to inspect and verify specific lake exceptions and sanctuary rules directly against official FMZ regulation guides when reviewing individual waterbody pages.
@@ -67,7 +62,13 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🏆 Completed Milestones (Merged into `master`)
 
-1. **Static Analysis & Strict Typing Auditing (`larastan/larastan`)**:
+1. **Global Quick Catch Slide-Over Drawer Modal (`@livewire('modals.quick-catch-modal')`)**:
+   - Created reactive Livewire 3 slide-over modal drawer mounted globally in [`resources/views/layouts/app.blade.php`](file:///home/gmroczek/git/fishing/resources/views/layouts/app.blade.php) with dark frosted backdrop and Option C Telemetry v2 styling.
+   - Connected 1-tap catch logging triggers across Desktop Sidebar, Mobile Sticky Header, Floating Navigation Bar (+), Map Explorer Lake Drawer, and Expedition Trip Dossier via `$dispatch('open-quick-catch', { lake_id, expedition_id, ... })` and global keyboard shortcut (`Alt + C` or `Q`).
+   - Built with lazy-loaded dropdown options, device geolocation GPS acquisition, tacklebox lure selector integration, and instant trophy personal best celebration notifications.
+   - Dispatches reactive `catch-saved`, `refresh-records`, and `refresh-map` events to parent pages upon logging.
+   - Covered with PHPUnit tests ([`QuickCatchModalLivewireTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/QuickCatchModalLivewireTest.php)) and Playwright E2E browser tests ([`quick-catch-modal.spec.js`](file:///home/gmroczek/git/fishing/tests/e2e/quick-catch-modal.spec.js)).
+2. **Static Analysis & Strict Typing Auditing (`larastan/larastan`)**:
    - Configured `larastan/larastan:^3.0` (PHPStan 2.x Level 5) in [`phpstan.neon`](file:///home/gmroczek/git/fishing/phpstan.neon) scanning `app/` and `routes/`.
    - Hardened all 13 Eloquent models with complete `@property` / `@property-read` docblocks and explicit relationship return types (`: BelongsTo`, `: HasMany`, `: HasManyThrough`, `: HasOne`, `: MorphMany`).
    - Hardened [`HasUuidAndSyncTracking`](file:///home/gmroczek/git/fishing/app/Traits/HasUuidAndSyncTracking.php) with `setAttribute()` to eliminate dynamic property mutations across all models.
