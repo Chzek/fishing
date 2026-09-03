@@ -48,8 +48,8 @@ trait HasUuidAndSyncTracking
      */
     public function markSynced(): bool
     {
-        $this->sync_status = 'synced';
-        $this->synced_at = now();
+        $this->setAttribute('sync_status', 'synced');
+        $this->setAttribute('synced_at', now());
 
         return $this->saveQuietly();
     }

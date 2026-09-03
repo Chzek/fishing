@@ -44,8 +44,8 @@ class TrophyCatchLogged extends Notification
      */
     public function toDatabase($notifiable): array
     {
-        $species = $this->record->fishBreed?->name ?? 'Fish';
-        $lake = $this->record->lake?->name ?? 'Waterbody';
+        $species = $this->record->fishBreed ? $this->record->fishBreed->name : 'Fish';
+        $lake = $this->record->lake ? $this->record->lake->name : 'Waterbody';
         $length = $this->record->length ? $this->record->length . '"' : '';
 
         $title = $this->milestone['title'] ?? "🏆 New Personal Best {$species}!";

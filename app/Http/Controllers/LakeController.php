@@ -19,7 +19,7 @@ class LakeController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
@@ -29,7 +29,7 @@ class LakeController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create()
     {
@@ -46,7 +46,7 @@ class LakeController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Fishinglog\Http\Requests\StoreLakeRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreLakeRequest $request)
     {
@@ -75,7 +75,7 @@ class LakeController extends Controller
      * Display the specified resource.
      *
      * @param  \Fishinglog\Models\Lake  $lake
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show(Lake $lake)
     {
@@ -115,7 +115,7 @@ class LakeController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \Fishinglog\Models\Lake  $lake
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function edit(Lake $lake)
     {
@@ -135,7 +135,7 @@ class LakeController extends Controller
      *
      * @param  \Fishinglog\Http\Requests\UpdateLakeRequest  $request
      * @param  \Fishinglog\Models\Lake  $lake
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UpdateLakeRequest $request, Lake $lake)
     {
@@ -190,7 +190,7 @@ class LakeController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \Fishinglog\Models\Lake  $lake
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Lake $lake)
     {

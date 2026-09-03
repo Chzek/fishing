@@ -35,3 +35,20 @@ Extract complex business logic out of HTTP controllers into invokable Action cla
 - Write reactive UI components using **Livewire 3 (standard PHP classes)** in `app/Livewire/`.
 - Ensure Blade components handle attribute HTML entity encoding properly in tests (`$view->assertSee(...)`).
 - Maintain Tailwind CSS v4 design tokens (`@theme`) in [`resources/css/app.css`](file:///home/gmroczek/git/fishing/resources/css/app.css).
+
+---
+
+## 3. Static Analysis & Strict Typing (Larastan Level 5)
+
+- **Execution Command**:
+  * Run static analysis via Sail: `./vendor/bin/sail bin phpstan analyse` or `./vendor/bin/sail composer analyse`.
+- **Model Property & Relationship Annotations**:
+  * All Eloquent models must contain explicit `@property` / `@property-read` docblocks defining table columns and relations.
+  * Explicitly type all Eloquent relationship method return types (`: BelongsTo`, `: HasMany`, `: HasOne`, `: MorphMany`, `: MorphTo`, `: HasManyThrough`).
+- **Configuration & Environment Access**:
+  * NEVER use `env()` in controllers, models, or services outside of `config/*.php` files (as config caching breaks `env()` calls). Always use `config('services.nas.url')`, `config('services.nas.token')`, etc.
+- **Resource Proxying**:
+  * Always annotate JsonResource classes with `/** @mixin \Fishinglog\Models\<ModelName> */` to preserve type safety across resource serialization.
+- **Null Safety & Covariance**:
+  * Model `$fillable` and `$hidden` arrays should use `@var list<string>`.
+  * Return types on controller methods should be accurately typed in docblocks as `@return \Illuminate\View\View`, `@return \Illuminate\Http\RedirectResponse`, or `@return \Illuminate\Http\JsonResponse`.

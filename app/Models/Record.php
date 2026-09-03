@@ -4,33 +4,72 @@ namespace Fishinglog\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string $id
+ * @property string|null $sync_status
+ * @property \Illuminate\Support\Carbon|null $synced_at
+ * @property string|null $client_id
+ * @property string|null $anglers_id
+ * @property string|null $lakes_id
+ * @property string|null $fish_breeds_id
+ * @property string|null $lures_id
+ * @property float|null $weight
+ * @property float|null $length
+ * @property float|null $temperature
+ * @property float|null $latitude
+ * @property float|null $longitude
+ * @property bool $released
+ * @property \Illuminate\Support\Carbon|null $caught
+ * @property string|null $trip_id
+ * @property int|null $month_num
+ * @property float|null $max_length
+ * @property int|null $catches
+ * @property float|null $longest
+ * @property int|null $count
+ * @property int|null $total_catches
+ * @property float|null $total_inches
+ * @property float|null $avg_length
+ * @property int|null $released_count
+ * @property float|null $avg_water_temp
+ * @property float|null $total_length
+ * @property float|null $longest_fish
+ * @property-read \Fishinglog\Models\Angler|null $angler
+ * @property-read \Fishinglog\Models\Lake|null $lake
+ * @property-read \Fishinglog\Models\FishBreed|null $fishBreed
+ * @property-read \Fishinglog\Models\Lure|null $lure
+ * @property-read \Fishinglog\Models\Expedition|null $expedition
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Photo> $photos
+ */
 class Record extends Model
 {
     use HasFactory;
     use SoftDeletes;
     use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
     protected $fillable = [
-        'id',
-        'sync_status',
-        'synced_at',
-        'client_id',
-        'anglers_id',
-        'lakes_id',
-        'fish_breeds_id',
-        'lures_id',
-        'weight',
-        'length',
-        'temperature',
-        'latitude',
-        'longitude',
-        'released',
-        'caught',
-        'trip_id',
+        'id', 'sync_status', 'synced_at', 'client_id', 'anglers_id', 'lakes_id', 'fish_breeds_id', 'lures_id',
+        'weight', 'length', 'temperature', 'latitude', 'longitude', 'released',
+        'caught', 'trip_id',
     ];
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'id';
+    }
 
     protected static function booted()
     {
@@ -43,33 +82,37 @@ class Record extends Model
         });
     }
 
-    public function angler()
-
+    public function angler(): BelongsTo
     {
         return $this->belongsTo(Angler::class, 'anglers_id', 'id');
     }
 
-    public function lake()
+    public function lake(): BelongsTo
     {
         return $this->belongsTo(Lake::class, 'lakes_id', 'id');
     }
 
-    public function fishBreed()
+    public function fishBreed(): BelongsTo
     {
         return $this->belongsTo(FishBreed::class, 'fish_breeds_id', 'id');
     }
 
-    public function lure()
+    public function lure(): BelongsTo
     {
         return $this->belongsTo(Lure::class, 'lures_id', 'id');
+    }
+
+    public function expedition(): BelongsTo
+    {
+        return $this->belongsTo(Expedition::class, 'trip_id', 'id');
     }
 
     /**
      * Get all attached photos for this catch record.
      */
-    public function photos()
+    public function photos(): MorphMany
     {
-        return $this->morphMany(Photo::class, 'photoable')->orderBy('is_cover', 'desc')->orderBy('created_at', 'asc');
+        return $this->morphMany(Photo::class, 'photoable');
     }
 
     /**
@@ -78,10 +121,14 @@ class Record extends Model
     public function primaryPhoto(): ?Photo
     {
         if ($this->relationLoaded('photos')) {
-            return $this->photos->firstWhere('is_cover', true) ?? $this->photos->first();
+            /** @var Photo|null $photo */
+            $photo = $this->photos->firstWhere('is_cover', true) ?? $this->photos->first();
+            return $photo;
         }
 
-        return $this->photos()->where('is_cover', true)->first() ?? $this->photos()->first();
+        /** @var Photo|null $photo */
+        $photo = $this->photos()->where('is_cover', true)->first() ?? $this->photos()->first();
+        return $photo;
     }
 
     /**
@@ -97,13 +144,13 @@ class Record extends Model
             return null;
         }
 
-        $caughtDate = is_a($this->caught, \DateTimeInterface::class) 
+        $caughtDate = $this->caught instanceof \DateTimeInterface 
             ? $this->caught->format('Y-m-d') 
             : substr((string) $this->caught, 0, 10);
 
         if ($this->relationLoaded('lake') && $this->lake && $this->lake->relationLoaded('dailyWeather')) {
             return $this->lake->dailyWeather->first(function ($w) use ($caughtDate) {
-                $wDate = is_a($w->date, \DateTimeInterface::class) ? $w->date->format('Y-m-d') : substr((string) $w->date, 0, 10);
+                $wDate = $w->date instanceof \DateTimeInterface ? $w->date->format('Y-m-d') : substr((string) $w->date, 0, 10);
                 return $wDate === $caughtDate;
             });
         }
@@ -133,7 +180,7 @@ class Record extends Model
         if ($previousCount === 0) {
             return [
                 'type' => 'first_species_catch',
-                'title' => "🎉 First Logged " . ($this->fishBreed?->name ?? 'Species') . "!",
+                'title' => "🎉 First Logged " . ($this->fishBreed ? $this->fishBreed->name : 'Species') . "!",
                 'previous_length' => null,
                 'previous_weight' => null,
             ];
@@ -144,7 +191,7 @@ class Record extends Model
         if ($this->length && $previousMax && (float) $this->length > (float) $previousMax) {
             return [
                 'type' => 'species_pb',
-                'title' => "🏆 New Personal Best " . ($this->fishBreed?->name ?? 'Species') . "!",
+                'title' => "🏆 New Personal Best " . ($this->fishBreed ? $this->fishBreed->name : 'Species') . "!",
                 'previous_length' => round((float) $previousMax, 2),
                 'previous_weight' => null,
             ];
@@ -153,4 +200,3 @@ class Record extends Model
         return null;
     }
 }
-

@@ -13,7 +13,7 @@ class FishBreedController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create()
     {
@@ -28,7 +28,7 @@ class FishBreedController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Fishinglog\Http\Requests\StoreFishBreedRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreFishBreedRequest $request)
     {
@@ -57,7 +57,7 @@ class FishBreedController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \Fishinglog\Models\FishBreed  $fishBreed
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function edit(FishBreed $fishBreed)
     {
@@ -71,7 +71,7 @@ class FishBreedController extends Controller
      *
      * @param  \Fishinglog\Http\Requests\UpdateFishBreedRequest  $request
      * @param  \Fishinglog\Models\FishBreed  $fishBreed
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UpdateFishBreedRequest $request, FishBreed $fishBreed)
     {
@@ -109,8 +109,7 @@ class FishBreedController extends Controller
             $srcImage = match ($extension) {
                 'jpg', 'jpeg' => @imagecreatefromjpeg($file->getRealPath()),
                 'png' => @imagecreatefrompng($file->getRealPath()),
-                'webp' => @imagecreatefromwebp($file->getRealPath()),
-                default => null,
+                default => @imagecreatefromwebp($file->getRealPath()),
             };
 
             if ($srcImage) {
@@ -143,7 +142,7 @@ class FishBreedController extends Controller
                 match ($extension) {
                     'jpg', 'jpeg' => imagejpeg($dstImage, null, 85),
                     'png' => imagepng($dstImage, null, 8),
-                    'webp' => imagewebp($dstImage, null, 85),
+                    default => imagewebp($dstImage, null, 85),
                 };
                 $compressedData = ob_get_clean();
 

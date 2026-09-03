@@ -29,10 +29,11 @@ class AdminInviteController extends Controller
         );
 
         $localSignedUrl = url($relativeSignedPath);
-        $nasBaseUrl = rtrim(env('NAS_URL', config('app.url')), '/');
+        $nasUrlConfig = (string) config('services.nas.url', '');
+        $nasBaseUrl = !empty($nasUrlConfig) ? rtrim($nasUrlConfig, '/') : rtrim((string) config('app.url', ''), '/');
         $nasSignedUrl = $nasBaseUrl . $relativeSignedPath;
 
-        $preferredSignedUrl = (!empty(env('NAS_URL')) && env('NAS_URL') !== url('/')) ? $nasSignedUrl : $localSignedUrl;
+        $preferredSignedUrl = (!empty($nasUrlConfig) && $nasUrlConfig !== url('/')) ? $nasSignedUrl : $localSignedUrl;
 
         return redirect()->route('admin.users')->with([
             'status' => "Invitation signed URL generated for {$request->email}: {$preferredSignedUrl}",

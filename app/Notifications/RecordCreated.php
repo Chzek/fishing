@@ -44,14 +44,17 @@ class RecordCreated extends Notification
      */
     public function toDatabase($notifiable)
     {
+        $species = $this->record->fishBreed ? $this->record->fishBreed->name : 'Fish';
+        $lake = $this->record->lake ? $this->record->lake->name : 'Waterbody';
+
         return [
             'type' => 'record_created',
             'record_id' => $this->record->id,
-            'species_name' => $this->record->fishBreed?->name ?? 'Fish',
+            'species_name' => $species,
             'length' => $this->record->length,
             'weight' => $this->record->weight,
-            'lake_name' => $this->record->lake?->name ?? 'Waterbody',
-            'message' => "New catch recorded: " . ($this->record->length ? $this->record->length . '" ' : '') . ($this->record->fishBreed?->name ?? 'Fish') . " at " . ($this->record->lake?->name ?? 'Waterbody') . ".",
+            'lake_name' => $lake,
+            'message' => "New catch recorded: " . ($this->record->length ? $this->record->length . '" ' : '') . $species . " at " . $lake . ".",
             'action_url' => url('/record/' . $this->record->id),
         ];
     }

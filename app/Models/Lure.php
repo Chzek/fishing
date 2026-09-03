@@ -4,8 +4,25 @@ namespace Fishinglog\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string $id
+ * @property string|null $sync_status
+ * @property \Illuminate\Support\Carbon|null $synced_at
+ * @property string $name
+ * @property string|null $color
+ * @property string|null $size
+ * @property string|null $category
+ * @property string|null $brand
+ * @property string|null $weight
+ * @property string|null $depth_range
+ * @property-read string $display_name
+ * @property-read \Fishinglog\Models\Record|null $record
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Record> $records
+ */
 class Lure extends Model
 {
     use HasFactory;
@@ -25,12 +42,12 @@ class Lure extends Model
         'depth_range',
     ];
 
-    public function record()
+    public function record(): HasOne
     {
         return $this->hasOne(Record::class, 'lures_id', 'id');
     }
 
-    public function records()
+    public function records(): HasMany
     {
         return $this->hasMany(Record::class, 'lures_id', 'id');
     }

@@ -51,5 +51,7 @@ class ProfileControllerTest extends TestCase
         $response->assertViewHas('totalInches', 24.5);
         $response->assertViewHas('totalFeet', 2.0);
         $response->assertViewHas('releaseRate', 100);
+        $response->assertViewHas('crews', 0);
+        $response->assertViewHas('personalBest');
     }
 }

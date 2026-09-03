@@ -27,7 +27,7 @@ class ProfileController extends Controller
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show()
     {
@@ -48,17 +48,20 @@ class ProfileController extends Controller
             ];
 
             $record_count = Record::where('anglers_id', $angler->id)->count();
+
             $lake_count = Record::where('anglers_id', $angler->id)
                 ->distinct('lakes_id')
                 ->count('lakes_id');
 
-            $totalInches = round(Record::where('anglers_id', $angler->id)->sum('length'), 1);
+            // Overall career stats
+            $totalInches = round(Record::where('anglers_id', $angler->id)->sum('length') ?: 0, 1);
             $totalFeet = round($totalInches / 12, 1);
-            $avgLength = round(Record::where('anglers_id', $angler->id)->whereNotNull('length')->avg('length'), 1);
+            $avgLength = round(Record::where('anglers_id', $angler->id)->avg('length') ?: 0, 1);
             $releasedCount = Record::where('anglers_id', $angler->id)->where('released', 1)->count();
             $releaseRate = $record_count > 0 ? round(($releasedCount / $record_count) * 100) : 0;
 
-            $mvpLure = Record::select('lures_id', DB::raw('count(*) as catches'), DB::raw('max(length) as longest'))
+            // Advanced telemetry
+            $mvpLure = Record::select('lures_id', DB::raw('count(*) as catches'))
                 ->where('anglers_id', $angler->id)
                 ->whereNotNull('lures_id')
                 ->groupBy('lures_id')
@@ -73,7 +76,7 @@ class ProfileController extends Controller
                 ->orderBy('count', 'desc')
                 ->first();
 
-            $peakMonthName = $peakMonth ? \DateTime::createFromFormat('!m', $peakMonth->month_num)->format('F') : null;
+            $peakMonthName = ($peakMonth && $peakMonth->month_num) ? (\DateTime::createFromFormat('!m', (string) $peakMonth->month_num) ?: null)?->format('F') : null;
 
             $topWaters = Record::select('lakes_id', DB::raw('count(*) as catches'), DB::raw('max(length) as longest'))
                 ->where('anglers_id', $angler->id)
@@ -154,7 +157,7 @@ class ProfileController extends Controller
     /**
      * Edit the authenticated users profile
      * 
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function edit(User $user)
     {

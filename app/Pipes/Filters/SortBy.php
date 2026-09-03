@@ -4,6 +4,8 @@ namespace Fishinglog\Pipes\Filters;
 
 use Closure;
 use Fishinglog\Pipes\PipeContract;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 
 class SortBy implements PipeContract
@@ -17,6 +19,11 @@ class SortBy implements PipeContract
         'status' => 'released',
     ];
 
+    /**
+     * @param Builder<Model>|\Illuminate\Database\Query\Builder $query
+     * @param Closure $next
+     * @return mixed
+     */
     public function handle($query, Closure $next)
     {
         $sortBy = request('sort_by');

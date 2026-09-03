@@ -19,7 +19,7 @@ class ComposerOutdated extends Card
         }
 
         $packages = $packages
-            ? json_decode($packages->value, JSON_THROW_ON_ERROR)['installed']
+            ? json_decode($packages->value, true, 512, JSON_THROW_ON_ERROR)['installed']
             : [];
 
         return view('livewire.composer-outdated', [

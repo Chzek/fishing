@@ -34,7 +34,7 @@ class ProcessPhotoUploadAction
 
         return Photo::create([
             'photoable_type' => get_class($target),
-            'photoable_id' => $target->id,
+            'photoable_id' => (string) $target->getKey(),
             'path' => $path,
             'original_name' => $file->getClientOriginalName(),
             'caption' => $caption ?? $file->getClientOriginalName(),

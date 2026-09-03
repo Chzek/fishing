@@ -16,7 +16,7 @@ class SearchController extends Controller
      * Handle global omnibox search and command palette queries.
      *
      * @param Request $request
-     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse
      */
     public function index(Request $request)
     {

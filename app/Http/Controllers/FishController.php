@@ -14,7 +14,7 @@ class FishController extends Controller
      * Display a listing of the resource.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index(Request $request)
     {
@@ -68,7 +68,7 @@ class FishController extends Controller
      * Display the specified resource.
      *
      * @param  string|int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show($id)
     {
@@ -218,7 +218,7 @@ class FishController extends Controller
         }
 
         foreach ($weatherStats as &$ws) {
-            $ws['percentage'] = $maxWeatherCatches > 0 ? round(($ws['count'] / $maxWeatherCatches) * 100) : 0;
+            $ws['percentage'] = round(($ws['count'] / $maxWeatherCatches) * 100);
         }
 
         return view('fish.show', [

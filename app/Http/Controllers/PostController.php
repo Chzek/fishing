@@ -16,7 +16,7 @@ class PostController extends Controller
      * Show the form for creating a new resource.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create(Request $request)
     {
@@ -33,7 +33,7 @@ class PostController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Fishinglog\Http\Requests\StorePostRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StorePostRequest $request)
     {
@@ -41,7 +41,7 @@ class PostController extends Controller
         $post->date = $request->date;
         $post->description = $request->description;
         $post->expeditions_id = $request->expeditions_id;
-        $post->anglers_id = Angler::where('user_id', Auth::user()->id)->firstOrFail()->id;
+        $post->anglers_id = Angler::where('user_id', Auth::id())->firstOrFail()->id;
 
         $post->save();
 
