@@ -164,10 +164,10 @@
                 <button 
                     type="button" 
                     wire:click="setCategory('all')" 
-                    class="group p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-1.5 relative overflow-hidden {{ $isAllActive ? 'bg-gradient-to-b from-teal-500/25 via-slate-900 to-slate-950 border-teal-400 shadow-lg shadow-teal-500/20 ring-1 ring-teal-400/50' : 'bg-slate-950/70 border-slate-800/90 hover:border-slate-700 hover:bg-slate-900/90 text-slate-300' }}"
+                    class="group p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-2 relative overflow-hidden {{ $isAllActive ? 'bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-teal-400 shadow-lg shadow-teal-500/25 ring-2 ring-teal-400/40' : 'bg-slate-950/80 border-slate-800/90 hover:border-slate-700 hover:bg-slate-900 text-slate-300' }}"
                 >
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 {{ $isAllActive ? 'bg-teal-500/30 text-teal-300 ring-1 ring-teal-400/40' : 'bg-slate-900 text-slate-400 group-hover:text-teal-400 group-hover:bg-slate-800' }}">
-                        <x-lureCategoryIcon category="all" :active="$isAllActive" class="w-6 h-6" />
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 {{ $isAllActive ? 'bg-teal-500/20 border border-teal-400/50 text-teal-300 ring-1 ring-teal-400/40' : 'bg-slate-800/80 border border-slate-700/60 text-slate-300 group-hover:text-white group-hover:bg-slate-800 group-hover:border-slate-600' }}">
+                        <x-lureCategoryIcon category="all" :active="$isAllActive" class="w-8 h-8" />
                     </div>
                     <div class="w-full">
                         <div class="font-extrabold text-xs tracking-tight truncate {{ $isAllActive ? 'text-white' : 'text-slate-200' }}">All Trays</div>
@@ -187,10 +187,10 @@
                     <button 
                         type="button" 
                         wire:click="setCategory('{{ $cat }}')" 
-                        class="group p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-1.5 relative overflow-hidden {{ $isActive ? 'bg-gradient-to-b from-teal-500/25 via-slate-900 to-slate-950 border-teal-400 shadow-lg shadow-teal-500/20 ring-1 ring-teal-400/50' : 'bg-slate-950/70 border-slate-800/90 hover:border-slate-700 hover:bg-slate-900/90 text-slate-300' }}"
+                        class="group p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-2 relative overflow-hidden {{ $isActive ? 'bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-teal-400 shadow-lg shadow-teal-500/25 ring-2 ring-teal-400/40' : 'bg-slate-950/80 border-slate-800/90 hover:border-slate-700 hover:bg-slate-900 text-slate-300' }}"
                     >
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 {{ $isActive ? 'bg-teal-500/30 text-teal-300 ring-1 ring-teal-400/40' : 'bg-slate-900 text-slate-400 group-hover:text-teal-400 group-hover:bg-slate-800' }}">
-                            <x-lureCategoryIcon :category="$cat" :active="$isActive" class="w-6 h-6" />
+                        <div class="w-11 h-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 {{ $isActive ? 'bg-teal-500/20 border border-teal-400/50 text-teal-300 ring-1 ring-teal-400/40' : 'bg-slate-800/80 border border-slate-700/60 text-slate-300 group-hover:text-white group-hover:bg-slate-800 group-hover:border-slate-600' }}">
+                            <x-lureCategoryIcon :category="$cat" :active="$isActive" class="w-8 h-8" />
                         </div>
                         <div class="w-full">
                             <div class="font-extrabold text-xs tracking-tight truncate {{ $isActive ? 'text-white' : 'text-slate-200' }}">{{ $cat }}</div>
