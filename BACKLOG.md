@@ -6,15 +6,6 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🎯 Active Priority Roadmap (Ranked by Impact & Value)
 
-### 🔥 Priority 1 (P1): High-Impact Usability & Reliability
-
-#### 1. Static Analysis & Strict Typing Auditing (`larastan/larastan`)
-- **Agents**: `laravel-architect` & `phpunit-test-architect`
-- **Impact**: **High** (Type Safety & Regression Prevention)
-- **Description**: Configure PHPStan / Larastan at Level 5+ to guarantee strict typing, Eloquent relationship validation, and null-safety across all 13 models, services, and Action classes.
-
----
-
 ### 🚀 Priority 2 (P2): Angling Experience & Reactive Workflows
 
 #### 2. Global Quick Catch Slide-Over Drawer Modal (`@livewire('modals.quick-catch-modal')`)
@@ -76,7 +67,15 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🏆 Completed Milestones (Merged into `master`)
 
-1. **Automated Database & Media Backup Package (`spatie/laravel-backup`)**:
+1. **Static Analysis & Strict Typing Auditing (`larastan/larastan`)**:
+   - Configured `larastan/larastan:^3.0` (PHPStan 2.x Level 5) in [`phpstan.neon`](file:///home/gmroczek/git/fishing/phpstan.neon) scanning `app/` and `routes/`.
+   - Hardened all 13 Eloquent models with complete `@property` / `@property-read` docblocks and explicit relationship return types (`: BelongsTo`, `: HasMany`, `: HasManyThrough`, `: HasOne`, `: MorphMany`).
+   - Hardened [`HasUuidAndSyncTracking`](file:///home/gmroczek/git/fishing/app/Traits/HasUuidAndSyncTracking.php) with `setAttribute()` to eliminate dynamic property mutations across all models.
+   - Replaced all non-config `env()` calls with `config('services.nas.*')` for production config cache safety.
+   - Annotated all JsonResource classes with `/** @mixin \Fishinglog\Models\<Model> */`.
+   - Standardized controller docblock return types and eliminated 340+ typing bugs down to **0 static analysis errors**.
+   - Integrated `"analyse": "vendor/bin/phpstan analyse --memory-limit=2G"` composer command and documented usage in `README.md` and `laravel-architect` skill.
+2. **Automated Database & Media Backup Package (`spatie/laravel-backup`)**:
    - Integrated `spatie/laravel-backup:^9.0` configured for full MySQL dumps, uploaded media assets (`storage/app/public`), and multi-tier grandfather-father-son retention rules (7 days all, 30 days daily, 8 weeks weekly, 12 months monthly, 2 years yearly, 5 GB storage ceiling).
    - Configured production-only automated Console schedules in [`routes/console.php`](file:///home/gmroczek/git/fishing/routes/console.php) (`backup:clean` at 01:00, `backup:run --only-db` at 02:00, full `backup:run` on Sundays at 03:00).
    - Hooked automated pre-migration safety snapshots into [`synology-nas-deploy/update_nas.sh`](file:///home/gmroczek/git/fishing/synology-nas-deploy/update_nas.sh).

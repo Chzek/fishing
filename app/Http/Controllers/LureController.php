@@ -14,7 +14,7 @@ class LureController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index(\Illuminate\Pipeline\Pipeline $pipeline, Request $request)
     {
@@ -77,16 +77,14 @@ class LureController extends Controller
             'categoryCounts' => $categoryCounts,
             'totalTackleCount' => $totalTackleCount,
             'totalCatchesOnTackle' => $totalCatchesOnTackle,
-            'topCategoryName' => $topCategory?->category ?? 'Tackle Box',
+            'topCategoryName' => $topCategory ? $topCategory->category : 'Tackle Box',
         ]);
-
-
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create()
     {
@@ -105,7 +103,7 @@ class LureController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Fishinglog\Http\Requests\StoreLureRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreLureRequest $request)
     {
@@ -219,7 +217,7 @@ class LureController extends Controller
      * Display the specified resource.
      *
      * @param  \Fishinglog\Models\Lure  $lure
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show(Lure $lure)
     {
@@ -238,7 +236,7 @@ class LureController extends Controller
         return view('lure.show', [
             'lure' => $lure,
             'catches' => $catches,
-            'topSpeciesName' => $topSpecies?->name ?? 'N/A',
+            'topSpeciesName' => $topSpecies ? $topSpecies->name : 'N/A',
         ]);
     }
 
@@ -246,7 +244,7 @@ class LureController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \Fishinglog\Models\Lure  $lure
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function edit(Lure $lure)
     {
@@ -265,7 +263,7 @@ class LureController extends Controller
      *
      * @param  \Fishinglog\Http\Requests\UpdateLureRequest  $request
      * @param  \Fishinglog\Models\Lure  $lure
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UpdateLureRequest $request, Lure $lure)
     {
@@ -288,7 +286,7 @@ class LureController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \Fishinglog\Models\Lure  $lure
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Lure $lure)
     {
@@ -354,9 +352,9 @@ class LureController extends Controller
             'category' => $category,
             'totalVariants' => $totalVariants,
             'totalCatches' => $totalCatches,
-            'topSpeciesName' => $topSpecies?->name ?? 'N/A',
-            'topLakeName' => $topLake?->name ?? 'N/A',
-            'topColorName' => $topColor?->color ?? 'N/A',
+            'topSpeciesName' => $topSpecies ? $topSpecies->name : 'N/A',
+            'topLakeName' => $topLake ? $topLake->name : 'N/A',
+            'topColorName' => $topColor ? $topColor->color : 'N/A',
             'modelsGroup' => $modelsGroup,
             'catches' => $catches,
         ]);
@@ -409,8 +407,8 @@ class LureController extends Controller
             'modelCategory' => $modelCategory,
             'variants' => $variants,
             'totalCatches' => $totalCatches,
-            'topSpeciesName' => $topSpecies?->name ?? 'N/A',
-            'topColorName' => $topColorVariant?->color ?? 'Standard',
+            'topSpeciesName' => $topSpecies ? $topSpecies->name : 'N/A',
+            'topColorName' => $topColorVariant ? $topColorVariant->color : 'Standard',
             'catches' => $catches,
         ]);
     }

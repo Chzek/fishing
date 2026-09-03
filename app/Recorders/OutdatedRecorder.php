@@ -35,7 +35,7 @@ class OutdatedRecorder
             );
         }
 
-        json_decode($result->output(), JSON_THROW_ON_ERROR);
+        json_decode($result->output(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->pulse->set('composer_outdated', 'result', $result->output());
     }

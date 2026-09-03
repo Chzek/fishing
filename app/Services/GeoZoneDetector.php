@@ -38,7 +38,7 @@ class GeoZoneDetector
      */
     public static function detectZoneCode($lat, $lng): ?string
     {
-        $features = static::getGeoJsonFeatures();
+        $features = self::getGeoJsonFeatures();
         if (empty($features)) {
             return null;
         }
@@ -55,14 +55,14 @@ class GeoZoneDetector
 
             if ($type === 'Polygon') {
                 foreach ($coordinates as $ring) {
-                    if (static::pointInPolygon($lat, $lng, $ring)) {
+                    if (self::pointInPolygon($lat, $lng, $ring)) {
                         return $code;
                     }
                 }
             } elseif ($type === 'MultiPolygon') {
                 foreach ($coordinates as $polygon) {
                     foreach ($polygon as $ring) {
-                        if (static::pointInPolygon($lat, $lng, $ring)) {
+                        if (self::pointInPolygon($lat, $lng, $ring)) {
                             return $code;
                         }
                     }

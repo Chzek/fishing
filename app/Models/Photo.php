@@ -4,10 +4,26 @@ namespace Fishinglog\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @property string $id
+ * @property string|null $sync_status
+ * @property \Illuminate\Support\Carbon|null $synced_at
+ * @property string $photoable_type
+ * @property string $photoable_id
+ * @property string $path
+ * @property string|null $original_name
+ * @property string|null $caption
+ * @property bool $is_cover
+ * @property string|null $user_id
+ * @property-read string $url
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $photoable
+ * @property-read \Fishinglog\Models\User|null $user
+ */
 class Photo extends Model
 {
     use HasFactory;
@@ -42,7 +58,7 @@ class Photo extends Model
     /**
      * Get the user who uploaded the photo.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }

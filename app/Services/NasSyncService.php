@@ -60,8 +60,8 @@ class NasSyncService
 
     public function __construct(?string $nasUrl = null, ?string $apiToken = null)
     {
-        $this->nasUrl = rtrim($nasUrl ?? config('services.nas.url', env('NAS_URL', '')), '/');
-        $this->apiToken = $apiToken ?? config('services.nas.token', env('NAS_API_TOKEN', ''));
+        $this->nasUrl = rtrim($nasUrl ?? (string) config('services.nas.url', ''), '/');
+        $this->apiToken = $apiToken ?? (string) config('services.nas.token', '');
     }
 
     /**

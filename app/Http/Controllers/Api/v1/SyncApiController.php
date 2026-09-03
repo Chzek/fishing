@@ -46,7 +46,7 @@ class SyncApiController extends Controller
     protected function isAuthorized(Request $request): bool
     {
         $token = $request->bearerToken() ?? $request->header('X-API-TOKEN') ?? $request->input('api_token');
-        $configuredToken = config('services.nas.token', env('NAS_API_TOKEN'));
+        $configuredToken = (string) config('services.nas.token', '');
 
         if (!empty($configuredToken) && !empty($token) && hash_equals($configuredToken, $token)) {
             return true;

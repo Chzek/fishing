@@ -4,8 +4,35 @@ namespace Fishinglog\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string $id
+ * @property string|null $sync_status
+ * @property \Illuminate\Support\Carbon|null $synced_at
+ * @property string|null $firstName
+ * @property string|null $middleName
+ * @property string|null $lastName
+ * @property string|null $firstname
+ * @property string|null $middlename
+ * @property string|null $lastname
+ * @property string|null $name
+ * @property int|null $user_id
+ * @property string|null $birthdate
+ * @property string|null $avatar
+ * @property float|null $avg_length
+ * @property float|null $avg_weight
+ * @property float|null $release_rate
+ * @property string|null $top_species_name
+ * @property-read string $full_name
+ * @property-read string $formal_name
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Record> $records
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Crew> $crews
+ * @property-read \Fishinglog\Models\User|null $user
+ */
 class Angler extends Model
 {
     use HasFactory;
@@ -15,23 +42,23 @@ class Angler extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'id', 'sync_status', 'synced_at', 'firstName', 'middleName', 'lastName', 'firstname', 'middlename', 'lastname', 'name', 'user_id',
     ];
 
-    public function records()
+    public function records(): HasMany
     {
         return $this->hasMany(Record::class, 'anglers_id', 'id');
     }
 
-    public function crews()
+    public function crews(): HasMany
     {
         return $this->hasMany(Crew::class, 'anglers_id', 'id');
     }
 
-    public function lakes()
+    public function lakes(): HasManyThrough
     {
         return $this->hasManyThrough(
             Lake::class,
@@ -43,7 +70,7 @@ class Angler extends Model
         );
     }
 
-    public function user()
+    public function user(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'user_id');
     }

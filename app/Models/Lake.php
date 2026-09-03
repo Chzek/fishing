@@ -4,8 +4,28 @@ namespace Fishinglog\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string $id
+ * @property string|null $sync_status
+ * @property \Illuminate\Support\Carbon|null $synced_at
+ * @property string $name
+ * @property float|null $latitude
+ * @property float|null $longitude
+ * @property string|null $structure
+ * @property float|null $max_depth
+ * @property string|null $fishing_zone_id
+ * @property float|null $distance
+ * @property-read \Fishinglog\Models\FishingZone|null $fishingZone
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\FishingRule> $rules
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Record> $records
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Angler> $anglers
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\LakeDailyWeather> $dailyWeather
+ */
 class Lake extends Model
 {
     use HasFactory;
@@ -24,27 +44,27 @@ class Lake extends Model
         'fishing_zone_id',
     ];
 
-    public function fishingZone()
+    public function fishingZone(): BelongsTo
     {
         return $this->belongsTo(FishingZone::class, 'fishing_zone_id', 'id');
     }
 
-    public function rules()
+    public function rules(): HasMany
     {
         return $this->hasMany(FishingRule::class, 'lake_id', 'id');
     }
 
-    public function records()
+    public function records(): HasMany
     {
         return $this->hasMany(Record::class, 'lakes_id', 'id');
     }
 
-    public function anglers()
+    public function anglers(): HasManyThrough
     {
         return $this->hasManyThrough(Angler::class, Record::class, 'lakes_id', 'id', 'id', 'anglers_id');
     }
 
-    public function dailyWeather()
+    public function dailyWeather(): HasMany
     {
         return $this->hasMany(LakeDailyWeather::class, 'lakes_id', 'id');
     }
@@ -69,9 +89,11 @@ class Lake extends Model
      */
     public function biggestCatch()
     {
-        return $this->records()
+        /** @var Record|null $record */
+        $record = $this->records()
             ->orderBy('records.length', 'desc')
             ->first();
+        return $record;
     }
 
     /**
@@ -80,7 +102,7 @@ class Lake extends Model
      * @param float $lat
      * @param float $lng
      * @param float $radiusMiles
-     * @param int|null $excludeId
+     * @param int|string|null $excludeId
      * @return \Illuminate\Support\Collection
      */
     public static function nearby($lat, $lng, $radiusMiles = 2.0, $excludeId = null)

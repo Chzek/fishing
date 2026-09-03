@@ -277,6 +277,7 @@ class AdminController extends Controller
             'angler' => Angler::class,
             'lure' => Lure::class,
             'expedition' => Expedition::class,
+            default => abort(400, 'Invalid type'),
         };
     }
 }

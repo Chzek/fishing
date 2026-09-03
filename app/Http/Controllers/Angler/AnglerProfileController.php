@@ -81,7 +81,7 @@ class AnglerProfileController extends Controller
             ->orderBy('count', 'desc')
             ->first();
 
-        $peakMonthName = $peakMonth ? \DateTime::createFromFormat('!m', $peakMonth->month_num)->format('F') : null;
+        $peakMonthName = ($peakMonth && $peakMonth->month_num) ? (\DateTime::createFromFormat('!m', (string) $peakMonth->month_num) ?: null)?->format('F') : null;
 
         $topWaters = Record::select('lakes_id', DB::raw('count(*) as catches'), DB::raw('max(length) as longest'))
             ->where('anglers_id', $angler->id)

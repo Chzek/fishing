@@ -34,7 +34,7 @@ class RecordController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
     public function index(Pipeline $pipeline, Request $request)
     {
@@ -281,7 +281,7 @@ class RecordController extends Controller
      *
      * @param Pipeline $pipeline
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function directory(Pipeline $pipeline, Request $request)
     {
@@ -307,7 +307,7 @@ class RecordController extends Controller
 
         // Optimizing weather telemetry: batch load exact daily weather records for current 15 page items
         $lakesAndDates = $records->getCollection()->map(function ($r) {
-            $cDate = is_a($r->caught, \DateTimeInterface::class) ? $r->caught->format('Y-m-d') : substr((string)$r->caught, 0, 10);
+            $cDate = $r->caught instanceof \DateTimeInterface ? $r->caught->format('Y-m-d') : substr((string)$r->caught, 0, 10);
             return ['lake_id' => $r->lakes_id, 'date' => $cDate];
         })->filter(fn($item) => !empty($item['lake_id']) && !empty($item['date']))->unique();
 
@@ -318,10 +318,10 @@ class RecordController extends Controller
                         $q->where('lakes_id', $item['lake_id'])->where('date', $item['date']);
                     });
                 }
-            })->get()->keyBy(fn($w) => $w->lakes_id . '_' . (is_a($w->date, \DateTimeInterface::class) ? $w->date->format('Y-m-d') : substr((string)$w->date, 0, 10)));
+            })->get()->keyBy(fn($w) => $w->lakes_id . '_' . ($w->date instanceof \DateTimeInterface ? $w->date->format('Y-m-d') : substr((string)$w->date, 0, 10)));
 
             $records->getCollection()->each(function ($record) use ($weatherModels) {
-                $cDate = is_a($record->caught, \DateTimeInterface::class) ? $record->caught->format('Y-m-d') : substr((string)$record->caught, 0, 10);
+                $cDate = $record->caught instanceof \DateTimeInterface ? $record->caught->format('Y-m-d') : substr((string)$record->caught, 0, 10);
                 $record->setRelation('dailyWeather', $weatherModels->get($record->lakes_id . '_' . $cDate));
             });
         }
@@ -338,7 +338,7 @@ class RecordController extends Controller
     /**
      * Show touch-optimized quick catch form for boat logging.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function quick()
     {
@@ -353,7 +353,7 @@ class RecordController extends Controller
     /**
      * Show offline catch sync review page.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function offlineReview()
     {
@@ -371,7 +371,7 @@ class RecordController extends Controller
      * Show the form for creating a new resource.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create(Request $request)
     {
@@ -390,7 +390,7 @@ class RecordController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Fishinglog\Http\Requests\StoreRecordRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreRecordRequest $request, CreateCatchRecordAction $createRecordAction, ProcessPhotoUploadAction $photoUploadAction)
     {
@@ -406,9 +406,9 @@ class RecordController extends Controller
                 }
                 session()->flash('trophy_celebration', array_merge($milestone, [
                     'record_id' => $record->id,
-                    'species_name' => $record->fishBreed?->name ?? 'Fish',
+                    'species_name' => $record->fishBreed ? $record->fishBreed->name : 'Fish',
                     'length' => $record->length,
-                    'lake_name' => $record->lake?->name ?? 'Waterbody',
+                    'lake_name' => $record->lake ? $record->lake->name : 'Waterbody',
                 ]));
             }
         } catch (\Throwable $e) {
@@ -437,7 +437,7 @@ class RecordController extends Controller
      * Display the specified resource.
      *
      * @param  \Fishinglog\Models\Record  $record
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show(Record $record)
     {
@@ -452,7 +452,7 @@ class RecordController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \Fishinglog\Models\Record  $record
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function edit(Record $record)
     {
@@ -468,7 +468,7 @@ class RecordController extends Controller
      *
      * @param  \Fishinglog\Http\Requests\UpdateRecordRequest  $request
      * @param  \Fishinglog\Models\Record  $record
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UpdateRecordRequest $request, Record $record)
     {
@@ -515,7 +515,7 @@ class RecordController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \Fishinglog\Models\Record  $record
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Record $record)
     {

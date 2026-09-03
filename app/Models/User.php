@@ -4,9 +4,22 @@ namespace Fishinglog\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property string $id
+ * @property string|null $sync_status
+ * @property \Illuminate\Support\Carbon|null $synced_at
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property string $type
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property string|null $remember_token
+ * @property-read \Fishinglog\Models\Angler|null $angler
+ */
 class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
@@ -19,16 +32,16 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
-        'id', 'sync_status', 'synced_at', 'name', 'email', 'password',
+        'id', 'sync_status', 'synced_at', 'name', 'email', 'password', 'type',
     ];
 
     /**
      * The attributes that should be hidden for arrays.
      *
-     * @var array
+     * @var list<string>
      */
     protected $hidden = [
         'password', 'remember_token',
@@ -56,10 +69,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Return the Angler associated with this user
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function angler()
+    public function angler(): HasOne
     {
         return $this->hasOne(Angler::class, 'user_id');
     }

@@ -129,6 +129,26 @@ Run headed mode for visual browser debugging:
 
 ---
 
+## 🔍 Static Analysis & Type Checking (Larastan Level 5)
+
+Static analysis and strict type verification is enforced via **`larastan/larastan`** (PHPStan 2.x Level 5):
+
+```bash
+# Run full application static analysis via Sail
+./vendor/bin/sail bin phpstan analyse
+
+# Or using composer script alias
+./vendor/bin/sail composer analyse
+```
+
+Key type-safety guardrails enforced:
+- Complete Eloquent model docblocks (`@property`, `@property-read`) and explicit relationship method return types (`: BelongsTo`, `: HasMany`, etc.).
+- No raw `env()` calls outside `config/*.php` files (ensures robust config caching).
+- Strict JsonResource model mixin annotations (`@mixin \Fishinglog\Models\<Model>`).
+- Controller return type docblock declarations (`@return \Illuminate\View\View`, `@return \Illuminate\Http\RedirectResponse`).
+
+---
+
 ## 💾 Database Safety & Backup Protocols
 
 > [!CAUTION]

@@ -81,7 +81,12 @@ class BackupDatabase extends Command
 }
 
 function human_filesize($bytes, $decimals = 2) {
-    $sz = 'BKMGTP';
-    $factor = floor((strlen($bytes) - 1) / 3);
-    return sprintf("%.{$decimals}f ", $bytes / pow(1024, $factor)) . @$sz[$factor] . 'B';
+    $sz = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    $bytes = (float) $bytes;
+    if ($bytes <= 0) {
+        return '0 B';
+    }
+    $factor = (int) floor(log($bytes, 1024));
+    $factor = max(0, min(count($sz) - 1, $factor));
+    return sprintf("%.{$decimals}f ", $bytes / pow(1024, $factor)) . $sz[$factor];
 }

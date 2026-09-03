@@ -4,7 +4,22 @@ namespace Fishinglog\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property string $id
+ * @property string|null $sync_status
+ * @property \Illuminate\Support\Carbon|null $synced_at
+ * @property string $name
+ * @property string|null $fish_families_id
+ * @property string|null $image
+ * @property string|null $avatar
+ * @property-read \Fishinglog\Models\FishFamily|null $family
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Record> $records
+ * @property-read string|null $avatar_url
+ * @property-read string|null $image_url
+ */
 class FishBreed extends Model
 {
     use HasFactory;
@@ -12,12 +27,12 @@ class FishBreed extends Model
 
     protected $fillable = ['id', 'sync_status', 'synced_at', 'name', 'fish_families_id', 'image', 'avatar'];
 
-    public function family()
+    public function family(): BelongsTo
     {
         return $this->belongsTo(FishFamily::class, 'fish_families_id', 'id');
     }
 
-    public function records()
+    public function records(): HasMany
     {
         return $this->hasMany(Record::class, 'fish_breeds_id', 'id');
     }

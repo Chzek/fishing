@@ -4,7 +4,29 @@ namespace Fishinglog\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string|null $sync_status
+ * @property \Illuminate\Support\Carbon|null $synced_at
+ * @property string $lakes_id
+ * @property \Illuminate\Support\Carbon $date
+ * @property float|null $air_temp_max
+ * @property float|null $air_temp_min
+ * @property float|null $air_temp_mean
+ * @property float|null $barometric_pressure
+ * @property float|null $wind_speed_max
+ * @property int|null $wind_direction_dominant
+ * @property string|null $weather_condition
+ * @property int|null $weather_code
+ * @property array<string, mixed>|null $hourly_telemetry
+ * @property float|null $window_pressure_start
+ * @property float|null $window_pressure_end
+ * @property float|null $window_pressure_delta
+ * @property string|null $pressure_trend
+ * @property-read \Fishinglog\Models\Lake|null $lake
+ */
 class LakeDailyWeather extends Model
 {
     use HasFactory;
@@ -48,7 +70,7 @@ class LakeDailyWeather extends Model
         'window_pressure_delta' => 'float',
     ];
 
-    public function lake()
+    public function lake(): BelongsTo
     {
         return $this->belongsTo(Lake::class, 'lakes_id', 'id');
     }

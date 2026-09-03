@@ -18,18 +18,17 @@ class AnglerController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
         return view('angler.index');
     }
 
-
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create()
     {
@@ -46,7 +45,7 @@ class AnglerController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Fishinglog\Http\Requests\StoreAnglerRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreAnglerRequest $request)
     {
@@ -66,7 +65,7 @@ class AnglerController extends Controller
      * Display the specified resource.
      *
      * @param  \Fishinglog\Models\Angler  $angler
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show(Angler $angler)
     {
@@ -97,7 +96,7 @@ class AnglerController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \Fishinglog\Models\Angler  $angler
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function edit(Angler $angler)
     {
@@ -109,14 +108,12 @@ class AnglerController extends Controller
         ]);
     }
 
-
-
     /**
      * Update the specified resource in storage.
      *
      * @param  \Fishinglog\Http\Requests\UpdateAnglerRequest  $request
      * @param  \Fishinglog\Models\Angler  $angler
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UpdateAnglerRequest $request, Angler $angler)
     {
@@ -143,7 +140,7 @@ class AnglerController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \Fishinglog\Models\Angler  $angler
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Angler $angler)
     {
@@ -154,7 +151,13 @@ class AnglerController extends Controller
 
     public function updateAvatar(UpdateAnglerAvatarRequest $request)
     {
-        $angler = Auth::user()->angler;
+        /** @var \Fishinglog\Models\User|null $user */
+        $user = Auth::user();
+        $angler = $user?->angler;
+
+        if (!$angler) {
+            return back()->with('error', 'No angler profile linked to your user account.');
+        }
 
         $avatarName = 'avatar_' . $angler->id . '_' . time() . '.' . $request->avatar->getClientOriginalExtension();
         $this->optimizeAndSaveImage($request->avatar, 'avatars/' . $avatarName, 600);
@@ -177,8 +180,7 @@ class AnglerController extends Controller
             $srcImage = match ($extension) {
                 'jpg', 'jpeg' => @imagecreatefromjpeg($file->getRealPath()),
                 'png' => @imagecreatefrompng($file->getRealPath()),
-                'webp' => @imagecreatefromwebp($file->getRealPath()),
-                default => null,
+                default => @imagecreatefromwebp($file->getRealPath()),
             };
 
             if ($srcImage) {
@@ -211,7 +213,7 @@ class AnglerController extends Controller
                 match ($extension) {
                     'jpg', 'jpeg' => imagejpeg($dstImage, null, 85),
                     'png' => imagepng($dstImage, null, 8),
-                    'webp' => imagewebp($dstImage, null, 85),
+                    default => imagewebp($dstImage, null, 85),
                 };
                 $compressedData = ob_get_clean();
 

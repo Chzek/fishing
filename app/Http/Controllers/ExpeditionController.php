@@ -14,7 +14,7 @@ class ExpeditionController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
@@ -24,7 +24,7 @@ class ExpeditionController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create()
     {
@@ -38,7 +38,7 @@ class ExpeditionController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Fishinglog\Http\Requests\StoreExpeditionRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreExpeditionRequest $request)
     {
@@ -56,7 +56,7 @@ class ExpeditionController extends Controller
      * Display the specified resource.
      *
      * @param  \Fishinglog\Models\Expedition  $expedition
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show(Expedition $expedition, \Fishinglog\Services\ExpeditionAnalyticsService $analyticsService)
     {
@@ -69,7 +69,18 @@ class ExpeditionController extends Controller
             ->paginate(15);
 
         $analytics = $analyticsService->getAnalytics($expedition);
-        extract($analytics);
+        $totalRecords = (int) ($analytics['totalRecords'] ?? 0);
+        $releasedCount = (int) ($analytics['releasedCount'] ?? 0);
+        $releaseRate = (int) ($analytics['releaseRate'] ?? 0);
+        $daysFishedCount = (int) ($analytics['daysFishedCount'] ?? 0);
+        $totalTripDays = (int) ($analytics['totalTripDays'] ?? 1);
+        $dailyAvgCatches = (float) ($analytics['dailyAvgCatches'] ?? 0);
+        $lunker = $analytics['lunker'] ?? null;
+        $heavyweight = $analytics['heavyweight'] ?? null;
+        $topRod = $analytics['topRod'] ?? null;
+        $hotLure = $analytics['hotLure'] ?? null;
+        $dailyCadence = $analytics['dailyCadence'] ?? [];
+        $speciesDistribution = $analytics['speciesDistribution'] ?? collect();
 
         $registeredCrewAnglerIds = $expedition->crews()->pluck('anglers_id')->filter()->unique();
 
@@ -141,9 +152,9 @@ class ExpeditionController extends Controller
         ->get();
 
         $daysFishedCount = count($dailyCadence);
-        $startDate = strtotime($expedition->start);
-        $finishDate = strtotime($expedition->finish);
-        $totalTripDays = ($startDate && $finishDate && $finishDate >= $startDate) ? max(1, round(($finishDate - $startDate) / 86400) + 1) : 1;
+        $startDate = strtotime((string) $expedition->start);
+        $finishDate = strtotime((string) $expedition->finish);
+        $totalTripDays = ($startDate && $finishDate && $finishDate >= $startDate) ? (int) max(1, round(($finishDate - $startDate) / 86400) + 1) : 1;
         $dailyAvgCatches = $daysFishedCount > 0 ? round($totalRecords / $daysFishedCount, 1) : 0;
 
         return view('expedition.show', [
@@ -172,7 +183,7 @@ class ExpeditionController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \Fishinglog\Models\Expedition  $expedition
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function edit(Expedition $expedition)
     {
@@ -186,7 +197,7 @@ class ExpeditionController extends Controller
      *
      * @param  \Fishinglog\Http\Requests\UpdateExpeditionRequest  $request
      * @param  \Fishinglog\Models\Expedition  $expedition
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UpdateExpeditionRequest $request, Expedition $expedition)
     {
@@ -205,7 +216,7 @@ class ExpeditionController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \Fishinglog\Models\Expedition  $expedition
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Expedition $expedition)
     {

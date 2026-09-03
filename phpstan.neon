@@ -1,0 +1,14 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/
+        - routes/
+
+    # Level 5 is a robust balance of strict type-checking and Laravel ergonomics
+    level: 5
+
+    treatPhpDocTypesAsCertain: false
+
+    ignoreErrors: []

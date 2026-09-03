@@ -14,7 +14,7 @@ class CrewController extends Controller
      * Show the form for creating a new resource.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create(Request $request)
     {
@@ -31,7 +31,7 @@ class CrewController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Fishinglog\Http\Requests\StoreCrewRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreCrewRequest $request)
     {

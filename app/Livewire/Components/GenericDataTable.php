@@ -217,7 +217,7 @@ class GenericDataTable extends Component
             $dirs = explode(',', $this->sortOrder);
             $this->sorts = [];
             foreach ($cols as $idx => $col) {
-                $dir = $dirs[$idx] ?? $dirs[0] ?? 'asc';
+                $dir = $dirs[$idx] ?? ($dirs[0] ?? 'asc');
                 $this->sorts[] = ['column' => trim($col), 'direction' => trim($dir)];
             }
         }
@@ -274,7 +274,7 @@ class GenericDataTable extends Component
         $this->sorts = [];
         foreach ($cols as $idx => $col) {
             if (empty(trim($col))) continue;
-            $dir = $dirs[$idx] ?? $dirs[0] ?? 'asc';
+            $dir = $dirs[$idx] ?? ($dirs[0] ?? 'asc');
             $this->sorts[] = ['column' => trim($col), 'direction' => trim($dir)];
         }
     }
@@ -286,7 +286,7 @@ class GenericDataTable extends Component
         $this->sorts = [];
         foreach ($cols as $idx => $col) {
             if (empty(trim($col))) continue;
-            $dir = $dirs[$idx] ?? $dirs[0] ?? 'asc';
+            $dir = $dirs[$idx] ?? ($dirs[0] ?? 'asc');
             $this->sorts[] = ['column' => trim($col), 'direction' => trim($dir)];
         }
     }
