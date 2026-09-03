@@ -29,6 +29,10 @@
         </div>
 
         <div class="flex items-center gap-2">
+            <button type="button" @click="$dispatch('open-quick-catch', { expedition_id: '{{ $expedition->id }}' })" class="px-3.5 py-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-semibold text-xs rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                <x-lucide-zap class="w-3.5 h-3.5 text-teal-200" />
+                <span>Log Catch</span>
+            </button>
             <form action="/expedition/{{ $expedition->id }}" method="POST" onsubmit="return confirm('Are you sure you want to remove this expedition?')">
                 @csrf
                 @method('DELETE')

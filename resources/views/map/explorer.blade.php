@@ -498,7 +498,16 @@
             document.getElementById('drawer-depth-badge').style.display = 'none';
         }
 
-        document.getElementById('drawer-quick-catch-btn').href = `/record/quick?lakes_id=${lake.id}`;
+        const qCatchBtn = document.getElementById('drawer-quick-catch-btn');
+        qCatchBtn.href = `/record/quick?lakes_id=${lake.id}`;
+        qCatchBtn.onclick = (e) => {
+            e.preventDefault();
+            window.Livewire?.dispatch('open-quick-catch', {
+                lake_id: lake.id,
+                latitude: lake.latitude,
+                longitude: lake.longitude
+            });
+        };
         document.getElementById('drawer-full-log-btn').href = `/lake/${lake.id}`;
 
         // Slide drawer in from right
@@ -632,5 +641,13 @@
             loadLakeDrawerDetail(activeSelectedLakeId);
         }
     }
+
+    // Reactively refresh explorer markers when a catch is saved
+    window.addEventListener('catch-saved', () => {
+        fetchExplorerLakes();
+        if (activeSelectedLakeId) {
+            loadLakeDrawerDetail(activeSelectedLakeId);
+        }
+    });
 </script>
 @endsection
