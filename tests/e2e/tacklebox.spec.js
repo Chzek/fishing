@@ -26,8 +26,8 @@ test.describe('Tacklebox & Lures Catalog - E2E Test Suite', () => {
         await searchInput.fill('Rapala');
         await page.waitForTimeout(500);
 
-        // Verify filtered results or tray banner
-        await expect(page.locator('text=Filtered By:').first()).toBeVisible({ timeout: 5000 });
+        // Verify filtered results or active filter chips
+        await expect(page.locator('text=Active Filters:').first()).toBeVisible({ timeout: 5000 });
     });
 
     test('log catch button on variant opens Global Quick Catch drawer modal', async ({ page }) => {
