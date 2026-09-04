@@ -7,7 +7,7 @@ export async function ensureAuthenticated(page, targetUrl = '/') {
     if (page.url().includes('/login')) {
         const emailInput = page.locator('input#email');
         if (await emailInput.isVisible({ timeout: 3000 }).catch(() => false)) {
-            await emailInput.fill('lauralkm@gmail.com');
+            await emailInput.fill('test.playwright@fishinglogbook.local');
             const pwdInput = page.locator('input#password');
             await pwdInput.fill('password');
             const form = page.locator('form[action*="login"]');

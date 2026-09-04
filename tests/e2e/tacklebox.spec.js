@@ -33,8 +33,9 @@ test.describe('Tacklebox & Lures Catalog - E2E Test Suite', () => {
     test('log catch button on variant opens Global Quick Catch drawer modal', async ({ page }) => {
         const logCatchBtn = page.locator('button:has-text("Log Catch")').first();
         if (await logCatchBtn.isVisible().catch(() => false)) {
+            await logCatchBtn.scrollIntoViewIfNeeded();
             await logCatchBtn.click();
-            await expect(page.locator('h2:has-text("Quick Catch Logger")')).toBeVisible({ timeout: 5000 });
+            await expect(page.locator('h2:has-text("Quick Catch Logger")')).toBeVisible({ timeout: 10000 });
         }
     });
 

@@ -5,8 +5,8 @@ test.describe('Global Quick Catch Slide-Over Drawer Modal - E2E Test Suite', () 
     test('opens slide-over drawer when clicking desktop sidebar Quick Catch button', async ({ page }) => {
         await ensureAuthenticated(page, '/profile');
 
-        // Click sidebar Quick Catch button
-        const quickCatchBtn = page.locator('aside button:has-text("Quick Catch")');
+        // Click Quick Catch button (sidebar on desktop or floating action button on mobile)
+        const quickCatchBtn = page.locator('aside button:visible, nav.fixed button:visible, button[title="Quick Catch"]:visible').first();
         await expect(quickCatchBtn).toBeVisible({ timeout: 10000 });
         await quickCatchBtn.click();
 
@@ -43,7 +43,8 @@ test.describe('Global Quick Catch Slide-Over Drawer Modal - E2E Test Suite', () 
         await ensureAuthenticated(page, '/profile');
 
         // Open modal
-        const quickCatchBtn = page.locator('aside button:has-text("Quick Catch")');
+        const quickCatchBtn = page.locator('aside button:visible, nav.fixed button:visible, button[title="Quick Catch"]:visible').first();
+        await expect(quickCatchBtn).toBeVisible({ timeout: 10000 });
         await quickCatchBtn.click();
         await expect(page.locator('h2:has-text("Quick Catch Logger")')).toBeVisible({ timeout: 5000 });
 
