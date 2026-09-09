@@ -143,4 +143,98 @@ class FishBreedControllerTest extends TestCase
             'image' => 'old_image.jpg',
         ]);
     }
+
+    #[Test]
+    public function it_renders_tactical_angler_intelligence_and_trophy_benchmarks_on_species_show()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $family = \Fishinglog\Models\FishFamily::factory()->create(['name' => 'Centrarchidae']);
+        $smallmouth = FishBreed::factory()->create([
+            'name' => 'Smallmouth Bass',
+            'fish_families_id' => $family->id,
+        ]);
+
+        $angler1 = \Fishinglog\Models\Angler::factory()->create(['firstName' => 'Bob', 'lastName' => 'Angler']);
+        $angler2 = \Fishinglog\Models\Angler::factory()->create(['firstName' => 'Alice', 'lastName' => 'Pro']);
+        $lake1 = \Fishinglog\Models\Lake::factory()->create(['name' => 'Lake Nipissing']);
+        $lake2 = \Fishinglog\Models\Lake::factory()->create(['name' => 'French River']);
+        $lure1 = \Fishinglog\Models\Lure::factory()->create([
+            'name' => 'Tube Jig',
+            'category' => 'Soft Plastics',
+            'color' => 'Green Pumpkin',
+        ]);
+        $lure2 = \Fishinglog\Models\Lure::factory()->create([
+            'name' => 'X-Rap Jerkbait',
+            'category' => 'Jerkbaits',
+            'color' => 'Silver Blue',
+        ]);
+
+        // Catches with trophy sizes
+        \Fishinglog\Models\Record::factory()->create([
+            'fish_breeds_id' => $smallmouth->id,
+            'anglers_id' => $angler1->id,
+            'lakes_id' => $lake1->id,
+            'lures_id' => $lure1->id,
+            'length' => 21.25,
+            'weight' => 5.40,
+            'released' => true,
+            'caught' => '2026-07-10',
+        ]);
+
+        \Fishinglog\Models\Record::factory()->create([
+            'fish_breeds_id' => $smallmouth->id,
+            'anglers_id' => $angler1->id,
+            'lakes_id' => $lake1->id,
+            'lures_id' => $lure1->id,
+            'length' => 19.50,
+            'weight' => 4.20,
+            'released' => true,
+            'caught' => '2026-07-12',
+        ]);
+
+        \Fishinglog\Models\Record::factory()->create([
+            'fish_breeds_id' => $smallmouth->id,
+            'anglers_id' => $angler2->id,
+            'lakes_id' => $lake2->id,
+            'lures_id' => $lure2->id,
+            'length' => 20.50,
+            'weight' => 4.90,
+            'released' => true,
+            'caught' => '2026-08-05',
+        ]);
+
+        $response = $this->get('/fish/' . $smallmouth->id);
+        $response->assertStatus(200);
+
+        // Verify Hero & Dossier
+        $response->assertSee('Smallmouth Bass');
+        $response->assertSee('Centrarchidae');
+        $response->assertSee('Species Intelligence Dossier', false);
+
+        // Verify Trophy & Master Angler Hall of Fame
+        $response->assertSee('Trophy Records & Benchmark Hall of Fame', false);
+        $response->assertSee('Ontario Master Angler: 20 in.', false);
+        $response->assertSee('Length Champion', false);
+        $response->assertSee('21.3 inches', false);
+        $response->assertSee('Bob Angler');
+        $response->assertSee('5.4 lbs');
+
+        // Verify Tactical Lure & Tackle Matrix
+        $response->assertSee('Productive Tackle & Lures', false);
+        $response->assertSee('Soft Plastics', false);
+        $response->assertSee('Green Pumpkin', false);
+        $response->assertSee('Tube Jig', false);
+
+        // Verify Waterbody Hotspots & Lake Records
+        $response->assertSee('Waterbody Hotspot Rankings', false);
+        $response->assertSee('Lake Nipissing', false);
+        $response->assertSee('French River', false);
+
+        // Verify Species Angler Spotlight Crown
+        $response->assertSee('Species Angler Hall of Fame', false);
+        $response->assertSee('Top Species Angler', false);
+        $response->assertSee('Bob Angler');
+    }
 }

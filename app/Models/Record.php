@@ -28,7 +28,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $month_num
  * @property float|null $max_length
  * @property int|null $catches
+ * @property int|null $catches_count
  * @property float|null $longest
+ * @property float|null $longest_catch
+ * @property float|null $heaviest_catch
  * @property int|null $count
  * @property int|null $total_catches
  * @property float|null $total_inches

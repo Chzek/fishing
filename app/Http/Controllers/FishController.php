@@ -78,40 +78,130 @@ class FishController extends Controller
         $fattest = Record::where('fish_breeds_id', $fish->id)->max('weight');
         $count = Record::where('fish_breeds_id', $fish->id)->count();
 
+        // Ontario Master Angler Benchmark Threshold by Species
+        $thresholdMap = [
+            'muskellunge' => 48.0,
+            'muskie' => 48.0,
+            'northern pike' => 40.0,
+            'lake trout' => 32.0,
+            'walleye' => 28.0,
+            'yellow pickerel' => 28.0,
+            'chinook salmon' => 30.0,
+            'coho salmon' => 28.0,
+            'atlantic salmon' => 28.0,
+            'rainbow trout' => 26.0,
+            'steelhead' => 26.0,
+            'splake' => 22.0,
+            'smallmouth bass' => 20.0,
+            'largemouth bass' => 20.0,
+            'brook trout' => 18.0,
+            'black crappie' => 14.0,
+            'yellow perch' => 12.0,
+            'rock bass' => 10.0,
+            'bluegill' => 10.0,
+            'pumpkinseed' => 9.0,
+        ];
+        $fishNameLower = strtolower(trim($fish->name));
+        $trophyThreshold = 20.0;
+        foreach ($thresholdMap as $key => $thresh) {
+            if (str_contains($fishNameLower, $key)) {
+                $trophyThreshold = $thresh;
+                break;
+            }
+        }
+        $trophyCatchesCount = Record::where('fish_breeds_id', $fish->id)
+            ->where('length', '>=', $trophyThreshold)
+            ->count();
+
         // Trophy record holders
-        $recordTrophy = Record::with(['angler', 'lake'])
+        $recordTrophy = Record::with(['angler', 'lake', 'lure', 'photos'])
             ->where('fish_breeds_id', $fish->id)
             ->whereNotNull('length')
             ->orderBy('length', 'desc')
             ->first();
 
-        $heaviestTrophy = Record::with(['angler', 'lake'])
+        $heaviestTrophy = Record::with(['angler', 'lake', 'lure', 'photos'])
             ->where('fish_breeds_id', $fish->id)
             ->whereNotNull('weight')
             ->orderBy('weight', 'desc')
             ->first();
 
-        // Top productive lures
-        $topLures = Record::where('fish_breeds_id', $fish->id)
-            ->whereNotNull('lures_id')
-            ->select('lures_id', DB::raw('count(*) as catches_count'))
-            ->groupBy('lures_id')
+        // Top 5 All-Time Trophies (Leaderboard with photos & details)
+        $topTrophies = Record::with(['angler', 'lake', 'lure', 'photos'])
+            ->where('fish_breeds_id', $fish->id)
+            ->whereNotNull('length')
+            ->where('length', '>', 0)
+            ->orderBy('length', 'desc')
+            ->orderBy('weight', 'desc')
+            ->orderBy('caught', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Top productive lures (Models with PB catch)
+        $topLures = Record::where('records.fish_breeds_id', $fish->id)
+            ->whereNotNull('records.lures_id')
+            ->select(
+                'records.lures_id',
+                DB::raw('count(*) as catches_count'),
+                DB::raw('max(records.length) as max_length'),
+                DB::raw('max(records.weight) as max_weight')
+            )
+            ->groupBy('records.lures_id')
             ->with('lure')
             ->orderBy('catches_count', 'desc')
             ->limit(5)
             ->get();
 
-        // Top anglers leaderboard
-        $topAnglers = Record::where('fish_breeds_id', $fish->id)
-            ->whereNotNull('anglers_id')
-            ->select('anglers_id', DB::raw('count(*) as catches_count'), DB::raw('max(length) as longest_catch'))
-            ->groupBy('anglers_id')
+        // Top Lure Categories (e.g. Soft Plastics, Crankbaits, Jigs, Spoons, Jerkbaits)
+        $topLureCategories = DB::table('records')
+            ->join('lures', 'records.lures_id', '=', 'lures.id')
+            ->where('records.fish_breeds_id', $fish->id)
+            ->whereNull('records.deleted_at')
+            ->whereNotNull('lures.category')
+            ->where('lures.category', '!=', '')
+            ->select('lures.category', DB::raw('count(*) as count'), DB::raw('max(records.length) as max_length'))
+            ->groupBy('lures.category')
+            ->orderBy('count', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Top Producing Lure Colors
+        $topLureColors = DB::table('records')
+            ->join('lures', 'records.lures_id', '=', 'lures.id')
+            ->where('records.fish_breeds_id', $fish->id)
+            ->whereNull('records.deleted_at')
+            ->whereNotNull('lures.color')
+            ->where('lures.color', '!=', '')
+            ->select('lures.color', DB::raw('count(*) as count'))
+            ->groupBy('lures.color')
+            ->orderBy('count', 'desc')
+            ->limit(6)
+            ->get();
+
+        // Top anglers leaderboard & Top Angler Crown
+        $topAnglers = Record::where('records.fish_breeds_id', $fish->id)
+            ->whereNotNull('records.anglers_id')
+            ->select(
+                'records.anglers_id',
+                DB::raw('count(*) as catches_count'),
+                DB::raw('max(records.length) as longest_catch'),
+                DB::raw('max(records.weight) as heaviest_catch')
+            )
+            ->groupBy('records.anglers_id')
             ->with('angler')
             ->orderBy('catches_count', 'desc')
             ->limit(5)
             ->get();
 
-        // Monthly catch distribution (May - Oct)
+        $topAngler = $topAnglers->first();
+        $topAnglerShare = ($count > 0 && $topAngler) ? round(($topAngler->catches_count / $count) * 100) : 0;
+
+        $releasedCount = Record::where('fish_breeds_id', $fish->id)
+            ->where('released', true)
+            ->count();
+        $speciesReleaseRate = $count > 0 ? round(($releasedCount / $count) * 100) : 100;
+
+        // Monthly catch distribution (April - Nov)
         $monthlyCatchesRaw = Record::where('fish_breeds_id', $fish->id)
             ->whereNotNull('caught')
             ->select(DB::raw('MONTH(caught) as month_num'), DB::raw('count(*) as count'))
@@ -132,10 +222,16 @@ class FishController extends Controller
 
         $monthlyStats = [];
         $maxMonthCount = max(array_values($monthlyCatchesRaw) ?: [1]);
+        $peakMonth = null;
+        $peakMonthCount = 0;
 
         foreach ($monthNames as $mNum => $mLabel) {
             $mCount = $monthlyCatchesRaw[$mNum] ?? 0;
             $pct = $maxMonthCount > 0 ? round(($mCount / $maxMonthCount) * 100) : 0;
+            if ($mCount > $peakMonthCount) {
+                $peakMonthCount = $mCount;
+                $peakMonth = $mLabel;
+            }
             $monthlyStats[] = [
                 'month' => $mLabel,
                 'count' => $mCount,
@@ -143,7 +239,7 @@ class FishController extends Controller
             ];
         }
 
-        // Lakes distribution
+        // Lakes distribution (complete list + top hotspot power rankings)
         $lakes = $fish->records()
             ->select(
                 'lakes_id',
@@ -158,8 +254,10 @@ class FishController extends Controller
             ->orderBy('count', 'desc')
             ->get();
 
+        $topHotspots = $lakes->take(5);
+
         // Recent catches feed
-        $recentCatches = Record::with(['angler', 'lake', 'lure'])
+        $recentCatches = Record::with(['angler', 'lake', 'lure', 'photos'])
             ->where('fish_breeds_id', $fish->id)
             ->orderBy('caught', 'desc')
             ->orderBy('created_at', 'desc')
@@ -203,6 +301,8 @@ class FishController extends Controller
 
         $maxWeatherCatches = 1;
         $weatherStats = [];
+        $topWeatherCondition = null;
+        $topWeatherCount = 0;
 
         foreach ($weatherCategories as $cat) {
             $c = 0;
@@ -213,6 +313,10 @@ class FishController extends Controller
             }
             if ($c > $maxWeatherCatches) {
                 $maxWeatherCatches = $c;
+            }
+            if ($c > $topWeatherCount) {
+                $topWeatherCount = $c;
+                $topWeatherCondition = $cat['key'];
             }
             $weatherStats[] = array_merge($cat, ['count' => $c]);
         }
@@ -226,16 +330,26 @@ class FishController extends Controller
             'longest' => $longest,
             'fattest' => $fattest,
             'count' => $count,
+            'trophyThreshold' => $trophyThreshold,
+            'trophyCatchesCount' => $trophyCatchesCount,
             'recordTrophy' => $recordTrophy,
             'heaviestTrophy' => $heaviestTrophy,
+            'topTrophies' => $topTrophies,
             'topLures' => $topLures,
+            'topLureCategories' => $topLureCategories,
+            'topLureColors' => $topLureColors,
             'topAnglers' => $topAnglers,
+            'topAngler' => $topAngler,
+            'topAnglerShare' => $topAnglerShare,
+            'speciesReleaseRate' => $speciesReleaseRate,
             'monthlyStats' => $monthlyStats,
+            'peakMonth' => $peakMonth,
             'lakes' => $lakes,
+            'topHotspots' => $topHotspots,
             'recentCatches' => $recentCatches,
             'weatherTelemetry' => $weatherTelemetry,
             'weatherStats' => $weatherStats,
+            'topWeatherCondition' => $topWeatherCondition,
         ]);
-
     }
 }
