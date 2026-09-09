@@ -8,14 +8,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### 🚀 Priority 2 (P2): Angling Experience & Reactive Workflows
 
-#### 3. Species Dossier Recommended Tackle Badging & Quick Catch Shortcuts (`seasoned-angler-advisor` & `ui-ux-auditor`)
-- **Agents**: `seasoned-angler-advisor` & `ui-ux-auditor`
-- **Impact**: **Medium** (Usability & Angling Knowledge)
-- **Description**: Enrich species dossier pages (`/fish/{id}`) and boat Quick Catch logger:
-  - Display top-producing tackle pairing badges (e.g., *"Top Lure for Walleye: Rapala Shad Rap"*).
-  - Add target species quick-filter shortcuts on the boat Quick Catch logger form.
-
-#### 4. Waterbody Regulations & Exceptions Review Framework (`seasoned-angler-advisor`)
+#### 3. Waterbody Regulations & Exceptions Review Framework (`seasoned-angler-advisor`)
 - **Agents**: `seasoned-angler-advisor`
 - **Impact**: **Medium** (Regulatory Usability)
 - **Description**: Provide a structured UI for anglers to inspect and verify specific lake exceptions and sanctuary rules directly against official FMZ regulation guides when reviewing individual waterbody pages.
@@ -57,7 +50,13 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🏆 Completed Milestones (Merged into `master`)
 
-1. **Interactive Tacklebox Category Trays & Color Variant Grid (`@livewire('tacklebox.lure-catalog')`)**:
+1. **Species Tactical Angler Intelligence Hub & Trophy Records Hall of Fame (`/fish/{id}`)**:
+   - Transformed species dossier (`/fish/{id}`) into an Angler Intelligence Hub with unified dark hero styling (`bg-slate-900 border-slate-800`) and a 4-column KPI telemetry metrics row (Total Logged, Record Length, Record Weight, C&R Conservation rate).
+   - Added Ontario Master Angler Benchmark bar, All-Time Length & Weight Champion spotlight cards, and Top 5 All-Time specimens ranking strip.
+   - Built 4-Quadrant Tactical Matrix: Productive Tackle & Lures (categories, top models with PB, colorways), Waterbody Hotspot Rankings, Seasonal & Weather Triggers (water temp ranges, monthly catch curves, sky conditions), and Species Master Angler & C&R Ethics.
+   - Integrated Waterbody Directory Table and direct link to pre-filtered Catch Logbook Directory (`/record/directory?species={id}`).
+   - Covered with PHPUnit Feature tests ([`FishBreedControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/FishBreedControllerTest.php)) and Playwright E2E browser tests ([`species-dossier.spec.js`](file:///home/gmroczek/git/fishing/tests/e2e/species-dossier.spec.js)).
+2. **Interactive Tacklebox Category Trays & Color Variant Grid (`@livewire('tacklebox.lure-catalog')`)**:
    - Built full-featured Telemetry & Depth-Tier Workstation Livewire 3 component in [`app/Livewire/Tacklebox/LureCatalog.php`](file:///home/gmroczek/git/fishing/app/Livewire/Tacklebox/LureCatalog.php) and [`resources/views/livewire/tacklebox/lure-catalog.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/tacklebox/lure-catalog.blade.php).
    - Features real-time multi-dimensional search & filtering (debounced query, category pills, brand selector, depth-zone pills: Surface 0ft, Shallow 1–5ft, Mid 6–10ft, Deep 10–20ft, Deep 20ft+).
    - Expandable Category Drawer Trays and Lure Model Cards with technical specs (Length, Weight, Depth range), Catch Efficiency Bars (verified catches & PB badges), and interactive Colorway Variant Grid.
