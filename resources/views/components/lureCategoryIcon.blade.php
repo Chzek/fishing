@@ -6,7 +6,7 @@
 
 @php
     $normalized = strtolower(trim((string) $category));
-    $colorClass = $active ? 'text-cyan-300' : 'text-slate-300 group-hover:text-white';
+    $colorClass = $active ? 'text-teal-600' : 'text-slate-500 group-hover:text-slate-800';
 @endphp
 
 @if ($normalized === 'all' || $normalized === 'all trays')

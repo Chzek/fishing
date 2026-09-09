@@ -18,16 +18,16 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
-            <a href="/record/quick" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 cursor-pointer">
-                <x-lucide-plus-circle class="w-3.5 h-3.5" />
+            <a href="/record/quick" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer">
+                <x-lucide-zap class="w-4 h-4 text-teal-400" />
                 <span>Log Catch</span>
             </a>
-            <a href="/fish/breed/create" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 cursor-pointer">
-                <x-lucide-plus class="w-3.5 h-3.5" />
+            <a href="/fish/breed/create" class="px-4 py-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                <x-lucide-plus class="w-4 h-4" />
                 <span>Add Species</span>
             </a>
             <a href="/fish/family/create" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
-                <x-lucide-folder-plus class="w-3.5 h-3.5" />
+                <x-lucide-folder-plus class="w-3.5 h-3.5 text-teal-400" />
                 <span>Add Family</span>
             </a>
         </div>

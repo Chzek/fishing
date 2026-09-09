@@ -2,7 +2,7 @@
     <!-- Digital Tackle Box Header & Actions -->
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-2xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
+            <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0 shadow-inner">
                 <x-lucide-box class="w-6 h-6" />
             </div>
             <div>
@@ -31,42 +31,42 @@
 
     <!-- Status Alerts -->
     @if ($statusMessage)
-        <div class="p-4 rounded-xl border bg-emerald-500/15 border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center justify-between shadow-sm animate-fadeIn" role="alert">
+        <div class="p-4 rounded-xl border bg-emerald-50 border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-between shadow-sm animate-fadeIn" role="alert">
             <div class="flex items-center gap-2">
-                <x-lucide-check-circle class="w-4 h-4 text-emerald-400 shrink-0" />
+                <x-lucide-check-circle class="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>{{ $statusMessage }}</span>
             </div>
-            <button type="button" wire:click="$set('statusMessage', null)" class="text-slate-400 hover:text-white cursor-pointer">
+            <button type="button" wire:click="$set('statusMessage', null)" class="text-slate-400 hover:text-slate-700 cursor-pointer">
                 <x-lucide-x class="w-4 h-4" />
             </button>
         </div>
     @endif
 
-    <!-- Telemetry Key Metrics Row -->
+    <!-- Telemetry Key Metrics Row (Matching /profile Soft KPI Standard) -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <x-kpiMetric label="Total Tackle Inventory" :value="$totalTackleCount" icon="box" color="teal" subtext="Registered Lures & Variants" />
-        <x-kpiMetric label="Top Productive Category" :value="$topCategoryName" icon="target" color="emerald" subtext="Most Populated Tackle Type" />
-        <x-kpiMetric label="Catches Landed on Tackle" :value="$totalCatchesOnTackle" icon="fishing-hook" color="sky" subtext="Verified Logbook Catches" />
+        <x-kpiMetric label="Total Tackle Inventory" :value="$totalTackleCount" icon="box" color="teal" subtext="Registered Lures & Variants" subtextIcon="layers" />
+        <x-kpiMetric label="Top Productive Category" :value="$topCategoryName" icon="target" color="emerald" subtext="Most Populated Tackle Type" subtextIcon="award" />
+        <x-kpiMetric label="Catches Landed on Tackle" :value="$totalCatchesOnTackle" icon="fishing-hook" color="sky" subtext="Verified Logbook Catches" subtextIcon="fish" />
     </div>
 
-    <!-- Interactive Workstation Control Center (Concept 2 Design) -->
-    <div class="bg-slate-900/90 backdrop-blur-md rounded-2xl p-5 shadow-lg border border-slate-800 space-y-4 text-slate-200">
+    <!-- Interactive Workstation Control Center (Soft White Card matching /profile standard) -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4 text-slate-800">
         
         <!-- Search & Brand Bar with Quick Action Button -->
         <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3">
             <!-- Search Bar Container -->
             <div class="relative flex-1">
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <x-lucide-search class="w-4 h-4 text-teal-400" />
+                    <x-lucide-search class="w-4 h-4 text-teal-600" />
                 </div>
                 <input 
                     type="text" 
                     wire:model.live.debounce.250ms="search" 
                     placeholder="Search tackle by model name, brand, colorway, depth, or specs..." 
-                    class="w-full h-11 pl-10 pr-10 bg-slate-950/80 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all font-medium shadow-inner"
+                    class="w-full h-11 pl-10 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all font-medium"
                 >
                 @if($search)
-                    <button type="button" wire:click="removeSearch" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white cursor-pointer">
+                    <button type="button" wire:click="removeSearch" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer">
                         <x-lucide-x class="w-4 h-4" />
                     </button>
                 @endif
@@ -76,7 +76,7 @@
             <div class="w-full md:w-52 shrink-0">
                 <select 
                     wire:model.live="selectedBrand" 
-                    class="w-full h-11 px-3 bg-slate-950/80 border border-slate-700/80 rounded-xl text-xs text-slate-300 font-medium focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                    class="w-full h-11 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-medium focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                 >
                     <option value="all">All Brands ({{ $brandsList->count() }})</option>
                     @foreach($brandsList as $brand)
@@ -89,39 +89,39 @@
             <button 
                 type="button" 
                 wire:click="toggleAllTrays" 
-                class="h-11 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-colors flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
+                class="h-11 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
             >
-                <x-lucide-chevrons-up-down class="w-4 h-4 text-teal-400" />
+                <x-lucide-chevrons-up-down class="w-4 h-4 text-teal-600" />
                 <span>{{ $allExpanded ? 'Collapse All' : 'Expand All' }}</span>
             </button>
         </div>
 
-        <!-- Inline Active Filter Chips Bar (Directly below search input, matching Mockup) -->
+        <!-- Inline Active Filter Chips Bar -->
         @if($search || $selectedCategory !== 'all' || $selectedDepth !== 'all' || $selectedBrand !== 'all')
             <div class="flex flex-wrap items-center gap-2 pt-1">
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                    <x-lucide-filter class="w-3 h-3 text-teal-400" />
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                    <x-lucide-filter class="w-3 h-3 text-teal-600" />
                     <span>Active Filters:</span>
                 </span>
 
                 @if($search)
-                    <button type="button" wire:click="removeSearch" class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-500/15 border border-teal-500/40 text-teal-300 rounded-lg text-xs font-medium hover:bg-teal-500/25 transition-colors cursor-pointer group">
+                    <button type="button" wire:click="removeSearch" class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-50 border border-teal-200 text-teal-800 rounded-lg text-xs font-medium hover:bg-teal-100 transition-colors cursor-pointer group">
                         <span>Search: "{{ $search }}"</span>
-                        <x-lucide-x class="w-3 h-3 text-teal-400 group-hover:text-white" />
+                        <x-lucide-x class="w-3 h-3 text-teal-600 group-hover:text-teal-900" />
                     </button>
                 @endif
 
                 @if($selectedBrand !== 'all')
-                    <button type="button" wire:click="removeBrand" class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-500/15 border border-teal-500/40 text-teal-300 rounded-lg text-xs font-medium hover:bg-teal-500/25 transition-colors cursor-pointer group">
+                    <button type="button" wire:click="removeBrand" class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-50 border border-teal-200 text-teal-800 rounded-lg text-xs font-medium hover:bg-teal-100 transition-colors cursor-pointer group">
                         <span>Brand: {{ $selectedBrand }}</span>
-                        <x-lucide-x class="w-3 h-3 text-teal-400 group-hover:text-white" />
+                        <x-lucide-x class="w-3 h-3 text-teal-600 group-hover:text-teal-900" />
                     </button>
                 @endif
 
                 @if($selectedCategory !== 'all')
-                    <button type="button" wire:click="removeCategory" class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-500/15 border border-teal-500/40 text-teal-300 rounded-lg text-xs font-medium hover:bg-teal-500/25 transition-colors cursor-pointer group">
+                    <button type="button" wire:click="removeCategory" class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-50 border border-teal-200 text-teal-800 rounded-lg text-xs font-medium hover:bg-teal-100 transition-colors cursor-pointer group">
                         <span>Category: {{ $selectedCategory }}</span>
-                        <x-lucide-x class="w-3 h-3 text-teal-400 group-hover:text-white" />
+                        <x-lucide-x class="w-3 h-3 text-teal-600 group-hover:text-teal-900" />
                     </button>
                 @endif
 
@@ -135,46 +135,46 @@
                             'deep_20_plus' => '20+ ft',
                         ];
                     @endphp
-                    <button type="button" wire:click="removeDepth" class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-500/15 border border-teal-500/40 text-teal-300 rounded-lg text-xs font-medium hover:bg-teal-500/25 transition-colors cursor-pointer group">
+                    <button type="button" wire:click="removeDepth" class="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-50 border border-teal-200 text-teal-800 rounded-lg text-xs font-medium hover:bg-teal-100 transition-colors cursor-pointer group">
                         <span>Depth: {{ $depthLabels[$selectedDepth] ?? $selectedDepth }}</span>
-                        <x-lucide-x class="w-3 h-3 text-teal-400 group-hover:text-white" />
+                        <x-lucide-x class="w-3 h-3 text-teal-600 group-hover:text-teal-900" />
                     </button>
                 @endif
 
-                <button type="button" wire:click="resetFilters" class="text-[11px] font-bold text-rose-400 hover:text-rose-300 underline ml-2 cursor-pointer">
+                <button type="button" wire:click="resetFilters" class="text-[11px] font-bold text-rose-600 hover:text-rose-700 underline ml-2 cursor-pointer">
                     Clear All
                 </button>
             </div>
         @endif
 
-        <!-- Category Tray Lure Profile Switcher (Concept 2 Silhouette Tray Navigation) -->
-        <div class="space-y-2.5 pt-3 border-t border-slate-800/80">
-            <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <!-- Category Tray Lure Profile Switcher (Soft Tactical Silhouette Tray Cards) -->
+        <div class="space-y-2.5 pt-3 border-t border-slate-100">
+            <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-500">
                 <span class="flex items-center gap-1.5">
-                    <x-lucide-layers class="w-3.5 h-3.5 text-teal-400" />
+                    <x-lucide-layers class="w-3.5 h-3.5 text-teal-600" />
                     <span>Category Tray Selector</span>
                 </span>
-                <span class="font-mono text-slate-400">Showing {{ $matchedCount }} Tackle Items</span>
+                <span class="font-mono text-slate-500">Showing {{ $matchedCount }} Tackle Items</span>
             </div>
 
-            <!-- Tactical Vector Lure Category Cards (Concept 2 Presentation) -->
+            <!-- Tactical Vector Lure Category Cards (Soft White / Slate Style) -->
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-11 gap-2 pt-1">
                 <!-- All Trays Card -->
                 @php $isAllActive = $selectedCategory === 'all'; @endphp
                 <button 
                     type="button" 
                     wire:click="setCategory('all')" 
-                    class="group p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-2 relative overflow-hidden {{ $isAllActive ? 'bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-teal-400 shadow-lg shadow-teal-500/25 ring-2 ring-teal-400/40' : 'bg-slate-950/80 border-slate-800/90 hover:border-slate-700 hover:bg-slate-900 text-slate-300' }}"
+                    class="group p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-2 relative overflow-hidden {{ $isAllActive ? 'bg-teal-50/90 border-2 border-teal-500 shadow-sm ring-1 ring-teal-400/30' : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 hover:bg-slate-100/80 text-slate-700' }}"
                 >
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 {{ $isAllActive ? 'bg-teal-500/20 border border-teal-400/50 text-teal-300 ring-1 ring-teal-400/40' : 'bg-slate-800/80 border border-slate-700/60 text-slate-300 group-hover:text-white group-hover:bg-slate-800 group-hover:border-slate-600' }}">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 {{ $isAllActive ? 'bg-white border border-teal-200 text-teal-600 shadow-2xs' : 'bg-white border border-slate-200 text-slate-500 group-hover:text-slate-800' }}">
                         <x-lureCategoryIcon category="all" :active="$isAllActive" class="w-8 h-8" />
                     </div>
                     <div class="w-full">
-                        <div class="font-extrabold text-xs tracking-tight truncate {{ $isAllActive ? 'text-white' : 'text-slate-200' }}">All Trays</div>
-                        <div class="text-[10px] font-mono mt-0.5 {{ $isAllActive ? 'text-teal-300 font-bold' : 'text-slate-400' }}">{{ $totalTackleCount }} items</div>
+                        <div class="font-extrabold text-xs tracking-tight truncate {{ $isAllActive ? 'text-teal-950' : 'text-slate-800' }}">All Trays</div>
+                        <div class="text-[10px] font-mono mt-0.5 {{ $isAllActive ? 'text-teal-700 font-bold' : 'text-slate-500' }}">{{ $totalTackleCount }} items</div>
                     </div>
                     @if($isAllActive)
-                        <div class="absolute bottom-0 inset-x-3 h-0.5 bg-teal-400 rounded-full shadow-sm shadow-teal-400"></div>
+                        <div class="absolute bottom-0 inset-x-3 h-0.5 bg-teal-500 rounded-full"></div>
                     @endif
                 </button>
 
@@ -187,17 +187,17 @@
                     <button 
                         type="button" 
                         wire:click="setCategory('{{ $cat }}')" 
-                        class="group p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-2 relative overflow-hidden {{ $isActive ? 'bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-teal-400 shadow-lg shadow-teal-500/25 ring-2 ring-teal-400/40' : 'bg-slate-950/80 border-slate-800/90 hover:border-slate-700 hover:bg-slate-900 text-slate-300' }}"
+                        class="group p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-2 relative overflow-hidden {{ $isActive ? 'bg-teal-50/90 border-2 border-teal-500 shadow-sm ring-1 ring-teal-400/30' : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 hover:bg-slate-100/80 text-slate-700' }}"
                     >
-                        <div class="w-11 h-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 {{ $isActive ? 'bg-teal-500/20 border border-teal-400/50 text-teal-300 ring-1 ring-teal-400/40' : 'bg-slate-800/80 border border-slate-700/60 text-slate-300 group-hover:text-white group-hover:bg-slate-800 group-hover:border-slate-600' }}">
+                        <div class="w-11 h-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 {{ $isActive ? 'bg-white border border-teal-200 text-teal-600 shadow-2xs' : 'bg-white border border-slate-200 text-slate-500 group-hover:text-slate-800' }}">
                             <x-lureCategoryIcon :category="$cat" :active="$isActive" class="w-8 h-8" />
                         </div>
                         <div class="w-full">
-                            <div class="font-extrabold text-xs tracking-tight truncate {{ $isActive ? 'text-white' : 'text-slate-200' }}">{{ $cat }}</div>
-                            <div class="text-[10px] font-mono mt-0.5 {{ $isActive ? 'text-teal-300 font-bold' : 'text-slate-400' }}">{{ $catCount }} item{{ $catCount === 1 ? '' : 's' }}</div>
+                            <div class="font-extrabold text-xs tracking-tight truncate {{ $isActive ? 'text-teal-950' : 'text-slate-800' }}">{{ $cat }}</div>
+                            <div class="text-[10px] font-mono mt-0.5 {{ $isActive ? 'text-teal-700 font-bold' : 'text-slate-500' }}">{{ $catCount }} item{{ $catCount === 1 ? '' : 's' }}</div>
                         </div>
                         @if($isActive)
-                            <div class="absolute bottom-0 inset-x-3 h-0.5 bg-teal-400 rounded-full shadow-sm shadow-teal-400"></div>
+                            <div class="absolute bottom-0 inset-x-3 h-0.5 bg-teal-500 rounded-full"></div>
                         @endif
                     </button>
                 @endforeach
@@ -205,9 +205,9 @@
         </div>
 
         <!-- Depth-Tier Running Zone Pills -->
-        <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/80">
-            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1 flex items-center gap-1">
-                <x-lucide-gauge class="w-3 h-3 text-teal-400" />
+        <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100">
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1 flex items-center gap-1">
+                <x-lucide-gauge class="w-3 h-3 text-teal-600" />
                 <span>Running Depth:</span>
             </span>
             @php
@@ -225,7 +225,7 @@
                 <button 
                     type="button" 
                     wire:click="setDepth('{{ $key }}')" 
-                    class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer {{ $selectedDepth === $key ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40' : 'bg-slate-950/60 hover:bg-slate-800 text-slate-400 border border-slate-800' }}"
+                    class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer {{ $selectedDepth === $key ? 'bg-teal-50 text-teal-700 border border-teal-300 shadow-2xs' : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200' }}"
                 >
                     {{ $label }}
                 </button>
@@ -243,29 +243,29 @@
                     $categoryTotalCatches = $modelsGroup->flatten(1)->sum('records_count');
                 @endphp
 
-                <!-- TIER 1: CATEGORY TRAY CONTAINER -->
-                <div class="bg-slate-900 rounded-2xl border border-slate-800 shadow-md overflow-hidden transition-all">
+                <!-- TIER 1: CATEGORY TRAY CONTAINER (Soft White Card) -->
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden transition-all">
                     <!-- Category Header Banner -->
                     <button 
                         type="button" 
                         wire:click="toggleCategory('{{ $categoryName }}')" 
-                        class="w-full px-6 py-4 bg-slate-950/80 hover:bg-slate-800/80 text-white flex items-center justify-between text-left transition-colors cursor-pointer border-b border-slate-800/80"
+                        class="w-full px-6 py-4 bg-slate-50/80 hover:bg-slate-100/90 text-slate-900 flex items-center justify-between text-left transition-colors cursor-pointer border-b border-slate-200/80"
                     >
                         <div class="flex items-center gap-3.5">
-                            <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-300 flex items-center justify-center shrink-0">
+                            <div class="w-10 h-10 rounded-xl bg-teal-50 border border-teal-200 text-teal-600 flex items-center justify-center shrink-0">
                                 <x-lureCategoryIcon :category="$categoryName" :active="true" class="w-6 h-6" />
                             </div>
                             <div>
-                                <h2 class="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2.5">
+                                <h2 class="text-base sm:text-lg font-black text-slate-900 tracking-tight flex items-center gap-2.5">
                                     <span>{{ $categoryName }} Tray</span>
                                 </h2>
-                                <div class="flex flex-wrap items-center gap-2 text-xs text-slate-400 font-mono mt-0.5">
+                                <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500 font-mono mt-0.5">
                                     <span>{{ $modelsGroup->count() }} Lure Model{{ $modelsGroup->count() === 1 ? '' : 's' }}</span>
                                     <span>•</span>
-                                    <span class="text-teal-300 font-bold">{{ $categoryTotalVariants }} Variant{{ $categoryTotalVariants === 1 ? '' : 's' }}</span>
+                                    <span class="text-teal-700 font-bold">{{ $categoryTotalVariants }} Variant{{ $categoryTotalVariants === 1 ? '' : 's' }}</span>
                                     @if($categoryTotalCatches > 0)
                                         <span>•</span>
-                                        <span class="text-amber-300 font-bold">🔥 {{ $categoryTotalCatches }} Verified Catch{{ $categoryTotalCatches === 1 ? '' : 'es' }}</span>
+                                        <span class="text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">🔥 {{ $categoryTotalCatches }} Verified Catch{{ $categoryTotalCatches === 1 ? '' : 'es' }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -275,20 +275,20 @@
                             <a 
                                 href="/lure/category/{{ urlencode($categoryName) }}" 
                                 @click.stop 
-                                class="px-2.5 py-1 bg-slate-800 hover:bg-teal-600 hover:text-white text-teal-300 font-bold text-xs rounded-lg border border-slate-700 transition-colors flex items-center gap-1 cursor-pointer"
+                                class="px-3 py-1.5 bg-white hover:bg-teal-50 hover:text-teal-700 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
                             >
                                 <span class="hidden sm:inline">Category Telemetry</span>
-                                <x-lucide-arrow-right class="w-3.5 h-3.5" />
+                                <x-lucide-arrow-right class="w-3.5 h-3.5 text-teal-600" />
                             </a>
-                            <div class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 transition-transform duration-200 {{ $isCategoryOpen ? 'rotate-180 bg-teal-500/20 text-teal-300 border-teal-500/40' : '' }}">
+                            <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 transition-transform duration-200 {{ $isCategoryOpen ? 'rotate-180 bg-teal-50 text-teal-700 border-teal-300' : '' }}">
                                 <x-lucide-chevron-down class="w-4 h-4" />
                             </div>
                         </div>
                     </button>
 
-                    <!-- TIER 2: LURE MODELS LIST (Concept 2 3-Panel Telemetry Workstation Layout) -->
+                    <!-- TIER 2: LURE MODELS LIST (Soft Inner Panel Architecture) -->
                     @if($isCategoryOpen)
-                        <div class="divide-y divide-slate-800/80 bg-slate-900/40">
+                        <div class="divide-y divide-slate-100 bg-white">
                             @foreach($modelsGroup as $modelName => $variants)
                                 @php
                                     $firstVariant = $variants->first();
@@ -304,16 +304,16 @@
                                     $activeVariantCatches = $activeVariant->records_count;
                                 @endphp
 
-                                <div class="p-6 space-y-4 hover:bg-slate-800/20 transition-colors">
+                                <div class="p-6 space-y-4 hover:bg-slate-50/50 transition-colors">
                                     
                                     <!-- Model Header & Top Telemetry Controls -->
                                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                         <div>
-                                            <div class="text-[11px] font-mono uppercase tracking-wider text-teal-400 font-bold">Lure Model</div>
+                                            <div class="text-[11px] font-mono uppercase tracking-wider text-teal-600 font-bold">Lure Model</div>
                                             <div class="flex items-center gap-2.5 mt-0.5">
-                                                <h3 class="font-extrabold text-white text-lg tracking-tight">{{ $modelName }}</h3>
+                                                <h3 class="font-extrabold text-slate-900 text-lg tracking-tight">{{ $modelName }}</h3>
                                                 @if($modelBrand)
-                                                    <span class="px-2 py-0.5 bg-slate-800 text-teal-300 font-bold text-[10px] uppercase tracking-wider rounded border border-slate-700 font-mono">
+                                                    <span class="px-2 py-0.5 bg-teal-50 text-teal-700 font-bold text-[10px] uppercase tracking-wider rounded border border-teal-200 font-mono">
                                                         {{ $modelBrand }}
                                                     </span>
                                                 @endif
@@ -323,29 +323,28 @@
                                         <div class="flex items-center gap-2 shrink-0">
                                             <a 
                                                 href="/lure/model/{{ urlencode($modelName) }}" 
-                                                class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer"
+                                                class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
                                                 title="View Model Telemetry Dossier"
                                             >
-                                                <x-lucide-activity class="w-3.5 h-3.5 text-teal-400" />
+                                                <x-lucide-activity class="w-3.5 h-3.5 text-teal-600" />
                                                 <span>Model Telemetry</span>
                                             </a>
                                         </div>
                                     </div>
 
-                                    <!-- 3-Panel Telemetry Workstation Card (Concept 2 Mockup Structure) -->
-                                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 p-5 bg-slate-950/70 rounded-2xl border border-slate-800/90 shadow-md">
+                                    <!-- 3-Panel Telemetry Workstation Card (Soft Slate Inner Panel) -->
+                                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 p-5 bg-slate-50/70 rounded-2xl border border-slate-200/80 shadow-2xs">
                                         
                                         <!-- PANEL 1: Dynamic Catch Efficiency Stats (Left Panel) -->
-                                        <div class="lg:col-span-4 space-y-3.5 pr-0 lg:pr-4 lg:border-r lg:border-slate-800/80 flex flex-col justify-between">
+                                        <div class="lg:col-span-4 space-y-3.5 pr-0 lg:pr-4 lg:border-r lg:border-slate-200/80 flex flex-col justify-between">
                                             <div>
-                                                <div class="text-xs font-bold text-slate-300 tracking-tight flex items-center justify-between">
+                                                <div class="text-xs font-bold text-slate-800 tracking-tight flex items-center justify-between">
                                                     <span>Dynamic Catch Efficiency Stats</span>
                                                 </div>
 
-                                                <!-- Vertical Glowing Cyan/Teal Catch Mini-Chart -->
-                                                <div class="mt-4 flex items-end justify-between gap-2 h-24 px-2 py-1 bg-slate-900/80 rounded-xl border border-slate-800">
+                                                <!-- Vertical Catch Mini-Chart -->
+                                                <div class="mt-4 flex items-end justify-between gap-2 h-24 px-2.5 py-1.5 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
                                                     @php
-                                                        // Generate dynamic relative bar heights based on catch volume
                                                         $baseCount = max($modelCatches, 1);
                                                         $bars = [
                                                             ['h' => min(95, max(20, (int)($modelCatches * 2.8) % 80 + 15)), 'label' => 'Spring'],
@@ -358,8 +357,8 @@
 
                                                     @foreach($bars as $bar)
                                                         <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end group">
-                                                            <div class="w-full max-w-[28px] rounded-t-md transition-all duration-500 {{ $loop->index === 1 || $loop->index === 2 ? 'bg-gradient-to-t from-teal-500 to-cyan-400 shadow-sm shadow-cyan-500/40' : 'bg-slate-800 hover:bg-slate-700' }}" style="height: {{ $bar['h'] }}%;"></div>
-                                                            <span class="text-[9px] text-slate-400 font-mono">{{ $bar['label'] }}</span>
+                                                            <div class="w-full max-w-[28px] rounded-t-md transition-all duration-500 {{ $loop->index === 1 || $loop->index === 2 ? 'bg-gradient-to-t from-teal-600 to-teal-400 shadow-2xs' : 'bg-slate-200 hover:bg-slate-300' }}" style="height: {{ $bar['h'] }}%;"></div>
+                                                            <span class="text-[9px] text-slate-500 font-mono">{{ $bar['label'] }}</span>
                                                         </div>
                                                     @endforeach
                                                 </div>
@@ -367,47 +366,47 @@
 
                                             <!-- KPI Badges Row -->
                                             <div class="grid grid-cols-2 gap-2.5 pt-1">
-                                                <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
-                                                    <div class="text-lg font-black text-teal-300 font-mono leading-tight">{{ $modelCatches }}</div>
-                                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Catches Landed</div>
+                                                <div class="p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                                                    <div class="text-lg font-black text-teal-700 font-mono leading-tight">{{ $modelCatches }}</div>
+                                                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Catches Landed</div>
                                                 </div>
-                                                <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
-                                                    <div class="text-lg font-black text-amber-300 font-mono leading-tight">{{ $variants->where('records_count', '>', 0)->count() }}</div>
-                                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Active Variants</div>
+                                                <div class="p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                                                    <div class="text-lg font-black text-amber-700 font-mono leading-tight">{{ $variants->where('records_count', '>', 0)->count() }}</div>
+                                                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Active Variants</div>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <!-- PANEL 2: Technical Specs Table (Center Panel) -->
-                                        <div class="lg:col-span-3 space-y-3 pr-0 lg:pr-4 lg:border-r lg:border-slate-800/80 flex flex-col justify-between">
+                                        <div class="lg:col-span-3 space-y-3 pr-0 lg:pr-4 lg:border-r lg:border-slate-200/80 flex flex-col justify-between">
                                             <div>
-                                                <div class="text-xs font-bold text-slate-300 tracking-tight">Technical Specs</div>
+                                                <div class="text-xs font-bold text-slate-800 tracking-tight">Technical Specs</div>
                                                 
-                                                <div class="mt-3 divide-y divide-slate-800/80 text-xs">
+                                                <div class="mt-3 divide-y divide-slate-200/70 text-xs">
                                                     <div class="py-1.5 flex items-center justify-between">
-                                                        <span class="text-slate-400 font-medium">Length / Size</span>
-                                                        <span class="text-white font-mono font-bold">{{ $activeVariant->size ?: ($activeVariant->weight ?: $modelSize) }}</span>
+                                                        <span class="text-slate-500 font-medium">Length / Size</span>
+                                                        <span class="text-slate-900 font-mono font-bold">{{ $activeVariant->size ?: ($activeVariant->weight ?: $modelSize) }}</span>
                                                     </div>
                                                     <div class="py-1.5 flex items-center justify-between">
-                                                        <span class="text-slate-400 font-medium">Weight</span>
-                                                        <span class="text-white font-mono font-bold">{{ $activeVariant->weight ?: ($activeVariant->size ?: 'Standard') }}</span>
+                                                        <span class="text-slate-500 font-medium">Weight</span>
+                                                        <span class="text-slate-900 font-mono font-bold">{{ $activeVariant->weight ?: ($activeVariant->size ?: 'Standard') }}</span>
                                                     </div>
                                                     <div class="py-1.5 flex items-center justify-between">
-                                                        <span class="text-slate-400 font-medium">Material / Body</span>
-                                                        <span class="text-teal-300 font-mono font-bold">{{ str_contains(strtolower($categoryName), 'crank') ? 'Balsa / Hard Poly' : (str_contains(strtolower($categoryName), 'soft') ? 'Soft Plastisol' : 'Forged Metal') }}</span>
+                                                        <span class="text-slate-500 font-medium">Material / Body</span>
+                                                        <span class="text-teal-700 font-mono font-bold">{{ str_contains(strtolower($categoryName), 'crank') ? 'Balsa / Hard Poly' : (str_contains(strtolower($categoryName), 'soft') ? 'Soft Plastisol' : 'Forged Metal') }}</span>
                                                     </div>
                                                     <div class="py-1.5 flex items-center justify-between">
-                                                        <span class="text-slate-400 font-medium">Running Depth</span>
-                                                        <span class="text-cyan-300 font-mono font-bold">{{ $activeVariant->depth_range ?: $modelDepth }}</span>
+                                                        <span class="text-slate-500 font-medium">Running Depth</span>
+                                                        <span class="text-teal-800 font-mono font-bold">{{ $activeVariant->depth_range ?: $modelDepth }}</span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-[11px] text-slate-400">
-                                                <span class="font-bold text-slate-300">Selected Finish:</span>
-                                                <span class="text-teal-300 font-mono font-bold ml-1">{{ $activeVariant->color ?: 'Standard' }}</span>
+                                            <div class="p-2.5 rounded-xl bg-white border border-slate-200/80 text-[11px] text-slate-600 shadow-2xs">
+                                                <span class="font-bold text-slate-700">Selected Finish:</span>
+                                                <span class="text-teal-700 font-mono font-bold ml-1">{{ $activeVariant->color ?: 'Standard' }}</span>
                                                 @if($activeVariantCatches > 0)
-                                                    <span class="text-amber-300 font-mono ml-1">({{ $activeVariantCatches }} catches)</span>
+                                                    <span class="text-amber-700 font-mono ml-1">({{ $activeVariantCatches }} catches)</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -415,9 +414,9 @@
                                         <!-- PANEL 3: Colorway Variant Grid & Tactile Swatches (Right Panel) -->
                                         <div class="lg:col-span-5 space-y-3 flex flex-col justify-between">
                                             <div>
-                                                <div class="flex items-center justify-between text-xs font-bold text-slate-300 tracking-tight">
+                                                <div class="flex items-center justify-between text-xs font-bold text-slate-800 tracking-tight">
                                                     <span>Colorway Variant Grid</span>
-                                                    <span class="text-[11px] text-slate-400 font-mono">{{ $variants->count() }} registered</span>
+                                                    <span class="text-[11px] text-slate-500 font-mono">{{ $variants->count() }} registered</span>
                                                 </div>
 
                                                 <!-- Swatch Grid with Realistic Gradient Patterns -->
@@ -427,7 +426,6 @@
                                                             $isSelected = (string)$variant->id === (string)$activeVariant->id;
                                                             $colorName = strtolower($variant->color ?: 'standard');
                                                             
-                                                            // Generate realistic tactile tackle gradient patterns
                                                             $swatchGradient = match(true) {
                                                                 str_contains($colorName, 'firetiger') => 'from-lime-400 via-yellow-400 to-emerald-600',
                                                                 str_contains($colorName, 'perch') => 'from-amber-400 via-yellow-600 to-emerald-800',
@@ -438,31 +436,30 @@
                                                                 str_contains($colorName, 'bone') || str_contains($colorName, 'white') => 'from-slate-100 via-amber-50 to-slate-300',
                                                                 str_contains($colorName, 'gold') => 'from-yellow-200 via-amber-400 to-yellow-700',
                                                                 str_contains($colorName, 'silver') || str_contains($colorName, 'shad') => 'from-slate-200 via-slate-400 to-slate-600',
-                                                                default => 'from-slate-700 via-slate-800 to-slate-950',
+                                                                default => 'from-slate-500 via-slate-600 to-slate-700',
                                                             };
                                                         @endphp
 
                                                         <button 
                                                             type="button" 
                                                             wire:click="selectVariant('{{ addslashes($modelKey) }}', '{{ $variant->id }}')" 
-                                                            class="p-2 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 {{ $isSelected ? 'bg-slate-900 border-teal-400 ring-2 ring-teal-400/40 shadow-sm shadow-teal-500/20' : 'bg-slate-900/70 border-slate-800 hover:border-slate-700 hover:bg-slate-900' }}"
+                                                            class="p-2 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-1.5 {{ $isSelected ? 'bg-white border-2 border-teal-500 ring-2 ring-teal-400/30 shadow-sm' : 'bg-white border-slate-200/80 hover:border-slate-300 hover:bg-slate-50' }}"
                                                         >
                                                             <!-- Tactile Swatch Bar -->
-                                                            <div class="w-full h-5 rounded-lg bg-gradient-to-r {{ $swatchGradient }} shadow-inner border border-white/10 relative overflow-hidden">
+                                                            <div class="w-full h-5 rounded-lg bg-gradient-to-r {{ $swatchGradient }} shadow-inner border border-slate-300/50 relative overflow-hidden">
                                                                 @if(str_contains($colorName, 'tiger') || str_contains($colorName, 'perch'))
-                                                                    <!-- Tiger Stripe Texture Overlay -->
                                                                     <div class="absolute inset-0 opacity-40 bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,#000_4px,#000_6px)]"></div>
                                                                 @endif
                                                             </div>
 
                                                             <div class="min-w-0">
-                                                                <div class="font-bold text-[11px] text-white truncate tracking-tight" title="{{ $variant->color ?: 'Standard' }}">
+                                                                <div class="font-bold text-[11px] text-slate-900 truncate tracking-tight" title="{{ $variant->color ?: 'Standard' }}">
                                                                     {{ $variant->color ?: 'Standard' }}
                                                                 </div>
-                                                                <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono mt-0.5">
+                                                                <div class="flex items-center justify-between text-[10px] text-slate-500 font-mono mt-0.5">
                                                                     <span>{{ $variant->size ?: ($variant->weight ?: '—') }}</span>
                                                                     @if($variant->records_count > 0)
-                                                                        <span class="text-amber-300 font-bold">🔥 {{ $variant->records_count }}</span>
+                                                                        <span class="text-amber-700 font-bold">🔥 {{ $variant->records_count }}</span>
                                                                     @endif
                                                                 </div>
                                                             </div>
@@ -472,16 +469,16 @@
                                             </div>
                                         </div>
 
-                                        <!-- CONSOLE ACTION FOOTER: Glowing 1-Click Catch Logger & Inline Variant Adder -->
-                                        <div class="col-span-12 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-slate-800">
+                                        <!-- CONSOLE ACTION FOOTER: 1-Click Catch Logger & Variant Adder -->
+                                        <div class="col-span-12 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-slate-200/80">
                                             <!-- Primary 1-Click Catch Trigger -->
                                             <button 
                                                 type="button" 
                                                 wire:click="logCatchWithLure('{{ $activeVariant->id }}')" 
-                                                class="px-5 py-3 bg-gradient-to-r from-teal-500 via-teal-400 to-cyan-400 hover:from-teal-400 hover:to-cyan-300 text-slate-950 font-black text-xs rounded-xl shadow-lg shadow-teal-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                                                class="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-xs rounded-xl shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                                                 title="Log Catch with active variant: {{ $activeVariant->displayName }}"
                                             >
-                                                <x-lucide-zap class="w-4 h-4 text-slate-950 fill-slate-950" />
+                                                <x-lucide-zap class="w-4 h-4 text-teal-200" />
                                                 <span>+ Log Catch with {{ $activeVariant->color ?: 'Lure' }}</span>
                                             </button>
 
@@ -490,15 +487,15 @@
                                                 <button 
                                                     type="button" 
                                                     wire:click="openAddVariantModal('{{ addslashes($modelBrand ?? '') }}', '{{ addslashes($modelName) }}', '{{ addslashes($categoryName) }}', '{{ addslashes($activeVariant->depth_range ?? '') }}', '{{ addslashes($activeVariant->weight ?: ($activeVariant->size ?: '')) }}')"
-                                                    class="px-4 py-3 bg-slate-800 hover:bg-slate-700 text-teal-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                                                    class="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 hover:text-teal-700 font-semibold text-xs rounded-xl border border-slate-200 shadow-2xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                                                 >
-                                                    <x-lucide-plus class="w-3.5 h-3.5" />
+                                                    <x-lucide-plus class="w-3.5 h-3.5 text-teal-600" />
                                                     <span>+ New Color</span>
                                                 </button>
 
                                                 <a 
                                                     href="/lure/{{ $activeVariant->id }}/edit" 
-                                                    class="p-3 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-xl border border-slate-700 transition-colors cursor-pointer"
+                                                    class="p-2.5 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 rounded-xl border border-slate-200 shadow-2xs transition-colors cursor-pointer"
                                                     title="Edit Active Variant Specs"
                                                 >
                                                     <x-lucide-edit-3 class="w-4 h-4" />
@@ -515,17 +512,17 @@
             @endforeach
         @else
             <!-- Empty State -->
-            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-12 text-center text-slate-400 space-y-4">
-                <div class="w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700 text-slate-400 flex items-center justify-center mx-auto">
-                    <x-lucide-package-search class="w-8 h-8 text-teal-400" />
+            <div class="bg-white rounded-2xl border border-slate-200/80 p-12 text-center text-slate-500 space-y-4 shadow-sm">
+                <div class="w-16 h-16 rounded-2xl bg-teal-50 border border-teal-200 text-teal-600 flex items-center justify-center mx-auto">
+                    <x-lucide-package-search class="w-8 h-8 text-teal-600" />
                 </div>
                 <div class="space-y-1">
-                    <h3 class="text-base font-bold text-white">No Tackle Found</h3>
-                    <p class="text-xs text-slate-400 max-w-md mx-auto">
+                    <h3 class="text-base font-bold text-slate-900">No Tackle Found</h3>
+                    <p class="text-xs text-slate-500 max-w-md mx-auto">
                         No lure models match your active search filters or depth criteria. Try adjusting your search query or reset your filters.
                     </p>
                 </div>
-                <button type="button" wire:click="resetFilters" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-teal-300 font-bold text-xs rounded-xl border border-slate-700 transition-colors cursor-pointer">
+                <button type="button" wire:click="resetFilters" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-colors cursor-pointer">
                     Clear All Filters
                 </button>
             </div>
@@ -534,27 +531,27 @@
 
     <!-- Inline Add Colorway Variant Modal -->
     @if($showAddVariantModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-            <div class="bg-slate-900 border border-slate-800 text-slate-200 rounded-2xl shadow-2xl max-w-lg w-full p-6 space-y-5">
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+            <div class="bg-white border border-slate-200 text-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 space-y-5">
                 
-                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-teal-500/20 border border-teal-500/30 text-teal-300 flex items-center justify-center">
+                        <div class="w-8 h-8 rounded-lg bg-teal-50 border border-teal-200 text-teal-700 flex items-center justify-center">
                             <x-lucide-palette class="w-4 h-4" />
                         </div>
                         <div>
-                            <h3 class="text-base font-bold text-white leading-tight">Add Colorway Variant</h3>
-                            <p class="text-[11px] text-teal-400 font-mono">{{ $targetModelBrand ? $targetModelBrand . ' ' : '' }}{{ $targetModelName }}</p>
+                            <h3 class="text-base font-bold text-slate-900 leading-tight">Add Colorway Variant</h3>
+                            <p class="text-[11px] text-teal-700 font-mono">{{ $targetModelBrand ? $targetModelBrand . ' ' : '' }}{{ $targetModelName }}</p>
                         </div>
                     </div>
-                    <button type="button" wire:click="closeAddVariantModal" class="text-slate-400 hover:text-white cursor-pointer">
+                    <button type="button" wire:click="closeAddVariantModal" class="text-slate-400 hover:text-slate-700 cursor-pointer">
                         <x-lucide-x class="w-5 h-5" />
                     </button>
                 </div>
 
                 <form wire:submit="saveVariant" class="space-y-4">
                     <div class="space-y-1.5">
-                        <label for="newVariantColors" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        <label for="newVariantColors" class="block text-[11px] font-bold uppercase tracking-wider text-slate-600">
                             Color Pattern(s) *
                         </label>
                         <input 
@@ -562,16 +559,16 @@
                             id="newVariantColors" 
                             wire:model="newVariantColors" 
                             placeholder="e.g. Firetiger, Bleeding Olive Flash, Perch" 
-                            class="w-full h-11 px-3.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            class="w-full h-11 px-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                             autofocus
                         >
-                        <span class="text-[10px] text-slate-400 block">Enter one color, or multiple comma-separated colors to batch create variants.</span>
-                        @error('newVariantColors') <span class="text-rose-400 text-[10px] block">{{ $message }}</span> @enderror
+                        <span class="text-[10px] text-slate-500 block">Enter one color, or multiple comma-separated colors to batch create variants.</span>
+                        @error('newVariantColors') <span class="text-rose-600 text-[10px] block">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <div class="space-y-1.5">
-                            <label for="newVariantSize" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                            <label for="newVariantSize" class="block text-[11px] font-bold uppercase tracking-wider text-slate-600">
                                 Size / Weight (Optional)
                             </label>
                             <input 
@@ -579,28 +576,28 @@
                                 id="newVariantSize" 
                                 wire:model="newVariantSize" 
                                 placeholder="e.g. 3/16 oz, 2.5 in" 
-                                class="w-full h-11 px-3.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                                class="w-full h-11 px-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                             >
                         </div>
 
                         <div class="space-y-1.5">
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600">
                                 Running Depth
                             </label>
                             <input 
                                 type="text" 
                                 value="{{ $targetModelDepth ?: 'Standard Depth' }}" 
                                 disabled 
-                                class="w-full h-11 px-3.5 bg-slate-950/60 border border-slate-800 rounded-xl text-xs text-slate-400 font-mono"
+                                class="w-full h-11 px-3.5 bg-slate-100 border border-slate-200 rounded-xl text-xs text-slate-500 font-mono"
                             >
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
+                    <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
                         <button 
                             type="button" 
                             wire:click="closeAddVariantModal" 
-                            class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl border border-slate-700 transition-colors cursor-pointer"
+                            class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-colors cursor-pointer"
                         >
                             Cancel
                         </button>

@@ -1,43 +1,45 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-6">
-    <!-- Sub-navigation Tab Switcher -->
-    <div class="flex items-center justify-between border-b border-slate-200/80 pb-3">
-        <div class="flex items-center gap-2">
-            <a href="{{ url('/angler') }}" class="px-4 py-2 text-xs font-bold rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center gap-2">
-                <x-lucide-users class="w-4 h-4 text-slate-400" />
-                <span>Anglers Directory</span>
-            </a>
-            <a href="{{ url('/angler/stats') }}" class="px-4 py-2 text-xs font-bold rounded-xl bg-teal-500/10 text-teal-700 border border-teal-500/20 flex items-center gap-2 shadow-2xs">
-                <x-lucide-bar-chart-3 class="w-4 h-4 text-teal-600" />
-                <span>Angler Stats & Summary</span>
-            </a>
-        </div>
-
-        <a href="{{ url('/angler/create') }}" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5">
-            <x-lucide-user-plus class="w-3.5 h-3.5" />
-            <span>Add Angler</span>
-        </a>
-    </div>
-
-    <!-- 1. Header Hero Telemetry Banner -->
-    <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 space-y-4">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+<div class="space-y-6 max-w-7xl mx-auto">
+    <!-- 1. Header Hero Telemetry Banner (Matching /profile & /angler standard) -->
+    <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0 shadow-inner">
+                <x-lucide-bar-chart-3 class="w-6 h-6" />
+            </div>
             <div>
-                <h1 class="text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
+                <h1 class="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
                     <span>Angler Telemetry & Summary Stats</span>
                     <span class="bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono">{{ $totalAnglers }} Registered Anglers</span>
                 </h1>
-                <p class="text-xs text-slate-400 font-medium pt-0.5">Aggregate crew analytics, catch distributions, and comprehensive crew comparison metrics</p>
+                <p class="text-xs text-slate-400 mt-0.5">Aggregate crew analytics, catch distributions, and comprehensive crew comparison metrics</p>
             </div>
+        </div>
 
-            <div class="flex items-center gap-2">
-                <a href="{{ url('/record/create') }}" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5">
-                    <x-lucide-plus class="w-3.5 h-3.5" />
-                    <span>Log Catch</span>
-                </a>
-            </div>
+        <div class="flex flex-wrap items-center gap-2.5">
+            <a href="{{ url('/record/quick') }}" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer">
+                <x-lucide-zap class="w-4 h-4 text-teal-400" />
+                <span>Log Catch</span>
+            </a>
+            <a href="{{ url('/angler/create') }}" class="px-4 py-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                <x-lucide-user-plus class="w-4 h-4" />
+                <span>Register Angler</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- 2. Sub-navigation Tab Switcher (Matching /angler standard) -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <div class="flex items-center gap-2">
+            <a href="{{ url('/angler') }}" class="px-3.5 py-1.5 text-xs font-bold rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors flex items-center gap-2">
+                <x-lucide-users class="w-4 h-4 text-slate-400" />
+                <span>Anglers Directory</span>
+            </a>
+            <a href="{{ url('/angler/stats') }}" class="px-3.5 py-1.5 text-xs font-bold rounded-xl bg-teal-50 text-teal-700 border border-teal-200 flex items-center gap-2 shadow-2xs">
+                <x-lucide-bar-chart-3 class="w-4 h-4 text-teal-600" />
+                <span>Angler Stats & Summary</span>
+            </a>
         </div>
     </div>
 

@@ -19,16 +19,12 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2.5 shrink-0">
-                <a href="{{ url('/record') }}" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
-                    <x-lucide-bar-chart-2 class="w-3.5 h-3.5 text-teal-400" />
-                    <span>Telemetry Dashboard</span>
-                </a>
-                <a href="{{ url('/record/create') }}" class="px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-teal-950/50 transition-all flex items-center gap-1.5">
+                <a href="{{ url('/record/create') }}" class="px-4 py-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
                     <x-lucide-plus class="w-4 h-4" />
                     <span>Log New Catch</span>
                 </a>
-                <a href="{{ url('/record/quick') }}" class="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-950/50 transition-all flex items-center gap-1.5">
-                    <x-lucide-zap class="w-4 h-4 text-emerald-200" />
+                <a href="{{ url('/record/quick') }}" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer">
+                    <x-lucide-zap class="w-4 h-4 text-teal-400" />
                     <span>Boat Quick Catch</span>
                 </a>
             </div>
