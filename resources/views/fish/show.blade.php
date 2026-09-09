@@ -2,128 +2,130 @@
 
 @section('content')
 <div class="space-y-6 max-w-7xl mx-auto">
-    <!-- 1. Hero Showcase Section (Matching /profile standard) -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Left: Biological Illustration Canvas Header -->
-        <div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col items-center justify-center relative min-h-[240px] lg:min-h-[280px]">
-            <div class="absolute top-3.5 left-3.5 flex items-center gap-2">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 border border-slate-200 text-slate-800 text-xs font-bold rounded-xl shadow-2xs">
-                    <x-lucide-layers class="w-3.5 h-3.5 text-teal-600" />
-                    <span>{{ $fish->family?->name ? $fish->family->name . ' Family' : 'Freshwater Taxonomy' }}</span>
-                </span>
-            </div>
+    <!-- Status Alerts -->
+    @if (session('status'))
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold p-4 rounded-xl shadow-sm flex items-center gap-2">
+            <x-lucide-check-circle class="w-4 h-4 text-emerald-600" />
+            <span>{{ session('status') }}</span>
+        </div>
+    @endif
 
-            <div class="w-full h-full flex items-center justify-center p-2">
+    <!-- 1. Unified Species Hero Header (Matching /angler/profile & /lake/show) -->
+    <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex flex-col md:flex-row items-center gap-5 text-center md:text-left">
+            <div class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white/5 border border-white/10 p-2 flex items-center justify-center shrink-0 overflow-hidden shadow-inner group">
                 @if($fish->imageUrl)
-                    <img src="{{ $fish->imageUrl }}" alt="{{ $fish->name }}" class="max-h-56 w-auto object-contain mix-blend-multiply hover:scale-105 transition-transform duration-300">
+                    <img src="{{ $fish->imageUrl }}" alt="{{ $fish->name }}" class="w-full h-full object-contain hover:scale-110 transition-transform duration-300">
                 @elseif($fish->avatarUrl)
-                    <img src="{{ $fish->avatarUrl }}" alt="{{ $fish->name }}" class="max-h-52 w-auto object-contain hover:scale-105 transition-transform duration-300">
+                    <img src="{{ $fish->avatarUrl }}" alt="{{ $fish->name }}" class="w-full h-full object-contain hover:scale-110 transition-transform duration-300">
                 @else
-                    <div class="text-center space-y-2 py-8">
-                        <div class="w-16 h-16 rounded-2xl bg-teal-50 border border-teal-100 text-teal-600 flex items-center justify-center mx-auto">
-                            <x-lucide-fish class="w-8 h-8" />
-                        </div>
-                        <span class="text-xs text-slate-400 font-medium block">No biological photo uploaded</span>
+                    <div class="w-12 h-12 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center">
+                        <x-lucide-fish class="w-7 h-7" />
                     </div>
                 @endif
             </div>
+
+            <div>
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1.5">
+                    <span class="text-[11px] font-mono font-bold uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-500/30 px-2.5 py-0.5 rounded-lg">
+                        Species Intelligence Dossier
+                    </span>
+                    <span class="text-[11px] font-mono font-bold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-0.5 rounded-lg">
+                        {{ $fish->family?->name ? $fish->family->name . ' Family' : 'Freshwater Taxonomy' }}
+                    </span>
+                    <span class="text-[11px] font-mono text-slate-400">ID: {{ substr($fish->id, 0, 8) }}</span>
+                    @if($trophyThreshold)
+                        <span class="text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-0.5 rounded-lg">
+                            Trophy Benchmark: {{ $trophyThreshold }}"+
+                        </span>
+                    @endif
+                </div>
+
+                <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center justify-center md:justify-start gap-2">
+                    <span>{{ $fish->name }}</span>
+                    <a href="/fish/breed/{{ $fish->id }}/edit" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit Species">
+                        <x-lucide-edit-3 class="w-4 h-4" />
+                    </a>
+                </h1>
+
+                <p class="text-xs font-medium text-teal-400 mt-1 flex items-center justify-center md:justify-start gap-1.5">
+                    <x-lucide-activity class="w-3.5 h-3.5 text-teal-400" />
+                    <span>{{ $fish->family?->name ? $fish->family->name . ' Biological Family &bull; ' : '' }}Ontario Fishery Telemetry & Angler Intelligence</span>
+                </p>
+            </div>
         </div>
 
-        <!-- Right: Species Dossier & Tactical KPI Hero -->
-        <div class="lg:col-span-7 bg-slate-900 text-white rounded-2xl p-6 sm:p-7 border border-slate-800 shadow-md flex flex-col justify-between space-y-6">
-            <div class="space-y-3">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                    <div class="flex items-center gap-2">
-                        <span class="text-[11px] font-mono font-bold uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-500/30 px-2.5 py-0.5 rounded-lg">
-                            Species Intelligence Dossier
-                        </span>
-                        <span class="text-xs text-slate-400 font-mono">ID: {{ substr($fish->id, 0, 8) }}</span>
-                    </div>
+        <div class="flex flex-wrap items-center justify-center gap-2.5 shrink-0">
+            <a href="/fish" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
+                <x-lucide-arrow-left class="w-3.5 h-3.5 text-slate-400" />
+                <span>Field Guide</span>
+            </a>
+            <a href="/fish/breed/{{ $fish->id }}/edit" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
+                <x-lucide-edit-3 class="w-3.5 h-3.5 text-teal-400" />
+                <span>Edit Specs</span>
+            </a>
+            <a href="{{ url('/record/quick?fish_breed_id=' . $fish->id) }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-lg shadow-teal-950/40 transition-all cursor-pointer active:scale-95">
+                <x-lucide-zap class="w-4 h-4 text-teal-200" />
+                <span>Quick Catch</span>
+            </a>
+        </div>
+    </div>
 
-                    <div class="flex items-center gap-2">
-                        <a href="/fish" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer">
-                            <x-lucide-arrow-left class="w-3.5 h-3.5 text-slate-400" />
-                            <span>Field Guide</span>
-                        </a>
-                        <a href="/fish/breed/{{ $fish->id }}/edit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer">
-                            <x-lucide-edit-3 class="w-3.5 h-3.5 text-slate-400" />
-                            <span>Edit</span>
-                        </a>
-                    </div>
-                </div>
-
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-                        <span>{{ $fish->name }}</span>
-                    </h1>
-                    <p class="text-xs text-teal-400 font-semibold mt-0.5">
-                        {{ $fish->family?->name ? $fish->family->name . ' Biological Family' : 'Freshwater Gamefish' }} &bull; Ontario Fishery Telemetry
-                    </p>
-                </div>
+    <!-- 2. Key Telemetry KPI Metrics Grid (Matching /angler/profile & /lake/show) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Card 1: Total Logged -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Total Logged</span>
+                <span class="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1 block">{{ number_format($count) }}</span>
+                <span class="text-[11px] text-teal-600 font-semibold mt-1 inline-flex items-center gap-1">
+                    <x-lucide-map-pin class="w-3 h-3" /> Across {{ count($lakes) }} Unique Waters
+                </span>
             </div>
-
-            <!-- Key Telemetry KPI Metric Cards -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 space-y-1">
-                    <div class="flex items-center justify-between text-slate-400">
-                        <span class="text-[10px] font-bold uppercase tracking-wider">Total Logged</span>
-                        <x-lucide-fish class="w-3.5 h-3.5 text-teal-400" />
-                    </div>
-                    <span class="text-xl sm:text-2xl font-black text-white block font-mono">{{ number_format($count) }}</span>
-                    <span class="text-[10px] text-slate-400 block truncate">Across {{ count($lakes) }} waters</span>
-                </div>
-
-                <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 space-y-1">
-                    <div class="flex items-center justify-between text-amber-300">
-                        <span class="text-[10px] font-bold uppercase tracking-wider">Record Length</span>
-                        <x-lucide-trophy class="w-3.5 h-3.5 text-amber-400" />
-                    </div>
-                    <span class="text-xl sm:text-2xl font-black text-amber-300 block font-mono">
-                        {{ $longest ? number_format($longest, 1) . '"' : '—' }}
-                    </span>
-                    <span class="text-[10px] text-slate-400 block truncate">
-                        {{ $recordTrophy?->angler?->fullName ? 'By ' . $recordTrophy->angler->fullName : 'No records' }}
-                    </span>
-                </div>
-
-                <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 space-y-1">
-                    <div class="flex items-center justify-between text-amber-300">
-                        <span class="text-[10px] font-bold uppercase tracking-wider">Record Weight</span>
-                        <x-lucide-award class="w-3.5 h-3.5 text-amber-400" />
-                    </div>
-                    <span class="text-xl sm:text-2xl font-black text-amber-300 block font-mono">
-                        {{ $fattest ? number_format($fattest, 1) . ' lbs' : '—' }}
-                    </span>
-                    <span class="text-[10px] text-slate-400 block truncate">
-                        {{ $heaviestTrophy?->angler?->fullName ? 'By ' . $heaviestTrophy->angler->fullName : 'No data' }}
-                    </span>
-                </div>
-
-                <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 space-y-1">
-                    <div class="flex items-center justify-between text-emerald-400">
-                        <span class="text-[10px] font-bold uppercase tracking-wider">C&R Rate</span>
-                        <x-lucide-waves class="w-3.5 h-3.5 text-emerald-400" />
-                    </div>
-                    <span class="text-xl sm:text-2xl font-black text-emerald-400 block font-mono">{{ $speciesReleaseRate }}%</span>
-                    <span class="text-[10px] text-slate-400 block truncate">Conservation rate</span>
-                </div>
+            <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
+                <x-lucide-fish class="w-6 h-6" />
             </div>
+        </div>
 
-            <!-- Quick Action CTA -->
-            <div class="pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
-                <a 
-                    href="/record/quick?fish_breed_id={{ $fish->id }}" 
-                    class="px-4 py-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-                >
-                    <x-lucide-zap class="w-4 h-4 text-teal-200" />
-                    <span>Quick Catch for {{ $fish->name }}</span>
-                </a>
+        <!-- Card 2: Record Length -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Record Length</span>
+                <span class="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1 block">{{ $longest ? number_format($longest, 1) . '"' : '—' }}</span>
+                <span class="text-[11px] text-amber-600 font-semibold mt-1 inline-flex items-center gap-1 truncate max-w-[150px]" title="{{ $recordTrophy?->angler?->fullName ? 'By ' . $recordTrophy->angler->fullName : 'No records' }}">
+                    <x-lucide-trophy class="w-3 h-3 shrink-0" /> <span class="truncate">{{ $recordTrophy?->angler?->fullName ? 'By ' . $recordTrophy->angler->fullName : 'No records' }}</span>
+                </span>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0">
+                <x-lucide-ruler class="w-6 h-6" />
+            </div>
+        </div>
 
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-slate-400 font-mono">
-                        Trophy Benchmark: <strong class="text-amber-300">{{ $trophyThreshold }}"+</strong> ({{ $trophyCatchesCount }} landed)
-                    </span>
-                </div>
+        <!-- Card 3: Record Weight -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Record Weight</span>
+                <span class="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1 block">{{ $fattest ? number_format($fattest, 1) . ' lbs' : '—' }}</span>
+                <span class="text-[11px] text-amber-600 font-semibold mt-1 inline-flex items-center gap-1 truncate max-w-[150px]" title="{{ $heaviestTrophy?->angler?->fullName ? 'By ' . $heaviestTrophy->angler->fullName : 'No data' }}">
+                    <x-lucide-award class="w-3 h-3 shrink-0" /> <span class="truncate">{{ $heaviestTrophy?->angler?->fullName ? 'By ' . $heaviestTrophy->angler->fullName : 'No data' }}</span>
+                </span>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0">
+                <x-lucide-scale class="w-6 h-6" />
+            </div>
+        </div>
+
+        <!-- Card 4: C&R Conservation -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
+            <div>
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">C&R Conservation</span>
+                <span class="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1 block">{{ $speciesReleaseRate }}%</span>
+                <span class="text-[11px] text-emerald-600 font-semibold mt-1 inline-flex items-center gap-1">
+                    <x-lucide-shield-check class="w-3 h-3" /> {{ number_format($releasedCount) }} Released Safe
+                </span>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
+                <x-lucide-waves class="w-6 h-6" />
             </div>
         </div>
     </div>

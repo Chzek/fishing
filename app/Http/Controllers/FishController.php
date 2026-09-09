@@ -342,6 +342,7 @@ class FishController extends Controller
             'topAngler' => $topAngler,
             'topAnglerShare' => $topAnglerShare,
             'speciesReleaseRate' => $speciesReleaseRate,
+            'releasedCount' => $releasedCount,
             'monthlyStats' => $monthlyStats,
             'peakMonth' => $peakMonth,
             'lakes' => $lakes,
