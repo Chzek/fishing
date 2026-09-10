@@ -41,10 +41,22 @@ class ProfileController extends Controller
 
             $crews = Crew::where('anglers_id', $angler->id)->count();
 
+            $longest = Record::where('anglers_id', $angler->id)
+                ->whereNotNull('length')
+                ->orderBy('length', 'desc')
+                ->with(['fishBreed', 'lake', 'lure'])
+                ->first();
+
+            $fattest = Record::where('anglers_id', $angler->id)
+                ->whereNotNull('weight')
+                ->orderBy('weight', 'desc')
+                ->with(['fishBreed', 'lake', 'lure'])
+                ->first();
+
             $personalBest = [
-                'byLength' => PersonalBestController::bestByLength($angler),
-                'byWeight' => PersonalBestController::bestByWeight($angler),
-                'lakeWithMostCatches' => PersonalBestController::lakeWithMostCatches($angler),
+                'byLength' => $longest,
+                'byWeight' => $fattest,
+                'lakeWithMostCatches' => $angler->lakeWithMostCatches(),
             ];
 
             $record_count = Record::where('anglers_id', $angler->id)->count();

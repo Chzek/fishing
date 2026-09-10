@@ -27,16 +27,7 @@
     </div>
 
     <!-- Status Alerts -->
-    @if (session('status'))
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold p-4 rounded-xl shadow-sm">
-            {{ session('status') }}
-        </div>
-    @endif
-    @if (session('error'))
-        <div class="bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold p-4 rounded-xl shadow-sm">
-            {{ session('error') }}
-        </div>
-    @endif
+    <x-statusAlert />
 
     <!-- Unread User Registration Notifications & Unlinked Accounts Banner -->
     @if(!empty($unreadNotifications) && $unreadNotifications->count() > 0)

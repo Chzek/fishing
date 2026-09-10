@@ -86,11 +86,7 @@
         </div>
     @endif
 
-    @if (session('error'))
-        <div class="bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold p-4 rounded-xl shadow-sm">
-            {{ session('error') }}
-        </div>
-    @endif
+    <x-statusAlert />
 
     <!-- Unlinked Accounts / Notifications Alert Banner -->
     @if(!empty($unreadNotifications) && $unreadNotifications->count() > 0)

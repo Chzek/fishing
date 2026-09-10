@@ -3,7 +3,6 @@
 namespace Fishinglog\Http\Controllers\Angler;
 
 use Fishinglog\Http\Controllers\Controller;
-use Fishinglog\Http\Controllers\PersonalBestController;
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\Crew;
 use Fishinglog\Models\Record;
@@ -30,7 +29,7 @@ class AnglerProfileController extends Controller
         $personalBest = [
             'byLength' => $longest,
             'byWeight' => $fattest,
-            'lakeWithMostCatches' => PersonalBestController::lakeWithMostCatches($angler),
+            'lakeWithMostCatches' => $angler->lakeWithMostCatches(),
         ];
 
         // Pipeline query for interactive angler catches table

@@ -22,11 +22,6 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 - **Impact**: **Medium** (Real-Time Weather Signals)
 - **Description**: Reactive weather widget that auto-fetches or updates live barometric pressure trends, wind velocity/direction, and surface water temp when selecting lakes during catch logging.
 
-#### 8. Catch Logbook CSV / Excel Streaming Export (`spatie/laravel-simple-excel`)
-- **Agents**: `laravel-architect`
-- **Impact**: **Low-Medium** (Data Portability)
-- **Description**: Zero-overhead streaming CSV/XLSX export for annual Catch Logbooks and Expedition summary sheets.
-
 ---
 
 ## 📦 Laravel & Livewire Ecosystem Package Evaluation
@@ -37,7 +32,6 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 | [`blade-ui-kit/blade-lucide-icons`](https://github.com/blade-ui-kit/blade-lucide-icons) | Blade / UI | Server-rendered Lucide icons (`<x-lucide-fish />`) eliminating JS DOM injection delays & SVG duplication. | **Completed** |
 | [`larastan/larastan`](https://github.com/larastan/larastan) *(dev)* | Static Analysis | Strict level typing, Eloquent relationship validation, and null safety checks across all 13 models & services. | **Completed** |
 | [`matanyadaev/laravel-eloquent-spatial`](https://github.com/matanyadaev/laravel-eloquent-spatial) | GIS / Mapping | Native MySQL 8 spatial geometry (`Point`, `Polygon`) with distance scopes (`whereDistance`) for Leaflet waypoint radius queries. | **P2 (Map Feature)** |
-| [`spatie/laravel-simple-excel`](https://github.com/spatie/laravel-simple-excel) | Data Export | Zero-overhead streaming CSV/XLSX export for annual Catch Logbooks and Expedition summary sheets. | **P2 (Feature-driven)** |
 | [`livewire/volt`](https://github.com/livewire/volt) | Livewire DX | Single-file reactive components for lightweight boat widgets (Barometer Telemetry, species badges). | **P3 (DX)** |
 | [`laravel/boost`](https://github.com/laravel/boost) *(dev)* | AI Tooling / MCP | Optional MCP server for IDEs; requires Sail container wrapper configuration. | **P3 (Optional)** |
 

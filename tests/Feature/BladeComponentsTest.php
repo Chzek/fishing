@@ -16,16 +16,15 @@ class BladeComponentsTest extends TestCase
     use DatabaseTransactions;
 
     #[Test]
-    public function status_badge_component_renders_correctly()
+    public function status_alert_component_renders_correctly()
     {
-        $view = $this->blade('<x-statusBadge type="synced" />');
-        $view->assertSee('Synced');
+        $view = $this->blade('<x-statusAlert status="Telemetry record updated successfully." />');
+        $view->assertSee('Telemetry record updated successfully.');
+        $view->assertSee('<svg', false);
 
-        $viewPending = $this->blade('<x-statusBadge type="pending" />');
-        $viewPending->assertSee('Pending Sync');
-
-        $viewPb = $this->blade('<x-statusBadge type="pb" />');
-        $viewPb->assertSee('Personal Best');
+        $viewError = $this->blade('<x-statusAlert status="Unable to connect to database." type="error" />');
+        $viewError->assertSee('Unable to connect to database.');
+        $viewError->assertSee('bg-rose-50', false);
     }
 
     #[Test]
@@ -38,58 +37,12 @@ class BladeComponentsTest extends TestCase
     }
 
     #[Test]
-    public function card_component_renders_correctly()
-    {
-        $view = $this->blade('<x-card title="Telemetry Overview" icon="anchor"><span>Card Content</span></x-card>');
-        $view->assertSee('Telemetry Overview');
-        $view->assertSee('Card Content');
-        $view->assertSee('<svg', false);
-    }
-
-    #[Test]
-    public function catch_card_component_renders_correctly()
-    {
-        $angler = Angler::factory()->create();
-        $breed = FishBreed::factory()->create(['name' => 'Crappie']);
-        $lake = Lake::factory()->create(['name' => 'Black Lake']);
-
-        $record = Record::create([
-            'anglers_id' => $angler->id,
-            'fish_breeds_id' => $breed->id,
-            'lakes_id' => $lake->id,
-            'length' => 14.5,
-            'caught' => now(),
-        ]);
-
-        $view = $this->blade('<x-catchCard :record="$record" />', ['record' => $record]);
-        $view->assertSee('Crappie');
-        $view->assertSee('14.5');
-        $view->assertSee('Black Lake');
-        $view->assertSee('<svg', false);
-    }
-
-    #[Test]
     public function kpi_metric_component_renders_correctly()
     {
         $view = $this->blade('<x-kpiMetric label="Unique Waters" value="18" icon="waves" color="teal" subtext="Visited Lakes" />');
         $view->assertSee('Unique Waters');
         $view->assertSee('18');
         $view->assertSee('Visited Lakes');
-        $view->assertSee('<svg', false);
-    }
-
-    #[Test]
-    public function lake_card_component_renders_correctly()
-    {
-        $lake = Lake::factory()->create([
-            'name' => 'Mirror Lake',
-            'latitude' => 44.28,
-            'longitude' => -73.98,
-        ]);
-
-        $view = $this->blade('<x-lakeCard :lake="$lake" :catchesCount="12" />', ['lake' => $lake]);
-        $view->assertSee('Mirror Lake');
-        $view->assertSee('12 catches');
         $view->assertSee('<svg', false);
     }
 

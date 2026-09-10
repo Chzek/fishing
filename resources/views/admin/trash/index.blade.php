@@ -22,11 +22,7 @@
     </div>
 
     <!-- Status Alerts -->
-    @if (session('status'))
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold p-4 rounded-xl shadow-sm">
-            {{ session('status') }}
-        </div>
-    @endif
+    <x-statusAlert />
 
     <!-- Category Tabs -->
     <div class="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs font-bold">

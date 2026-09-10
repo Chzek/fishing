@@ -49,12 +49,7 @@
     </div>
 
     <!-- Status Alerts -->
-    @if (session('status'))
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold p-4 rounded-xl shadow-sm flex items-center gap-2">
-            <x-lucide-check-circle class="w-4 h-4 text-emerald-600" />
-            <span>{{ session('status') }}</span>
-        </div>
-    @endif
+    <x-statusAlert />
 
     <!-- Telemetry Stats Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">

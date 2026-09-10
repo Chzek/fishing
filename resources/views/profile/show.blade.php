@@ -2,12 +2,7 @@
 
 @section('content')
 <div class="space-y-6">
-    @if (session('status'))
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-xl p-4 flex items-center gap-3 shadow-sm" role="alert">
-            <x-lucide-check-circle class="w-5 h-5 text-emerald-500 shrink-0" />
-            <span>{{ session('status') }}</span>
-        </div>
-    @endif
+    <x-statusAlert />
 
     @if (isset($angler))
         <!-- Hero Angler Profile Header -->

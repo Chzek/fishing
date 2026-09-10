@@ -44,54 +44,11 @@
     </div>
 
     <!-- 2. Summary KPI Metrics Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <!-- Total Crew Catch Volume -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-1">
-            <div class="flex items-center justify-between text-slate-500">
-                <span class="text-xs font-bold uppercase tracking-wider">Total Catches</span>
-                <div class="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-600 flex items-center justify-center">
-                    <x-lucide-fish class="w-4 h-4" />
-                </div>
-            </div>
-            <strong class="text-2xl font-black text-slate-900 font-mono block">{{ number_format($totalRecords) }}</strong>
-            <span class="text-[11px] text-slate-400 font-medium">Logged across all waters</span>
-        </div>
-
-        <!-- Overall Catch & Release Rate -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-1">
-            <div class="flex items-center justify-between text-slate-500">
-                <span class="text-xs font-bold uppercase tracking-wider">Conservation Rate</span>
-                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
-                    <x-lucide-waves class="w-4 h-4" />
-                </div>
-            </div>
-            <strong class="text-2xl font-black text-emerald-600 font-mono block">{{ $overallReleaseRate }}%</strong>
-            <span class="text-[11px] text-slate-400 font-medium">Catch and release conservation</span>
-        </div>
-
-        <!-- Avg Catches Per Angler -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-1">
-            <div class="flex items-center justify-between text-slate-500">
-                <span class="text-xs font-bold uppercase tracking-wider">Avg Catches / Angler</span>
-                <div class="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-600 flex items-center justify-center">
-                    <x-lucide-trending-up class="w-4 h-4" />
-                </div>
-            </div>
-            <strong class="text-2xl font-black text-slate-900 font-mono block">{{ $avgCatchesPerAngler }}</strong>
-            <span class="text-[11px] text-slate-400 font-medium">Mean logbook output</span>
-        </div>
-
-        <!-- Avg Waters Fished -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-1">
-            <div class="flex items-center justify-between text-slate-500">
-                <span class="text-xs font-bold uppercase tracking-wider">Avg Waters Fished</span>
-                <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
-                    <x-lucide-compass class="w-4 h-4" />
-                </div>
-            </div>
-            <strong class="text-2xl font-black text-slate-900 font-mono block">{{ $avgLakesPerAngler }}</strong>
-            <span class="text-[11px] text-slate-400 font-medium">Unique lakes / angler</span>
-        </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <x-kpiMetric label="Total Catches" :value="$totalRecords" icon="fish" color="teal" subtext="Logged across all waters" />
+        <x-kpiMetric label="Conservation Rate" :value="$overallReleaseRate . '%'" icon="waves" color="emerald" subtext="Catch and release conservation" />
+        <x-kpiMetric label="Avg Catches / Angler" :value="$avgCatchesPerAngler" icon="trending-up" color="sky" subtext="Mean logbook output" />
+        <x-kpiMetric label="Avg Waters Fished" :value="$avgLakesPerAngler" icon="compass" color="indigo" subtext="Unique lakes / angler" />
     </div>
 
     <!-- 3. Telemetry Visual Breakdown & Activity Tiering -->

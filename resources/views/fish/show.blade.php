@@ -3,12 +3,7 @@
 @section('content')
 <div class="space-y-6 max-w-7xl mx-auto">
     <!-- Status Alerts -->
-    @if (session('status'))
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold p-4 rounded-xl shadow-sm flex items-center gap-2">
-            <x-lucide-check-circle class="w-4 h-4 text-emerald-600" />
-            <span>{{ session('status') }}</span>
-        </div>
-    @endif
+    <x-statusAlert />
 
     <!-- 1. Unified Species Hero Header (Matching /angler/profile & /lake/show) -->
     <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">

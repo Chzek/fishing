@@ -117,6 +117,21 @@ class Angler extends Model
     }
 
     /**
+     * Get the lake where this angler has recorded the most catches.
+     */
+    public function lakeWithMostCatches(): ?Lake
+    {
+        $topLake = Record::select('lakes_id', \Illuminate\Support\Facades\DB::raw('count(id) as total'))
+            ->where('anglers_id', $this->id)
+            ->whereNotNull('lakes_id')
+            ->groupBy('lakes_id')
+            ->orderBy('total', 'desc')
+            ->first();
+
+        return $topLake ? Lake::find($topLake->lakes_id) : null;
+    }
+
+    /**
      * Get all photos attached directly to this angler.
      */
     public function photos()

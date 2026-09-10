@@ -2,12 +2,7 @@
 
 @section('content')
 <div class="space-y-6">
-    @if (session('status'))
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm rounded-xl p-4 flex items-center gap-3 shadow-sm" role="alert">
-            <x-lucide-check-circle class="w-5 h-5 text-emerald-500 shrink-0" />
-            <span>{{ session('status') }}</span>
-        </div>
-    @endif
+    <x-statusAlert />
 
     @if (isset($angler))
         <!-- Hero Angler Profile Header -->
@@ -47,49 +42,11 @@
             </div>
         </div>
 
-        <!-- Metrics Key Stats Row -->
+        <!-- KPI Metrics Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <!-- Lakes Visited -->
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
-                <div>
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Lakes Visited</span>
-                    <span class="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1 block">{{ $lake_count }}</span>
-                    <span class="text-[11px] text-teal-600 font-semibold mt-1 inline-flex items-center gap-1">
-                        <x-lucide-map-pin class="w-3 h-3" /> Unique Waters
-                    </span>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
-                    <x-lucide-waves class="w-6 h-6" />
-                </div>
-            </div>
-
-            <!-- Fish Caught -->
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
-                <div>
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Fish Caught</span>
-                    <span class="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1 block">{{ $record_count }}</span>
-                    <span class="text-[11px] text-emerald-600 font-semibold mt-1 inline-flex items-center gap-1">
-                        <x-lucide-trending-up class="w-3 h-3" /> Logbook Catches
-                    </span>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
-                    <x-lucide-fish class="w-6 h-6" />
-                </div>
-            </div>
-
-            <!-- Expeditions -->
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
-                <div>
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Expeditions</span>
-                    <span class="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1 block">{{ $crews }}</span>
-                    <span class="text-[11px] text-sky-600 font-semibold mt-1 inline-flex items-center gap-1">
-                        <x-lucide-navigation class="w-3 h-3" /> Crew Trips
-                    </span>
-                </div>
-                <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center shrink-0">
-                    <x-lucide-ship class="w-6 h-6" />
-                </div>
-            </div>
+            <x-kpiMetric label="Lakes Visited" :value="$lake_count" icon="waves" color="teal" subtext="Unique Waters" subtextIcon="map-pin" />
+            <x-kpiMetric label="Fish Caught" :value="$record_count" icon="fish" color="emerald" subtext="Logbook Catches" subtextIcon="trending-up" />
+            <x-kpiMetric label="Expeditions" :value="$crews" icon="ship" color="sky" subtext="Crew Trips" subtextIcon="navigation" />
         </div>
 
         <!-- Personal Best Trophies Cards Section -->
