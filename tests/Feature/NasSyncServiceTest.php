@@ -85,7 +85,7 @@ class NasSyncServiceTest extends TestCase
             'https://nas.example.com/api/v1/sync/push' => function (\Illuminate\Http\Client\Request $request) use ($localPhoto) {
                 $data = $request->data();
                 $photos = $data['photos'] ?? [];
-                if (count($photos) > 0 && isset($photos[0]['file_base64'])) {
+                if (count($photos) > 0) {
                     return Http::response([
                         'status' => 'success',
                         'synced_uuids' => [$localPhoto->id],
@@ -94,6 +94,14 @@ class NasSyncServiceTest extends TestCase
                 }
                 return Http::response(['status' => 'error'], 400);
             },
+            'https://nas.example.com/api/v1/sync/media/verify' => Http::response([
+                'status' => 'success',
+                'missing_paths' => [$localPhotoPath],
+            ], 200),
+            'https://nas.example.com/api/v1/sync/media/chunk' => Http::response([
+                'status' => 'success',
+                'completed' => true,
+            ], 200),
             'https://nas.example.com/api/v1/sync/pull*' => Http::response([
                 'photos' => [
                     [

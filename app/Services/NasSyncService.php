@@ -25,6 +25,7 @@ class NasSyncService
 {
     protected string $nasUrl;
     protected string $apiToken;
+    protected MediaSyncManager $mediaSyncManager;
 
     protected array $modelMap = [
         'users' => User::class,
@@ -58,10 +59,11 @@ class NasSyncService
         'users' => 'Users',
     ];
 
-    public function __construct(?string $nasUrl = null, ?string $apiToken = null)
+    public function __construct(?string $nasUrl = null, ?string $apiToken = null, ?MediaSyncManager $mediaSyncManager = null)
     {
         $this->nasUrl = rtrim($nasUrl ?? (string) config('services.nas.url', ''), '/');
         $this->apiToken = $apiToken ?? (string) config('services.nas.token', '');
+        $this->mediaSyncManager = $mediaSyncManager ?? app(MediaSyncManager::class);
     }
 
     /**
@@ -116,6 +118,7 @@ class NasSyncService
         $pulledCount = 0;
         $pushedBreakdown = [];
         $pulledBreakdown = [];
+        $mediaToVerify = [];
 
         // 1. Execute Push model by model in chunks to prevent request payload size and timeout limits on NAS server
         foreach ($this->modelMap as $key => $modelClass) {
@@ -124,32 +127,48 @@ class NasSyncService
                 continue;
             }
 
-            $chunkSize = in_array($key, ['photos', 'fish_breeds', 'anglers']) ? 2 : 50;
+            // Standard models chunked at 50; media models chunked at 25 since binary is streamed separately
+            $chunkSize = 50;
             foreach ($pending->chunk($chunkSize) as $chunk) {
 
-                $itemsArray = $chunk->map(function ($item) use ($key) {
+                $itemsArray = $chunk->map(function ($item) use ($key, &$mediaToVerify) {
                     $data = method_exists($item, 'makeVisible')
                         ? $item->makeVisible(['password', 'remember_token'])->toArray()
                         : $item->toArray();
 
+                    // Track media assets for SHA-256 chunked streaming
                     if ($key === 'photos' && !empty($item->path) && Storage::disk('public')->exists($item->path)) {
-                        $data['file_base64'] = base64_encode(Storage::disk('public')->get($item->path));
+                        $hash = $this->mediaSyncManager->computeHash($item->path);
+                        if ($hash) {
+                            $mediaToVerify[] = ['path' => $item->path, 'hash' => $hash];
+                        }
                     }
                     if ($key === 'anglers' && !empty($item->avatar) && Storage::disk('public')->exists('avatars/' . $item->avatar)) {
-                        $data['avatar_base64'] = base64_encode(Storage::disk('public')->get('avatars/' . $item->avatar));
+                        $avatarPath = 'avatars/' . $item->avatar;
+                        $hash = $this->mediaSyncManager->computeHash($avatarPath);
+                        if ($hash) {
+                            $mediaToVerify[] = ['path' => $avatarPath, 'hash' => $hash];
+                        }
                     }
                     if ($key === 'fish_breeds') {
                         if (!empty($item->avatar) && Storage::disk('public')->exists('fish/avatars/' . $item->avatar)) {
-                            $data['avatar_base64'] = base64_encode(Storage::disk('public')->get('fish/avatars/' . $item->avatar));
+                            $avatarPath = 'fish/avatars/' . $item->avatar;
+                            $hash = $this->mediaSyncManager->computeHash($avatarPath);
+                            if ($hash) {
+                                $mediaToVerify[] = ['path' => $avatarPath, 'hash' => $hash];
+                            }
                         }
                         if (!empty($item->image) && Storage::disk('public')->exists('fish/' . $item->image)) {
-                            $data['image_base64'] = base64_encode(Storage::disk('public')->get('fish/' . $item->image));
+                            $imagePath = 'fish/' . $item->image;
+                            $hash = $this->mediaSyncManager->computeHash($imagePath);
+                            if ($hash) {
+                                $mediaToVerify[] = ['path' => $imagePath, 'hash' => $hash];
+                            }
                         }
                     }
 
                     return $data;
                 })->all();
-
 
                 $pushPayload = [$key => $itemsArray];
                 $localPendingByUuid = [];
@@ -180,6 +199,16 @@ class NasSyncService
             }
         }
 
+        // 2. Stream pending media binary files in multi-chunk slices with SHA-256 deduplication
+        if (!empty($mediaToVerify)) {
+            $missingPaths = $this->mediaSyncManager->verifyRemoteMedia($this->nasUrl, $this->apiToken, $mediaToVerify);
+            foreach ($missingPaths as $path) {
+                if (Storage::disk('public')->exists($path)) {
+                    $this->mediaSyncManager->uploadFileInChunks($this->nasUrl, $this->apiToken, $path, $path);
+                }
+            }
+        }
+
         // 3. Execute Pull for downstream updates
         $lastSyncedAt = $forceBaseline ? null : $this->getLastSyncedAt();
         $pullQueryParams = $lastSyncedAt ? ['since' => $lastSyncedAt, 'mark_synced' => 1] : ['mark_synced' => 1];
@@ -203,19 +232,31 @@ class NasSyncService
                     continue;
                 }
 
-                // If remote photo or avatar includes binary file payload, write to local storage
+                // If remote photo or avatar includes legacy binary file payload, write to local storage
                 if ($key === 'photos' && !empty($remoteItem['file_base64']) && !empty($remoteItem['path'])) {
                     Storage::disk('public')->put($remoteItem['path'], base64_decode($remoteItem['file_base64']));
+                } elseif ($key === 'photos' && !empty($remoteItem['path']) && !Storage::disk('public')->exists($remoteItem['path'])) {
+                    // Stream download missing photo from NAS server
+                    $this->mediaSyncManager->downloadFile($this->nasUrl, $this->apiToken, $remoteItem['path'], $remoteItem['path']);
                 }
+
                 if ($key === 'anglers' && !empty($remoteItem['avatar_base64']) && !empty($remoteItem['avatar'])) {
                     Storage::disk('public')->put('avatars/' . $remoteItem['avatar'], base64_decode($remoteItem['avatar_base64']));
+                } elseif ($key === 'anglers' && !empty($remoteItem['avatar']) && !Storage::disk('public')->exists('avatars/' . $remoteItem['avatar'])) {
+                    $this->mediaSyncManager->downloadFile($this->nasUrl, $this->apiToken, 'avatars/' . $remoteItem['avatar'], 'avatars/' . $remoteItem['avatar']);
                 }
+
                 if ($key === 'fish_breeds') {
                     if (!empty($remoteItem['avatar_base64']) && !empty($remoteItem['avatar'])) {
                         Storage::disk('public')->put('fish/avatars/' . $remoteItem['avatar'], base64_decode($remoteItem['avatar_base64']));
+                    } elseif (!empty($remoteItem['avatar']) && !Storage::disk('public')->exists('fish/avatars/' . $remoteItem['avatar'])) {
+                        $this->mediaSyncManager->downloadFile($this->nasUrl, $this->apiToken, 'fish/avatars/' . $remoteItem['avatar'], 'fish/avatars/' . $remoteItem['avatar']);
                     }
+
                     if (!empty($remoteItem['image_base64']) && !empty($remoteItem['image'])) {
                         Storage::disk('public')->put('fish/' . $remoteItem['image'], base64_decode($remoteItem['image_base64']));
+                    } elseif (!empty($remoteItem['image']) && !Storage::disk('public')->exists('fish/' . $remoteItem['image'])) {
+                        $this->mediaSyncManager->downloadFile($this->nasUrl, $this->apiToken, 'fish/' . $remoteItem['image'], 'fish/' . $remoteItem['image']);
                     }
                 }
 

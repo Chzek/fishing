@@ -24,6 +24,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::prefix('v1')->group(function () {
     Route::post('/sync/push', [Fishinglog\Http\Controllers\Api\v1\SyncApiController::class, 'push']);
     Route::get('/sync/pull', [Fishinglog\Http\Controllers\Api\v1\SyncApiController::class, 'pull']);
+    Route::post('/sync/media/verify', [Fishinglog\Http\Controllers\Api\v1\SyncApiController::class, 'verifyMedia']);
+    Route::post('/sync/media/chunk', [Fishinglog\Http\Controllers\Api\v1\SyncApiController::class, 'uploadMediaChunk']);
+    Route::get('/sync/media/download', [Fishinglog\Http\Controllers\Api\v1\SyncApiController::class, 'downloadMedia']);
 
     Route::get('/reference-data', [ReferenceApiController::class, 'index']);
 

@@ -238,4 +238,181 @@ class SyncApiController extends Controller
 
         return response()->json($payload);
     }
+
+    /**
+     * Verify which media files need syncing via SHA-256 hashes.
+     */
+    public function verifyMedia(Request $request)
+    {
+        if (!$this->isAuthorized($request)) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        $media = $request->input('media', []);
+        if (!is_array($media)) {
+            return response()->json(['missing_paths' => []]);
+        }
+
+        $missingPaths = [];
+
+        foreach ($media as $item) {
+            $path = $item['path'] ?? null;
+            $expectedHash = $item['hash'] ?? null;
+
+            if (empty($path)) {
+                continue;
+            }
+
+            // Reject directory traversal
+            if (str_contains($path, '..')) {
+                continue;
+            }
+
+            if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+                $missingPaths[] = $path;
+                continue;
+            }
+
+            if (!empty($expectedHash)) {
+                $fullPath = \Illuminate\Support\Facades\Storage::disk('public')->path($path);
+                $actualHash = file_exists($fullPath) ? hash_file('sha256', $fullPath) : null;
+
+                if (!$actualHash || !hash_equals($expectedHash, $actualHash)) {
+                    $missingPaths[] = $path;
+                }
+            }
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'missing_paths' => $missingPaths,
+        ]);
+    }
+
+    /**
+     * Receive and assemble binary media chunks.
+     */
+    public function uploadMediaChunk(Request $request)
+    {
+        if (!$this->isAuthorized($request)) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        $request->validate([
+            'upload_id' => 'required|string',
+            'path' => 'required|string',
+            'chunk_index' => 'required|integer|min:0',
+            'total_chunks' => 'required|integer|min:1',
+            'file_hash' => 'required|string',
+            'chunk_hash' => 'required|string',
+            'chunk_data' => 'required|file',
+        ]);
+
+        $uploadId = preg_replace('/[^a-zA-Z0-9\-]/', '', (string) $request->input('upload_id'));
+        $targetPath = (string) $request->input('path');
+
+        if (str_contains($targetPath, '..')) {
+            return response()->json(['message' => 'Invalid path.'], 422);
+        }
+
+        $chunkIndex = (int) $request->input('chunk_index');
+        $totalChunks = (int) $request->input('total_chunks');
+        $fileHash = (string) $request->input('file_hash');
+        $expectedChunkHash = (string) $request->input('chunk_hash');
+
+        $uploadedFile = $request->file('chunk_data');
+        if (!$uploadedFile || !$uploadedFile->isValid()) {
+            return response()->json(['message' => 'Invalid chunk file.'], 422);
+        }
+
+        $chunkContent = file_get_contents($uploadedFile->getRealPath());
+        if ($chunkContent === false) {
+            return response()->json(['message' => 'Could not read chunk data.'], 500);
+        }
+
+        $actualChunkHash = hash('sha256', $chunkContent);
+        if (!hash_equals($expectedChunkHash, $actualChunkHash)) {
+            return response()->json(['message' => 'Chunk hash mismatch.'], 422);
+        }
+
+        $tempChunkDir = storage_path("app/temp/chunks/{$uploadId}");
+        if (!is_dir($tempChunkDir)) {
+            mkdir($tempChunkDir, 0755, true);
+        }
+
+        file_put_contents("{$tempChunkDir}/chunk_{$chunkIndex}.bin", $chunkContent);
+
+        $completed = ($chunkIndex + 1 === $totalChunks);
+
+        if ($completed) {
+            $assembledPath = "{$tempChunkDir}/assembled.tmp";
+            $assembledHandle = fopen($assembledPath, 'wb');
+
+            if ($assembledHandle === false) {
+                return response()->json(['message' => 'Failed to assemble file.'], 500);
+            }
+
+            for ($i = 0; $i < $totalChunks; $i++) {
+                $chunkFile = "{$tempChunkDir}/chunk_{$i}.bin";
+                if (!file_exists($chunkFile)) {
+                    fclose($assembledHandle);
+                    return response()->json(['message' => "Missing chunk {$i} during assembly."], 422);
+                }
+
+                $chunkPiece = file_get_contents($chunkFile);
+                if ($chunkPiece !== false) {
+                    fwrite($assembledHandle, $chunkPiece);
+                }
+            }
+
+            fclose($assembledHandle);
+
+            $assembledHash = hash_file('sha256', $assembledPath);
+            if (!$assembledHash || !hash_equals($fileHash, $assembledHash)) {
+                @unlink($assembledPath);
+                return response()->json(['message' => 'Assembled file checksum mismatch.'], 422);
+            }
+
+            // Ensure directory exists on public disk and write file
+            $publicDir = dirname($targetPath);
+            if ($publicDir !== '.' && !\Illuminate\Support\Facades\Storage::disk('public')->exists($publicDir)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory($publicDir);
+            }
+
+            \Illuminate\Support\Facades\Storage::disk('public')->put($targetPath, file_get_contents($assembledPath));
+
+            // Clean up temporary chunks
+            array_map('unlink', glob("{$tempChunkDir}/*.*") ?: []);
+            @rmdir($tempChunkDir);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'upload_id' => $uploadId,
+            'chunk_index' => $chunkIndex,
+            'completed' => $completed,
+        ]);
+    }
+
+    /**
+     * Stream binary media file to client.
+     */
+    public function downloadMedia(Request $request)
+    {
+        if (!$this->isAuthorized($request)) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        $path = (string) $request->query('path', '');
+        if (empty($path) || str_contains($path, '..')) {
+            return response()->json(['message' => 'Invalid media path.'], 422);
+        }
+
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+            return response()->json(['message' => 'Media file not found.'], 404);
+        }
+
+        $fullPath = \Illuminate\Support\Facades\Storage::disk('public')->path($path);
+        return response()->file($fullPath);
+    }
 }
