@@ -8,8 +8,18 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### 🚀 Priority 2 (P2): Angling Experience & Reactive Workflows
 
+#### 1. Lake Waterbody Intelligence Dossier & Bathymetric Telemetry (`/lake/{id}`)
+- **Agents**: `ui-ux-auditor`, `laravel-architect`, `seasoned-angler-advisor`
+- **Impact**: **High** (Parity with Species Intelligence Hub)
+- **Description**: Upgrade the individual waterbody show page (`/lake/{id}`) to match the unified dark hero styling of `/fish/{id}`. Incorporate a 4-column KPI telemetry metrics row (Total Catches, Top Angler, Productive Species Count, C&R Rate), Species Diversity breakdown with benchmark sizes, Top 5 Proven Lures & Colorways on this lake, Seasonal Catch Distribution curves, and a direct pre-filtered link to the Catch Directory (`/record/directory?lake={id}`).
+
+#### 2. Expedition Accolades, Crew Leaderboard & Trip Recap Dossier (`/expedition/{id}`)
+- **Agents**: `laravel-architect`, `ui-ux-auditor`, `seasoned-angler-advisor`
+- **Impact**: **Medium** (Crew Experience & Social Angling)
+- **Description**: Enhance expedition trip summaries with automated awards and crew accolades calculated by `ExpeditionAnalyticsService`: "Lunker Champion" (longest fish), "High Roller" (most catches), "Grand Slam" (most diverse species), "First Blood" (earliest catch), and "Conservation MVP" (highest C&R rate), accompanied by a crew comparison breakdown and downloadable trip recap dossier.
+
 #### 3. Waterbody Regulations & Exceptions Review Framework (`seasoned-angler-advisor`)
-- **Agents**: `seasoned-angler-advisor`
+- **Agents**: `seasoned-angler-advisor`, `ui-ux-auditor`
 - **Impact**: **Medium** (Regulatory Usability)
 - **Description**: Provide a structured UI for anglers to inspect and verify specific lake exceptions and sanctuary rules directly against official FMZ regulation guides when reviewing individual waterbody pages.
 
@@ -17,10 +27,30 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### ⚙️ Priority 3 (P3): Infrastructure, Sync & Optimization
 
-#### 7. Live Weather & Telemetry Barometer Widget (`@livewire('widgets.weather-telemetry')`)
+#### 1. Offline Catch Queue Sync Indicator & Background Resync Worker (`@livewire('ui.offline-sync-indicator')`)
+- **Agents**: `nas-sync-architect`, `livewire-architect`
+- **Impact**: **High** (Remote Boat Usability)
+- **Description**: Real-time status badge in the top navigation bar monitoring IndexedDB / LocalStorage catches logged offline while out on the water. Displays pending queue count, triggers automated background synchronization when the boat laptop reconnects to Wi-Fi / NAS, and provides 1-click manual sync inspection.
+
+#### 2. Live Weather & Telemetry Barometer Widget (`@livewire('widgets.weather-telemetry')`)
 - **Agents**: `livewire-architect` & `seasoned-angler-advisor`
 - **Impact**: **Medium** (Real-Time Weather Signals)
 - **Description**: Reactive weather widget that auto-fetches or updates live barometric pressure trends, wind velocity/direction, and surface water temp when selecting lakes during catch logging.
+
+#### 3. Solunar & Moon Phase Feeding Forecast Matrix (`@livewire('widgets.solunar-forecast')`)
+- **Agents**: `seasoned-angler-advisor`, `livewire-architect`
+- **Impact**: **Medium** (Predictive Tactical Intelligence)
+- **Description**: Computes real-time Major/Minor feeding periods, lunar phases (New Moon, 1st Quarter, Full Moon, 3rd Quarter), and illumination percentage based on GPS lake coordinates and target date to provide anglers predictive peak bite windows.
+
+#### 4. Synology NAS Connectivity & Real-Time Sync Diagnostic Console (`/admin/sync`)
+- **Agents**: `nas-sync-architect`, `laravel-architect`
+- **Impact**: **Medium** (Admin & Operations Reliability)
+- **Description**: Enhanced diagnostics dashboard inside Admin Portal showing live Synology NAS ping latency, mutual SSL certificate status, per-model synchronization outbox breakdown, and automated retry mechanism for failed media chunk transfers.
+
+#### 5. Database Composite Index Optimization & Query Profiling Audit
+- **Agents**: `query-profiler-optimizer`, `laravel-architect`
+- **Impact**: **Medium** (Scalability & Low-Latency Performance)
+- **Description**: Add targeted composite MySQL indexes to `records` (`(anglers_id, caught)`, `(lakes_id, fish_breeds_id)`, `(fish_breeds_id, length)`) to accelerate generic data table multi-sort filtering, species telemetry aggregations, and personal best queries under high logbook volume.
 
 ---
 
