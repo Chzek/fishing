@@ -18,7 +18,7 @@
             <div class="space-y-1.5">
                 <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-700">{{ __('E-Mail Address') }}</label>
                 <div class="relative">
-                    <input id="email" type="email" class="w-full h-11 pl-10 pr-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors {{ $errors->has('email') ? 'border-rose-500' : '' }}" name="email" value="{{ old('email') }}" required autofocus placeholder="name@example.com">
+                    <input id="email" type="email" autocomplete="email" class="w-full h-11 pl-10 pr-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors {{ $errors->has('email') ? 'border-rose-500' : '' }}" name="email" value="{{ old('email') }}" required autofocus placeholder="name@example.com">
                     <x-lucide-mail class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
                 </div>
                 @if ($errors->has('email'))
@@ -30,7 +30,7 @@
             <div class="space-y-1.5">
                 <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-700">{{ __('Password') }}</label>
                 <div class="relative">
-                    <input id="password" type="password" class="w-full h-11 pl-10 pr-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors {{ $errors->has('password') ? 'border-rose-500' : '' }}" name="password" required placeholder="••••••••">
+                    <input id="password" type="password" autocomplete="current-password" class="w-full h-11 pl-10 pr-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors {{ $errors->has('password') ? 'border-rose-500' : '' }}" name="password" required placeholder="••••••••">
                     <x-lucide-lock class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
                 </div>
                 @if ($errors->has('password'))

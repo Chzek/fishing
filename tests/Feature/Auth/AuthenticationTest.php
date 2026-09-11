@@ -63,4 +63,65 @@ class AuthenticationTest extends TestCase
 
         $response->assertRedirect('/login');
     }
+
+    public function test_users_can_authenticate_with_remember_me(): void
+    {
+        $user = User::factory()->create([
+            'password' => bcrypt('password123'),
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password123',
+            'remember' => 'on',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect('/profile');
+
+        $recallerCookie = null;
+        foreach ($response->headers->getCookies() as $cookie) {
+            if (str_starts_with($cookie->getName(), 'remember_web_')) {
+                $recallerCookie = $cookie;
+                break;
+            }
+        }
+
+        $this->assertNotNull($recallerCookie, 'Remember Me cookie was not queued on login response');
+        $this->assertNotNull($user->fresh()->remember_token, 'Remember token was not stored in database');
+    }
+
+    public function test_remember_me_cookie_persists_authentication_after_session_cleared(): void
+    {
+        $user = User::factory()->create([
+            'password' => bcrypt('password123'),
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password123',
+            'remember' => 'on',
+        ]);
+
+        $recallerCookie = null;
+        foreach ($response->headers->getCookies() as $cookie) {
+            if (str_starts_with($cookie->getName(), 'remember_web_')) {
+                $recallerCookie = $cookie;
+                break;
+            }
+        }
+
+        $this->assertNotNull($recallerCookie);
+
+        // Simulate closing the browser: flush in-memory session and flush authenticated user instance
+        $this->flushSession();
+        $this->app['auth']->forgetGuards();
+
+        // Making a request with only the remember cookie should re-authenticate the user
+        $followUp = $this->withUnencryptedCookie($recallerCookie->getName(), $recallerCookie->getValue())
+            ->get('/profile');
+
+        $followUp->assertOk();
+        $this->assertAuthenticatedAs($user);
+    }
 }
