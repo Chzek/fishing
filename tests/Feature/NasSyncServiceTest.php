@@ -338,4 +338,42 @@ class NasSyncServiceTest extends TestCase
         $this->assertNotEmpty($user->password, 'A fallback secure hashed password must be populated when missing');
         $this->assertEquals('synced', $user->sync_status);
     }
+
+    #[Test]
+    public function it_skips_downloading_legacy_placeholder_avatars_during_sync()
+    {
+        $remoteAnglerUuid = '01a00a92-9999-7154-a4d4-91c26979dd6e';
+
+        Http::fake([
+            'https://nas.example.com/api/v1/sync/push' => Http::response(['status' => 'success', 'synced_uuids' => []], 200),
+            'https://nas.example.com/api/v1/sync/pull*' => Http::response([
+                'anglers' => [
+                    [
+                        'id' => $remoteAnglerUuid,
+                        'firstName' => 'Bob',
+                        'lastName' => 'Elsey',
+                        'avatar' => 'user.jpg',
+                        'created_at' => '2026-08-16T12:35:41Z',
+                        'updated_at' => '2026-08-16T13:06:46Z',
+                    ]
+                ],
+                'server_timestamp' => '2026-08-16T15:00:00Z',
+            ], 200),
+        ]);
+
+        $service = new NasSyncService('https://nas.example.com', 'test-token');
+        $result = $service->sync();
+
+        $this->assertEquals(1, $result['pulled']);
+
+        // Verify no request was made to download user.jpg
+        Http::assertNotSent(function (\Illuminate\Http\Client\Request $request) {
+            return str_contains($request->url(), '/api/v1/sync/media/download');
+        });
+
+        $angler = \Fishinglog\Models\Angler::find($remoteAnglerUuid);
+        $this->assertNotNull($angler);
+        $this->assertEquals('Bob', $angler->firstName);
+        $this->assertEquals('synced', $angler->sync_status);
+    }
 }

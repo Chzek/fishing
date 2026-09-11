@@ -242,7 +242,7 @@ class NasSyncService
 
                 if ($key === 'anglers' && !empty($remoteItem['avatar_base64']) && !empty($remoteItem['avatar'])) {
                     Storage::disk('public')->put('avatars/' . $remoteItem['avatar'], base64_decode($remoteItem['avatar_base64']));
-                } elseif ($key === 'anglers' && !empty($remoteItem['avatar']) && !Storage::disk('public')->exists('avatars/' . $remoteItem['avatar'])) {
+                } elseif ($key === 'anglers' && !empty($remoteItem['avatar']) && !in_array($remoteItem['avatar'], ['user.jpg', 'default.jpg', 'avatar.jpg', 'default-avatar.png']) && !Storage::disk('public')->exists('avatars/' . $remoteItem['avatar'])) {
                     $this->mediaSyncManager->downloadFile($this->nasUrl, $this->apiToken, 'avatars/' . $remoteItem['avatar'], 'avatars/' . $remoteItem['avatar']);
                 }
 
