@@ -503,14 +503,14 @@
                                     @else
                                         <span class="text-slate-400 text-xs italic">Unlinked</span>
                                     @endif
-                                @elseif($type === 'admin_user_actions')
+                                @elseif($type === 'admin_user_assignment' || $type === 'admin_user_actions')
                                     @php
                                         static $allAnglers = null;
                                         if ($allAnglers === null) {
                                             $allAnglers = \Fishinglog\Models\Angler::orderBy('lastName', 'asc')->get();
                                         }
                                     @endphp
-                                    <div class="flex items-center justify-end gap-2">
+                                    <div class="flex items-center justify-end gap-1.5">
                                         <!-- Link / Relate Angler Dropdown Form -->
                                         <form action="{{ route('admin.users.link') }}" method="POST" class="flex items-center gap-1.5">
                                             @csrf
@@ -527,25 +527,6 @@
                                                 Assign
                                             </button>
                                         </form>
-
-                                        <!-- Toggle Admin Privileges -->
-                                        @if(auth()->id() !== $record->id)
-                                            <form action="{{ route('admin.users.toggle-admin', $record) }}" method="POST" onsubmit="return confirm('Change admin privileges for {{ $record->name }}?')">
-                                                @csrf
-                                                <button type="submit" class="h-8 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl border border-slate-200 transition-colors cursor-pointer">
-                                                    {{ $record->isAdmin() ? 'Demote' : 'Make Admin' }}
-                                                </button>
-                                            </form>
-
-                                            <!-- Delete User Account -->
-                                            <form action="{{ route('admin.users.delete', $record) }}" method="POST" onsubmit="return confirm('Are you sure you want to PERMANENTLY remove user account {{ $record->name }}?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="h-8 px-2.5 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 font-bold text-xs rounded-xl transition-colors cursor-pointer" title="Delete User">
-                                                    Delete
-                                                </button>
-                                            </form>
-                                        @endif
                                     </div>
                                 @elseif($type === 'lake_link')
                                     <a href="{{ $record->lake ? url('/lake/' . $record->lake->id) : '#' }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
@@ -707,14 +688,28 @@
                                         </a>
                                     </div>
                                 @elseif($tbl === 'users')
-                                    <div class="flex items-center justify-end gap-1.5">
-                                        <form action="{{ route('admin.users.toggle-admin', $record) }}" method="POST" class="inline">
-                                            @csrf
-                                            <button type="submit" class="text-[10px] font-bold px-2 py-0.5 rounded border transition-colors cursor-pointer {{ $record->isAdmin() ? 'text-amber-800 bg-amber-50 hover:bg-amber-100 border-amber-200' : 'text-teal-800 bg-teal-50 hover:bg-teal-100 border-teal-200' }}">
-                                                {{ $record->isAdmin() ? 'Demote' : 'Make Admin' }}
-                                            </button>
-                                        </form>
-                                    </div>
+                                    @if(auth()->id() !== $record->id)
+                                        <div class="flex items-center justify-end gap-1.5">
+                                            <!-- Toggle Admin Privileges -->
+                                            <form action="{{ route('admin.users.toggle-admin', $record) }}" method="POST" class="inline" onsubmit="return confirm('Change admin privileges for {{ $record->name }}?')">
+                                                @csrf
+                                                <button type="submit" class="h-8 px-2.5 rounded-xl border text-xs font-semibold transition-colors cursor-pointer {{ $record->isAdmin() ? 'text-amber-800 bg-amber-50 hover:bg-amber-100 border-amber-200' : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border-slate-200' }}">
+                                                    {{ $record->isAdmin() ? 'Demote' : 'Make Admin' }}
+                                                </button>
+                                            </form>
+
+                                            <!-- Delete User Account -->
+                                            <form action="{{ route('admin.users.delete', $record) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to PERMANENTLY remove user account {{ $record->name }}?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="h-8 px-2.5 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 font-bold text-xs rounded-xl transition-colors cursor-pointer" title="Delete User">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @else
+                                        <span class="text-slate-400 text-xs italic">Current User</span>
+                                    @endif
                                 @else
                                     <a href="{{ url('/' . $tbl . '/' . $record->id) }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
                                         View →
