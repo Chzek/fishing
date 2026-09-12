@@ -52,6 +52,8 @@ class CreateLureVariantAction
             $created->push($lure);
         }
 
+        \Illuminate\Support\Facades\Cache::forget('lure_categories');
+
         return $created;
     }
 }

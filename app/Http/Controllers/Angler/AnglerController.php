@@ -2,6 +2,7 @@
 
 namespace Fishinglog\Http\Controllers\Angler;
 
+use Fishinglog\Actions\Media\ProcessPhotoUploadAction;
 use Fishinglog\Http\Controllers\Controller;
 use Fishinglog\Http\Requests\StoreAnglerRequest;
 use Fishinglog\Http\Requests\UpdateAnglerAvatarRequest;
@@ -15,6 +16,10 @@ use Illuminate\Support\Facades\DB;
 
 class AnglerController extends Controller
 {
+    public function __construct(
+        protected ProcessPhotoUploadAction $photoUploadAction
+    ) {}
+
     /**
      * Display a listing of the resource.
      *
@@ -127,7 +132,7 @@ class AnglerController extends Controller
 
         if ($request->hasFile('avatar')) {
             $avatarName = 'avatar_' . time() . '.' . $request->avatar->getClientOriginalExtension();
-            $this->optimizeAndSaveImage($request->avatar, 'avatars/' . $avatarName, 600);
+            $this->photoUploadAction->optimizeAndSave($request->avatar, 'avatars/' . $avatarName, 600);
             $targetAngler->avatar = $avatarName;
         }
 
@@ -160,76 +165,12 @@ class AnglerController extends Controller
         }
 
         $avatarName = 'avatar_' . $angler->id . '_' . time() . '.' . $request->avatar->getClientOriginalExtension();
-        $this->optimizeAndSaveImage($request->avatar, 'avatars/' . $avatarName, 600);
+        $this->photoUploadAction->optimizeAndSave($request->avatar, 'avatars/' . $avatarName, 600);
 
         $angler->avatar = $avatarName;
         $angler->save();
 
         return back()->with('success', 'You have successfully uploaded your avatar.');
     }
-
-    /**
-     * Compress and resize an uploaded image to a maximum dimension and quality.
-     */
-    private function optimizeAndSaveImage($file, string $relativeStoragePath, int $maxDimension = 600): void
-    {
-        $extension = strtolower($file->getClientOriginalExtension());
-        $disk = \Illuminate\Support\Facades\Storage::disk('public');
-
-        if (in_array($extension, ['jpg', 'jpeg', 'png', 'webp']) && extension_loaded('gd')) {
-            $srcImage = match ($extension) {
-                'jpg', 'jpeg' => @imagecreatefromjpeg($file->getRealPath()),
-                'png' => @imagecreatefrompng($file->getRealPath()),
-                default => @imagecreatefromwebp($file->getRealPath()),
-            };
-
-            if ($srcImage) {
-                $origWidth = imagesx($srcImage);
-                $origHeight = imagesy($srcImage);
-
-                if ($origWidth > $maxDimension || $origHeight > $maxDimension) {
-                    if ($origWidth >= $origHeight) {
-                        $newWidth = $maxDimension;
-                        $newHeight = (int) round(($origHeight / $origWidth) * $maxDimension);
-                    } else {
-                        $newHeight = $maxDimension;
-                        $newWidth = (int) round(($origWidth / $origHeight) * $maxDimension);
-                    }
-                } else {
-                    $newWidth = $origWidth;
-                    $newHeight = $origHeight;
-                }
-
-                $dstImage = imagecreatetruecolor($newWidth, $newHeight);
-                
-                if (in_array($extension, ['png', 'webp'])) {
-                    imagealphablending($dstImage, false);
-                    imagesavealpha($dstImage, true);
-                }
-
-                imagecopyresampled($dstImage, $srcImage, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
-
-                ob_start();
-                match ($extension) {
-                    'jpg', 'jpeg' => imagejpeg($dstImage, null, 85),
-                    'png' => imagepng($dstImage, null, 8),
-                    default => imagewebp($dstImage, null, 85),
-                };
-                $compressedData = ob_get_clean();
-
-                imagedestroy($srcImage);
-                imagedestroy($dstImage);
-
-                if ($compressedData) {
-                    $disk->put($relativeStoragePath, $compressedData);
-                    return;
-                }
-            }
-        }
-
-        // Fallback standard storage
-        $file->storeAs(dirname($relativeStoragePath), basename($relativeStoragePath), 'public');
-    }
-
 }
 

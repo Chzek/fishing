@@ -143,6 +143,17 @@ class Record extends Model
     }
 
     /**
+     * Scope a query to eager load lake daily weather efficiently for collections.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithDailyWeather($query)
+    {
+        return $query->with(['lake.dailyWeather']);
+    }
+
+    /**
      * Get all attached photos for this catch record.
      */
     public function photos(): MorphMany

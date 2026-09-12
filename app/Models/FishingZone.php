@@ -40,9 +40,18 @@ class FishingZone extends Model
         'bounds',
     ];
 
-    protected $casts = [
-        'bounds' => 'array',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'bounds' => 'array',
+            'synced_at' => 'datetime',
+        ];
+    }
 
     public function lakes(): HasMany
     {

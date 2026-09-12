@@ -47,6 +47,19 @@ class FishingRule extends Model
         'notes',
     ];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_aggregate' => 'boolean',
+            'synced_at' => 'datetime',
+        ];
+    }
+
     public function fishingZone(): BelongsTo
     {
         return $this->belongsTo(FishingZone::class, 'fishing_zone_id', 'id');

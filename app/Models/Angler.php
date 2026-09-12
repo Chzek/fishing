@@ -48,6 +48,19 @@ class Angler extends Model
         'id', 'sync_status', 'synced_at', 'firstName', 'middleName', 'lastName', 'firstname', 'middlename', 'lastname', 'name', 'user_id',
     ];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'synced_at' => 'datetime',
+            'birthdate' => 'date',
+        ];
+    }
+
     public function records(): HasMany
     {
         return $this->hasMany(Record::class, 'anglers_id', 'id');

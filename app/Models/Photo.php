@@ -43,9 +43,18 @@ class Photo extends Model
         'user_id',
     ];
 
-    protected $casts = [
-        'is_cover' => 'boolean',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_cover' => 'boolean',
+            'synced_at' => 'datetime',
+        ];
+    }
 
     /**
      * Get the owning photoable model (Record, Expedition, Angler, Lake, etc).

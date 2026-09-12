@@ -55,20 +55,29 @@ class LakeDailyWeather extends Model
         'pressure_trend',
     ];
 
-    protected $casts = [
-        'date' => 'date',
-        'air_temp_max' => 'float',
-        'air_temp_min' => 'float',
-        'air_temp_mean' => 'float',
-        'barometric_pressure' => 'float',
-        'wind_speed_max' => 'float',
-        'wind_direction_dominant' => 'integer',
-        'weather_code' => 'integer',
-        'hourly_telemetry' => 'array',
-        'window_pressure_start' => 'float',
-        'window_pressure_end' => 'float',
-        'window_pressure_delta' => 'float',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date',
+            'air_temp_max' => 'float',
+            'air_temp_min' => 'float',
+            'air_temp_mean' => 'float',
+            'barometric_pressure' => 'float',
+            'wind_speed_max' => 'float',
+            'wind_direction_dominant' => 'integer',
+            'weather_code' => 'integer',
+            'hourly_telemetry' => 'array',
+            'window_pressure_start' => 'float',
+            'window_pressure_end' => 'float',
+            'window_pressure_delta' => 'float',
+            'synced_at' => 'datetime',
+        ];
+    }
 
     public function lake(): BelongsTo
     {

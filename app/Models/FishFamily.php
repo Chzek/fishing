@@ -20,6 +20,18 @@ class FishFamily extends Model
 
     protected $fillable = ['id', 'sync_status', 'synced_at', 'name'];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'synced_at' => 'datetime',
+        ];
+    }
+
     public function breeds(): HasMany
     {
         return $this->hasMany(FishBreed::class, 'fish_families_id', 'id');

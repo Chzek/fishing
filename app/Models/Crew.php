@@ -23,6 +23,18 @@ class Crew extends Model
 
     protected $fillable = ['id', 'sync_status', 'synced_at', 'expeditions_id', 'anglers_id'];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'synced_at' => 'datetime',
+        ];
+    }
+
     public function expedition(): BelongsTo
     {
         return $this->belongsTo(Expedition::class, 'expeditions_id');

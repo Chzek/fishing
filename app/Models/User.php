@@ -48,6 +48,19 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'synced_at' => 'datetime',
+        ];
+    }
+
+    /**
      * Check to see if this user is an Admin
      * 
      * @return boolean

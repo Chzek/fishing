@@ -3,6 +3,7 @@
 namespace Fishinglog\Http\Controllers;
 
 use Fishinglog\Actions\Media\ProcessPhotoUploadAction;
+use Fishinglog\Http\Requests\StorePhotoRequest;
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\Expedition;
 use Fishinglog\Models\Photo;
@@ -16,16 +17,8 @@ class PhotoController extends Controller
     /**
      * Store batch uploaded photos for a polymorphic entity (Expedition or Record).
      */
-    public function store(Request $request, ProcessPhotoUploadAction $photoUploadAction)
+    public function store(StorePhotoRequest $request, ProcessPhotoUploadAction $photoUploadAction)
     {
-        $request->validate([
-            'photoable_type' => 'required|string|in:record,expedition,angler',
-            'photoable_id' => 'required|string',
-            'photos' => 'required|array|min:1',
-            'photos.*' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:20480',
-            'caption' => 'nullable|string|max:500',
-        ]);
-
         $typeMap = [
             'record' => Record::class,
             'expedition' => Expedition::class,

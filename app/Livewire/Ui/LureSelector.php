@@ -89,12 +89,14 @@ class LureSelector extends Component
             ? Lure::withCount('records')->find($this->selectedId)
             : null;
 
-        $categories = Lure::whereNotNull('category')
-            ->where('category', '!=', '')
-            ->distinct()
-            ->orderBy('category')
-            ->pluck('category')
-            ->toArray();
+        $categories = \Illuminate\Support\Facades\Cache::remember('lure_categories', 86400, function () {
+            return Lure::whereNotNull('category')
+                ->where('category', '!=', '')
+                ->distinct()
+                ->orderBy('category')
+                ->pluck('category')
+                ->toArray();
+        });
 
         $query = Lure::query()->withCount('records');
 

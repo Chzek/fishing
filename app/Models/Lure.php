@@ -42,6 +42,24 @@ class Lure extends Model
         'depth_range',
     ];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'synced_at' => 'datetime',
+        ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('lure_categories'));
+        static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('lure_categories'));
+    }
+
     public function record(): HasOne
     {
         return $this->hasOne(Record::class, 'lures_id', 'id');

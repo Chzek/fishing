@@ -28,6 +28,20 @@ class Expedition extends Model
 
     protected $fillable = ['id', 'sync_status', 'synced_at', 'description', 'title', 'start', 'finish'];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'start' => 'datetime',
+            'finish' => 'datetime',
+            'synced_at' => 'datetime',
+        ];
+    }
+
     public function crews(): HasMany
     {
         return $this->hasMany(Crew::class, 'expeditions_id', 'id');
