@@ -8,36 +8,31 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### 🚀 Priority 1 (P1): Angling Experience & Reactive Workflows
 
-#### 1. Waterbody Regulations & Exceptions Review Framework (`seasoned-angler-advisor`)
-- **Agents**: `seasoned-angler-advisor`, `ui-ux-auditor`
-- **Impact**: **Medium** (Regulatory Usability)
-- **Description**: Provide a structured UI for anglers to inspect and verify specific lake exceptions and sanctuary rules directly against official FMZ regulation guides when reviewing individual waterbody pages.
-
----
-
-### ⚙️ Priority 2 (P2): Infrastructure, Performance & Refactoring
-
 #### 1. Live Weather & Telemetry Barometer Widget (`@livewire('widgets.weather-telemetry')`)
 - **Agents**: `livewire-architect` & `seasoned-angler-advisor`
-- **Impact**: **Medium** (Real-Time Weather Signals)
-- **Description**: Reactive weather widget that auto-fetches or updates live barometric pressure trends, wind velocity/direction, and surface water temp when selecting lakes during catch logging.
+- **Impact**: **High** (Real-Time Weather Signals & Barometric Trends)
+- **Description**: Reactive weather widget that auto-fetches and displays live barometric pressure trends, wind velocity/direction, sky conditions, and surface water temp when selecting lakes during catch logging or inspecting waterbodies.
 
 #### 2. Solunar & Moon Phase Feeding Forecast Matrix (`@livewire('widgets.solunar-forecast')`)
 - **Agents**: `seasoned-angler-advisor`, `livewire-architect`
 - **Impact**: **Medium** (Predictive Tactical Intelligence)
 - **Description**: Computes real-time Major/Minor feeding periods, lunar phases (New Moon, 1st Quarter, Full Moon, 3rd Quarter), and illumination percentage based on GPS lake coordinates and target date to provide anglers predictive peak bite windows.
 
-#### 3. Synology NAS Connectivity & Real-Time Sync Diagnostic Console (`/admin/sync`)
+---
+
+### ⚙️ Priority 2 (P2): Infrastructure, Performance & Refactoring
+
+#### 1. Synology NAS Connectivity & Real-Time Sync Diagnostic Console (`/admin/sync`)
 - **Agents**: `nas-sync-architect`, `laravel-architect`
 - **Impact**: **Medium** (Admin & Operations Reliability)
 - **Description**: Enhanced diagnostics dashboard inside Admin Portal showing live Synology NAS ping latency, mutual SSL certificate status, per-model synchronization outbox breakdown, and automated retry mechanism for failed media chunk transfers.
 
-#### 4. Database Composite Index Optimization & Query Profiling Audit
+#### 2. Database Composite Index Optimization & Query Profiling Audit
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (Scalability & Low-Latency Performance)
 - **Description**: Add targeted composite MySQL indexes to `records` (`(anglers_id, caught)`, `(lakes_id, fish_breeds_id)`, `(fish_breeds_id, length)`) to accelerate generic data table multi-sort filtering, species telemetry aggregations, and personal best queries under high logbook volume.
 
-#### 5. Test Suite Architecture Modernization & Strict Assertion Refactoring (`testing-best-practices`)
+#### 3. Test Suite Architecture Modernization & Strict Assertion Refactoring (`testing-best-practices`)
 - **Agents**: `phpunit-test-architect`, `laravel-architect`
 - **Impact**: **Medium** (Test Suite Health, Determinism & Rigor)
 - **Description**: Modernize the PHPUnit backend test suite according to upstream Laravel Boost `testing-best-practices`:
@@ -47,32 +42,32 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   - **Boilerplate Pruning**: Remove obsolete default Laravel starter stub (`ExampleTest.php`).
   - **Triple-Tier Write Verifications**: Ensure all mutation endpoints verify the HTTP response/redirect, exact database row state (`assertDatabaseHas`), and any dispatched side effects.
 
-#### 6. Consolidate `RecordController@index` Multi-Query Telemetry (`CatchTelemetryService`)
+#### 4. Consolidate `RecordController@index` Multi-Query Telemetry (`CatchTelemetryService`)
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (Controller Slimming & Query Optimization)
 - **Description**: Refactor `RecordController@index` and `/record/directory` by extracting a dedicated `CatchTelemetryService`. Replace 7 consecutive cloned query executions with a consolidated aggregate query and cache layer.
 
-#### 7. Livewire Reference Data Caching (`LureSelector` Categories)
+#### 5. Livewire Reference Data Caching (`LureSelector` Categories)
 - **Agents**: `livewire-architect`, `query-profiler-optimizer`
 - **Impact**: **Low** (Sub-Second UI Responsiveness)
 - **Description**: Cache distinct lure categories in `app/Livewire/Ui/LureSelector.php` with `Cache::remember('lure_categories', 86400, ...)` to eliminate redundant database extraction on every debounced keystroke.
 
-#### 8. Dynamic Weather Relationship N+1 Elimination (`Record::scopeWithDailyWeather`)
+#### 6. Dynamic Weather Relationship N+1 Elimination (`Record::scopeWithDailyWeather`)
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (N+1 Query Elimination)
 - **Description**: Eliminate query-per-row execution in `Record::getDailyWeatherAttribute` by creating an explicit query scope `scopeWithDailyWeather($query)` for single-pass eager loading in collection views.
 
-#### 9. Centralized Image Optimization & Upload Action (`ProcessPhotoUploadAction`)
+#### 7. Centralized Image Optimization & Upload Action (`ProcessPhotoUploadAction`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Medium** (DRY Code Architecture)
 - **Description**: Unify duplicate private `optimizeAndSaveImage()` helper methods in `AnglerController` and `FishBreedController` into `ProcessPhotoUploadAction` (or a dedicated `OptimizeAndStoreMediaAction`).
 
-#### 10. Model Cast Modernization with Native Laravel 12 `casts()`
+#### 8. Model Cast Modernization with Native Laravel 12 `casts()`
 - **Agents**: `laravel-architect`
 - **Impact**: **Medium** (Strict Type Safety)
 - **Description**: Standardize all 13 Eloquent models (`Lake`, `Record`, `Lure`, `FishingZone`, `Photo`, etc.) to use Laravel 12's `protected function casts(): array` with explicit scalar and datetime types (`float`, `integer`, `boolean`, `datetime`).
 
-#### 11. Controller Form Request Standardization (`StorePhotoRequest`, `StoreExpeditionRequest`, `StoreLakeRequest`)
+#### 9. Controller Form Request Standardization (`StorePhotoRequest`, `StoreExpeditionRequest`, `StoreLakeRequest`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Low** (Validation Consistency)
 - **Description**: Extract dedicated Form Request classes for `PhotoController`, `ExpeditionController`, and `LakeController` to replace inline `$request->validate()` calls with uniform validation and authorization gating.
