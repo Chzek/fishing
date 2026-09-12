@@ -150,9 +150,6 @@
         </div>
     </div>
 
-    <!-- Solunar & Moon Phase Feeding Forecast Matrix -->
-    @livewire('widgets.solunar-forecast', ['lakeId' => (string) $lake->id])
-
     <!-- Location & Topographic Map Card -->
     @if($lake->latitude && $lake->longitude)
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-0">
@@ -210,6 +207,9 @@
             </div>
         </div>
     @endif
+
+    <!-- Solunar & Moon Phase Feeding Forecast Matrix -->
+    @livewire('widgets.solunar-forecast', ['lakeId' => (string) $lake->id])
 
     <!-- Catches Logbook Directory Quick Access Banner Card -->
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
