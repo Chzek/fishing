@@ -6,6 +6,7 @@ use Fishinglog\Actions\Records\CreateCatchRecordAction;
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\Lake;
+use Fishinglog\Models\Lure;
 use Fishinglog\Models\Record;
 use Fishinglog\Notifications\TrophyCatchLogged;
 use Illuminate\Contracts\View\View;
@@ -192,11 +193,13 @@ class QuickCatchModal extends Component
         $anglers = $this->isOpen ? Angler::orderBy('firstName')->get() : collect();
         $lakes = $this->isOpen ? Lake::orderBy('name')->get() : collect();
         $fishBreeds = $this->isOpen ? FishBreed::orderBy('name')->get() : collect();
+        $lures = $this->isOpen ? Lure::orderBy('name')->get() : collect();
 
         return view('livewire.modals.quick-catch-modal', [
             'anglers' => $anglers,
             'lakes' => $lakes,
             'fishBreeds' => $fishBreeds,
+            'lures' => $lures,
         ]);
     }
 }

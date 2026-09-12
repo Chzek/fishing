@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fishinglog-v2';
+const CACHE_NAME = 'fishinglog-v3';
 const MAP_CACHE_NAME = 'fishinglog-map-tiles-v1';
 
 const STATIC_ASSETS = [
@@ -87,7 +87,14 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         })
-        .catch(() => caches.match(event.request))
+        .catch(() => {
+          return caches.match(event.request).then((cached) => {
+            return cached || new Response('{"anglers":[],"lakes":[],"fish_breeds":[],"lures":[],"expeditions":[]}', {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' }
+            });
+          });
+        })
     );
     return;
   }
@@ -111,8 +118,11 @@ self.addEventListener('fetch', (event) => {
           }
           // If HTML navigation request fails offline, fallback to boat quick catch logger
           if (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html')) {
-            return caches.match('/record/quick');
+            return caches.match('/record/quick').then((quickFallback) => {
+              return quickFallback || new Response('Offline - Fishing Logbook', { status: 503, statusText: 'Offline' });
+            });
           }
+          return new Response('Network offline', { status: 503, statusText: 'Offline' });
         });
       })
   );
