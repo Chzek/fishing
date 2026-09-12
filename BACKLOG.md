@@ -8,17 +8,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### 🚀 Priority 1 (P1): Angling Experience & Reactive Workflows
 
-#### 1. Lake Waterbody Intelligence Dossier & Bathymetric Telemetry (`/lake/{id}`)
-- **Agents**: `ui-ux-auditor`, `laravel-architect`, `seasoned-angler-advisor`
-- **Impact**: **High** (Parity with Species Intelligence Hub)
-- **Description**: Upgrade the individual waterbody show page (`/lake/{id}`) to match the unified dark hero styling of `/fish/{id}`. Incorporate a 4-column KPI telemetry metrics row (Total Catches, Top Angler, Productive Species Count, C&R Rate), Species Diversity breakdown with benchmark sizes, Top 5 Proven Lures & Colorways on this lake, Seasonal Catch Distribution curves, and a direct pre-filtered link to the Catch Directory (`/record/directory?lake={id}`).
-
-#### 2. Expedition Accolades, Crew Leaderboard & Trip Recap Dossier (`/expedition/{id}`)
-- **Agents**: `laravel-architect`, `ui-ux-auditor`, `seasoned-angler-advisor`
-- **Impact**: **Medium** (Crew Experience & Social Angling)
-- **Description**: Enhance expedition trip summaries with automated awards and crew accolades calculated by `ExpeditionAnalyticsService`: "Lunker Champion" (longest fish), "High Roller" (most catches), "Grand Slam" (most diverse species), "First Blood" (earliest catch), and "Conservation MVP" (highest C&R rate), accompanied by a crew comparison breakdown and downloadable trip recap dossier.
-
-#### 3. Waterbody Regulations & Exceptions Review Framework (`seasoned-angler-advisor`)
+#### 1. Waterbody Regulations & Exceptions Review Framework (`seasoned-angler-advisor`)
 - **Agents**: `seasoned-angler-advisor`, `ui-ux-auditor`
 - **Impact**: **Medium** (Regulatory Usability)
 - **Description**: Provide a structured UI for anglers to inspect and verify specific lake exceptions and sanctuary rules directly against official FMZ regulation guides when reviewing individual waterbody pages.
