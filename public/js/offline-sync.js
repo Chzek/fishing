@@ -108,17 +108,48 @@ class OfflineSyncManager {
     });
   }
 
+  async clearQueue() {
+    if (!this.db) await this.initDB();
+
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.clear();
+
+      req.onsuccess = () => {
+        this.updateSyncBadge();
+        resolve();
+      };
+      req.onerror = (e) => reject(e.target.error);
+    });
+  }
+
   async updateSyncBadge() {
     const pending = await this.getPendingCatches();
+    const count = pending.length;
+
+    // Legacy DOM elements
     const badgeEl = document.getElementById('offline-sync-badge');
     const badgeCountEl = document.getElementById('offline-sync-count');
-
     if (badgeEl && badgeCountEl) {
-      if (pending.length > 0) {
-        badgeCountEl.textContent = pending.length;
-        badgeEl.style.display = 'inline-block';
+      if (count > 0) {
+        badgeCountEl.textContent = count;
+        badgeEl.style.display = 'inline-flex';
       } else {
         badgeEl.style.display = 'none';
+      }
+    }
+
+    // Dispatch reactive events for Livewire & Alpine components
+    window.dispatchEvent(new CustomEvent('offline-queue-updated', {
+      detail: { count: count, pending: pending }
+    }));
+
+    if (window.Livewire) {
+      try {
+        window.Livewire.dispatch('offline-queue-updated', { count: count });
+      } catch (e) {
+        // Livewire may not be initialized yet
       }
     }
   }
@@ -143,18 +174,26 @@ class OfflineSyncManager {
   }
 
   async syncNow() {
-    if (this.isSyncing) return;
+    if (this.isSyncing) return { success: false, syncedCount: 0, message: 'Sync already in progress' };
     if (!navigator.onLine) {
-      alert('You are currently offline. Connect to Wi-Fi/cellular network to sync catches.');
-      return;
+      window.dispatchEvent(new CustomEvent('offline-sync-error', {
+        detail: { message: 'Device is offline. Connect to Wi-Fi/cellular network to sync catches.' }
+      }));
+      return { success: false, syncedCount: 0, message: 'Device is offline' };
     }
 
     this.isSyncing = true;
+    window.dispatchEvent(new CustomEvent('offline-sync-started'));
+
     const pending = await this.getPendingCatches();
 
     if (pending.length === 0) {
       this.isSyncing = false;
-      return;
+      this.updateSyncBadge();
+      window.dispatchEvent(new CustomEvent('offline-sync-completed', {
+        detail: { syncedCount: 0, remainingCount: 0 }
+      }));
+      return { success: true, syncedCount: 0, message: 'Queue is empty' };
     }
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -182,17 +221,34 @@ class OfflineSyncManager {
     }
 
     this.isSyncing = false;
-    this.updateSyncBadge();
+    await this.updateSyncBadge();
+
+    const remaining = await this.getPendingCatches();
+
+    window.dispatchEvent(new CustomEvent('offline-sync-completed', {
+      detail: { syncedCount: syncedCount, remainingCount: remaining.length }
+    }));
+
+    if (window.Livewire) {
+      try {
+        window.Livewire.dispatch('offline-sync-completed', { syncedCount: syncedCount, remainingCount: remaining.length });
+        window.Livewire.dispatch('refresh-records');
+      } catch (e) {
+        // Safe fallback
+      }
+    }
 
     if (syncedCount > 0) {
       this.showSyncToast(syncedCount);
       const banner = document.getElementById('offline-sync-alert');
       if (banner) {
         banner.textContent = `🎉 Successfully synced ${syncedCount} catch(es) to server!`;
-        banner.classList.remove('d-none');
-        setTimeout(() => banner.classList.add('d-none'), 4000);
+        banner.classList.remove('hidden');
+        setTimeout(() => banner.classList.add('hidden'), 4000);
       }
     }
+
+    return { success: true, syncedCount: syncedCount, remainingCount: remaining.length };
   }
 
   showSyncToast(syncedCount) {
@@ -232,5 +288,11 @@ window.offlineSyncManager = new OfflineSyncManager();
 
 window.addEventListener('online', () => {
   console.log('Network connected. Triggering auto-sync...');
+  window.dispatchEvent(new CustomEvent('network-status-changed', { detail: { online: true } }));
   window.offlineSyncManager.syncNow();
+});
+
+window.addEventListener('offline', () => {
+  console.log('Network disconnected. Entering boat mode...');
+  window.dispatchEvent(new CustomEvent('network-status-changed', { detail: { online: false } }));
 });

@@ -164,11 +164,11 @@
 
             <!-- Sidebar User Profile Footer -->
             <div class="p-4 border-t border-slate-800 bg-slate-950/50">
-                <!-- Offline Sync Button -->
-                <button id="offline-sync-badge" onclick="window.offlineSyncManager.syncNow()" class="w-full mb-3 hidden items-center justify-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-semibold py-2 px-3 rounded-lg hover:bg-amber-500/30 transition-all">
-                    <x-lucide-refresh-cw class="w-3.5 h-3.5 animate-spin" />
-                    <span><span id="offline-sync-count">0</span> Catches Queued (Sync Now)</span>
-                </button>
+                <!-- Offline Sync Indicator -->
+                <div class="mb-3 flex items-center justify-between">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sync Telemetry</span>
+                    @livewire('ui.offline-sync-indicator', ['compact' => false, 'showLabel' => true])
+                </div>
 
                 @auth
                     <div class="flex items-center justify-between">
@@ -226,6 +226,8 @@
             </a>
 
             <div class="flex items-center gap-2">
+                @livewire('ui.offline-sync-indicator', ['compact' => true, 'showLabel' => false])
+
                 @auth
                     @if(Auth::user()->isAdmin())
                         <a href="{{ route('admin') }}" class="relative p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors" title="Admin Portal">
