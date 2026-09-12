@@ -163,8 +163,9 @@
                 <!-- Current Time Marker Indicator (Hidden on Hover to prevent clutter) -->
                 @if($isToday)
                     @php
-                        $nowH = (int) now()->format('G');
-                        $nowM = (int) now()->format('i');
+                        $nowInTz = now($solunar['timezone'] ?? 'America/Detroit');
+                        $nowH = (int) $nowInTz->format('G');
+                        $nowM = (int) $nowInTz->format('i');
                         $currentPercent = min(99, max(1, (($nowH + ($nowM / 60)) / 24.0) * 100));
                     @endphp
                     <div 
