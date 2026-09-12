@@ -150,6 +150,9 @@
         </div>
     </div>
 
+    <!-- Solunar & Moon Phase Feeding Forecast Matrix -->
+    @livewire('widgets.solunar-forecast', ['lakeId' => (string) $lake->id])
+
     <!-- Location & Topographic Map Card -->
     @if($lake->latitude && $lake->longitude)
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-3">
