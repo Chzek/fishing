@@ -6,20 +6,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🎯 Active Priority Roadmap (Ranked by Impact & Value)
 
-### 🏆 Priority 1 (P1): AI Governance & Architectural Invariants
-
-#### 1. Formalize & Bootstrap Durable Codebase Conventions (`.ai/rules/`)
-- **Agents**: `infer-conventions`, `laravel-architect`
-- **Impact**: **Critical** (AI Governance, Agent Invariant Alignment & Zero Context Drift)
-- **Description**: Bootstrap and record settled architectural invariants into `.ai/rules/` and `.ai/rules/index.md` using Laravel Boost, ensuring all future AI agent interactions inherit strict, path-scoped domain rules:
-  - **Models**: UUID primary keys via `HasUuidAndSyncTracking` trait + native `casts()` method definitions.
-  - **Actions & Services**: Single-purpose Action classes exposing public `execute()` methods and constructor-injected Domain Services.
-  - **Controllers & Validation**: Thin controllers delegating to Action classes with dedicated `FormRequest` classes.
-  - **Sail & Testing**: Containerized execution with PHPUnit 11 `#[Test]` attributes, strict assertions, and `DatabaseTransactions`.
-
----
-
-### 🚀 Priority 2 (P2): Angling Experience & Reactive Workflows
+### 🚀 Priority 1 (P1): Angling Experience & Reactive Workflows
 
 #### 1. Lake Waterbody Intelligence Dossier & Bathymetric Telemetry (`/lake/{id}`)
 - **Agents**: `ui-ux-auditor`, `laravel-architect`, `seasoned-angler-advisor`
@@ -38,7 +25,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ---
 
-### ⚙️ Priority 3 (P3): Infrastructure, Performance & Refactoring
+### ⚙️ Priority 2 (P2): Infrastructure, Performance & Refactoring
 
 #### 1. Offline Catch Queue Sync Indicator & Background Resync Worker (`@livewire('ui.offline-sync-indicator')`)
 - **Agents**: `nas-sync-architect`, `livewire-architect`
@@ -122,21 +109,24 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🏆 Completed Milestones (Merged into `master`)
 
-1. **Native MySQL 8 Spatial Engine & Eloquent Geometry Integration (`matanyadaev/laravel-eloquent-spatial`)**:
+1. **AI Governance & Durable Codebase Conventions Bootstrap (`.ai/rules/`)**:
+   - Established permanent, path-scoped rule registry in [`.ai/rules/index.md`](file:///home/gmroczek/git/fishing/.ai/rules/index.md) and area rule files for Models, Actions & Services, Controllers & Form Requests, Livewire 3 & Frontend, Testing with Sail, and remote Synology NAS Synchronization.
+   - Fully aligned with Antigravity's on-demand skills architecture in `.agents/skills/` and global project safety rules in `.agents/AGENTS.md`.
+2. **Native MySQL 8 Spatial Engine & Eloquent Geometry Integration (`matanyadaev/laravel-eloquent-spatial`)**:
    - Integrated `matanyadaev/laravel-eloquent-spatial:^4.8` with native MySQL 8 `POINT` geometries (SRID 4326 WGS 84) on `lakes` and `records` tables.
    - Added `HasSpatial` trait and `'location' => Point::class` casting across [`Lake.php`](file:///home/gmroczek/git/fishing/app/Models/Lake.php) and [`Record.php`](file:///home/gmroczek/git/fishing/app/Models/Record.php).
    - Wired bidirectional automatic lifecycle synchronization between traditional `latitude`/`longitude` floats and spatial `Point` objects for 100% backward compatibility with existing web forms, APIs, and two-way Synology NAS synchronization.
    - Refactored `Lake::nearby()` to execute native spherical distance queries (`whereDistanceSphere`, `withDistanceSphere`, `orderByDistanceSphere`), eliminating legacy CPU-bound Haversine trigonometry.
    - Verified with dedicated feature tests ([`SpatialModelTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/SpatialModelTest.php) and [`OfflineMapTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/OfflineMapTest.php)).
-2. **Personal Best Trophy Cards Grayscale Watermark Graphics**:
+3. **Personal Best Trophy Cards Grayscale Watermark Graphics**:
    - Engineered scalable, vector Blade components ([`watermarkTapeMeasure.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/watermarkTapeMeasure.blade.php) and [`watermarkDialScale.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/watermarkDialScale.blade.php)) with diagonal ribbon rotation and vintage platform scale line-art in subtle slate-gray styling.
    - Seamlessly integrated across Personal Best cards on Lake Show, Expedition Show, Angler Profile, and User Profile views.
-3. **AI Development Infrastructure & Agent Skills Integration (`laravel/boost`)**:
+4. **AI Development Infrastructure & Agent Skills Integration (`laravel/boost`)**:
    - Installed `laravel/boost:^2.8` and `laravel/mcp` as development dependencies within Laravel Sail.
    - Configured [`boost.json`](file:///home/gmroczek/git/fishing/boost.json) and [`AGENTS.md`](file:///home/gmroczek/git/fishing/AGENTS.md) scoped specifically for **Antigravity**.
    - Integrated and synced upstream standard agent skills into [`.agents/skills/`](file:///home/gmroczek/git/fishing/.agents/skills) (`infer-conventions`, `laravel-best-practices`, `testing-best-practices`, `tailwindcss-development`, `pulse-development`, `deploying-to-cloud`).
    - Wired automated post-update synchronization hook (`"@php artisan boost:update --ansi"`) into [`composer.json`](file:///home/gmroczek/git/fishing/composer.json).
-2. **NAS Sync Multi-Chunk Media Streaming & SHA-256 Deduplication (`MediaSyncManager`)**:
+5. **NAS Sync Multi-Chunk Media Streaming & SHA-256 Deduplication (`MediaSyncManager`)**:
    - Engineered dedicated [`MediaSyncManager`](file:///home/gmroczek/git/fishing/app/Services/MediaSyncManager.php) service for high-performance two-tier synchronization between local instances and the Synology NAS server.
    - Replaced bloated in-memory base64 encoding with 1 MB binary chunk slicing (`/api/v1/sync/media/chunk`) and streaming downloads (`/api/v1/sync/media/download`), reducing peak PHP memory consumption by >75% and eliminating +33% base64 network overhead.
    - Integrated SHA-256 checksum verification and pre-upload hash comparison (`/api/v1/sync/media/verify`) for zero-overhead deduplication.
