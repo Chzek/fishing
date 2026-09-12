@@ -51,7 +51,7 @@ class PhotoUploadTest extends TestCase
             'fish_breeds_id' => $breed->id,
             'length' => 24.5,
         ]);
-        $this->assertEquals(0, Photo::count());
+        $this->assertDatabaseCount('photos', 0);
     }
 
     #[Test]
@@ -117,7 +117,7 @@ class PhotoUploadTest extends TestCase
 
         $expedition->refresh();
         $this->assertCount(1, $expedition->photos);
-        $this->assertEquals('Camp sunset on Dog Lake', $expedition->coverPhoto()->caption);
+        $this->assertSame('Camp sunset on Dog Lake', $expedition->coverPhoto()->caption);
     }
 
     #[Test]
@@ -139,7 +139,7 @@ class PhotoUploadTest extends TestCase
 
         $response->assertRedirect();
         $angler->refresh();
-        $this->assertEquals('photos/records/trophy.jpg', $angler->avatar);
+        $this->assertSame('photos/records/trophy.jpg', $angler->avatar);
     }
 
     #[Test]

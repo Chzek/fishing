@@ -1,30 +1,22 @@
 <?php
 
 namespace Tests\Unit;
-use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Angler;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AnglerTest extends TestCase
 {
     use DatabaseTransactions;
 
-    protected $angler;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->angler = Angler::factory()->create();
-    }
-
     #[Test]
     public function it_cannot_create_a_duplicate_angler()
     {
         $this->expectException(\Illuminate\Database\QueryException::class);
-        $anglerCopy = $this->angler->replicate();
+        $angler = Angler::factory()->create();
+        $anglerCopy = $angler->replicate();
         $anglerCopy->save();
     }
 
@@ -37,10 +29,10 @@ class AnglerTest extends TestCase
             'lastName' => 'Doe',
         ]);
 
-        $this->assertEquals('John D. Doe', $anglerWithMiddle->full_name);
-        $this->assertEquals('John D. Doe', $anglerWithMiddle->fullName);
-        $this->assertEquals('Doe, John D.', $anglerWithMiddle->formal_name);
-        $this->assertEquals('Doe, John D.', $anglerWithMiddle->formalName);
+        $this->assertSame('John D. Doe', $anglerWithMiddle->full_name);
+        $this->assertSame('John D. Doe', $anglerWithMiddle->fullName);
+        $this->assertSame('Doe, John D.', $anglerWithMiddle->formal_name);
+        $this->assertSame('Doe, John D.', $anglerWithMiddle->formalName);
 
         $anglerWithoutMiddle = Angler::create([
             'firstName' => 'Jane',
@@ -48,8 +40,8 @@ class AnglerTest extends TestCase
             'lastName' => 'Smith',
         ]);
 
-        $this->assertEquals('Jane Smith', $anglerWithoutMiddle->full_name);
-        $this->assertEquals('Smith, Jane', $anglerWithoutMiddle->formal_name);
+        $this->assertSame('Jane Smith', $anglerWithoutMiddle->full_name);
+        $this->assertSame('Smith, Jane', $anglerWithoutMiddle->formal_name);
     }
 
     #[Test]
@@ -61,14 +53,13 @@ class AnglerTest extends TestCase
             'lastName' => 'Johnson',
         ]);
 
-        $this->assertEquals('Robert', $angler->firstName);
-        $this->assertEquals('Robert', $angler->firstname);
-        $this->assertEquals('Johnson', $angler->lastName);
-        $this->assertEquals('Johnson', $angler->lastname);
-        $this->assertEquals('Paul', $angler->middleName);
-        $this->assertEquals('Paul', $angler->middlename);
-        $this->assertEquals('Robert P. Johnson', $angler->name);
-        $this->assertEquals('Robert P. Johnson', $angler->full_name);
+        $this->assertSame('Robert', $angler->firstName);
+        $this->assertSame('Robert', $angler->firstname);
+        $this->assertSame('Johnson', $angler->lastName);
+        $this->assertSame('Johnson', $angler->lastname);
+        $this->assertSame('Paul', $angler->middleName);
+        $this->assertSame('Paul', $angler->middlename);
+        $this->assertSame('Robert P. Johnson', $angler->name);
+        $this->assertSame('Robert P. Johnson', $angler->full_name);
     }
-
 }

@@ -15,47 +15,32 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### ⚙️ Priority 2 (P2): Infrastructure, Performance & Refactoring
 
-#### 1. Database Composite Index Optimization & Query Profiling Audit
-- **Agents**: `query-profiler-optimizer`, `laravel-architect`
-- **Impact**: **Medium** (Scalability & Low-Latency Performance)
-- **Description**: Add targeted composite MySQL indexes to `records` (`(anglers_id, caught)`, `(lakes_id, fish_breeds_id)`, `(fish_breeds_id, length)`) to accelerate generic data table multi-sort filtering, species telemetry aggregations, and personal best queries under high logbook volume.
-
-#### 2. Test Suite Architecture Modernization & Strict Assertion Refactoring (`testing-best-practices`)
-- **Agents**: `phpunit-test-architect`, `laravel-architect`
-- **Impact**: **Medium** (Test Suite Health, Determinism & Rigor)
-- **Description**: Modernize the PHPUnit backend test suite according to upstream Laravel Boost `testing-best-practices`:
-  - **Strict Assertions & DB Count Helpers**: Replace loose `$this->assertEquals()` with strict `$this->assertSame()` across feature tests (`NasSyncServiceTest`, `PhotoUploadTest`, etc.) and adopt `$this->assertDatabaseCount()` / `$this->assertDatabaseEmpty()`.
-  - **Behavioral Relationship Testing**: Refactor legacy reflection unit tests (`method_exists()`) in `RecordTest`, `FishFamilyTest`, and `LakeTest` into observable Eloquent relationship behavior and query tests.
-  - **Self-Contained Fixtures**: Remove mutable database record creation from `setUp()` in legacy unit/feature tests (`AnglerTest`, `CrewTest`) to guarantee independent, self-contained test execution.
-  - **Boilerplate Pruning**: Remove obsolete default Laravel starter stub (`ExampleTest.php`).
-  - **Triple-Tier Write Verifications**: Ensure all mutation endpoints verify the HTTP response/redirect, exact database row state (`assertDatabaseHas`), and any dispatched side effects.
-
-#### 3. Consolidate `RecordController@index` Multi-Query Telemetry (`CatchTelemetryService`)
+#### 1. Consolidate `RecordController@index` Multi-Query Telemetry (`CatchTelemetryService`)
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (Controller Slimming & Query Optimization)
 - **Description**: Refactor `RecordController@index` and `/record/directory` by extracting a dedicated `CatchTelemetryService`. Replace 7 consecutive cloned query executions with a consolidated aggregate query and cache layer.
 
-#### 4. Livewire Reference Data Caching (`LureSelector` Categories)
+#### 2. Livewire Reference Data Caching (`LureSelector` Categories)
 - **Agents**: `livewire-architect`, `query-profiler-optimizer`
 - **Impact**: **Low** (Sub-Second UI Responsiveness)
 - **Description**: Cache distinct lure categories in `app/Livewire/Ui/LureSelector.php` with `Cache::remember('lure_categories', 86400, ...)` to eliminate redundant database extraction on every debounced keystroke.
 
-#### 5. Dynamic Weather Relationship N+1 Elimination (`Record::scopeWithDailyWeather`)
+#### 3. Dynamic Weather Relationship N+1 Elimination (`Record::scopeWithDailyWeather`)
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (N+1 Query Elimination)
 - **Description**: Eliminate query-per-row execution in `Record::getDailyWeatherAttribute` by creating an explicit query scope `scopeWithDailyWeather($query)` for single-pass eager loading in collection views.
 
-#### 6. Centralized Image Optimization & Upload Action (`ProcessPhotoUploadAction`)
+#### 4. Centralized Image Optimization & Upload Action (`ProcessPhotoUploadAction`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Medium** (DRY Code Architecture)
 - **Description**: Unify duplicate private `optimizeAndSaveImage()` helper methods in `AnglerController` and `FishBreedController` into `ProcessPhotoUploadAction` (or a dedicated `OptimizeAndStoreMediaAction`).
 
-#### 7. Model Cast Modernization with Native Laravel 12 `casts()`
+#### 5. Model Cast Modernization with Native Laravel 12 `casts()`
 - **Agents**: `laravel-architect`
 - **Impact**: **Medium** (Strict Type Safety)
 - **Description**: Standardize all 13 Eloquent models (`Lake`, `Record`, `Lure`, `FishingZone`, `Photo`, etc.) to use Laravel 12's `protected function casts(): array` with explicit scalar and datetime types (`float`, `integer`, `boolean`, `datetime`).
 
-#### 8. Controller Form Request Standardization (`StorePhotoRequest`, `StoreExpeditionRequest`, `StoreLakeRequest`)
+#### 6. Controller Form Request Standardization (`StorePhotoRequest`, `StoreExpeditionRequest`, `StoreLakeRequest`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Low** (Validation Consistency)
 - **Description**: Extract dedicated Form Request classes for `PhotoController`, `ExpeditionController`, and `LakeController` to replace inline `$request->validate()` calls with uniform validation and authorization gating.
@@ -190,5 +175,22 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - Implemented comprehensive 13-Model Outbox & Sync Health matrix tracking entity synchronization percentage progress, local modification times, and pending outbox queues with "Filter Pending Only" toggle.
     - Wired interactive admin controls for Live Ping probes, Incremental Sync execution, Full Baseline pull reconcile, and Mark All Synced state clearing.
     - Added direct navigation hooks from the Admin Dashboard header and Two-Way Sync Engine card.
-    - Verified with 32 comprehensive tests across [`AdminNasSyncConsoleTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AdminNasSyncConsoleTest.php), [`NasSyncServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncServiceTest.php), and [`NasSyncApiTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncApiTest.php) (241 total passing tests across the entire test suite).
+    - Verified with 32 comprehensive tests across [`AdminNasSyncConsoleTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AdminNasSyncConsoleTest.php), [`NasSyncServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncServiceTest.php), and [`NasSyncApiTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncApiTest.php).
+27. **Database Composite Index Optimization & Query Profiling Audit (`records` table)**:
+    - Added 6 targeted MySQL composite indexes to the `records` table in [`2026_09_12_000002_add_composite_indexes_to_records_table.php`](file:///home/gmroczek/git/fishing/database/migrations/2026_09_12_000002_add_composite_indexes_to_records_table.php):
+      * `records_anglers_caught_idx` (`['anglers_id', 'caught']`): Accelerates angler profile timeline history and chronologically sorted catch tables.
+      * `records_lakes_fish_breeds_idx` (`['lakes_id', 'fish_breeds_id']`): Accelerates lake biodiversity queries and waterbody species breakdowns.
+      * `records_fish_breeds_length_idx` (`['fish_breeds_id', 'length']`): Accelerates species length trophy leaderboards and PB evaluations.
+      * `records_fish_breeds_weight_idx` (`['fish_breeds_id', 'weight']`): Accelerates species heavyweight trophy leaderboards.
+      * `records_lakes_caught_idx` (`['lakes_id', 'caught']`): Accelerates lake chronological catch logs and seasonal activity curves.
+      * `records_anglers_fish_breeds_idx` (`['anglers_id', 'fish_breeds_id']`): Accelerates angler species life-list calculations and per-species personal bests.
+    - Verified with dedicated feature tests in [`DatabaseCompositeIndexTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/DatabaseCompositeIndexTest.php).
+28. **Test Suite Architecture Modernization & Strict Assertion Refactoring (`testing-best-practices`)**:
+    - Modernized backend PHPUnit test suite to align with upstream Laravel Boost `testing-best-practices` standards.
+    - Refactored unit tests in [`RecordTest.php`](file:///home/gmroczek/git/fishing/tests/Unit/RecordTest.php), [`CrewTest.php`](file:///home/gmroczek/git/fishing/tests/Unit/CrewTest.php), and [`LakeTest.php`](file:///home/gmroczek/git/fishing/tests/Unit/LakeTest.php) from fragile reflection methods (`method_exists()`, `get_class()`) into behavioral Eloquent relationship integration tests.
+    - Removed mutable `$this->angler` and `$this->lake` fixtures from `setUp()` in [`AnglerTest.php`](file:///home/gmroczek/git/fishing/tests/Unit/AnglerTest.php) and [`LakeTest.php`](file:///home/gmroczek/git/fishing/tests/Unit/LakeTest.php) for fully isolated, self-contained test execution.
+    - Upgraded assertions across unit and feature tests to strict `$this->assertSame()` and adopted database state assertions (`$this->assertDatabaseCount()`, `$this->assertDatabaseHas()`).
+    - Pruned obsolete starter boilerplate stub (`ExampleTest.php`).
+    - Reached **251 passing tests (1017 assertions)** with 0 errors across PHPUnit and PHPStan level 5.
+
 
