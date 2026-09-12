@@ -155,7 +155,7 @@
 
     <!-- Location & Topographic Map Card -->
     @if($lake->latitude && $lake->longitude)
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-3">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-0">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                 <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
                     <x-lucide-compass class="w-4 h-4 text-teal-600" />
@@ -166,23 +166,7 @@
                 </span>
             </div>
 
-            <div id="lake-show-map" class="w-full h-[380px]"></div>
-
-            <div id="viewport-lakes-container" class="p-4 bg-slate-50 border-t border-slate-100 text-xs space-y-2">
-                <div class="flex items-center justify-between">
-                    <span class="font-bold text-slate-700 block">Identified Lakes in Viewport:</span>
-                    <span id="viewport-lakes-subtext" class="text-[11px] text-slate-400 font-mono">Pan or zoom map to explore nearby waterbodies</span>
-                </div>
-                <div id="viewport-lakes-pills" class="flex flex-wrap gap-1.5">
-                    @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
-                        @foreach($nearbyLakes as $nearLake)
-                            <a href="{{ url('/lake/' . $nearLake->id) }}" class="bg-white hover:bg-teal-50 text-slate-800 border border-slate-200 hover:border-teal-300 font-semibold px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 shadow-2xs">
-                                🏞️ {{ $nearLake->name }} <span class="text-slate-400 font-mono text-[11px]">({{ $nearLake->distance }} mi)</span>
-                            </a>
-                        @endforeach
-                    @endif
-                </div>
-            </div>
+            <div id="lake-show-map" class="w-full h-[420px]"></div>
         </div>
     @endif
 
@@ -317,30 +301,6 @@
                     const badge = document.getElementById('viewport-lakes-badge');
                     if (badge) {
                         badge.innerText = `${lakes.length} Lake${lakes.length === 1 ? '' : 's'} in Viewport`;
-                    }
-
-                    const pillsContainer = document.getElementById('viewport-lakes-pills');
-                    if (pillsContainer) {
-                        pillsContainer.innerHTML = '';
-                        if (otherLakes.length === 0) {
-                            pillsContainer.innerHTML = '<span class="text-slate-400 italic">No other registered lakes in this viewport. Pan or zoom out to discover nearby waters.</span>';
-                        } else {
-                            // Sort other lakes by distance to target lake
-                            otherLakes.sort((a, b) => {
-                                const distA = parseFloat(calculateDistance(lat, lng, a.latitude, a.longitude));
-                                const distB = parseFloat(calculateDistance(lat, lng, b.latitude, b.longitude));
-                                return distA - distB;
-                            });
-
-                            otherLakes.forEach(nLake => {
-                                const dist = calculateDistance(lat, lng, nLake.latitude, nLake.longitude);
-                                const pill = document.createElement('a');
-                                pill.href = `/lake/${nLake.id}`;
-                                pill.className = 'bg-white hover:bg-teal-50 text-slate-800 border border-slate-200 hover:border-teal-300 font-semibold px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 shadow-2xs text-xs';
-                                pill.innerHTML = `🏞️ <span>${nLake.name}</span> <span class="text-slate-400 font-mono text-[11px]">(${dist} mi)</span>`;
-                                pillsContainer.appendChild(pill);
-                            });
-                        }
                     }
 
                     otherLakes.forEach(nLake => {
