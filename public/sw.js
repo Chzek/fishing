@@ -1,26 +1,33 @@
-const CACHE_NAME = 'fishinglog-v1';
+const CACHE_NAME = 'fishinglog-v2';
 const MAP_CACHE_NAME = 'fishinglog-map-tiles-v1';
+
 const STATIC_ASSETS = [
   '/',
   '/record/quick',
   '/map/offline',
-  '/css/app.css',
+  '/record/offline-review',
+  '/manifest.json',
+  '/favicon.ico',
   '/css/leaflet.css',
+  '/js/leaflet.js',
+  '/js/offline-sync.js',
   '/css/images/marker-icon.png',
   '/css/images/marker-icon-2x.png',
   '/css/images/marker-shadow.png',
   '/css/images/layers.png',
   '/css/images/layers-2x.png',
-  '/js/app.js',
-  '/js/leaflet.js',
-  '/js/offline-sync.js',
-  '/manifest.json'
+  '/api/v1/reference-data'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch((err) => console.log('Caching initial assets:', err));
+      // Use individual caching so a single failed asset never aborts the service worker installation
+      return Promise.allSettled(
+        STATIC_ASSETS.map((asset) =>
+          cache.add(asset).catch((err) => console.warn('PWA: Non-fatal error caching initial asset:', asset, err))
+        )
+      );
     })
   );
   self.skipWaiting();
@@ -32,6 +39,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME && key !== MAP_CACHE_NAME) {
+            console.log('PWA: Clearing obsolete cache:', key);
             return caches.delete(key);
           }
         })
@@ -46,7 +54,7 @@ self.addEventListener('fetch', (event) => {
 
   const url = event.request.url;
 
-  // Intercept map tile requests for offline caching
+  // 1. Intercept map tile requests for offline spatial tile caching
   if (url.includes('arcgisonline.com') || url.includes('opentopomap.org') || url.includes('tile.openstreetmap.org') || url.includes('/tile/')) {
     event.respondWith(
       caches.open(MAP_CACHE_NAME).then((cache) => {
@@ -68,7 +76,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Standard PWA Network-First / Cache Fallback
+  // 2. Reference Data API Cache-First / Stale-While-Revalidate
+  if (url.includes('/api/v1/reference-data')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // 3. Standard PWA Network-First with Cache Fallback
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
@@ -85,6 +109,7 @@ self.addEventListener('fetch', (event) => {
           if (cachedResponse) {
             return cachedResponse;
           }
+          // If HTML navigation request fails offline, fallback to boat quick catch logger
           if (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html')) {
             return caches.match('/record/quick');
           }

@@ -203,10 +203,5 @@ class LureSelectorLivewireTest extends TestCase
         $editResponse = $this->actingAs($user)->get("/record/{$record->id}/edit");
         $editResponse->assertStatus(200);
         $editResponse->assertSeeLivewire(LureSelector::class);
-
-        // Verify quick catch form
-        $quickResponse = $this->actingAs($user)->get('/record/quick');
-        $quickResponse->assertStatus(200);
-        $quickResponse->assertSeeLivewire(LureSelector::class);
     }
 }

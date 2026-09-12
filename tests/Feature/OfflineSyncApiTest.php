@@ -1,7 +1,6 @@
 <?php
 
 namespace Tests\Feature;
-use PHPUnit\Framework\Attributes\Test;
 
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\FishBreed;
@@ -10,6 +9,7 @@ use Fishinglog\Models\Lure;
 use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class OfflineSyncApiTest extends TestCase
@@ -17,27 +17,46 @@ class OfflineSyncApiTest extends TestCase
     use DatabaseTransactions;
 
     #[Test]
-    public function it_returns_reference_data_for_offline_cache()
+    public function it_returns_enriched_reference_data_for_offline_cache(): void
     {
-        $angler = Angler::factory()->create();
-        $lake = Lake::factory()->create();
-        $breed = FishBreed::factory()->create();
-        $lure = Lure::factory()->create();
+        $angler = Angler::factory()->create([
+            'firstName' => 'John',
+            'lastName' => 'Doe',
+        ]);
+        $lake = Lake::factory()->create(['name' => 'Wawa Lake']);
+        $breed = FishBreed::factory()->create(['name' => 'Walleye']);
+        $lure = Lure::factory()->create([
+            'brand' => 'Rapala',
+            'name' => 'Husky Jerk',
+            'category' => 'Hard Baits',
+            'color' => 'Silver Blue',
+        ]);
 
         $response = $this->getJson('/api/v1/reference-data');
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
-            'anglers',
-            'lakes',
-            'fish_breeds',
-            'lures',
+            'anglers' => [
+                '*' => ['id', 'firstName', 'middleName', 'lastName', 'full_name'],
+            ],
+            'lakes' => [
+                '*' => ['id', 'name', 'latitude', 'longitude'],
+            ],
+            'fish_breeds' => [
+                '*' => ['id', 'name', 'fish_families_id'],
+            ],
+            'lures' => [
+                '*' => ['id', 'name', 'brand', 'category', 'color', 'size', 'depth_range'],
+            ],
             'expeditions',
         ]);
+
+        $this->assertTrue(collect($response->json('anglers'))->contains('full_name', $angler->full_name));
+        $this->assertTrue(collect($response->json('lures'))->contains('brand', 'Rapala'));
     }
 
     #[Test]
-    public function it_can_store_catch_via_api_and_prevents_duplicate_client_id()
+    public function it_can_store_catch_via_api_and_prevents_duplicate_client_id(): void
     {
         $angler = Angler::factory()->create();
         $lake = Lake::factory()->create();
@@ -71,20 +90,26 @@ class OfflineSyncApiTest extends TestCase
         $response2->assertJsonPath('status', 'duplicate_ignored');
 
         // Verify only 1 record exists in database
-        $this->assertEquals(1, Record::where('client_id', $clientId)->count());
+        $this->assertSame(1, Record::where('client_id', $clientId)->count());
     }
 
     #[Test]
-    public function it_can_access_quick_catch_web_route()
+    public function it_renders_quick_catch_page_with_offline_components_and_rehydration(): void
     {
         $user = User::factory()->create();
+        $angler = Angler::factory()->create(['user_id' => $user->id, 'firstName' => 'Mark', 'lastName' => 'Bowen']);
+        $lake = Lake::factory()->create(['name' => 'Kabitotikwia Lake']);
+        $breed = FishBreed::factory()->create(['name' => 'Northern Pike']);
+        $lure = Lure::factory()->create(['name' => 'Red Eye Special']);
 
         $response = $this->actingAs($user)->get('/record/quick');
 
         $response->assertStatus(200);
         $response->assertSee('Boat Quick Catch Log');
-        $response->assertDontSee('parseInt(form.anglers_id.value)');
-        $response->assertDontSee('parseInt(form.lakes_id.value)');
-        $response->assertDontSee('parseInt(form.fish_breeds_id.value)');
+        $response->assertSee('offlineLureSelector(');
+        $response->assertSee('rehydrateOfflineSelects()');
+        $response->assertSee('Kabitotikwia Lake');
+        $response->assertSee('Northern Pike');
+        $response->assertSee('Red Eye Special');
     }
 }
