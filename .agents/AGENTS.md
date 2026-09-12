@@ -9,8 +9,9 @@
   2. Create a new dedicated feature branch for the task (e.g., `git checkout -b <feature-or-fix-name>`).
   3. Execute all code changes, edits, and tests (`./vendor/bin/sail test`) on the feature branch.
   4. When writing feature tests for custom Blade components (`$this->blade(...)`), test for unescaped value strings (e.g. `$view->assertSee('14.5')`) to account for Blade's automatic HTML entity encoding (`&quot;`) on attribute strings.
-  5. Ensure all tests pass cleanly before merging into `master`.
-  6. After merging into `master`, push the commits (`git push`) to keep the repository synchronized across machines.
+  5. Update `BACKLOG.md` with completed items, status badges, test metrics, or new backlog tickets BEFORE making commits to git.
+  6. Ensure all tests pass cleanly before merging into `master`.
+  7. After merging into `master`, push the commits (`git push`) to keep the repository synchronized across machines.
 
 
 - **Database Safety & Backups**:
