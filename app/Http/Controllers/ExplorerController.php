@@ -16,7 +16,7 @@ class ExplorerController extends Controller
     public function index()
     {
         $fishBreeds = FishBreed::orderBy('name', 'asc')->get();
-        $anglers = Angler::orderBy('firstname', 'asc')->orderBy('lastname', 'asc')->get();
+        $anglers = Angler::orderBy('firstName', 'asc')->orderBy('lastName', 'asc')->get();
         $lures = Lure::orderBy('name', 'asc')->get();
         
         $years = Record::whereNotNull('caught')

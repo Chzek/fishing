@@ -75,23 +75,52 @@ class Angler extends Model
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
-    public function getFullNameAttribute()
+    public function getFirstnameAttribute(): ?string
     {
-        $trimmedMiddle = trim($this->middleName ?? '');
-        $middleInitial = ($trimmedMiddle !== '' && !in_array($trimmedMiddle, ['?', 'N/A'])) 
-            ? ' ' . strtoupper(mb_substr($trimmedMiddle, 0, 1)) . '.'
-            : '';
-        return trim("{$this->firstName}{$middleInitial} {$this->lastName}");
+        return $this->attributes['firstName'] ?? $this->attributes['firstname'] ?? null;
     }
 
-    public function getFormalNameAttribute()
+    public function getLastnameAttribute(): ?string
     {
-        $trimmedMiddle = trim($this->middleName ?? '');
+        return $this->attributes['lastName'] ?? $this->attributes['lastname'] ?? null;
+    }
+
+    public function getMiddlenameAttribute(): ?string
+    {
+        return $this->attributes['middleName'] ?? $this->attributes['middlename'] ?? null;
+    }
+
+    public function getNameAttribute(): string
+    {
+        return $this->full_name;
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        $first = $this->firstName ?? $this->firstname ?? '';
+        $middle = $this->middleName ?? $this->middlename ?? '';
+        $last = $this->lastName ?? $this->lastname ?? '';
+
+        $trimmedMiddle = trim($middle);
         $middleInitial = ($trimmedMiddle !== '' && !in_array($trimmedMiddle, ['?', 'N/A'])) 
             ? ' ' . strtoupper(mb_substr($trimmedMiddle, 0, 1)) . '.'
             : '';
-        return trim("{$this->lastName}, {$this->firstName}{$middleInitial}");
+        return trim("{$first}{$middleInitial} {$last}");
     }
+
+    public function getFormalNameAttribute(): string
+    {
+        $first = $this->firstName ?? $this->firstname ?? '';
+        $middle = $this->middleName ?? $this->middlename ?? '';
+        $last = $this->lastName ?? $this->lastname ?? '';
+
+        $trimmedMiddle = trim($middle);
+        $middleInitial = ($trimmedMiddle !== '' && !in_array($trimmedMiddle, ['?', 'N/A'])) 
+            ? ' ' . strtoupper(mb_substr($trimmedMiddle, 0, 1)) . '.'
+            : '';
+        return trim("{$last}, {$first}{$middleInitial}");
+    }
+
 
 
     public function personal_best()

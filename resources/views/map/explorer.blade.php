@@ -56,7 +56,7 @@
                 <select id="filter-angler" class="w-full h-8 px-2.5 text-xs rounded-xl border border-slate-700 bg-slate-800/90 text-slate-200 font-medium focus:ring-1 focus:ring-teal-500 focus:border-teal-500">
                     <option value="">👨‍🌾 All Anglers</option>
                     @foreach($anglers as $angler)
-                        <option value="{{ $angler->id }}">{{ trim($angler->firstname . ' ' . $angler->lastname) ?: 'Angler #' . $angler->id }}</option>
+                        <option value="{{ $angler->id }}">{{ $angler->full_name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -108,7 +108,7 @@
                     <select id="m-filter-angler" onchange="syncMobileFilter('filter-angler', this.value)" class="w-full h-10 px-3 text-xs rounded-xl border border-slate-700 bg-slate-800 text-slate-200 font-medium">
                         <option value="">👨‍🌾 All Anglers</option>
                         @foreach($anglers as $angler)
-                            <option value="{{ $angler->id }}">{{ trim($angler->firstname . ' ' . $angler->lastname) ?: 'Angler #' . $angler->id }}</option>
+                            <option value="{{ $angler->id }}">{{ $angler->full_name }}</option>
                         @endforeach
                     </select>
                 </div>

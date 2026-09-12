@@ -20,6 +20,11 @@ class MapExplorerTest extends TestCase
     public function test_authenticated_user_can_access_map_explorer_page(): void
     {
         $user = User::factory()->create();
+        $angler = Angler::create([
+            'firstName' => 'Samantha',
+            'middleName' => 'Rae',
+            'lastName' => 'Fisher',
+        ]);
 
         $response = $this->actingAs($user)->get('/map/explorer');
 
@@ -32,6 +37,8 @@ class MapExplorerTest extends TestCase
         $response->assertSee('filter-lure');
         $response->assertSee('filter-trophy');
         $response->assertSee('filter-year');
+        $response->assertSee('Samantha R. Fisher');
+        $response->assertDontSee('Angler #' . $angler->id);
     }
 
     public function test_explorer_lakes_api_returns_lakes_in_bounding_box_with_filters(): void

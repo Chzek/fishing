@@ -23,10 +23,12 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 - **Impact**: **Medium** (Regulatory Usability)
 - **Description**: Provide a structured UI for anglers to inspect and verify specific lake exceptions and sanctuary rules directly against official FMZ regulation guides when reviewing individual waterbody pages.
 
-#### 4. Angler Name Normalization & Filter Dropdown Resolution (`/map/explorer`)
+#### 4. Angler Name Normalization & Filter Dropdown Resolution (`/map/explorer`) ✅ [Completed]
 - **Agents**: `ui-ux-auditor`, `laravel-architect`
 - **Impact**: **High** (Visual Polish & Usability)
+- **Status**: **Completed & Verified (221 tests passing)**
 - **Description**: Standardize Angler name rendering across all filter dropdowns, omnibox search, and map explorer controls. Fix attribute case-sensitivity in `map/explorer.blade.php` (where accessing `$angler->firstname` / `$angler->lastname` falls back to raw UUID strings like `Angler #c58c7c7b-...`) by standardizing on `$angler->full_name` and adding defensive accessors on the `Angler` model to guarantee human-readable names (`First M. Last`) everywhere.
+
 
 ---
 
