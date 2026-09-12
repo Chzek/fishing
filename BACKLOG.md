@@ -52,6 +52,16 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 - **Impact**: **Medium** (Scalability & Low-Latency Performance)
 - **Description**: Add targeted composite MySQL indexes to `records` (`(anglers_id, caught)`, `(lakes_id, fish_breeds_id)`, `(fish_breeds_id, length)`) to accelerate generic data table multi-sort filtering, species telemetry aggregations, and personal best queries under high logbook volume.
 
+#### 6. Test Suite Architecture Modernization & Strict Assertion Refactoring (`testing-best-practices`)
+- **Agents**: `phpunit-test-architect`, `laravel-architect`
+- **Impact**: **Medium** (Test Suite Health, Determinism & Rigor)
+- **Description**: Modernize the PHPUnit backend test suite according to upstream Laravel Boost `testing-best-practices`:
+  - **Strict Assertions & DB Count Helpers**: Replace loose `$this->assertEquals()` with strict `$this->assertSame()` across feature tests (`NasSyncServiceTest`, `PhotoUploadTest`, etc.) and adopt `$this->assertDatabaseCount()` / `$this->assertDatabaseEmpty()`.
+  - **Behavioral Relationship Testing**: Refactor legacy reflection unit tests (`method_exists()`) in `RecordTest`, `FishFamilyTest`, and `LakeTest` into observable Eloquent relationship behavior and query tests.
+  - **Self-Contained Fixtures**: Remove mutable database record creation from `setUp()` in legacy unit/feature tests (`AnglerTest`, `CrewTest`) to guarantee independent, self-contained test execution.
+  - **Boilerplate Pruning**: Remove obsolete default Laravel starter stub (`ExampleTest.php`).
+  - **Triple-Tier Write Verifications**: Ensure all mutation endpoints verify the HTTP response/redirect, exact database row state (`assertDatabaseHas`), and any dispatched side effects.
+
 ---
 
 ## 📦 Laravel & Livewire Ecosystem Package Evaluation
