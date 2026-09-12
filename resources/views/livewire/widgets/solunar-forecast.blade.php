@@ -80,18 +80,96 @@
         </div>
 
         <!-- 4. 24-hour Bite Timeline (Col Span 4) -->
-        <div class="md:col-span-4 flex flex-col justify-center">
-            <h4 class="text-xs font-bold text-slate-900 mb-1.5">24-hour Bite timeline</h4>
+        <div 
+            x-data="{
+                hovered: false,
+                hoverPercent: 0,
+                hoverTime: '',
+                hoverStatus: '',
+                hoverStatusClass: '',
+                hourlyData: @js($solunar['hourlyIntensity']),
+                onMouseMove(e) {
+                    const rect = this.$refs.chartContainer.getBoundingClientRect();
+                    if (!rect.width) return;
+                    const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+                    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+                    this.hoverPercent = (x / rect.width) * 100;
+                    const decimalHour = (x / rect.width) * 24.0;
+                    
+                    let h = Math.floor(decimalHour);
+                    let m = Math.round((decimalHour - h) * 60);
+                    if (m === 60) {
+                        h = (h + 1) % 24;
+                        m = 0;
+                    }
+                    const period = h >= 12 ? 'PM' : 'AM';
+                    const h12 = h % 12 || 12;
+                    this.hoverTime = `${String(h12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${period}`;
+                    
+                    const hourIdx = Math.min(23, Math.max(0, Math.floor(decimalHour)));
+                    const data = this.hourlyData[hourIdx] || {};
+                    if (data.status === 'major') {
+                        this.hoverStatus = 'Major Peak (2h)';
+                        this.hoverStatusClass = 'text-amber-400 font-bold';
+                    } else if (data.status === 'minor') {
+                        this.hoverStatus = 'Minor Window (1h)';
+                        this.hoverStatusClass = 'text-teal-400 font-bold';
+                    } else {
+                        this.hoverStatus = 'Normal Activity';
+                        this.hoverStatusClass = 'text-slate-400';
+                    }
+                }
+            }"
+            class="md:col-span-4 flex flex-col justify-center"
+        >
+            <div class="flex items-center justify-between mb-1.5">
+                <h4 class="text-xs font-bold text-slate-900">24-hour Bite timeline</h4>
+                <span class="text-[10px] text-slate-600 font-medium hidden sm:inline">Hover chart for exact time</span>
+            </div>
 
-            <div class="relative w-full pt-3">
-                <!-- Current Time Marker Indicator -->
+            <div 
+                x-ref="chartContainer"
+                @mouseenter="hovered = true"
+                @mouseleave="hovered = false"
+                @mousemove="onMouseMove($event)"
+                @touchstart.passive="hovered = true; onMouseMove($event)"
+                @touchmove.passive="onMouseMove($event)"
+                @touchend="hovered = false"
+                class="relative w-full pt-4 cursor-crosshair group"
+            >
+                <!-- Interactive Hover Tooltip & Crosshair -->
+                <template x-if="hovered">
+                    <div 
+                        class="absolute -top-4 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-mono px-2 py-0.5 rounded-lg shadow-lg pointer-events-none whitespace-nowrap z-30 flex items-center gap-1.5 border border-slate-700/80"
+                        :style="'left: ' + hoverPercent + '%;'"
+                    >
+                        <span class="font-bold text-amber-300" x-text="hoverTime"></span>
+                        <span class="text-slate-500">·</span>
+                        <span :class="hoverStatusClass" x-text="hoverStatus"></span>
+                    </div>
+                </template>
+
+                <template x-if="hovered">
+                    <div 
+                        class="absolute top-2 bottom-0 w-px bg-slate-800/80 pointer-events-none z-20"
+                        :style="'left: ' + hoverPercent + '%;'"
+                    >
+                        <div class="w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white -translate-x-1/2 absolute top-0"></div>
+                    </div>
+                </template>
+
+                <!-- Current Time Marker Indicator (Hidden on Hover to prevent clutter) -->
                 @if($isToday)
                     @php
                         $nowH = (int) now()->format('G');
                         $nowM = (int) now()->format('i');
                         $currentPercent = min(99, max(1, (($nowH + ($nowM / 60)) / 24.0) * 100));
                     @endphp
-                    <div class="absolute top-0 -translate-x-1/2 flex flex-col items-center pointer-events-none z-10" style="left: {{ $currentPercent }}%;">
+                    <div 
+                        x-show="!hovered" 
+                        class="absolute top-0 -translate-x-1/2 flex flex-col items-center pointer-events-none z-10 transition-opacity" 
+                        style="left: {{ $currentPercent }}%;"
+                    >
                         <span class="text-[8px] font-bold text-slate-800 leading-none">Current</span>
                         <span class="text-[7px] text-slate-900 leading-none mt-0.5">▼</span>
                     </div>
@@ -121,29 +199,16 @@
                 </div>
 
                 <!-- 24-Hour Timeline Ticks -->
-                <div class="flex justify-between text-[8px] font-mono text-slate-400 mt-1 px-0.5 select-none">
-                    <span>00</span>
-                    <span>01</span>
-                    <span>02</span>
-                    <span>03</span>
-                    <span>04</span>
-                    <span>05</span>
-                    <span>06</span>
-                    <span>09</span>
-                    <span>10</span>
-                    <span>11</span>
-                    <span>02</span>
-                    <span>03</span>
-                    <span>04</span>
-                    <span>05</span>
-                    <span>06</span>
-                    <span>12</span>
-                    <span>15</span>
-                    <span>18</span>
-                    <span>21</span>
-                    <span>22</span>
-                    <span>23</span>
-                    <span>24</span>
+                <div class="flex justify-between text-[10px] font-mono font-medium text-slate-500 mt-1.5 px-0.5 select-none">
+                    <span>12 AM</span>
+                    <span class="hidden sm:inline">3 AM</span>
+                    <span>6 AM</span>
+                    <span class="hidden sm:inline">9 AM</span>
+                    <span>12 PM</span>
+                    <span class="hidden sm:inline">3 PM</span>
+                    <span>6 PM</span>
+                    <span class="hidden sm:inline">9 PM</span>
+                    <span>12 AM</span>
                 </div>
             </div>
         </div>
