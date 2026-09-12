@@ -89,9 +89,16 @@ class SolunarService
         // SVG Moon Phase Path
         $moonSvg = $this->generateMoonSvgPath($daysSinceNew);
 
+        // Timezone Resolution (Defaults to America/Detroit for SW Michigan home base)
+        $timezone = $this->resolveTimezone($latitude, $longitude);
+        $dateInTz = Carbon::parse($carbonDate->format('Y-m-d') . ' 12:00:00', $timezone);
+        $timezoneAbbr = $dateInTz->format('T');
+
         return [
             'date' => $carbonDate->format('Y-m-d'),
             'formattedDate' => $carbonDate->format('l, M j, Y'),
+            'timezone' => $timezone,
+            'timezoneAbbr' => $timezoneAbbr,
             'coordinates' => [
                 'latitude' => $latitude,
                 'longitude' => $longitude,
@@ -473,5 +480,33 @@ class SolunarService
             'height' => $height,
             'baseY' => $baseY,
         ];
+    }
+
+    /**
+     * Resolve timezone identifier from coordinates.
+     * Default home base: Southwest Michigan (America/Detroit / Eastern Time).
+     */
+    public function resolveTimezone(float $latitude, float $longitude): string
+    {
+        // Michigan & Great Lakes (Eastern Time)
+        if ($latitude >= 41.0 && $latitude <= 48.5 && $longitude >= -87.6 && $longitude <= -82.0) {
+            return 'America/Detroit';
+        }
+
+        // Eastern North America / Southern & Eastern Ontario
+        if ($longitude >= -86.5) {
+            return 'America/Detroit'; // Eastern (EDT/EST)
+        }
+
+        // Central North America / Northwest Ontario / Wisconsin / Illinois
+        if ($longitude >= -102.0) {
+            return 'America/Chicago'; // Central (CDT/CST)
+        }
+
+        if ($longitude >= -115.0) {
+            return 'America/Denver'; // Mountain (MDT/MST)
+        }
+
+        return 'America/Los_Angeles'; // Pacific (PDT/PST)
     }
 }

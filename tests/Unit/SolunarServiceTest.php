@@ -80,4 +80,17 @@ class SolunarServiceTest extends TestCase
             $this->assertNotEmpty($min['display']);
         }
     }
+
+    #[Test]
+    public function it_resolves_timezone_for_southwest_michigan_and_other_regions(): void
+    {
+        // Southwest Michigan (e.g. Kalamazoo / St. Joseph: ~42.2° N, -85.6° W)
+        $miTz = $this->service->resolveTimezone(42.2917, -85.5872);
+        $this->assertSame('America/Detroit', $miTz);
+
+        // Data payload includes timezone and abbreviation
+        $data = $this->service->getSolunarData(42.2917, -85.5872, '2026-07-15');
+        $this->assertSame('America/Detroit', $data['timezone']);
+        $this->assertSame('EDT', $data['timezoneAbbr']);
+    }
 }

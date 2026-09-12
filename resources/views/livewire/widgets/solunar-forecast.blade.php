@@ -5,9 +5,11 @@
             <h3 class="font-black text-slate-900 text-sm sm:text-base tracking-tight">
                 Solunar & Moon Phase Feeding Forecast
             </h3>
-            <span class="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-lg font-mono">
-                <x-lucide-map-pin class="w-3 h-3 text-teal-600" />
+            <span class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-lg font-mono">
+                <x-lucide-map-pin class="w-3 h-3 text-teal-600 shrink-0" />
                 <span>{{ $lakeName }}</span>
+                <span class="text-slate-300">·</span>
+                <span class="text-teal-700 font-bold bg-teal-50 border border-teal-200/60 px-1 py-0.2 rounded text-[10px]">{{ $solunar['timezoneAbbr'] }}</span>
             </span>
         </div>
 
@@ -143,7 +145,7 @@
                         class="absolute -top-4 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-mono px-2 py-0.5 rounded-lg shadow-lg pointer-events-none whitespace-nowrap z-30 flex items-center gap-1.5 border border-slate-700/80"
                         :style="'left: ' + hoverPercent + '%;'"
                     >
-                        <span class="font-bold text-amber-300" x-text="hoverTime"></span>
+                        <span class="font-bold text-amber-300" x-text="hoverTime + ' ' + @js($solunar['timezoneAbbr'])"></span>
                         <span class="text-slate-500">·</span>
                         <span :class="hoverStatusClass" x-text="hoverStatus"></span>
                     </div>
