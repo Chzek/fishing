@@ -6,6 +6,19 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🎯 Active Priority Roadmap (Ranked by Impact & Value)
 
+### 🏆 Priority 1 (P1): AI Governance & Architectural Invariants
+
+#### 1. Formalize & Bootstrap Durable Codebase Conventions (`.ai/rules/`)
+- **Agents**: `infer-conventions`, `laravel-architect`
+- **Impact**: **Critical** (AI Governance, Agent Invariant Alignment & Zero Context Drift)
+- **Description**: Bootstrap and record settled architectural invariants into `.ai/rules/` and `.ai/rules/index.md` using Laravel Boost, ensuring all future AI agent interactions inherit strict, path-scoped domain rules:
+  - **Models**: UUID primary keys via `HasUuidAndSyncTracking` trait + native `casts()` method definitions.
+  - **Actions & Services**: Single-purpose Action classes exposing public `execute()` methods and constructor-injected Domain Services.
+  - **Controllers & Validation**: Thin controllers delegating to Action classes with dedicated `FormRequest` classes.
+  - **Sail & Testing**: Containerized execution with PHPUnit 11 `#[Test]` attributes, strict assertions, and `DatabaseTransactions`.
+
+---
+
 ### 🚀 Priority 2 (P2): Angling Experience & Reactive Workflows
 
 #### 1. Lake Waterbody Intelligence Dossier & Bathymetric Telemetry (`/lake/{id}`)
@@ -25,7 +38,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ---
 
-### ⚙️ Priority 3 (P3): Infrastructure, Sync & Optimization
+### ⚙️ Priority 3 (P3): Infrastructure, Performance & Refactoring
 
 #### 1. Offline Catch Queue Sync Indicator & Background Resync Worker (`@livewire('ui.offline-sync-indicator')`)
 - **Agents**: `nas-sync-architect`, `livewire-architect`
@@ -61,6 +74,36 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   - **Self-Contained Fixtures**: Remove mutable database record creation from `setUp()` in legacy unit/feature tests (`AnglerTest`, `CrewTest`) to guarantee independent, self-contained test execution.
   - **Boilerplate Pruning**: Remove obsolete default Laravel starter stub (`ExampleTest.php`).
   - **Triple-Tier Write Verifications**: Ensure all mutation endpoints verify the HTTP response/redirect, exact database row state (`assertDatabaseHas`), and any dispatched side effects.
+
+#### 7. Consolidate `RecordController@index` Multi-Query Telemetry (`CatchTelemetryService`)
+- **Agents**: `query-profiler-optimizer`, `laravel-architect`
+- **Impact**: **Medium** (Controller Slimming & Query Optimization)
+- **Description**: Refactor `RecordController@index` and `/record/directory` by extracting a dedicated `CatchTelemetryService`. Replace 7 consecutive cloned query executions with a consolidated aggregate query and cache layer.
+
+#### 8. Livewire Reference Data Caching (`LureSelector` Categories)
+- **Agents**: `livewire-architect`, `query-profiler-optimizer`
+- **Impact**: **Low** (Sub-Second UI Responsiveness)
+- **Description**: Cache distinct lure categories in `app/Livewire/Ui/LureSelector.php` with `Cache::remember('lure_categories', 86400, ...)` to eliminate redundant database extraction on every debounced keystroke.
+
+#### 9. Dynamic Weather Relationship N+1 Elimination (`Record::scopeWithDailyWeather`)
+- **Agents**: `query-profiler-optimizer`, `laravel-architect`
+- **Impact**: **Medium** (N+1 Query Elimination)
+- **Description**: Eliminate query-per-row execution in `Record::getDailyWeatherAttribute` by creating an explicit query scope `scopeWithDailyWeather($query)` for single-pass eager loading in collection views.
+
+#### 10. Centralized Image Optimization & Upload Action (`ProcessPhotoUploadAction`)
+- **Agents**: `laravel-architect`
+- **Impact**: **Medium** (DRY Code Architecture)
+- **Description**: Unify duplicate private `optimizeAndSaveImage()` helper methods in `AnglerController` and `FishBreedController` into `ProcessPhotoUploadAction` (or a dedicated `OptimizeAndStoreMediaAction`).
+
+#### 11. Model Cast Modernization with Native Laravel 12 `casts()`
+- **Agents**: `laravel-architect`
+- **Impact**: **Medium** (Strict Type Safety)
+- **Description**: Standardize all 13 Eloquent models (`Lake`, `Record`, `Lure`, `FishingZone`, `Photo`, etc.) to use Laravel 12's `protected function casts(): array` with explicit scalar and datetime types (`float`, `integer`, `boolean`, `datetime`).
+
+#### 12. Controller Form Request Standardization (`StorePhotoRequest`, `StoreExpeditionRequest`, `StoreLakeRequest`)
+- **Agents**: `laravel-architect`
+- **Impact**: **Low** (Validation Consistency)
+- **Description**: Extract dedicated Form Request classes for `PhotoController`, `ExpeditionController`, and `LakeController` to replace inline `$request->validate()` calls with uniform validation and authorization gating.
 
 ---
 
