@@ -14,12 +14,16 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-3">
-            <a href="{{ route('admin.users') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors">
-                <x-lucide-users class="w-4 h-4" />
-                <span>User Account Linking</span>
+        <div class="flex flex-wrap items-center gap-2.5">
+            <a href="{{ route('admin.sync') }}" class="inline-flex items-center gap-2 px-3.5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors">
+                <x-lucide-activity class="w-4 h-4" />
+                <span>Sync Diagnostic Console</span>
             </a>
-            <a href="{{ route('admin.trash') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-colors">
+            <a href="{{ route('admin.users') }}" class="inline-flex items-center gap-2 px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-colors">
+                <x-lucide-users class="w-4 h-4 text-teal-400" />
+                <span>User Linking</span>
+            </a>
+            <a href="{{ route('admin.trash') }}" class="inline-flex items-center gap-2 px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-colors">
                 <x-lucide-trash-2 class="w-4 h-4 text-rose-400" />
                 <span>Trash Bin ({{ $trashedCount }})</span>
             </a>
@@ -204,6 +208,10 @@
                         </button>
                     </form>
                 </div>
+                <a href="{{ route('admin.sync') }}" class="w-full inline-flex items-center justify-center gap-1.5 pt-1 text-[11px] font-bold text-teal-400 hover:text-teal-300 hover:underline transition-colors">
+                    <x-lucide-activity class="w-3.5 h-3.5" />
+                    <span>Open Full Diagnostic Console →</span>
+                </a>
             </div>
 
         </div>

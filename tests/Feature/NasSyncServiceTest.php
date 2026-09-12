@@ -376,4 +376,68 @@ class NasSyncServiceTest extends TestCase
         $this->assertEquals('Bob', $angler->firstName);
         $this->assertEquals('synced', $angler->sync_status);
     }
+
+    #[Test]
+    public function it_probes_connectivity_and_ssl_status()
+    {
+        Http::fake([
+            'https://nas.example.com/api/v1/sync/pull*' => Http::response(['status' => 'ok'], 200),
+        ]);
+
+        $service = new NasSyncService('https://nas.example.com', 'valid-token');
+        $diagnostics = $service->checkConnectivity();
+
+        $this->assertTrue($diagnostics['online']);
+        $this->assertTrue($diagnostics['auth_valid']);
+        $this->assertTrue($diagnostics['ssl_enabled']);
+        $this->assertNotNull($diagnostics['latency_ms']);
+        $this->assertEquals(200, $diagnostics['http_status']);
+    }
+
+    #[Test]
+    public function it_handles_offline_or_invalid_auth_in_connectivity_probe()
+    {
+        Http::fake([
+            'https://nas.example.com/api/v1/sync/pull*' => Http::response(['error' => 'Unauthorized'], 401),
+        ]);
+
+        $service = new NasSyncService('https://nas.example.com', 'bad-token');
+        $diagnostics = $service->checkConnectivity();
+
+        $this->assertTrue($diagnostics['online']);
+        $this->assertFalse($diagnostics['auth_valid']);
+        $this->assertEquals(401, $diagnostics['http_status']);
+        $this->assertStringContainsString('Authentication Rejected', $diagnostics['error_message']);
+    }
+
+    #[Test]
+    public function it_returns_detailed_model_matrix_across_all_13_models()
+    {
+        Lake::create(['name' => 'Matrix Test Lake', 'latitude' => 45.0, 'longitude' => -78.0]);
+
+        $service = new NasSyncService('https://nas.example.com', 'test-token');
+        $matrix = $service->getDetailedModelMatrix();
+
+        $this->assertCount(13, $matrix);
+        $this->assertArrayHasKey('lakes', $matrix);
+        $this->assertArrayHasKey('records', $matrix);
+        $this->assertArrayHasKey('photos', $matrix);
+        $this->assertArrayHasKey('anglers', $matrix);
+        $this->assertArrayHasKey('users', $matrix);
+
+        $this->assertGreaterThanOrEqual(1, $matrix['lakes']['total']);
+        $this->assertGreaterThanOrEqual(1, $matrix['lakes']['pending']);
+    }
+
+    #[Test]
+    public function it_returns_media_diagnostic_status()
+    {
+        $service = new NasSyncService('https://nas.example.com', 'test-token');
+        $media = $service->getMediaDiagnosticStatus();
+
+        $this->assertArrayHasKey('total_media_records', $media);
+        $this->assertArrayHasKey('chunk_size_mb', $media);
+        $this->assertEquals('SHA-256', $media['hashing_algorithm']);
+        $this->assertEquals('public', $media['storage_disk']);
+    }
 }

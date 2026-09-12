@@ -63,6 +63,7 @@ Route::prefix('profile')->group(function () {
 
 Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
+    Route::get('/sync', [AdminController::class, 'syncConsole'])->name('admin.sync');
     Route::post('/notifications/mark-all-read', [AdminController::class, 'markAllNotificationsRead'])->name('admin.notifications.mark_read');
     Route::post('/notifications/{id}/mark-read', [AdminController::class, 'markNotificationRead'])->name('admin.notifications.mark_single_read');
     Route::post('/sync/trigger', [AdminController::class, 'triggerSync'])->name('admin.sync.trigger');

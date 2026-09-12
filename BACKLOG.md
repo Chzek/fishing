@@ -15,17 +15,12 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### ⚙️ Priority 2 (P2): Infrastructure, Performance & Refactoring
 
-#### 1. Synology NAS Connectivity & Real-Time Sync Diagnostic Console (`/admin/sync`)
-- **Agents**: `nas-sync-architect`, `laravel-architect`
-- **Impact**: **Medium** (Admin & Operations Reliability)
-- **Description**: Enhanced diagnostics dashboard inside Admin Portal showing live Synology NAS ping latency, mutual SSL certificate status, per-model synchronization outbox breakdown, and automated retry mechanism for failed media chunk transfers.
-
-#### 2. Database Composite Index Optimization & Query Profiling Audit
+#### 1. Database Composite Index Optimization & Query Profiling Audit
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (Scalability & Low-Latency Performance)
 - **Description**: Add targeted composite MySQL indexes to `records` (`(anglers_id, caught)`, `(lakes_id, fish_breeds_id)`, `(fish_breeds_id, length)`) to accelerate generic data table multi-sort filtering, species telemetry aggregations, and personal best queries under high logbook volume.
 
-#### 3. Test Suite Architecture Modernization & Strict Assertion Refactoring (`testing-best-practices`)
+#### 2. Test Suite Architecture Modernization & Strict Assertion Refactoring (`testing-best-practices`)
 - **Agents**: `phpunit-test-architect`, `laravel-architect`
 - **Impact**: **Medium** (Test Suite Health, Determinism & Rigor)
 - **Description**: Modernize the PHPUnit backend test suite according to upstream Laravel Boost `testing-best-practices`:
@@ -35,32 +30,32 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   - **Boilerplate Pruning**: Remove obsolete default Laravel starter stub (`ExampleTest.php`).
   - **Triple-Tier Write Verifications**: Ensure all mutation endpoints verify the HTTP response/redirect, exact database row state (`assertDatabaseHas`), and any dispatched side effects.
 
-#### 4. Consolidate `RecordController@index` Multi-Query Telemetry (`CatchTelemetryService`)
+#### 3. Consolidate `RecordController@index` Multi-Query Telemetry (`CatchTelemetryService`)
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (Controller Slimming & Query Optimization)
 - **Description**: Refactor `RecordController@index` and `/record/directory` by extracting a dedicated `CatchTelemetryService`. Replace 7 consecutive cloned query executions with a consolidated aggregate query and cache layer.
 
-#### 5. Livewire Reference Data Caching (`LureSelector` Categories)
+#### 4. Livewire Reference Data Caching (`LureSelector` Categories)
 - **Agents**: `livewire-architect`, `query-profiler-optimizer`
 - **Impact**: **Low** (Sub-Second UI Responsiveness)
 - **Description**: Cache distinct lure categories in `app/Livewire/Ui/LureSelector.php` with `Cache::remember('lure_categories', 86400, ...)` to eliminate redundant database extraction on every debounced keystroke.
 
-#### 6. Dynamic Weather Relationship N+1 Elimination (`Record::scopeWithDailyWeather`)
+#### 5. Dynamic Weather Relationship N+1 Elimination (`Record::scopeWithDailyWeather`)
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (N+1 Query Elimination)
 - **Description**: Eliminate query-per-row execution in `Record::getDailyWeatherAttribute` by creating an explicit query scope `scopeWithDailyWeather($query)` for single-pass eager loading in collection views.
 
-#### 7. Centralized Image Optimization & Upload Action (`ProcessPhotoUploadAction`)
+#### 6. Centralized Image Optimization & Upload Action (`ProcessPhotoUploadAction`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Medium** (DRY Code Architecture)
 - **Description**: Unify duplicate private `optimizeAndSaveImage()` helper methods in `AnglerController` and `FishBreedController` into `ProcessPhotoUploadAction` (or a dedicated `OptimizeAndStoreMediaAction`).
 
-#### 8. Model Cast Modernization with Native Laravel 12 `casts()`
+#### 7. Model Cast Modernization with Native Laravel 12 `casts()`
 - **Agents**: `laravel-architect`
 - **Impact**: **Medium** (Strict Type Safety)
 - **Description**: Standardize all 13 Eloquent models (`Lake`, `Record`, `Lure`, `FishingZone`, `Photo`, etc.) to use Laravel 12's `protected function casts(): array` with explicit scalar and datetime types (`float`, `integer`, `boolean`, `datetime`).
 
-#### 9. Controller Form Request Standardization (`StorePhotoRequest`, `StoreExpeditionRequest`, `StoreLakeRequest`)
+#### 8. Controller Form Request Standardization (`StorePhotoRequest`, `StoreExpeditionRequest`, `StoreLakeRequest`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Low** (Validation Consistency)
 - **Description**: Extract dedicated Form Request classes for `PhotoController`, `ExpeditionController`, and `LakeController` to replace inline `$request->validate()` calls with uniform validation and authorization gating.
@@ -188,4 +183,12 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - Engineered offline-first pure mathematical astronomical calculation engine in [`SolunarService.php`](file:///home/gmroczek/git/fishing/app/Services/SolunarService.php) utilizing Julian Date celestial algorithms, synodic lunar cycles (29.53058867 days), solar declination, and observer GPS coordinates to compute peak 2-hour Major feeding periods (moon overhead/underfoot), 1-hour Minor feeding periods (moonrise/moonset), exact sunrise/sunset, 1-5 star day ratings, and 24-hour hour-by-hour feeding activity levels.
     - Created reactive Livewire 3 component [`SolunarForecast.php`](file:///home/gmroczek/git/fishing/app/Livewire/Widgets/SolunarForecast.php) and Tailwind Blade view [`solunar-forecast.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/widgets/solunar-forecast.blade.php) featuring date stepping controls (prev/today/next), a 4-metric overview ribbon, and an interactive 24-hour visual activity bar with glowing Major (gold) and Minor (teal) peak window indicators.
     - Integrated seamlessly into the Lake Dossier view ([`lake/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/show.blade.php)) with collapsible accordion card layout and zero external network dependencies.
-    - Verified with 3 unit tests ([`SolunarServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Unit/SolunarServiceTest.php)) and 5 feature tests ([`SolunarForecastTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/Livewire/SolunarForecastTest.php)) (229 total passing tests across the entire application suite).
+    - Verified with 3 unit tests ([`SolunarServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Unit/SolunarServiceTest.php)) and 5 feature tests ([`SolunarForecastTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/Livewire/SolunarForecastTest.php)).
+26. **Synology NAS Connectivity & Real-Time Sync Diagnostic Console (`/admin/sync`)**:
+    - Built dedicated Remote Synchronization & Diagnostic Console view (`/admin/sync`) and reactive Livewire 3 console ([`SyncDiagnosticConsole.php`](file:///home/gmroczek/git/fishing/app/Livewire/Admin/SyncDiagnosticConsole.php) and [`sync-diagnostic-console.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/admin/sync-diagnostic-console.blade.php)).
+    - Provides real-time network latency probes (`checkConnectivity`), peer TLS / SSL certificate inspection (issuer, validity, expiration countdown), Bearer token authorization checks, and 1MB chunked binary media diagnostics.
+    - Implemented comprehensive 13-Model Outbox & Sync Health matrix tracking entity synchronization percentage progress, local modification times, and pending outbox queues with "Filter Pending Only" toggle.
+    - Wired interactive admin controls for Live Ping probes, Incremental Sync execution, Full Baseline pull reconcile, and Mark All Synced state clearing.
+    - Added direct navigation hooks from the Admin Dashboard header and Two-Way Sync Engine card.
+    - Verified with 32 comprehensive tests across [`AdminNasSyncConsoleTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AdminNasSyncConsoleTest.php), [`NasSyncServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncServiceTest.php), and [`NasSyncApiTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncApiTest.php) (241 total passing tests across the entire test suite).
+

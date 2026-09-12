@@ -106,6 +106,183 @@ class NasSyncService
     }
 
     /**
+     * Test live connectivity, latency, SSL certificate status, and token authorization against the remote NAS.
+     */
+    public function checkConnectivity(bool $forceFresh = false): array
+    {
+        if (empty($this->nasUrl)) {
+            return [
+                'online' => false,
+                'latency_ms' => null,
+                'http_status' => null,
+                'ssl_enabled' => false,
+                'ssl_valid' => false,
+                'ssl_issuer' => null,
+                'ssl_expires_at' => null,
+                'auth_valid' => false,
+                'target_url' => 'Not Configured (Set NAS_URL in environment)',
+                'instance_name' => $this->getInstanceName(),
+                'target_name' => $this->getTargetName(),
+                'error_message' => 'NAS_URL is empty in application configuration.',
+                'checked_at' => now()->toIso8601String(),
+            ];
+        }
+
+        $sslEnabled = str_starts_with(strtolower($this->nasUrl), 'https://');
+        $sslValid = false;
+        $sslIssuer = null;
+        $sslExpiresAt = null;
+
+        $startTime = microtime(true);
+        $isOnline = false;
+        $httpStatus = null;
+        $authValid = false;
+        $errorMessage = null;
+
+        try {
+            $response = Http::timeout(5)
+                ->withToken($this->apiToken)
+                ->acceptJson()
+                ->get("{$this->nasUrl}/api/v1/sync/pull", [
+                    'limit' => 1,
+                ]);
+
+            $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
+            $httpStatus = $response->status();
+
+            if ($response->successful()) {
+                $isOnline = true;
+                $authValid = true;
+                if ($sslEnabled) {
+                    $sslValid = true;
+                    $sslIssuer = 'Verified TLS Session';
+                }
+            } elseif ($httpStatus === 401 || $httpStatus === 403) {
+                $isOnline = true;
+                $authValid = false;
+                $errorMessage = "Authentication Rejected ({$httpStatus}). Check NAS_API_TOKEN configuration.";
+            } else {
+                $isOnline = true;
+                $errorMessage = "Server responded with HTTP status {$httpStatus}.";
+            }
+        } catch (\Throwable $e) {
+            $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
+            $isOnline = false;
+            $errorMessage = $e->getMessage();
+        }
+
+        // Additional peer SSL certificate inspection for HTTPS endpoints
+        if ($sslEnabled && $isOnline && function_exists('openssl_x509_parse')) {
+            try {
+                $parsed = parse_url($this->nasUrl);
+                $host = $parsed['host'] ?? null;
+                $port = $parsed['port'] ?? 443;
+                if ($host) {
+                    $streamContext = stream_context_create([
+                        'ssl' => [
+                            'capture_peer_cert' => true,
+                            'verify_peer' => false,
+                            'verify_peer_name' => false,
+                        ],
+                    ]);
+                    $client = @stream_socket_client("ssl://{$host}:{$port}", $errno, $errstr, 2, STREAM_CLIENT_CONNECT, $streamContext);
+                    if ($client) {
+                        $params = stream_context_get_params($client);
+                        $cert = $params['options']['ssl']['peer_certificate'] ?? null;
+                        if ($cert) {
+                            $certData = openssl_x509_parse($cert);
+                            if ($certData) {
+                                $sslIssuer = $certData['issuer']['O'] ?? $certData['issuer']['CN'] ?? 'Let\'s Encrypt / Synology CA';
+                                if (!empty($certData['validTo_time_t'])) {
+                                    $sslExpiresAt = Carbon::createFromTimestamp($certData['validTo_time_t'])->format('Y-m-d H:i:s');
+                                    $sslValid = $certData['validTo_time_t'] > time();
+                                }
+                            }
+                        }
+                        fclose($client);
+                    }
+                }
+            } catch (\Throwable) {
+                // Keep default SSL heuristics if raw socket probe fails
+            }
+        }
+
+        return [
+            'online' => $isOnline,
+            'latency_ms' => $isOnline ? $latencyMs : null,
+            'http_status' => $httpStatus,
+            'ssl_enabled' => $sslEnabled,
+            'ssl_valid' => $sslValid,
+            'ssl_issuer' => $sslIssuer ?: ($sslEnabled ? 'TLS / SSL' : 'Disabled (HTTP)'),
+            'ssl_expires_at' => $sslExpiresAt,
+            'auth_valid' => $authValid,
+            'target_url' => $this->nasUrl,
+            'instance_name' => $this->getInstanceName(),
+            'target_name' => $this->getTargetName(),
+            'error_message' => $errorMessage,
+            'checked_at' => now()->toIso8601String(),
+        ];
+    }
+
+    /**
+     * Get detailed synchronization matrix and outbox status across all 13 models.
+     */
+    public function getDetailedModelMatrix(): array
+    {
+        $matrix = [];
+
+        foreach ($this->modelMap as $key => $modelClass) {
+            $total = $modelClass::count();
+            $synced = $modelClass::where('sync_status', 'synced')->count();
+            $pending = $modelClass::pendingUpstream()->count();
+            $percent = $total > 0 ? (int) round(($synced / $total) * 100) : 100;
+
+            $latestLocal = $modelClass::max('updated_at');
+            $latestSynced = $modelClass::where('sync_status', 'synced')->max('synced_at');
+
+            $matrix[$key] = [
+                'key' => $key,
+                'label' => $this->modelLabels[$key] ?? ucfirst(str_replace('_', ' ', $key)),
+                'total' => $total,
+                'synced' => $synced,
+                'pending' => $pending,
+                'percent' => $percent,
+                'latest_local' => $latestLocal ? Carbon::parse($latestLocal)->diffForHumans() : '—',
+                'latest_synced' => $latestSynced ? Carbon::parse($latestSynced)->diffForHumans() : 'Never',
+            ];
+        }
+
+        return $matrix;
+    }
+
+    /**
+     * Get media assets synchronization diagnostics.
+     */
+    public function getMediaDiagnosticStatus(): array
+    {
+        $photosCount = Photo::count();
+        $photosWithFile = Photo::whereNotNull('path')->where('path', '!=', '')->count();
+        $anglersWithAvatar = Angler::whereNotNull('avatar')->where('avatar', '!=', '')->count();
+        $speciesWithArtwork = FishBreed::where(function ($q) {
+            $q->whereNotNull('avatar')->orWhereNotNull('image');
+        })->count();
+
+        $totalMediaAssets = $photosWithFile + $anglersWithAvatar + $speciesWithArtwork;
+
+        return [
+            'total_media_records' => $totalMediaAssets,
+            'photos_count' => $photosCount,
+            'photos_with_file' => $photosWithFile,
+            'anglers_avatars_count' => $anglersWithAvatar,
+            'species_artwork_count' => $speciesWithArtwork,
+            'chunk_size_bytes' => MediaSyncManager::DEFAULT_CHUNK_SIZE,
+            'chunk_size_mb' => round(MediaSyncManager::DEFAULT_CHUNK_SIZE / 1048576, 1),
+            'hashing_algorithm' => 'SHA-256',
+            'storage_disk' => 'public',
+        ];
+    }
+
+    /**
      * Execute full two-way sync with NAS server.
      */
     public function sync(bool $forceBaseline = false): array

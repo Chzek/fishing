@@ -106,8 +106,12 @@ class AdminController extends Controller
     public function markNotificationRead($id)
     {
         $notification = auth()->user()->notifications()->findOrFail($id);
-        $notification->markAsRead();
         return back()->with('status', 'Notification dismissed.');
+    }
+
+    public function syncConsole()
+    {
+        return view('admin.sync.index');
     }
 
     public function triggerSync(\Fishinglog\Services\NasSyncService $syncService)
