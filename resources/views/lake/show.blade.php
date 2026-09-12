@@ -88,15 +88,16 @@
         </div>
 
         <!-- Card 2: Lunker Legend (Longest Catch) -->
-        <div class="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent bg-white p-5 rounded-2xl border border-amber-200 shadow-sm space-y-2">
-            <div class="flex items-center justify-between">
+        <div class="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent bg-white p-5 rounded-2xl border border-amber-200 shadow-sm space-y-2 relative overflow-hidden">
+            <x-watermarkTapeMeasure />
+            <div class="flex items-center justify-between relative z-10">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1">
                     👑 Lunker Legend
                 </span>
                 <span class="text-xs font-black text-amber-600 bg-amber-100 px-2.5 py-0.5 rounded-full font-mono">Length</span>
             </div>
             @isset($longest)
-                <div class="space-y-1 pt-1">
+                <div class="space-y-1 pt-1 relative z-10">
                     <div class="flex items-baseline gap-1.5">
                         <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($longest->length, 1) }}</span>
                         <span class="text-xs font-bold text-slate-500">inches</span>
@@ -111,22 +112,23 @@
                     </div>
                 </div>
             @else
-                <div class="py-4 text-center text-slate-400 text-xs italic">
+                <div class="py-4 text-center text-slate-400 text-xs italic relative z-10">
                     No length record logged yet.
                 </div>
             @endisset
         </div>
 
         <!-- Card 3: Heavyweight Champ (Fattest Catch) -->
-        <div class="bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-transparent bg-white p-5 rounded-2xl border border-sky-200 shadow-sm space-y-2">
-            <div class="flex items-center justify-between">
+        <div class="bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-transparent bg-white p-5 rounded-2xl border border-sky-200 shadow-sm space-y-2 relative overflow-hidden">
+            <x-watermarkDialScale />
+            <div class="flex items-center justify-between relative z-10">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-sky-800 flex items-center gap-1">
                     🏋️ Heavyweight Champ
                 </span>
                 <span class="text-xs font-black text-sky-600 bg-sky-100 px-2.5 py-0.5 rounded-full font-mono">Weight</span>
             </div>
             @if(isset($fattest) && !is_null($fattest->weight))
-                <div class="space-y-1 pt-1">
+                <div class="space-y-1 pt-1 relative z-10">
                     <div class="flex items-baseline gap-1.5">
                         <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($fattest->weight, 1) }}</span>
                         <span class="text-xs font-bold text-slate-500">lbs.</span>
@@ -141,7 +143,7 @@
                     </div>
                 </div>
             @else
-                <div class="py-4 text-center text-slate-400 text-xs italic">
+                <div class="py-4 text-center text-slate-400 text-xs italic relative z-10">
                     No weight record logged yet.
                 </div>
             @endif

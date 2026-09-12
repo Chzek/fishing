@@ -51,7 +51,8 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- 👑 Lunker Legend -->
         <div class="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent bg-white p-5 rounded-2xl border border-amber-200 shadow-sm relative overflow-hidden space-y-2">
-            <div class="flex items-center justify-between">
+            <x-watermarkTapeMeasure />
+            <div class="flex items-center justify-between relative z-10">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1">
                     👑 Lunker Legend
                 </span>
@@ -59,7 +60,7 @@
             </div>
 
             @if($lunker)
-                <div class="space-y-1 pt-1">
+                <div class="space-y-1 pt-1 relative z-10">
                     <div class="flex items-baseline gap-1.5">
                         <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($lunker->length, 1) }}</span>
                         <span class="text-xs font-bold text-slate-500">inches</span>
@@ -73,13 +74,14 @@
                     </div>
                 </div>
             @else
-                <div class="text-xs text-slate-400 py-3 italic">No catches logged yet.</div>
+                <div class="text-xs text-slate-400 py-3 italic relative z-10">No catches logged yet.</div>
             @endif
         </div>
 
         <!-- 🏋️ Heavyweight Champion -->
-        <div class="bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-transparent bg-white p-5 rounded-2xl border border-sky-200 shadow-sm space-y-2">
-            <div class="flex items-center justify-between">
+        <div class="bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-transparent bg-white p-5 rounded-2xl border border-sky-200 shadow-sm space-y-2 relative overflow-hidden">
+            <x-watermarkDialScale />
+            <div class="flex items-center justify-between relative z-10">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-sky-800 flex items-center gap-1">
                     🏋️ Heavyweight Champ
                 </span>
@@ -87,7 +89,7 @@
             </div>
 
             @if($heavyweight)
-                <div class="space-y-1 pt-1">
+                <div class="space-y-1 pt-1 relative z-10">
                     <div class="flex items-baseline gap-1.5">
                         <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($heavyweight->weight, 1) }}</span>
                         <span class="text-xs font-bold text-slate-500">lbs.</span>
@@ -101,7 +103,7 @@
                     </div>
                 </div>
             @else
-                <div class="text-xs text-slate-400 py-3 italic">No weight entries logged.</div>
+                <div class="text-xs text-slate-400 py-3 italic relative z-10">No weight entries logged.</div>
             @endif
         </div>
 

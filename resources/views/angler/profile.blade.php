@@ -60,15 +60,16 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <!-- 👑 Trophy By Length -->
-                <div class="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent bg-white p-5 rounded-2xl border border-amber-200 shadow-sm space-y-2">
-                    <div class="flex items-center justify-between">
+                <div class="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent bg-white p-5 rounded-2xl border border-amber-200 shadow-sm space-y-2 relative overflow-hidden">
+                    <x-watermarkTapeMeasure />
+                    <div class="flex items-center justify-between relative z-10">
                         <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1">
                             👑 Lunker Legend
                         </span>
                         <span class="text-xs font-black text-amber-600 bg-amber-100 px-2.5 py-0.5 rounded-full">Length</span>
                     </div>
                     @if(isset($personalBest['byLength']) && $personalBest['byLength'])
-                        <div class="flex items-center gap-3.5 pt-1">
+                        <div class="flex items-center gap-3.5 pt-1 relative z-10">
                             <x-fishAvatar :breed="$personalBest['byLength']->fishBreed" size="xl" class="shadow-sm ring-2 ring-amber-400/40" />
                             <div class="space-y-1 min-w-0 flex-1">
                                 <div class="flex items-baseline gap-1.5">
@@ -86,22 +87,23 @@
                             </div>
                         </div>
                     @else
-                        <div class="py-4 text-center text-slate-400 text-xs italic">
+                        <div class="py-4 text-center text-slate-400 text-xs italic relative z-10">
                             No length record logged yet.
                         </div>
                     @endif
                 </div>
 
                 <!-- 🏋️ Trophy By Weight -->
-                <div class="bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-transparent bg-white p-5 rounded-2xl border border-sky-200 shadow-sm space-y-2">
-                    <div class="flex items-center justify-between">
+                <div class="bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-transparent bg-white p-5 rounded-2xl border border-sky-200 shadow-sm space-y-2 relative overflow-hidden">
+                    <x-watermarkDialScale />
+                    <div class="flex items-center justify-between relative z-10">
                         <span class="text-[10px] font-bold uppercase tracking-wider text-sky-800 flex items-center gap-1">
                             🏋️ Heavyweight Champ
                         </span>
                         <span class="text-xs font-black text-sky-600 bg-sky-100 px-2.5 py-0.5 rounded-full">Weight</span>
                     </div>
                     @if(isset($personalBest['byWeight']) && $personalBest['byWeight'])
-                        <div class="flex items-center gap-3.5 pt-1">
+                        <div class="flex items-center gap-3.5 pt-1 relative z-10">
                             <x-fishAvatar :breed="$personalBest['byWeight']->fishBreed" size="xl" class="shadow-sm ring-2 ring-sky-400/40" />
                             <div class="space-y-1 min-w-0 flex-1">
                                 <div class="flex items-baseline gap-1.5">
@@ -119,7 +121,7 @@
                             </div>
                         </div>
                     @else
-                        <div class="py-4 text-center text-slate-400 text-xs italic">
+                        <div class="py-4 text-center text-slate-400 text-xs italic relative z-10">
                             No weight record logged yet.
                         </div>
                     @endif
