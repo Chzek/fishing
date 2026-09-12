@@ -6,16 +6,70 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🎯 Active Priority Roadmap (Ranked by Impact & Value)
 
-### 🚀 Priority 1 (P1): Angling Experience & Reactive Workflows
+### 🚀 Priority 1 (P1): Angling Experience & Tactical Intelligence Features
 
-*All current P1 features completed. Advancing priority backlog.*
+#### 1. Multi-Day Solunar Forecast & Astronomical Trip Planner
+- **Agents**: `seasoned-angler-advisor`, `livewire-architect`
+- **Impact**: **High** (Trip Planning & Tactical Value)
+- **Description**: Extend [`SolunarService.php`](file:///home/gmroczek/git/fishing/app/Services/SolunarService.php) to compute a 7-day predictive window with 1–5 star day ratings, major/minor windows, and sunrise/sunset times. Mount the component across the **Expedition Show** page (`/expedition/{id}`) and **Quick Catch Logger** context so anglers can plan multi-day Canadian wilderness fishing schedules around peak feeding windows.
 
+#### 2. Barometric Pressure Velocity & Tactical Weather Trigger Badges
+- **Agents**: `seasoned-angler-advisor`, `query-profiler-optimizer`
+- **Impact**: **High** (Real-World Boat Decision Making)
+- **Description**: Compute barometric pressure velocity ($\Delta P = P_{\text{current}} - P_{t-3\text{h}}$) to classify conditions (Rapidly Rising, Slow Rise, Steady, Falling, Rapid Drop). Display tactical feeding badges (e.g., *"Rapid Drop: Pre-Frontal Surface Feeding Surge"* or *"Post-Front High Pressure: Finesse/Downsize Tactics Required"*) on Catch Records, Lake Dossiers, and Expedition recaps.
+
+#### 3. FMZ Fishing Regulations Warning & Slot Limit Compliance Alerts
+- **Agents**: `seasoned-angler-advisor`, `laravel-architect`
+- **Impact**: **High** (Legal & Conservation Compliance)
+- **Description**: Connect existing `FishingRule` and `FishingZone` relations to the Quick Catch Modal and Lake Dossier to provide real-time slot limit compliance warnings (e.g., Ontario FMZ 2 / FMZ 4 Walleye slot: *None between 16.1" and 22.0"*) and season open/close indicators during catch logging.
+
+#### 4. Trophy Catch Brag Card Generator & Chartplotter GPX/CSV Export
+- **Agents**: `ui-ux-auditor`, `laravel-architect`
+- **Impact**: **Medium-High** (Social Sharing & Marine Navigation Integration)
+- **Description**: Generate a downloadable high-resolution branded brag card (catch length/weight, lake, lure, solunar rating, photo) for social sharing, and implement 1-click GPX/CSV waypoint export formatted specifically for Garmin, Humminbird, and Lowrance chartplotters.
 
 ---
 
-### ⚙️ Priority 2 (P2): Infrastructure, Performance & Refactoring
+### ⚙️ Priority 2 (P2): Frontend Reactivity, Livewire DX & Visual Polish
 
-*All P2 items completed. Advancing priority backlog.*
+#### 1. Map Explorer Bathymetry Tile Switcher & Fast SQL Year Query
+- **Agents**: `query-profiler-optimizer`, `ui-ux-auditor`
+- **Impact**: **Medium** (Performance & Navigation Usability)
+- **Description**: In [`ExplorerController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/ExplorerController.php), replace `Record::whereNotNull('caught')->get()->map(...)` (loading all records into PHP memory) with a fast query: `Record::whereNotNull('caught')->selectRaw('DISTINCT YEAR(caught) as yr')->pluck('yr')`. Add a Leaflet tile layer selector supporting OpenStreetMap, Esri Satellite Imagery, and Topographic / Contour layers.
+
+#### 2. Livewire Data Table Preferences Persistence (`GenericDataTable`)
+- **Agents**: `livewire-architect`
+- **Impact**: **Medium** (User Experience)
+- **Description**: Persist table density (compact/comfortable/spacious), per-page limit, and column visibility in session/localStorage so anglers' customized table layouts persist across sessions and page reloads.
+
+#### 3. Modernize Remaining Legacy Create/Edit Forms to Dark Telemetry Tokens
+- **Agents**: `ui-ux-auditor`, `tailwindcss-development`
+- **Impact**: **Medium** (Visual Consistency)
+- **Description**: Upgrade the remaining legacy forms ([`lake/create.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/create.blade.php), [`angler/create.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/create.blade.php), [`expedition/create.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/create.blade.php)) to Option C dark frosted cards (`bg-slate-900 border-slate-800 text-slate-100`) with consistent inputs and error states.
+
+#### 4. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
+- **Agents**: `query-profiler-optimizer`, `laravel-architect`
+- **Impact**: **Medium** (Database Query Optimization)
+- **Description**: Consolidate the 5 separate count and aggregation queries in `LakeController@show` (total catches, longest catch, heaviest catch, unique visits, unique anglers) into a consolidated single-pass aggregation query.
+
+---
+
+### 🛠️ Priority 3 (P3): Architecture, Events, Synology NAS & DevOps
+
+#### 1. Decoupled Domain Event Pipeline (`CatchLoggedEvent`)
+- **Agents**: `laravel-architect`
+- **Impact**: **Medium** (Clean Architecture)
+- **Description**: Dispatch `CatchLoggedEvent` from [`CreateCatchRecordAction.php`](file:///home/gmroczek/git/fishing/app/Actions/Records/CreateCatchRecordAction.php) with dedicated listeners: `CheckTrophyMilestoneListener`, `InvalidateTelemetryCacheListener`, and `FetchCatchWeatherListener`.
+
+#### 2. Low-Bandwidth Chunked NAS Outbox Push & Scheduled Sync Health Webhook
+- **Agents**: `nas-sync-architect`
+- **Impact**: **Medium** (Remote Data Integrity)
+- **Description**: Add chunked outbox streaming (50 records per payload) for low-bandwidth cellular / boat satellite connections, and add a scheduled health monitor triggering notifications if NAS sync is unreachable or failing for >24 hours.
+
+#### 3. Automated Backup Verification & Restore Drill Command (`backup:verify`)
+- **Agents**: `laravel-architect`
+- **Impact**: **Low-Medium** (Disaster Recovery Verification)
+- **Description**: Create an `artisan backup:verify` command that unzips recent Spatie backup archives in a temporary staging environment to verify SQL dump validity and image asset completeness.
 
 ---
 
