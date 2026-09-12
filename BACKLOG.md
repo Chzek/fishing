@@ -8,15 +8,11 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### 🚀 Priority 1 (P1): Angling Experience & Reactive Workflows
 
-#### 1. Live Weather & Telemetry Barometer Widget (`@livewire('widgets.weather-telemetry')`)
-- **Agents**: `livewire-architect` & `seasoned-angler-advisor`
-- **Impact**: **High** (Real-Time Weather Signals & Barometric Trends)
-- **Description**: Reactive weather widget that auto-fetches and displays live barometric pressure trends, wind velocity/direction, sky conditions, and surface water temp when selecting lakes during catch logging or inspecting waterbodies.
-
-#### 2. Solunar & Moon Phase Feeding Forecast Matrix (`@livewire('widgets.solunar-forecast')`)
+#### 1. Solunar & Moon Phase Feeding Forecast Matrix (`@livewire('widgets.solunar-forecast')`)
 - **Agents**: `seasoned-angler-advisor`, `livewire-architect`
-- **Impact**: **Medium** (Predictive Tactical Intelligence)
-- **Description**: Computes real-time Major/Minor feeding periods, lunar phases (New Moon, 1st Quarter, Full Moon, 3rd Quarter), and illumination percentage based on GPS lake coordinates and target date to provide anglers predictive peak bite windows.
+- **Impact**: **High** (100% Offline Tactical Intelligence & Peak Bite Windows)
+- **Description**: Computes offline Major/Minor feeding periods (2-hour major windows around moon transit/underfoot and 1-hour minor windows around moonrise/moonset), lunar phases (New Moon, 1st Quarter, Full Moon, 3rd Quarter), and illumination percentage based on GPS lake coordinates and target date. Works completely offline on remote lakes without internet access.
+
 
 ---
 
