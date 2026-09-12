@@ -15,4 +15,4 @@
 
 - **Database Safety & Backups**:
   - Never execute destructive database commands (such as `migrate:fresh`, `migrate:reset`, `migrate:refresh`, or `db:wipe`) without explicit confirmation, as this is a live/shared database environment.
-  - Before executing schema/data migrations, bulk data imports, baseline sync pulls, or any destructive operations, always create a timestamped database backup in `database/backups/` using `mysqldump` / Sail.
+  - Before executing schema/data migrations, bulk data imports, baseline sync pulls, or any destructive operations, always create a timestamped database backup using the Spatie backup package via Sail: `./vendor/bin/sail artisan backup:run --only-db`.

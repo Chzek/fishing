@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 
 /**
  * @property string $id
@@ -16,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $name
  * @property float|null $latitude
  * @property float|null $longitude
+ * @property Point|null $location
  * @property string|null $structure
  * @property float|null $max_depth
  * @property string|null $fishing_zone_id
@@ -29,6 +32,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Lake extends Model
 {
     use HasFactory;
+    use HasSpatial;
     use SoftDeletes;
     use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
@@ -39,10 +43,43 @@ class Lake extends Model
         'name',
         'latitude',
         'longitude',
+        'location',
         'structure',
         'max_depth',
         'fishing_zone_id',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'location' => Point::class,
+            'latitude' => 'float',
+            'longitude' => 'float',
+            'max_depth' => 'float',
+            'synced_at' => 'datetime',
+        ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Lake $lake) {
+            if ($lake->isDirty(['latitude', 'longitude'])) {
+                if ($lake->latitude && $lake->longitude && (float) $lake->latitude != 0 && (float) $lake->longitude != 0) {
+                    $lake->location = new Point((float) $lake->latitude, (float) $lake->longitude, 4326);
+                } else {
+                    $lake->location = null;
+                }
+            } elseif ($lake->isDirty('location') && $lake->location instanceof Point) {
+                $lake->latitude = $lake->location->latitude;
+                $lake->longitude = $lake->location->longitude;
+            }
+        });
+    }
 
     public function fishingZone(): BelongsTo
     {
@@ -97,7 +134,7 @@ class Lake extends Model
     }
 
     /**
-     * Find nearby lakes within a radius in miles.
+     * Find nearby lakes within a radius in miles using spatial distance queries.
      *
      * @param float $lat
      * @param float $lng
@@ -111,27 +148,23 @@ class Lake extends Model
             return collect([]);
         }
 
-        $latDelta = $radiusMiles / 69.0;
-        $cosLat = cos(deg2rad($lat));
-        $lngDelta = $radiusMiles / (69.0 * ($cosLat == 0 ? 1 : abs($cosLat)));
+        $radiusMeters = $radiusMiles * 1609.344;
+        $point = new Point((float) $lat, (float) $lng, 4326);
 
-        $query = static::whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->whereBetween('latitude', [$lat - $latDelta, $lat + $latDelta])
-            ->whereBetween('longitude', [$lng - $lngDelta, $lng + $lngDelta]);
+        $query = static::whereNotNull('location')
+            ->whereDistanceSphere('location', $point, '<=', $radiusMeters)
+            ->withDistanceSphere('location', $point, 'distance_meters');
 
         if ($excludeId) {
             $query->where('id', '!=', $excludeId);
         }
 
-        $lakes = $query->get();
+        $lakes = $query->orderByDistanceSphere('location', $point)->get();
 
-        return $lakes->map(function ($lake) use ($lat, $lng) {
-            $lake->distance = static::haversineDistance($lat, $lng, $lake->latitude, $lake->longitude);
+        return $lakes->map(function ($lake) {
+            $lake->distance = round(((float) ($lake->distance_meters ?? 0)) / 1609.344, 2);
             return $lake;
-        })->filter(function ($lake) use ($radiusMiles) {
-            return $lake->distance <= $radiusMiles;
-        })->sortBy('distance')->values();
+        })->values();
     }
 
     /**

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use MatanYadaev\EloquentSpatial\Objects\Point;
+use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
 
 /**
  * @property string $id
@@ -22,6 +24,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $temperature
  * @property float|null $latitude
  * @property float|null $longitude
+ * @property Point|null $location
  * @property bool $released
  * @property \Illuminate\Support\Carbon|null $caught
  * @property string|null $trip_id
@@ -50,6 +53,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Record extends Model
 {
     use HasFactory;
+    use HasSpatial;
     use SoftDeletes;
     use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
@@ -60,7 +64,7 @@ class Record extends Model
      */
     protected $fillable = [
         'id', 'sync_status', 'synced_at', 'client_id', 'anglers_id', 'lakes_id', 'fish_breeds_id', 'lures_id',
-        'weight', 'length', 'temperature', 'latitude', 'longitude', 'released',
+        'weight', 'length', 'temperature', 'latitude', 'longitude', 'location', 'released',
         'caught', 'trip_id',
     ];
 
@@ -74,8 +78,36 @@ class Record extends Model
         return 'id';
     }
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'location' => Point::class,
+            'released' => 'boolean',
+            'caught' => 'datetime',
+            'synced_at' => 'datetime',
+        ];
+    }
+
     protected static function booted()
     {
+        static::saving(function (Record $record) {
+            if ($record->isDirty(['latitude', 'longitude'])) {
+                if ($record->latitude && $record->longitude && (float) $record->latitude != 0 && (float) $record->longitude != 0) {
+                    $record->location = new Point((float) $record->latitude, (float) $record->longitude, 4326);
+                } else {
+                    $record->location = null;
+                }
+            } elseif ($record->isDirty('location') && $record->location instanceof Point) {
+                $record->latitude = $record->location->latitude;
+                $record->longitude = $record->location->longitude;
+            }
+        });
+
         static::saved(function () {
             \Illuminate\Support\Facades\Cache::forget('angler_stats_overview');
         });

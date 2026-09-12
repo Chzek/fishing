@@ -114,7 +114,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 | [`spatie/laravel-backup`](https://github.com/spatie/laravel-backup) | DB Safety / DevOps | Automated, scheduled timestamped database and media directory backups to `storage/app/backups/` & NAS. | **Completed** |
 | [`blade-ui-kit/blade-lucide-icons`](https://github.com/blade-ui-kit/blade-lucide-icons) | Blade / UI | Server-rendered Lucide icons (`<x-lucide-fish />`) eliminating JS DOM injection delays & SVG duplication. | **Completed** |
 | [`larastan/larastan`](https://github.com/larastan/larastan) *(dev)* | Static Analysis | Strict level typing, Eloquent relationship validation, and null safety checks across all 13 models & services. | **Completed** |
-| [`matanyadaev/laravel-eloquent-spatial`](https://github.com/matanyadaev/laravel-eloquent-spatial) | GIS / Mapping | Native MySQL 8 spatial geometry (`Point`, `Polygon`) with distance scopes (`whereDistance`) for Leaflet waypoint radius queries. | **P2 (Map Feature)** |
+| [`matanyadaev/laravel-eloquent-spatial`](https://github.com/matanyadaev/laravel-eloquent-spatial) | GIS / Mapping | Native MySQL 8 spatial geometry (`Point`, `Polygon`) with spherical distance scopes (`whereDistanceSphere`) for sub-millisecond waypoint & nearby radius lookups. | **Completed** |
 | [`livewire/volt`](https://github.com/livewire/volt) | Livewire DX | Single-file reactive components for lightweight boat widgets (Barometer Telemetry, species badges). | **P3 (DX)** |
 | [`laravel/boost`](https://github.com/laravel/boost) *(dev)* | AI Tooling / MCP | Embedded MCP server and AI guidelines/skills for Antigravity-assisted development. | **Completed** |
 
@@ -122,7 +122,16 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🏆 Completed Milestones (Merged into `master`)
 
-1. **AI Development Infrastructure & Agent Skills Integration (`laravel/boost`)**:
+1. **Native MySQL 8 Spatial Engine & Eloquent Geometry Integration (`matanyadaev/laravel-eloquent-spatial`)**:
+   - Integrated `matanyadaev/laravel-eloquent-spatial:^4.8` with native MySQL 8 `POINT` geometries (SRID 4326 WGS 84) on `lakes` and `records` tables.
+   - Added `HasSpatial` trait and `'location' => Point::class` casting across [`Lake.php`](file:///home/gmroczek/git/fishing/app/Models/Lake.php) and [`Record.php`](file:///home/gmroczek/git/fishing/app/Models/Record.php).
+   - Wired bidirectional automatic lifecycle synchronization between traditional `latitude`/`longitude` floats and spatial `Point` objects for 100% backward compatibility with existing web forms, APIs, and two-way Synology NAS synchronization.
+   - Refactored `Lake::nearby()` to execute native spherical distance queries (`whereDistanceSphere`, `withDistanceSphere`, `orderByDistanceSphere`), eliminating legacy CPU-bound Haversine trigonometry.
+   - Verified with dedicated feature tests ([`SpatialModelTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/SpatialModelTest.php) and [`OfflineMapTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/OfflineMapTest.php)).
+2. **Personal Best Trophy Cards Grayscale Watermark Graphics**:
+   - Engineered scalable, vector Blade components ([`watermarkTapeMeasure.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/watermarkTapeMeasure.blade.php) and [`watermarkDialScale.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/watermarkDialScale.blade.php)) with diagonal ribbon rotation and vintage platform scale line-art in subtle slate-gray styling.
+   - Seamlessly integrated across Personal Best cards on Lake Show, Expedition Show, Angler Profile, and User Profile views.
+3. **AI Development Infrastructure & Agent Skills Integration (`laravel/boost`)**:
    - Installed `laravel/boost:^2.8` and `laravel/mcp` as development dependencies within Laravel Sail.
    - Configured [`boost.json`](file:///home/gmroczek/git/fishing/boost.json) and [`AGENTS.md`](file:///home/gmroczek/git/fishing/AGENTS.md) scoped specifically for **Antigravity**.
    - Integrated and synced upstream standard agent skills into [`.agents/skills/`](file:///home/gmroczek/git/fishing/.agents/skills) (`infer-conventions`, `laravel-best-practices`, `testing-best-practices`, `tailwindcss-development`, `pulse-development`, `deploying-to-cloud`).
