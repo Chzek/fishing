@@ -19,9 +19,9 @@ class SolunarForecastTest extends TestCase
             ->assertStatus(200)
             ->assertSee('Solunar')
             ->assertSee('Feeding Forecast')
-            ->assertSee('Major Windows')
-            ->assertSee('Minor Windows')
-            ->assertSee('24-Hour Solunar Feeding Activity Ribbon');
+            ->assertSee('Major Feed')
+            ->assertSee('Minor Feed')
+            ->assertSee('24-hour Bite timeline');
     }
 
     public function test_solunar_widget_binds_to_specific_lake(): void

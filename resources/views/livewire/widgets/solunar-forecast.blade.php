@@ -1,28 +1,18 @@
-<div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden transition-all">
+<div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 transition-all">
     <!-- Header Row -->
-    <div class="p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 {{ $collapsed ? '' : 'border-b border-slate-100' }}">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center text-xl shrink-0">
-                <span>{{ $solunar['moon']['emoji'] }}</span>
-            </div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <h2 class="font-black text-slate-900 text-sm sm:text-base tracking-tight flex items-center gap-1.5">
-                        <span>Solunar & Moon Feeding Forecast</span>
-                    </h2>
-                    <span class="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-lg font-mono">
-                        <x-lucide-map-pin class="w-3 h-3 text-teal-600" />
-                        <span>{{ $lakeName }}</span>
-                    </span>
-                </div>
-                <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5 font-medium">
-                    <span>100% Offline Tactical Bite Windows & Celestial Timing</span>
-                </p>
-            </div>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+            <h3 class="font-black text-slate-900 text-sm sm:text-base tracking-tight">
+                Solunar & Moon Phase Feeding Forecast
+            </h3>
+            <span class="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-lg font-mono">
+                <x-lucide-map-pin class="w-3 h-3 text-teal-600" />
+                <span>{{ $lakeName }}</span>
+            </span>
         </div>
 
         <!-- Date Controls & Day Rating -->
-        <div class="flex flex-wrap items-center gap-2 self-stretch sm:self-auto justify-between sm:justify-end">
+        <div class="flex items-center gap-2 self-stretch sm:self-auto justify-between sm:justify-end">
             <!-- Reactive Date Navigator -->
             <div class="inline-flex items-center bg-slate-50 border border-slate-200/80 rounded-xl p-1 text-xs font-semibold">
                 <button type="button" wire:click="previousDay" class="p-1 text-slate-500 hover:text-slate-900 hover:bg-white rounded-lg transition-colors cursor-pointer" title="Previous Day">
@@ -38,176 +28,125 @@
             </div>
 
             <!-- Day Rating Badge -->
-            <div class="flex items-center gap-2 bg-slate-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-800 shrink-0">
+            <div class="flex items-center gap-1.5 bg-slate-900 text-white px-2.5 py-1 rounded-xl text-xs font-bold border border-slate-800 shrink-0">
                 <span class="text-amber-400 font-mono">{{ $solunar['rating']['score'] }}/5</span>
-                <span class="text-[10px] uppercase font-black text-emerald-400 tracking-wider">{{ $solunar['rating']['label'] }}</span>
+                <span class="text-[10px] uppercase font-black text-emerald-400 tracking-wider hidden sm:inline">{{ $solunar['rating']['label'] }}</span>
             </div>
-
-            <!-- Collapse Toggle -->
-            <button type="button" wire:click="toggleCollapsed" class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer" title="{{ $collapsed ? 'Expand Forecast' : 'Collapse Forecast' }}">
-                @if($collapsed)
-                    <x-lucide-chevron-down class="w-4 h-4" />
-                @else
-                    <x-lucide-chevron-up class="w-4 h-4" />
-                @endif
-            </button>
         </div>
     </div>
 
-    @if(!$collapsed)
-        <!-- 4-Column Key Solunar Metrics Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 text-xs">
-            <!-- 1. Moon Phase -->
-            <div class="p-4 space-y-1 bg-slate-50/40">
-                <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block flex items-center gap-1">
-                    <span>Moon Phase</span>
-                </span>
-                <div class="flex items-center gap-2 pt-0.5">
-                    <span class="text-xl">{{ $solunar['moon']['emoji'] }}</span>
-                    <div>
-                        <strong class="text-sm font-black text-slate-900 block leading-tight">{{ $solunar['moon']['phase'] }}</strong>
-                        <span class="text-[11px] font-mono text-teal-600 font-semibold">{{ $solunar['moon']['illumination'] }}% Illuminated ({{ $solunar['moon']['ageDays'] }}d)</span>
-                    </div>
-                </div>
+    <!-- Main 4-Column Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6 items-center">
+        <!-- 1. Moon Phase Card (Col Span 4) -->
+        <div class="md:col-span-4 bg-slate-50/80 border border-slate-200/80 rounded-xl p-3 flex items-center gap-3.5">
+            <div class="relative w-10 h-10 shrink-0 flex items-center justify-center">
+                <svg viewBox="0 0 32 32" class="w-9 h-9 drop-shadow-xs">
+                    <!-- Dark moon disc base -->
+                    <circle cx="16" cy="16" r="14" fill="#2d3748" />
+                    <!-- Illuminated lunar phase -->
+                    @if($solunar['moon']['svgPath']['type'] === 'full')
+                        <circle cx="16" cy="16" r="14" fill="#e2e8f0" />
+                    @elseif(!empty($solunar['moon']['svgPath']['path']))
+                        <path d="{{ $solunar['moon']['svgPath']['path'] }}" fill="#e2e8f0" />
+                    @endif
+                </svg>
             </div>
-
-            <!-- 2. Major Feeding Windows (2 Hours) -->
-            <div class="p-4 space-y-1">
-                <span class="text-[10px] uppercase font-bold text-amber-700 tracking-wider block flex items-center justify-between">
-                    <span class="flex items-center gap-1">👑 Major Windows</span>
-                    <span class="text-[9px] bg-amber-100 text-amber-800 font-mono font-bold px-1.5 py-0.2 rounded">2-Hr Peak</span>
-                </span>
-                <div class="space-y-0.5 pt-0.5">
-                    @foreach($solunar['majorWindows'] as $maj)
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-slate-500 text-[11px]">{{ $maj['type'] }}:</span>
-                            <span class="font-mono font-bold text-slate-900">{!! $maj['display'] !!}</span>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <!-- 3. Minor Feeding Windows (1 Hour) -->
-            <div class="p-4 space-y-1">
-                <span class="text-[10px] uppercase font-bold text-teal-700 tracking-wider block flex items-center justify-between">
-                    <span class="flex items-center gap-1">⚡ Minor Windows</span>
-                    <span class="text-[9px] bg-teal-100 text-teal-800 font-mono font-bold px-1.5 py-0.2 rounded">1-Hr Window</span>
-                </span>
-                <div class="space-y-0.5 pt-0.5">
-                    @foreach($solunar['minorWindows'] as $min)
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-slate-500 text-[11px]">{{ $min['type'] }}:</span>
-                            <span class="font-mono font-bold text-slate-900">{!! $min['display'] !!}</span>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <!-- 4. Sun Times & Day Length -->
-            <div class="p-4 space-y-1 bg-slate-50/40">
-                <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block flex items-center justify-between">
-                    <span>Sun & Daylight</span>
-                    <span class="text-[9px] font-mono text-slate-500">{{ $solunar['sun']['dayLength'] }} light</span>
-                </span>
-                <div class="space-y-0.5 pt-0.5">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-500 flex items-center gap-1">
-                            <x-lucide-sunrise class="w-3 h-3 text-amber-500" />
-                            <span>Sunrise:</span>
-                        </span>
-                        <span class="font-mono font-bold text-slate-900">{{ $solunar['sun']['sunrise'] }}</span>
-                    </div>
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-500 flex items-center gap-1">
-                            <x-lucide-sunset class="w-3 h-3 text-orange-500" />
-                            <span>Sunset:</span>
-                        </span>
-                        <span class="font-mono font-bold text-slate-900">{{ $solunar['sun']['sunset'] }}</span>
-                    </div>
-                </div>
+            <div class="min-w-0">
+                <h4 class="text-xs font-bold text-slate-900">Moon Phase</h4>
+                <p class="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                    {{ $solunar['moon']['phase'] }} &ndash; {{ $solunar['moon']['illumination'] }}% Illuminated
+                </p>
             </div>
         </div>
 
-        <!-- 24-Hour Bite Activity Timeline Bar -->
-        <div class="p-4 sm:p-5 bg-slate-900 text-white space-y-3">
-            <div class="flex items-center justify-between text-xs">
-                <span class="font-bold text-slate-200 flex items-center gap-1.5">
-                    <x-lucide-clock class="w-3.5 h-3.5 text-teal-400" />
-                    <span>24-Hour Solunar Feeding Activity Ribbon ({{ $solunar['formattedDate'] }})</span>
-                </span>
-                <div class="flex items-center gap-3 text-[10px] font-semibold text-slate-300">
-                    <span class="flex items-center gap-1">
-                        <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block shadow-xs"></span>
-                        <span>Major Period (2h)</span>
-                    </span>
-                    <span class="flex items-center gap-1">
-                        <span class="w-2.5 h-2.5 rounded-full bg-teal-400 inline-block shadow-xs"></span>
-                        <span>Minor Period (1h)</span>
-                    </span>
-                    <span class="hidden sm:flex items-center gap-1">
-                        <span class="w-2.5 h-2.5 rounded-full bg-slate-700 inline-block"></span>
-                        <span>Night</span>
-                    </span>
-                    <span class="hidden sm:flex items-center gap-1">
-                        <span class="w-2.5 h-2.5 rounded-full bg-slate-600 inline-block"></span>
-                        <span>Daylight</span>
-                    </span>
-                </div>
+        <!-- 2. Major Feed (Col Span 2) -->
+        <div class="md:col-span-2">
+            <h4 class="text-xs font-bold text-slate-900">Major Feed</h4>
+            <div class="mt-1 space-y-0.5 text-xs text-slate-700 font-mono font-medium">
+                @foreach($solunar['majorWindows'] as $maj)
+                    <div>{{ $maj['start'] }} - {{ $maj['end'] }}</div>
+                @endforeach
             </div>
+        </div>
 
-            <!-- Visual Bar Grid -->
-            <div class="space-y-1.5">
-                <div class="h-9 rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950/80 p-0.5 gap-0.5" style="display: grid; grid-template-columns: repeat(24, minmax(0, 1fr));">
+        <!-- 3. Minor Feed (Col Span 2) -->
+        <div class="md:col-span-2">
+            <h4 class="text-xs font-bold text-slate-900">Minor Feed</h4>
+            <div class="mt-1 space-y-0.5 text-xs text-slate-700 font-mono font-medium">
+                @foreach($solunar['minorWindows'] as $min)
+                    <div>{{ $min['start'] }} - {{ $min['end'] }}</div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- 4. 24-hour Bite Timeline (Col Span 4) -->
+        <div class="md:col-span-4 flex flex-col justify-center">
+            <h4 class="text-xs font-bold text-slate-900 mb-1.5">24-hour Bite timeline</h4>
+
+            <div class="relative w-full pt-3">
+                <!-- Current Time Marker Indicator -->
+                @if($isToday)
                     @php
-                        $currentHour = (int) now()->format('H');
+                        $nowH = (int) now()->format('G');
+                        $nowM = (int) now()->format('i');
+                        $currentPercent = min(99, max(1, (($nowH + ($nowM / 60)) / 24.0) * 100));
                     @endphp
-                    @foreach($solunar['hourlyIntensity'] as $hourData)
-                        @php
-                            $bg = 'bg-slate-800/60';
-                            if ($hourData['isDaylight']) {
-                                $bg = 'bg-slate-700/60';
-                            }
-                            if ($hourData['status'] === 'major') {
-                                $bg = 'bg-gradient-to-t from-amber-600 to-amber-400 text-amber-950 font-black shadow-md shadow-amber-500/20';
-                            } elseif ($hourData['status'] === 'minor') {
-                                $bg = 'bg-gradient-to-t from-teal-600 to-teal-400 text-teal-950 font-black shadow-md shadow-teal-500/20';
-                            }
-                            $isNow = $isToday && ($currentHour === $hourData['hour']);
-                        @endphp
-                        <div class="h-full rounded-md flex flex-col items-center justify-center transition-all relative group {{ $bg }} {{ $isNow ? 'ring-2 ring-white ring-offset-1 ring-offset-slate-900 z-10' : '' }}" title="{{ $hourData['timeLabel'] }}: {{ ucfirst($hourData['status']) }} Activity {{ $isNow ? '(Current Hour)' : '' }}">
-                            @if($hourData['status'] === 'major')
-                                <span class="text-[8px] uppercase tracking-tighter">MAJ</span>
-                            @elseif($hourData['status'] === 'minor')
-                                <span class="text-[8px] uppercase tracking-tighter">MIN</span>
-                            @elseif($hourData['isSunrise'])
-                                <x-lucide-sunrise class="w-2.5 h-2.5 text-amber-300" />
-                            @elseif($hourData['isSunset'])
-                                <x-lucide-sunset class="w-2.5 h-2.5 text-orange-300" />
-                            @endif
+                    <div class="absolute top-0 -translate-x-1/2 flex flex-col items-center pointer-events-none z-10" style="left: {{ $currentPercent }}%;">
+                        <span class="text-[8px] font-bold text-slate-800 leading-none">Current</span>
+                        <span class="text-[7px] text-slate-900 leading-none mt-0.5">▼</span>
+                    </div>
+                @endif
 
-                            @if($isNow)
-                                <div class="absolute -top-1 w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
-                            @endif
-                        </div>
-                    @endforeach
+                <!-- SVG Continuous Wave Chart -->
+                <div class="w-full h-10 relative">
+                    <svg viewBox="{{ $solunar['waveCurve']['viewBox'] }}" preserveAspectRatio="none" class="w-full h-full overflow-visible">
+                        <defs>
+                            <linearGradient id="biteWaveGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#f97316" stop-opacity="0.9" />
+                                <stop offset="35%" stop-color="#fbbf24" stop-opacity="0.8" />
+                                <stop offset="75%" stop-color="#a7f3d0" stop-opacity="0.4" />
+                                <stop offset="100%" stop-color="#e2e8f0" stop-opacity="0.1" />
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Subtle Baseline Bar -->
+                        <line x1="0" y1="{{ $solunar['waveCurve']['baseY'] }}" x2="{{ $solunar['waveCurve']['width'] }}" y2="{{ $solunar['waveCurve']['baseY'] }}" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round" />
+
+                        <!-- Wave Area Fill -->
+                        <path d="{{ $solunar['waveCurve']['fillPath'] }}" fill="url(#biteWaveGrad)" />
+
+                        <!-- Wave Ridge Line Stroke -->
+                        <path d="{{ $solunar['waveCurve']['strokePath'] }}" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </div>
 
-                <!-- Hour Tick Markers (Every 2 Hours) -->
-                <div class="grid grid-cols-12 text-[9px] font-mono text-slate-400 text-center px-0.5">
-                    <span>00:00</span>
-                    <span>02:00</span>
-                    <span>04:00</span>
-                    <span>06:00</span>
-                    <span>08:00</span>
-                    <span>10:00</span>
-                    <span>12:00</span>
-                    <span>14:00</span>
-                    <span>16:00</span>
-                    <span>18:00</span>
-                    <span>20:00</span>
-                    <span>22:00</span>
+                <!-- 24-Hour Timeline Ticks -->
+                <div class="flex justify-between text-[8px] font-mono text-slate-400 mt-1 px-0.5 select-none">
+                    <span>00</span>
+                    <span>01</span>
+                    <span>02</span>
+                    <span>03</span>
+                    <span>04</span>
+                    <span>05</span>
+                    <span>06</span>
+                    <span>09</span>
+                    <span>10</span>
+                    <span>11</span>
+                    <span>02</span>
+                    <span>03</span>
+                    <span>04</span>
+                    <span>05</span>
+                    <span>06</span>
+                    <span>12</span>
+                    <span>15</span>
+                    <span>18</span>
+                    <span>21</span>
+                    <span>22</span>
+                    <span>23</span>
+                    <span>24</span>
                 </div>
             </div>
         </div>
-    @endif
+    </div>
 </div>
+

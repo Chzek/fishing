@@ -75,6 +75,20 @@ class SolunarService
             $sunTimes['sunsetHour']
         );
 
+        // Smooth 24-hour continuous wave curve data for visual chart
+        $waveCurve = $this->generateWaveCurve(
+            $overheadHour,
+            $underfootHour,
+            $moonriseHour,
+            $moonsetHour,
+            300,
+            38,
+            38
+        );
+
+        // SVG Moon Phase Path
+        $moonSvg = $this->generateMoonSvgPath($daysSinceNew);
+
         return [
             'date' => $carbonDate->format('Y-m-d'),
             'formattedDate' => $carbonDate->format('l, M j, Y'),
@@ -87,6 +101,7 @@ class SolunarService
                 'emoji' => $phaseInfo['emoji'],
                 'ageDays' => round($daysSinceNew, 1),
                 'illumination' => $illuminationPct,
+                'svgPath' => $moonSvg,
             ],
             'rating' => $rating,
             'sun' => [
@@ -103,6 +118,7 @@ class SolunarService
                 $minor2,
             ],
             'hourlyIntensity' => $hourlyIntensity,
+            'waveCurve' => $waveCurve,
         ];
     }
 
@@ -339,5 +355,123 @@ class SolunarService
         }
 
         return sprintf('%02d:%02d %s', $displayHour, $minutes, $period);
+    }
+
+    /**
+     * Generate SVG path for the illuminated moon phase.
+     */
+    public function generateMoonSvgPath(float $ageDays): array
+    {
+        $r = 14;
+        $cx = 16;
+        $cy = 16;
+        $top = $cy - $r;
+        $bottom = $cy + $r;
+
+        $p = fmod($ageDays, self::SYNODIC_MONTH) / self::SYNODIC_MONTH;
+        $angle = $p * 2 * M_PI;
+        $cosA = cos($angle);
+        $rx = abs($r * $cosA);
+
+        $isWaxing = ($p <= 0.5);
+        $isCrescent = ($cosA > 0);
+
+        if ($p < 0.02 || $p > 0.98) {
+            return [
+                'type' => 'new',
+                'path' => '',
+                'fill' => '#1e293b',
+            ];
+        }
+
+        if ($p >= 0.48 && $p <= 0.52) {
+            return [
+                'type' => 'full',
+                'path' => "M {$cx} {$top} A {$r} {$r} 0 1 1 {$cx} {$bottom} A {$r} {$r} 0 1 1 {$cx} {$top}",
+                'fill' => '#e2e8f0',
+            ];
+        }
+
+        if ($isWaxing) {
+            $outer = "M {$cx} {$top} A {$r} {$r} 0 0 1 {$cx} {$bottom}";
+            $sweep = $isCrescent ? 0 : 1;
+            $inner = "A {$rx} {$r} 0 0 {$sweep} {$cx} {$top} Z";
+        } else {
+            $outer = "M {$cx} {$top} A {$r} {$r} 0 0 0 {$cx} {$bottom}";
+            $sweep = $isCrescent ? 1 : 0;
+            $inner = "A {$rx} {$r} 0 0 {$sweep} {$cx} {$top} Z";
+        }
+
+        return [
+            'type' => 'phase',
+            'path' => "{$outer} {$inner}",
+            'fill' => '#e2e8f0',
+        ];
+    }
+
+    /**
+     * Generate smooth 24-hour continuous wave curve data for visual chart.
+     */
+    public function generateWaveCurve(
+        float $overhead,
+        float $underfoot,
+        float $moonrise,
+        float $moonset,
+        int $width = 300,
+        int $height = 36,
+        int $baseY = 36
+    ): array {
+        $numSamples = 120;
+        $stepX = $width / $numSamples;
+        $majors = [$overhead, $underfoot];
+        $minors = [$moonrise, $moonset];
+
+        $points = [];
+        for ($i = 0; $i <= $numSamples; $i++) {
+            $t = ($i / $numSamples) * 24.0;
+            $x = round($i * $stepX, 2);
+
+            $intensity = 0.0;
+
+            foreach ($majors as $center) {
+                $diff = abs($t - $center);
+                if ($diff > 12.0) {
+                    $diff = 24.0 - $diff;
+                }
+                $intensity += 29.0 * exp(- ($diff * $diff) / (2 * 1.35 * 1.35));
+            }
+
+            foreach ($minors as $center) {
+                $diff = abs($t - $center);
+                if ($diff > 12.0) {
+                    $diff = 24.0 - $diff;
+                }
+                $intensity += 15.0 * exp(- ($diff * $diff) / (2 * 0.95 * 0.95));
+            }
+
+            $curveHeight = min($height - 2, max(0.5, $intensity));
+            $y = round($baseY - $curveHeight, 2);
+
+            $points[] = ['x' => $x, 'y' => $y, 't' => $t, 'intensity' => $intensity];
+        }
+
+        $first = $points[0];
+        $strokeParts = ["M {$first['x']} {$first['y']}"];
+        for ($i = 1; $i < count($points); $i++) {
+            $strokeParts[] = "L {$points[$i]['x']} {$points[$i]['y']}";
+        }
+        $strokePath = implode(' ', $strokeParts);
+
+        $last = end($points);
+        $fillPath = "M 0 {$baseY} L {$first['x']} {$first['y']} " . implode(' ', array_slice($strokeParts, 1)) . " L {$last['x']} {$baseY} Z";
+
+        return [
+            'fillPath' => $fillPath,
+            'strokePath' => $strokePath,
+            'viewBox' => "0 0 {$width} {$baseY}",
+            'width' => $width,
+            'height' => $height,
+            'baseY' => $baseY,
+        ];
     }
 }
