@@ -161,27 +161,28 @@
                     <x-lucide-compass class="w-4 h-4 text-teal-600" />
                     <span>Location & Topographic Map</span>
                 </h2>
-                @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
-                    <span class="bg-teal-50 text-teal-700 border border-teal-200 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono">
-                        {{ $nearbyLakes->count() }} Nearby Lake(s) within 2 Miles
-                    </span>
-                @endif
+                <span id="viewport-lakes-badge" class="bg-teal-50 text-teal-700 border border-teal-200 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono transition-all">
+                    Loading Viewport Lakes...
+                </span>
             </div>
 
             <div id="lake-show-map" class="w-full h-[380px]"></div>
 
-            @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
-                <div class="p-4 bg-slate-50 border-t border-slate-100 text-xs space-y-2">
-                    <span class="font-bold text-slate-700 block">Identified Lakes Within 2 Miles:</span>
-                    <div class="flex flex-wrap gap-1.5">
+            <div id="viewport-lakes-container" class="p-4 bg-slate-50 border-t border-slate-100 text-xs space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-700 block">Identified Lakes in Viewport:</span>
+                    <span id="viewport-lakes-subtext" class="text-[11px] text-slate-400 font-mono">Pan or zoom map to explore nearby waterbodies</span>
+                </div>
+                <div id="viewport-lakes-pills" class="flex flex-wrap gap-1.5">
+                    @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
                         @foreach($nearbyLakes as $nearLake)
                             <a href="{{ url('/lake/' . $nearLake->id) }}" class="bg-white hover:bg-teal-50 text-slate-800 border border-slate-200 hover:border-teal-300 font-semibold px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 shadow-2xs">
                                 🏞️ {{ $nearLake->name }} <span class="text-slate-400 font-mono text-[11px]">({{ $nearLake->distance }} mi)</span>
                             </a>
                         @endforeach
-                    </div>
+                    @endif
                 </div>
-            @endif
+            </div>
         </div>
     @endif
 
@@ -255,6 +256,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         const lat = {{ $lake->latitude }};
         const lng = {{ $lake->longitude }};
+        const currentLakeId = '{{ $lake->id }}';
 
         const map = L.map('lake-show-map').setView([lat, lng], 12);
 
@@ -273,42 +275,104 @@
             "🛰️ Satellite Imagery": satLayer
         }).addTo(map);
 
-        // Draw 2-mile radius circle around lake (3,218.68 meters = 2 miles)
-        L.circle([lat, lng], {
-            color: '#0d9488',
-            fillColor: '#0d9488',
-            fillOpacity: 0.08,
-            radius: 3218.68
-        }).addTo(map);
-
-        // Target Lake Marker
-        L.marker([lat, lng]).addTo(map)
-            .bindPopup("<b>{{ $lake->name }}</b><br>Coordinates: " + lat + ", " + lng)
+        // Target Lake Marker (prominent pin with higher zIndex)
+        L.marker([lat, lng], { zIndexOffset: 1000 }).addTo(map)
+            .bindPopup("<div class='p-1 font-sans'><b class='text-slate-900'>📍 {{ $lake->name }}</b><br><span class='text-xs text-teal-700 font-bold'>Current Lake</span><br><span class='text-[11px] text-slate-500 font-mono'>" + lat.toFixed(4) + ", " + lng.toFixed(4) + "</span></div>")
             .openPopup();
 
-        // Render Nearby Lakes within 2 miles
-        @if(isset($nearbyLakes) && $nearbyLakes->count() > 0)
-            const nearbyLakesData = @json($nearbyLakes);
+        // Layer group for dynamic viewport lake markers
+        const viewportMarkersLayer = L.layerGroup().addTo(map);
 
-            nearbyLakesData.forEach(function (nLake) {
-                if (nLake.latitude && nLake.longitude) {
-                    const nMarker = L.circleMarker([nLake.latitude, nLake.longitude], {
-                        radius: 8,
-                        fillColor: "#10b981",
-                        color: "#ffffff",
-                        weight: 2,
-                        opacity: 1,
-                        fillOpacity: 0.9
-                    }).addTo(map);
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 3958.8; // Earth radius in miles
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return (R * c).toFixed(2);
+        }
 
-                    nMarker.bindPopup(
-                        "<b>🏞️ " + nLake.name + "</b><br>" +
-                        "📍 " + nLake.distance + " miles away<br>" +
-                        "<a href='/lake/" + nLake.id + "' class='btn btn-sm btn-outline-success mt-1'>View Lake</a>"
-                    );
-                }
-            });
-        @endif
+        let debounceTimer = null;
+        function onMapMove() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(fetchViewportLakes, 250);
+        }
+
+        function fetchViewportLakes() {
+            const bounds = map.getBounds();
+            const minLat = bounds.getSouth();
+            const maxLat = bounds.getNorth();
+            const minLng = bounds.getWest();
+            const maxLng = bounds.getEast();
+
+            fetch(`/api/v1/explorer/lakes?min_lat=${minLat}&max_lat=${maxLat}&min_lng=${minLng}&max_lng=${maxLng}`)
+                .then(res => res.json())
+                .then(resData => {
+                    viewportMarkersLayer.clearLayers();
+                    const lakes = resData.data || [];
+                    const otherLakes = lakes.filter(l => String(l.id) !== currentLakeId);
+
+                    const badge = document.getElementById('viewport-lakes-badge');
+                    if (badge) {
+                        badge.innerText = `${lakes.length} Lake${lakes.length === 1 ? '' : 's'} in Viewport`;
+                    }
+
+                    const pillsContainer = document.getElementById('viewport-lakes-pills');
+                    if (pillsContainer) {
+                        pillsContainer.innerHTML = '';
+                        if (otherLakes.length === 0) {
+                            pillsContainer.innerHTML = '<span class="text-slate-400 italic">No other registered lakes in this viewport. Pan or zoom out to discover nearby waters.</span>';
+                        } else {
+                            // Sort other lakes by distance to target lake
+                            otherLakes.sort((a, b) => {
+                                const distA = parseFloat(calculateDistance(lat, lng, a.latitude, a.longitude));
+                                const distB = parseFloat(calculateDistance(lat, lng, b.latitude, b.longitude));
+                                return distA - distB;
+                            });
+
+                            otherLakes.forEach(nLake => {
+                                const dist = calculateDistance(lat, lng, nLake.latitude, nLake.longitude);
+                                const pill = document.createElement('a');
+                                pill.href = `/lake/${nLake.id}`;
+                                pill.className = 'bg-white hover:bg-teal-50 text-slate-800 border border-slate-200 hover:border-teal-300 font-semibold px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 shadow-2xs text-xs';
+                                pill.innerHTML = `🏞️ <span>${nLake.name}</span> <span class="text-slate-400 font-mono text-[11px]">(${dist} mi)</span>`;
+                                pillsContainer.appendChild(pill);
+                            });
+                        }
+                    }
+
+                    otherLakes.forEach(nLake => {
+                        if (nLake.latitude && nLake.longitude) {
+                            const dist = calculateDistance(lat, lng, nLake.latitude, nLake.longitude);
+                            const nMarker = L.circleMarker([nLake.latitude, nLake.longitude], {
+                                radius: 7,
+                                fillColor: "#0d9488",
+                                color: "#ffffff",
+                                weight: 2,
+                                opacity: 1,
+                                fillOpacity: 0.9
+                            }).addTo(viewportMarkersLayer);
+
+                            nMarker.bindPopup(
+                                `<div class="p-1 font-sans">` +
+                                `<b class="text-slate-900">🏞️ ${nLake.name}</b><br>` +
+                                `<span class="text-xs text-slate-500 font-mono">📍 ${dist} mi away</span><br>` +
+                                `<a href="/lake/${nLake.id}" class="inline-block mt-1.5 text-xs font-semibold text-teal-700 hover:text-teal-900 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">View Lake Dossier &rarr;</a>` +
+                                `</div>`
+                            );
+                        }
+                    });
+                })
+                .catch(err => console.error('Failed to load viewport lakes:', err));
+        }
+
+        map.on('moveend', onMapMove);
+        map.on('zoomend', onMapMove);
+
+        // Initial fetch on mount
+        fetchViewportLakes();
     });
 </script>
 @endif
