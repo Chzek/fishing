@@ -96,7 +96,9 @@ class SyncApiController extends Controller
                     }
                 }
 
-                $existing = $modelClass::find($id);
+                $existing = in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive($modelClass))
+                    ? $modelClass::withTrashed()->find($id)
+                    : $modelClass::find($id);
 
                 $attributes = $itemData;
                 $attributes['id'] = $id;

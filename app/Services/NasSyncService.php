@@ -442,7 +442,9 @@ class NasSyncService
                     }
                 }
 
-                $existing = $modelClass::find($id);
+                $existing = in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive($modelClass))
+                    ? $modelClass::withTrashed()->find($id)
+                    : $modelClass::find($id);
 
                 $attributes = $remoteItem;
                 $attributes['id'] = $id;
@@ -473,6 +475,11 @@ class NasSyncService
                 $entity = $existing ?? new $modelClass();
                 $columns = \Illuminate\Support\Facades\Schema::getColumnListing($entity->getTable());
                 $filtered = array_intersect_key($attributes, array_flip($columns));
+
+                // Strip raw array spatial location object to allow latitude/longitude to cleanly populate Spatial Point
+                if (isset($filtered['location']) && is_array($filtered['location'])) {
+                    unset($filtered['location']);
+                }
 
                 if ($key === 'users') {
                     if (!$existing && empty($filtered['password'])) {

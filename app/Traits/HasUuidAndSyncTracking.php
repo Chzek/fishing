@@ -25,6 +25,24 @@ trait HasUuidAndSyncTracking
                 $model->sync_status = 'pending_upstream';
             }
         });
+
+        if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive(static::class))) {
+            static::deleted(function ($model) {
+                if (!method_exists($model, 'isForceDeleting') || !$model->isForceDeleting()) {
+                    $model->newQueryWithoutScopes()
+                        ->where($model->getKeyName(), $model->getKey())
+                        ->update(['sync_status' => 'pending_upstream']);
+                    $model->sync_status = 'pending_upstream';
+                }
+            });
+
+            static::restored(function ($model) {
+                $model->newQueryWithoutScopes()
+                    ->where($model->getKeyName(), $model->getKey())
+                    ->update(['sync_status' => 'pending_upstream']);
+                $model->sync_status = 'pending_upstream';
+            });
+        }
     }
 
     /**
@@ -32,6 +50,10 @@ trait HasUuidAndSyncTracking
      */
     public function scopePendingUpstream($query)
     {
+        if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive(static::class))) {
+            return $query->withTrashed()->where('sync_status', 'pending_upstream');
+        }
+
         return $query->where('sync_status', 'pending_upstream');
     }
 
@@ -40,6 +62,10 @@ trait HasUuidAndSyncTracking
      */
     public function scopeSynced($query)
     {
+        if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive(static::class))) {
+            return $query->withTrashed()->where('sync_status', 'synced');
+        }
+
         return $query->where('sync_status', 'synced');
     }
 

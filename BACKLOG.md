@@ -247,6 +247,11 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - Updated [`NasSyncService.php`](file:///home/gmroczek/git/fishing/app/Services/NasSyncService.php) and [`SyncApiController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Api/v1/SyncApiController.php) to omit raw array spatial payloads and let the model's `saving` lifecycle hook automatically build `Point($latitude, $longitude, 4326)`.
     - Executed live two-way sync against Synology NAS successfully syncing all pending outbox records (3 pushed, 5 pulled, 0 remaining pending).
     - Verified with all 37 NAS feature tests passing in [`AdminNasSyncConsoleTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AdminNasSyncConsoleTest.php), [`NasMediaChunkSyncTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasMediaChunkSyncTest.php), [`NasSyncApiTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncApiTest.php), and [`NasSyncServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncServiceTest.php).
+33. **Soft-Deleted Entity Synchronization Tracking & Outbox Integration**:
+    - Hooked `static::deleted` and `static::restored` in [`HasUuidAndSyncTracking.php`](file:///home/gmroczek/git/fishing/app/Traits/HasUuidAndSyncTracking.php) to automatically flip database `sync_status` to `pending_upstream` when models are soft-deleted or restored.
+    - Updated `scopePendingUpstream` and `scopeSynced` to include `withTrashed()` so soft-deleted records are properly surfaced in Outbox counts and pushed to the NAS server.
+    - Added `withTrashed()` resolution when finding existing models during push and pull ingest in [`NasSyncService.php`](file:///home/gmroczek/git/fishing/app/Services/NasSyncService.php) and [`SyncApiController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Api/v1/SyncApiController.php), preventing SQL duplicate key exceptions.
+    - Verified full soft-delete and restore sync cycle against live Synology NAS, with all 37 NAS feature tests passing.
 
 
 
