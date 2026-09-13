@@ -40,15 +40,21 @@ class WeatherTelemetryService
      * Fetch and store daily + hourly weather telemetry for a lake on a given date.
      *
      * @param Lake $lake
-     * @param string $date YYYY-MM-DD
+     * @param string|\DateTimeInterface $date YYYY-MM-DD or DateTimeInterface
      * @param bool $force Force re-fetching Open-Meteo telemetry even if cached
      * @return LakeDailyWeather|null
      */
-    public function fetchForLakeAndDate(Lake $lake, string $date, bool $force = false): ?LakeDailyWeather
+    public function fetchForLakeAndDate(Lake $lake, string|\DateTimeInterface $date, bool $force = false): ?LakeDailyWeather
     {
+        $dateStr = $date instanceof \DateTimeInterface ? $date->format('Y-m-d') : substr(trim((string) $date), 0, 10);
+
+        if (empty($dateStr) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateStr)) {
+            return null;
+        }
+
         // Return existing weather if already cached with hourly telemetry
         $existing = LakeDailyWeather::where('lakes_id', $lake->id)
-            ->where('date', $date)
+            ->where('date', $dateStr)
             ->first();
 
         if ($existing && !$force && !empty($existing->hourly_telemetry)) {
@@ -62,7 +68,7 @@ class WeatherTelemetryService
 
         try {
             // Determine whether date is historical or current/forecast
-            $isHistorical = strtotime($date) < strtotime(date('Y-m-d'));
+            $isHistorical = strtotime($dateStr) < strtotime(date('Y-m-d'));
             $endpoint = $isHistorical
                 ? 'https://archive-api.open-meteo.com/v1/archive'
                 : 'https://api.open-meteo.com/v1/forecast';
@@ -70,8 +76,8 @@ class WeatherTelemetryService
             $response = Http::timeout(5)->get($endpoint, [
                 'latitude' => $lake->latitude,
                 'longitude' => $lake->longitude,
-                'start_date' => $date,
-                'end_date' => $date,
+                'start_date' => $dateStr,
+                'end_date' => $dateStr,
                 'daily' => 'temperature_2m_max,temperature_2m_min,temperature_2m_mean,surface_pressure_mean,wind_speed_10m_max,wind_direction_10m_dominant,weather_code',
                 'hourly' => 'temperature_2m,surface_pressure,weather_code,wind_speed_10m',
                 'temperature_unit' => 'fahrenheit',
@@ -146,7 +152,7 @@ class WeatherTelemetryService
             return LakeDailyWeather::updateOrCreate(
                 [
                     'lakes_id' => $lake->id,
-                    'date' => $date,
+                    'date' => $dateStr,
                 ],
                 [
                     'air_temp_max' => $daily['temperature_2m_max'][0] ?? null,

@@ -108,4 +108,41 @@ class WeatherTelemetryTest extends TestCase
             'weather_condition' => 'Clear sky ☀️',
         ]);
     }
+
+    #[Test]
+    public function it_handles_datetime_objects_and_timestamps_correctly()
+    {
+        Http::fake([
+            'archive-api.open-meteo.com/*' => function ($request) {
+                // Ensure query parameters received only YYYY-MM-DD
+                $startDate = $request->data()['start_date'] ?? null;
+                $this->assertEquals('2026-07-15', $startDate);
+
+                return Http::response([
+                    'daily' => [
+                        'time' => ['2026-07-15'],
+                        'temperature_2m_max' => [85.0],
+                        'temperature_2m_min' => [65.0],
+                        'temperature_2m_mean' => [75.0],
+                        'surface_pressure_mean' => [1010.0],
+                        'wind_speed_10m_max' => [4.0],
+                        'wind_direction_10m_dominant' => [120],
+                        'weather_code' => [0],
+                    ],
+                ], 200);
+            },
+        ]);
+
+        $lake = Lake::factory()->create([
+            'latitude' => 48.2156,
+            'longitude' => -84.7438,
+        ]);
+
+        $service = new WeatherTelemetryService();
+        $weatherFromCarbon = $service->fetchForLakeAndDate($lake, \Illuminate\Support\Carbon::parse('2026-07-15 14:35:00'));
+        $this->assertNotNull($weatherFromCarbon);
+
+        $weatherFromTimestampStr = $service->fetchForLakeAndDate($lake, '2026-07-15 18:00:00');
+        $this->assertNotNull($weatherFromTimestampStr);
+    }
 }

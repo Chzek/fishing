@@ -237,6 +237,11 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - Extracted 31 navigation/lake tracks and routes spanning Catfish Lake, access trails, and regional corridors (3,896 coordinate track points).
     - Integrated as an interactive overlay layer (`📍 Canada GPS (Waypoints & Tracks)`) in the Leaflet Map Explorer ([`explorer.blade.php`](file:///home/gmroczek/git/fishing/resources/views/map/explorer.blade.php)) with dynamic custom divIcons, rich waypoint detail popups, track polylines, and layer switcher controls.
     - Verified with feature tests in [`MapExplorerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/MapExplorerTest.php) with the full test suite passing at **270 tests (1173 assertions)**.
+31. **Weather Telemetry Sync Open-Meteo Date Normalization Bugfix**:
+    - Fixed Open-Meteo HTTP 400 Bad Request error caused by Carbon datetime string casting (`YYYY-MM-DD HH:MM:SS`) in [`WeatherTelemetryService.php`](file:///home/gmroczek/git/fishing/app/Services/WeatherTelemetryService.php).
+    - Added strict date normalization (`YYYY-MM-DD`) and regex validation supporting both string dates and `\DateTimeInterface` objects.
+    - Optimized [`FetchMissingWeatherCommand.php`](file:///home/gmroczek/git/fishing/app/Console/Commands/FetchMissingWeatherCommand.php) to deduplicate distinct `(lakes_id, DATE(caught))` queries at the SQL layer.
+    - Verified all 878 mappable historical catches are now 100% weather-synced (0 pending fetchable), with dedicated feature tests in [`WeatherTelemetryTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/WeatherTelemetryTest.php).
 
 
 

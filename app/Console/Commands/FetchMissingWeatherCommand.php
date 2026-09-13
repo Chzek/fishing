@@ -31,7 +31,9 @@ class FetchMissingWeatherCommand extends Command
         $force = (bool) $this->option('force');
         $this->info('Checking catch records for weather telemetry' . ($force ? ' (FORCED HOURLY RESYNC)' : '') . '...');
 
-        $distinctCatches = Record::select('lakes_id', 'caught')
+        $distinctCatches = Record::selectRaw('lakes_id, DATE(caught) as caught_date')
+            ->whereNotNull('lakes_id')
+            ->whereNotNull('caught')
             ->distinct()
             ->get();
 
@@ -48,7 +50,7 @@ class FetchMissingWeatherCommand extends Command
             $lake = Lake::find($catch->lakes_id);
 
             if ($lake && !is_null($lake->latitude) && !is_null($lake->longitude)) {
-                $weather = $weatherService->fetchForLakeAndDate($lake, $catch->caught, $force);
+                $weather = $weatherService->fetchForLakeAndDate($lake, $catch->caught_date, $force);
                 if ($weather) {
                     $count++;
                 }
