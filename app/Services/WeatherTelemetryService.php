@@ -170,4 +170,167 @@ class WeatherTelemetryService
             return null;
         }
     }
+
+    /**
+     * Compute 3-hour barometric pressure velocity and 5-category tactical angling intelligence.
+     *
+     * @param array<int, array<string, mixed>>|null $hourlyPoints
+     * @param float|null $fallbackDelta
+     * @param string|null $fallbackTrend
+     * @param int|null $targetHour
+     * @return array{
+     *     velocity_3h: float|null,
+     *     classification: string,
+     *     badge_label: string,
+     *     tactical_advice: string,
+     *     target_species_depth: string,
+     *     lure_recommendations: string,
+     *     badge_class: string,
+     *     border_class: string,
+     *     text_class: string,
+     *     icon: string,
+     *     icon_color: string
+     * }
+     */
+    public function calculatePressureVelocity(
+        ?array $hourlyPoints = null,
+        ?float $fallbackDelta = null,
+        ?string $fallbackTrend = null,
+        ?int $targetHour = null
+    ): array {
+        $velocity = null;
+
+        if (!empty($hourlyPoints)) {
+            $pointsByHour = [];
+            foreach ($hourlyPoints as $pt) {
+                if (isset($pt['hour']) && isset($pt['pressure'])) {
+                    $pointsByHour[(int) $pt['hour']] = (float) $pt['pressure'];
+                }
+            }
+
+            if (!empty($pointsByHour)) {
+                if (!is_null($targetHour)) {
+                    $currHour = max(0, min(23, $targetHour));
+                    $prevHour = max(0, $currHour - 3);
+                    if (isset($pointsByHour[$currHour]) && isset($pointsByHour[$prevHour])) {
+                        $velocity = round($pointsByHour[$currHour] - $pointsByHour[$prevHour], 2);
+                    }
+                }
+
+                // If velocity still null, calculate from prime evening window (hour 21 vs hour 18 or 16)
+                if (is_null($velocity)) {
+                    if (isset($pointsByHour[21]) && isset($pointsByHour[18])) {
+                        $velocity = round($pointsByHour[21] - $pointsByHour[18], 2);
+                    } elseif (isset($pointsByHour[21]) && isset($pointsByHour[16])) {
+                        // 5h window normalized to 3h: delta * 0.6
+                        $velocity = round(($pointsByHour[21] - $pointsByHour[16]) * (3.0 / 5.0), 2);
+                    }
+                }
+
+                // If still null, try latest consecutive 3h delta available
+                if (is_null($velocity)) {
+                    $hours = array_keys($pointsByHour);
+                    sort($hours);
+                    $maxH = (int) end($hours);
+                    $minH = max(0, $maxH - 3);
+                    if (isset($pointsByHour[$maxH]) && isset($pointsByHour[$minH]) && $maxH > $minH) {
+                        $velocity = round(($pointsByHour[$maxH] - $pointsByHour[$minH]) * (3.0 / ($maxH - $minH)), 2);
+                    }
+                }
+            }
+        }
+
+        // Fallback to stored window_pressure_delta if available
+        if (is_null($velocity) && !is_null($fallbackDelta)) {
+            $velocity = round($fallbackDelta * 0.6, 2);
+        }
+
+        // Classify into 5 distinct angling states
+        if (!is_null($velocity)) {
+            if ($velocity <= -2.0) {
+                $classification = 'rapid_drop';
+            } elseif ($velocity <= -0.8) {
+                $classification = 'falling';
+            } elseif ($velocity >= 2.0) {
+                $classification = 'rapid_rise';
+            } elseif ($velocity >= 0.8) {
+                $classification = 'rising';
+            } else {
+                $classification = 'stable';
+            }
+        } elseif ($fallbackTrend === 'falling') {
+            $classification = 'falling';
+            $velocity = -1.2;
+        } elseif ($fallbackTrend === 'rising') {
+            $classification = 'rising';
+            $velocity = 1.2;
+        } else {
+            $classification = 'stable';
+            $velocity = 0.0;
+        }
+
+        $configs = [
+            'rapid_drop' => [
+                'badge_label' => 'Rapid Drop: Pre-Frontal Surge (' . $velocity . ' hPa/3h)',
+                'tactical_advice' => 'Fish are aggressively feeding before the incoming storm front. Target shallow flats and weedlines with fast-moving reaction baits.',
+                'target_species_depth' => 'Shallow 2–8 ft / Active surface & upper water column',
+                'lure_recommendations' => 'Topwater frogs, buzzbaits, chatterbaits, lipless crankbaits & fast spinnerbaits',
+                'badge_class' => 'bg-emerald-50 text-emerald-900 border-emerald-300 shadow-sm',
+                'border_class' => 'border-emerald-300',
+                'text_class' => 'text-emerald-800',
+                'icon' => 'zap',
+                'icon_color' => 'text-emerald-600',
+            ],
+            'falling' => [
+                'badge_label' => 'Falling Barometer: Active Feeding Window (' . $velocity . ' hPa/3h)',
+                'tactical_advice' => 'Barometer is dropping steadily. Fish are active, moving out of heavy cover and roaming structure to feed.',
+                'target_species_depth' => 'Mid-depth 6–15 ft / Structure edges & weed edges',
+                'lure_recommendations' => 'Jerkbaits, medium-diving crankbaits, swimbaits & willow-blade spinnerbaits',
+                'badge_class' => 'bg-emerald-50/80 text-emerald-800 border-emerald-200',
+                'border_class' => 'border-emerald-200',
+                'text_class' => 'text-emerald-700',
+                'icon' => 'trending-down',
+                'icon_color' => 'text-emerald-600',
+            ],
+            'stable' => [
+                'badge_label' => 'Stable Barometer: Consistent Depth Patterns (' . ($velocity >= 0 ? '+' : '') . $velocity . ' hPa/3h)',
+                'tactical_advice' => 'Consistent atmospheric pressure. Fish are holding in standard seasonal holding areas; rely on proven contour structure patterns.',
+                'target_species_depth' => 'Seasonal holding depth / Main lake humps, points & drop-offs',
+                'lure_recommendations' => 'Football jigs, Texas-rigged worms, tube jigs & deep crankbaits',
+                'badge_class' => 'bg-sky-50 text-sky-800 border-sky-200',
+                'border_class' => 'border-sky-200',
+                'text_class' => 'text-sky-700',
+                'icon' => 'minus',
+                'icon_color' => 'text-sky-600',
+            ],
+            'rising' => [
+                'badge_label' => 'Rising Barometer: Fish Tight to Cover (' . '+' . $velocity . ' hPa/3h)',
+                'tactical_advice' => 'Barometer is rising following weather shift. Fish are holding tighter to wood, dense weeds, and deep shade. Slow down cadence.',
+                'target_species_depth' => 'Tight to heavy cover / Wood, docks & dense vegetation',
+                'lure_recommendations' => 'Pitching jigs, wacky worms, slow-fall stickbaits & weighted tubes',
+                'badge_class' => 'bg-amber-50 text-amber-800 border-amber-200',
+                'border_class' => 'border-amber-200',
+                'text_class' => 'text-amber-700',
+                'icon' => 'trending-up',
+                'icon_color' => 'text-amber-600',
+            ],
+            'rapid_rise' => [
+                'badge_label' => 'Post-Front High Pressure: Finesse Required (' . '+' . $velocity . ' hPa/3h)',
+                'tactical_advice' => 'Bluebird high pressure conditions with lockjaw bite. Fish are glued to bottom or deep structure. Extreme finesse presentations required.',
+                'target_species_depth' => 'Deep bottom structure 18–35+ ft / Basins & steep drop-offs',
+                'lure_recommendations' => 'Downsized Ned rigs, drop-shot finesse worms, hair jigs & live bait rigs',
+                'badge_class' => 'bg-indigo-50 text-indigo-800 border-indigo-200',
+                'border_class' => 'border-indigo-200',
+                'text_class' => 'text-indigo-700',
+                'icon' => 'shield-alert',
+                'icon_color' => 'text-indigo-600',
+            ],
+        ];
+
+        $res = $configs[$classification];
+        $res['velocity_3h'] = $velocity;
+        $res['classification'] = $classification;
+
+        return $res;
+    }
 }

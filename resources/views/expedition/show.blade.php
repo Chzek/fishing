@@ -361,6 +361,22 @@
         </div>
     </div>
 
+    <!-- ASTRONOMICAL SOLUNAR TRIP PLANNER & FEEDING OUTLOOK -->
+    @php
+        $primaryLake = $visitedLakes->first();
+    @endphp
+    <div>
+        @livewire('widgets.solunar-forecast', [
+            'lakeId' => $primaryLake?->id ? (string) $primaryLake->id : null,
+            'latitude' => $primaryLake?->latitude ? (float) $primaryLake->latitude : null,
+            'longitude' => $primaryLake?->longitude ? (float) $primaryLake->longitude : null,
+            'date' => (string) $expedition->start,
+            'startDate' => (string) $expedition->start,
+            'days' => min(14, max(1, $totalTripDays)),
+            'multiDay' => true,
+        ])
+    </div>
+
     <!-- EXPEDITION CATCH MAP -->
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-3">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">

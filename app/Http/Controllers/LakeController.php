@@ -98,6 +98,7 @@ class LakeController extends Controller
             ->count('anglers_id');
 
         $nearbyLakes = Lake::nearby($lake->latitude, $lake->longitude, 2.0, $lake->id);
+        $latestWeather = $lake->dailyWeather()->latest('date')->first();
 
         return view('lake.show', [
             'lake' => $lake,
@@ -108,6 +109,7 @@ class LakeController extends Controller
             'anglers' => $anglers,
             'stats' => $this->stats($lake),
             'nearbyLakes' => $nearbyLakes,
+            'latestWeather' => $latestWeather,
         ]);
     }
 

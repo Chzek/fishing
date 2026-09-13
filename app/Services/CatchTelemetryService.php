@@ -87,7 +87,7 @@ class CatchTelemetryService
         $releaseRate = $totalCatches > 0 ? (int) round(($releasedCount / $totalCatches) * 100) : 0;
         $avgWaterTemp = round((float) ($stats->avg_water_temp ?? 0), 1);
 
-        $latestYear = (int) ($stats->latest_year ?: date('Y'));
+        $latestYear = (int) (($stats && $stats->getAttribute('latest_year')) ? $stats->getAttribute('latest_year') : date('Y'));
         $prevYear = $latestYear - 1;
 
         // 2. Standout catches (Longest and Heaviest) with strict relationship scoping
@@ -139,10 +139,11 @@ class CatchTelemetryService
             ->with('fishBreed')
             ->get();
 
-        $speciesTrends = $topSpeciesRecords->map(function (Record $item) use ($totalCatches) {
-            $currCount = (int) ($item->curr_count ?? 0);
-            $prevCount = (int) ($item->prev_count ?? 0);
-            $totalCount = (int) ($item->total_count ?? 0);
+        $speciesTrends = $topSpeciesRecords->map(function ($item) use ($totalCatches) {
+            /** @var Record $item */
+            $currCount = (int) ($item->getAttribute('curr_count') ?? 0);
+            $prevCount = (int) ($item->getAttribute('prev_count') ?? 0);
+            $totalCount = (int) ($item->getAttribute('total_count') ?? 0);
             $percentage = $totalCatches > 0 ? round(($totalCount / $totalCatches) * 100, 1) : 0.0;
             $shift = $prevCount > 0 ? (int) round((($currCount - $prevCount) / $prevCount) * 100) : ($currCount > 0 ? 100 : 0);
 

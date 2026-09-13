@@ -106,11 +106,12 @@
                         </div>
                         <div>
                             <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Environmental Telemetry</span>
-                            <span class="text-xs font-semibold text-slate-700">Prime Bite Window & Barometric Movement</span>
+                            <span class="text-xs font-semibold text-slate-700">Prime Bite Window & Barometric Velocity</span>
                         </div>
                     </div>
                     <x-barometerTrend :weather="$record->dailyWeather" />
                 </div>
+
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center pt-3 border-t border-slate-100 text-xs">
                     <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
                         <span class="text-[10px] uppercase font-bold text-slate-400 block">Condition</span>
@@ -128,6 +129,11 @@
                         <span class="text-[10px] uppercase font-bold text-slate-400 block">Max Wind</span>
                         <span class="text-xs font-bold text-slate-900 font-mono block mt-0.5">{{ round($record->dailyWeather->wind_speed_max, 1) }} mph</span>
                     </div>
+                </div>
+
+                <!-- Tactical Angler Feeding Intelligence Callout -->
+                <div class="pt-2">
+                    <x-tacticalPressureBadge :weather="$record->dailyWeather" :showAdvice="true" />
                 </div>
             </div>
         @endif

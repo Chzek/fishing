@@ -130,6 +130,83 @@ class SolunarService
     }
 
     /**
+     * Compute multi-day Solunar forecast (e.g. 7-day trip planning window).
+     *
+     * @param float $latitude
+     * @param float $longitude
+     * @param string|DateTimeInterface $startDate
+     * @param int $days Number of days to forecast (1 to 30, defaults to 7)
+     * @return array<string, mixed>
+     */
+    public function getMultiDayForecast(
+        float $latitude,
+        float $longitude,
+        string|DateTimeInterface $startDate,
+        int $days = 7
+    ): array {
+        $days = max(1, min(30, $days));
+        $carbonStart = is_string($startDate) ? Carbon::parse($startDate) : Carbon::instance($startDate);
+
+        $dailyForecasts = [];
+        $peakScore = -1;
+        $peakDay = null;
+
+        for ($i = 0; $i < $days; $i++) {
+            $currentDate = $carbonStart->copy()->addDays($i);
+            $dayData = $this->getSolunarData($latitude, $longitude, $currentDate);
+            $dailyForecasts[] = $dayData;
+
+            if ($dayData['rating']['score'] > $peakScore) {
+                $peakScore = $dayData['rating']['score'];
+                $peakDay = [
+                    'date' => $dayData['date'],
+                    'formattedDate' => $dayData['formattedDate'],
+                    'score' => $dayData['rating']['score'],
+                    'label' => $dayData['rating']['label'],
+                    'phase' => $dayData['moon']['phase'],
+                    'emoji' => $dayData['moon']['emoji'],
+                ];
+            }
+        }
+
+        return [
+            'startDate' => $carbonStart->format('Y-m-d'),
+            'endDate' => $carbonStart->copy()->addDays($days - 1)->format('Y-m-d'),
+            'daysCount' => $days,
+            'coordinates' => [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+            ],
+            'peakDay' => $peakDay,
+            'forecast' => $dailyForecasts,
+        ];
+    }
+
+    /**
+     * Get lightweight Solunar badge summary for a specific date and time.
+     *
+     * @param float $latitude
+     * @param float $longitude
+     * @param string|DateTimeInterface $date
+     * @return array<string, mixed>
+     */
+    public function getQuickSolunarSummary(
+        float $latitude,
+        float $longitude,
+        string|DateTimeInterface $date
+    ): array {
+        $data = $this->getSolunarData($latitude, $longitude, $date);
+
+        return [
+            'date' => $data['date'],
+            'rating' => $data['rating'],
+            'moon' => $data['moon'],
+            'majorWindows' => $data['majorWindows'],
+            'minorWindows' => $data['minorWindows'],
+        ];
+    }
+
+    /**
      * Calculate Julian Date Number at 00:00 UTC.
      */
     public function calculateJulianDate(int $year, int $month, int $day): float

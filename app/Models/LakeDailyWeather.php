@@ -20,11 +20,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $wind_direction_dominant
  * @property string|null $weather_condition
  * @property int|null $weather_code
- * @property array<string, mixed>|null $hourly_telemetry
+ * @property array<int, array<string, mixed>>|null $hourly_telemetry
  * @property float|null $window_pressure_start
  * @property float|null $window_pressure_end
  * @property float|null $window_pressure_delta
  * @property string|null $pressure_trend
+ * @property-read string $wind_direction_text
+ * @property-read array<string, mixed> $tactical_feeding_advice
+ * @property-read float|null $pressure_velocity_3h
  * @property-read \Fishinglog\Models\Lake|null $lake
  */
 class LakeDailyWeather extends Model
@@ -115,5 +118,32 @@ class LakeDailyWeather extends Model
         $directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
         $idx = round(($deg % 360) / 22.5) % 16;
         return $directions[$idx];
+    }
+
+    /**
+     * Get tactical angling feeding intelligence based on 3-hour pressure velocity.
+     *
+     * @return array<string, mixed>
+     */
+    public function getTacticalFeedingAdviceAttribute(): array
+    {
+        $service = app(\Fishinglog\Services\WeatherTelemetryService::class);
+
+        /** @var array<int, array<string, mixed>>|null $hourly */
+        $hourly = is_array($this->hourly_telemetry) ? $this->hourly_telemetry : null;
+
+        return $service->calculatePressureVelocity(
+            $hourly,
+            $this->window_pressure_delta,
+            $this->pressure_trend
+        );
+    }
+
+    /**
+     * Get calculated 3-hour pressure velocity in hPa/3h.
+     */
+    public function getPressureVelocity3hAttribute(): ?float
+    {
+        return $this->tactical_feeding_advice['velocity_3h'] ?? null;
     }
 }

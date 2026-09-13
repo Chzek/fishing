@@ -8,27 +8,12 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### 🚀 Priority 1 (P1): Angling Experience & Tactical Intelligence Features
 
-#### 1. Multi-Day Solunar Forecast & Astronomical Trip Planner
-- **Agents**: `seasoned-angler-advisor`, `livewire-architect`
-- **Impact**: **High** (Trip Planning & Tactical Value)
-- **Description**: Extend [`SolunarService.php`](file:///home/gmroczek/git/fishing/app/Services/SolunarService.php) to compute a 7-day predictive window with 1–5 star day ratings, major/minor windows, and sunrise/sunset times. Mount the component across the **Expedition Show** page (`/expedition/{id}`) and **Quick Catch Logger** context so anglers can plan multi-day Canadian wilderness fishing schedules around peak feeding windows.
-
-#### 2. Barometric Pressure Velocity & Tactical Weather Trigger Badges
-- **Agents**: `seasoned-angler-advisor`, `livewire-architect`
-- **Impact**: **High** (Trip Planning & Tactical Value)
-- **Description**: Extend [`SolunarService.php`](file:///home/gmroczek/git/fishing/app/Services/SolunarService.php) to compute a 7-day predictive window with 1–5 star day ratings, major/minor windows, and sunrise/sunset times. Mount the component across the **Expedition Show** page (`/expedition/{id}`) and **Quick Catch Logger** context so anglers can plan multi-day Canadian wilderness fishing schedules around peak feeding windows.
-
-#### 2. Barometric Pressure Velocity & Tactical Weather Trigger Badges
-- **Agents**: `seasoned-angler-advisor`, `query-profiler-optimizer`
-- **Impact**: **High** (Real-World Boat Decision Making)
-- **Description**: Compute barometric pressure velocity ($\Delta P = P_{\text{current}} - P_{t-3\text{h}}$) to classify conditions (Rapidly Rising, Slow Rise, Steady, Falling, Rapid Drop). Display tactical feeding badges (e.g., *"Rapid Drop: Pre-Frontal Surface Feeding Surge"* or *"Post-Front High Pressure: Finesse/Downsize Tactics Required"*) on Catch Records, Lake Dossiers, and Expedition recaps.
-
-#### 3. FMZ Fishing Regulations Warning & Slot Limit Compliance Alerts
+#### 1. FMZ Fishing Regulations Warning & Slot Limit Compliance Alerts
 - **Agents**: `seasoned-angler-advisor`, `laravel-architect`
 - **Impact**: **High** (Legal & Conservation Compliance)
 - **Description**: Connect existing `FishingRule` and `FishingZone` relations to the Quick Catch Modal and Lake Dossier to provide real-time slot limit compliance warnings (e.g., Ontario FMZ 2 / FMZ 4 Walleye slot: *None between 16.1" and 22.0"*) and season open/close indicators during catch logging.
 
-#### 4. Trophy Catch Brag Card Generator & Chartplotter GPX/CSV Export
+#### 2. Trophy Catch Brag Card Generator & Chartplotter GPX/CSV Export
 - **Agents**: `ui-ux-auditor`, `laravel-architect`
 - **Impact**: **Medium-High** (Social Sharing & Marine Navigation Integration)
 - **Description**: Generate a downloadable high-resolution branded brag card (catch length/weight, lake, lure, solunar rating, photo) for social sharing, and implement 1-click GPX/CSV waypoint export formatted specifically for Garmin, Humminbird, and Lowrance chartplotters.
@@ -93,7 +78,15 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🏆 Completed Milestones (Merged into `master`)
 
-1. **AI Governance & Durable Codebase Conventions Bootstrap (`.ai/rules/`)**:
+1. **Multi-Day Solunar Forecast & Astronomical Trip Planner (P1.1)**:
+   - Extended [`SolunarService.php`](file:///home/gmroczek/git/fishing/app/Services/SolunarService.php) with multi-day predictive window engine (`getMultiDayForecast`) computing 1–5 star ratings, peak trip feeding days, moon illumination/phases, and major/minor windows for 1 to 14 days.
+   - Upgraded `@livewire('widgets.solunar-forecast')` with a compact, single-line horizontal trip outlook strip and reactive day switching across Expedition Dossiers (`/expedition/{id}`) and Lake Dossiers (`/lake/{id}`).
+   - Covered with dedicated unit & feature tests in [`SolunarMultiDayForecastTest.php`](file:///home/gmroczek/git/fishing/tests/Unit/SolunarMultiDayForecastTest.php) and [`ExpeditionSolunarPlannerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/ExpeditionSolunarPlannerTest.php).
+2. **Barometric Pressure Velocity & Tactical Weather Trigger Badges (P1.2)**:
+   - Extended [`WeatherTelemetryService.php`](file:///home/gmroczek/git/fishing/app/Services/WeatherTelemetryService.php) and [`LakeDailyWeather.php`](file:///home/gmroczek/git/fishing/app/Models/LakeDailyWeather.php) with 3-hour pressure velocity calculation ($\Delta P = P_{\text{hour}} - P_{\text{hour}-3}$) and 5-category tactical feeding classifications (Rapid Drop, Falling, Stable, Rising, Rapid Rise).
+   - Created `<x-tacticalPressureBadge />` and upgraded `<x-barometerTrend />` with outdoor-tested badges, target depths, and lure/presentation recommendations across Catch Records (`/record/{id}`), Lake Dossiers (`/lake/{id}`), and Expedition recaps.
+   - Tested with dedicated unit tests in [`BarometricPressureVelocityTest.php`](file:///home/gmroczek/git/fishing/tests/Unit/BarometricPressureVelocityTest.php).
+3. **AI Governance & Durable Codebase Conventions Bootstrap (`.ai/rules/`)**:
    - Established permanent, path-scoped rule registry in [`.ai/rules/index.md`](file:///home/gmroczek/git/fishing/.ai/rules/index.md) and area rule files for Models, Actions & Services, Controllers & Form Requests, Livewire 3 & Frontend, Testing with Sail, and remote Synology NAS Synchronization.
    - Fully aligned with Antigravity's on-demand skills architecture in `.agents/skills/` and global project safety rules in `.agents/AGENTS.md`.
 2. **Native MySQL 8 Spatial Engine & Eloquent Geometry Integration (`matanyadaev/laravel-eloquent-spatial`)**:

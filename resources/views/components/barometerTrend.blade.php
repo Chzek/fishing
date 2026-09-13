@@ -7,36 +7,19 @@
         return;
     }
 
-    $trend = is_object($weather) ? ($weather->pressure_trend ?? null) : ($weather['pressure_trend'] ?? null);
+    $service = app(\Fishinglog\Services\WeatherTelemetryService::class);
+    $hourly = is_object($weather) ? ($weather->hourly_telemetry ?? null) : ($weather['hourly_telemetry'] ?? null);
     $delta = is_object($weather) ? ($weather->window_pressure_delta ?? null) : ($weather['window_pressure_delta'] ?? null);
+    $trend = is_object($weather) ? ($weather->pressure_trend ?? null) : ($weather['pressure_trend'] ?? null);
 
-    if (!$trend && is_null($delta)) {
-        return;
-    }
-
-    $badge = match ($trend) {
-        'falling' => [
-            'label' => 'Falling Barometer (' . ($delta ? $delta . ' hPa' : '4-9 PM') . ')',
-            'icon' => 'trending-down',
-            'class' => 'bg-emerald-50 text-emerald-800 border-emerald-200/90',
-            'iconColor' => 'text-emerald-600',
-        ],
-        'rising' => [
-            'label' => 'Rising Barometer (' . ($delta ? '+' . $delta . ' hPa' : '4-9 PM') . ')',
-            'icon' => 'trending-up',
-            'class' => 'bg-slate-100 text-slate-700 border-slate-200',
-            'iconColor' => 'text-slate-500',
-        ],
-        default => [
-            'label' => 'Stable Barometer (4-9 PM)',
-            'icon' => 'minus',
-            'class' => 'bg-sky-50 text-sky-800 border-sky-200/90',
-            'iconColor' => 'text-sky-600',
-        ],
-    };
+    $intel = $service->calculatePressureVelocity(
+        is_array($hourly) ? $hourly : null,
+        $delta,
+        $trend
+    );
 @endphp
 
-<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold border shadow-xs ' . $badge['class']]) }} title="Prime Fishing Window (4-9 PM) Barometric Pressure Movement">
-    <x-dynamic-component :component="'lucide-' . $badge['icon']" class="w-3.5 h-3.5 {{ $badge['iconColor'] }} shrink-0" />
-    <span>{{ $badge['label'] }}</span>
+<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold border shadow-xs ' . $intel['badge_class']]) }} title="{{ $intel['tactical_advice'] }}">
+    <x-dynamic-component :component="'lucide-' . $intel['icon']" class="w-3.5 h-3.5 {{ $intel['icon_color'] }} shrink-0" />
+    <span>{{ $intel['badge_label'] }}</span>
 </span>

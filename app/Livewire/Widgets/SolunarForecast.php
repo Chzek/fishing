@@ -21,6 +21,12 @@ class SolunarForecast extends Component
 
     public string $date = '';
 
+    public ?string $startDate = null;
+
+    public int $days = 7;
+
+    public bool $multiDay = true;
+
     public bool $compact = false;
 
     public bool $collapsed = false;
@@ -30,6 +36,9 @@ class SolunarForecast extends Component
         ?float $latitude = null,
         ?float $longitude = null,
         ?string $date = null,
+        ?string $startDate = null,
+        int $days = 7,
+        bool $multiDay = true,
         bool $compact = false,
         bool $collapsed = false
     ): void {
@@ -38,6 +47,9 @@ class SolunarForecast extends Component
         $this->longitude = $longitude;
         $this->compact = $compact;
         $this->collapsed = $collapsed;
+        $this->days = max(1, min(14, $days));
+        $this->multiDay = $multiDay;
+        $this->startDate = $startDate ?: ($date ?: Carbon::today()->format('Y-m-d'));
         $this->date = $date ?: Carbon::today()->format('Y-m-d');
 
         $this->resolveLakeCoordinates();
@@ -89,6 +101,11 @@ class SolunarForecast extends Component
         $this->date = Carbon::parse($targetDate)->format('Y-m-d');
     }
 
+    public function toggleMultiDay(): void
+    {
+        $this->multiDay = !$this->multiDay;
+    }
+
     public function toggleCollapsed(): void
     {
         $this->collapsed = !$this->collapsed;
@@ -103,10 +120,22 @@ class SolunarForecast extends Component
             $this->date
         );
 
+        $multiDayForecast = null;
+        if ($this->multiDay && !$this->compact) {
+            $forecastStart = $this->startDate ?: $this->date;
+            $multiDayForecast = $solunarService->getMultiDayForecast(
+                (float) $this->latitude,
+                (float) $this->longitude,
+                $forecastStart,
+                $this->days
+            );
+        }
+
         $isToday = Carbon::parse($this->date)->isToday();
 
         return view('livewire.widgets.solunar-forecast', [
             'solunar' => $solunarData,
+            'multiDayForecast' => $multiDayForecast,
             'isToday' => $isToday,
         ]);
     }

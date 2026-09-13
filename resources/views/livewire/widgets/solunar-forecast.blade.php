@@ -37,6 +37,55 @@
         </div>
     </div>
 
+    @if(!empty($multiDayForecast) && count($multiDayForecast['forecast']) > 1)
+        <!-- Compact Single-Line Multi-Day Astronomical Strip -->
+        <div class="mb-3.5 pb-2.5 border-b border-slate-100">
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                    <x-lucide-calendar-days class="w-3 h-3 text-teal-600" />
+                    {{ $multiDayForecast['daysCount'] }}-Day Trip Feeding Outlook
+                </span>
+                @if($multiDayForecast['peakDay'])
+                    <span class="text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-md flex items-center gap-1">
+                        <span>🔥 Trip Peak:</span>
+                        <strong>{{ date('M j', strtotime($multiDayForecast['peakDay']['date'])) }} ({{ $multiDayForecast['peakDay']['score'] }}★)</strong>
+                    </span>
+                @endif
+            </div>
+
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                @foreach($multiDayForecast['forecast'] as $dayItem)
+                    @php
+                        $isSelected = ($dayItem['date'] === $date);
+                        $isPeak = (!empty($multiDayForecast['peakDay']) && $multiDayForecast['peakDay']['date'] === $dayItem['date']);
+                        $carbonD = \Illuminate\Support\Carbon::parse($dayItem['date']);
+                    @endphp
+                    <button 
+                        type="button" 
+                        wire:click="setDate('{{ $dayItem['date'] }}')"
+                        class="px-2.5 py-1.5 rounded-lg text-center transition-all cursor-pointer shrink-0 border relative {{ $isSelected ? 'bg-slate-900 text-white border-slate-800 shadow-sm ring-2 ring-teal-500/40' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/70' }}"
+                        title="{{ $carbonD->format('l, M j, Y') }}: {{ $dayItem['rating']['score'] }}/5 Stars ({{ $dayItem['rating']['label'] }})"
+                    >
+                        @if($isPeak)
+                            <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500 ring-1 ring-white" title="Trip Peak Feeding Day"></span>
+                        @endif
+
+                        <div class="text-[9px] font-mono uppercase font-bold {{ $isSelected ? 'text-teal-300' : 'text-slate-400' }} leading-none">
+                            {{ $carbonD->format('D, M j') }}
+                        </div>
+
+                        <div class="flex items-center justify-center gap-1 mt-1 leading-none">
+                            <span class="text-xs">{{ $dayItem['moon']['emoji'] }}</span>
+                            <span class="text-[11px] font-mono font-black {{ $isSelected ? 'text-amber-400' : 'text-amber-600' }}">
+                                {{ $dayItem['rating']['score'] }}★
+                            </span>
+                        </div>
+                    </button>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <!-- Main 4-Column Layout -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6 items-center">
         <!-- 1. Moon Phase Card (Col Span 4) -->
