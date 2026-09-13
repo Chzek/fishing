@@ -110,10 +110,17 @@ class Record extends Model
 
         static::saved(function () {
             \Illuminate\Support\Facades\Cache::forget('angler_stats_overview');
+            \Fishinglog\Services\CatchTelemetryService::clearCache();
         });
 
         static::deleted(function () {
             \Illuminate\Support\Facades\Cache::forget('angler_stats_overview');
+            \Fishinglog\Services\CatchTelemetryService::clearCache();
+        });
+
+        static::restored(function () {
+            \Illuminate\Support\Facades\Cache::forget('angler_stats_overview');
+            \Fishinglog\Services\CatchTelemetryService::clearCache();
         });
     }
 

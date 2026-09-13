@@ -9,6 +9,55 @@ use Illuminate\Support\Facades\DB;
 
 class CatchTelemetryService
 {
+    public const CACHE_KEY = 'catch_telemetry_summary';
+    public const CACHE_TTL = 3600; // 1 hour (invalidated on model events)
+
+    /**
+     * Get or calculate cached comprehensive catch telemetry.
+     *
+     * @param Builder|null $baseQuery
+     * @param bool $forceRefresh
+     * @return array<string, mixed>
+     */
+    public function getOrCalculateTelemetry(?Builder $baseQuery = null, bool $forceRefresh = false): array
+    {
+        // If a customized/filtered query is passed, compute directly without modifying global cache
+        if ($baseQuery !== null && $this->isFilteredQuery($baseQuery)) {
+            return $this->calculateTelemetry($baseQuery);
+        }
+
+        if ($forceRefresh) {
+            Cache::forget(self::CACHE_KEY);
+        }
+
+        return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () use ($baseQuery) {
+            return $this->calculateTelemetry($baseQuery ?? Record::query());
+        });
+    }
+
+    /**
+     * Clear cached catch telemetry summary.
+     */
+    public static function clearCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+    }
+
+    /**
+     * Check if the builder has non-default where/order clauses.
+     */
+    protected function isFilteredQuery(Builder $query): bool
+    {
+        $wheres = $query->getQuery()->wheres;
+        // If there are where clauses other than standard soft-delete check
+        foreach ($wheres as $where) {
+            if (isset($where['column']) && $where['column'] !== 'records.deleted_at' && $where['column'] !== 'deleted_at') {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Compute comprehensive catch telemetry, leaderboard records, top performers, species shifts, and weather aggregates.
      *
@@ -17,7 +66,7 @@ class CatchTelemetryService
      */
     public function calculateTelemetry(Builder $baseQuery): array
     {
-        // 1. High-level telemetry stats
+        // 1. High-level telemetry stats + latest catch year in a single query
         $stats = (clone $baseQuery)
             ->reorder()
             ->selectRaw('
@@ -25,7 +74,8 @@ class CatchTelemetryService
                 COALESCE(SUM(length), 0) as total_inches,
                 COALESCE(AVG(length), 0) as avg_length,
                 COALESCE(SUM(CASE WHEN released = 1 THEN 1 ELSE 0 END), 0) as released_count,
-                COALESCE(AVG(temperature), 0) as avg_water_temp
+                COALESCE(AVG(temperature), 0) as avg_water_temp,
+                MAX(YEAR(caught)) as latest_year
             ')
             ->first();
 
@@ -37,7 +87,10 @@ class CatchTelemetryService
         $releaseRate = $totalCatches > 0 ? (int) round(($releasedCount / $totalCatches) * 100) : 0;
         $avgWaterTemp = round((float) ($stats->avg_water_temp ?? 0), 1);
 
-        // 2. Standout catches (Longest and Heaviest)
+        $latestYear = (int) ($stats->latest_year ?: date('Y'));
+        $prevYear = $latestYear - 1;
+
+        // 2. Standout catches (Longest and Heaviest) with strict relationship scoping
         $longestCatch = (clone $baseQuery)->whereNotNull('length')
             ->reorder()
             ->orderBy('length', 'desc')
@@ -70,26 +123,14 @@ class CatchTelemetryService
             ->with('lake')
             ->get();
 
-        // 5. Macro Target Species Shifts & Trends
-        $latestYear = (clone $baseQuery)->whereNotNull('caught')->max(DB::raw('year(caught)')) ?: (int) date('Y');
-        $prevYear = $latestYear - 1;
-
-        $currentYearBreeds = (clone $baseQuery)->select('fish_breeds_id', DB::raw('count(*) as count'))
-            ->reorder()
-            ->whereNotNull('fish_breeds_id')
-            ->whereRaw('year(caught) = ?', [$latestYear])
-            ->groupBy('fish_breeds_id')
-            ->pluck('count', 'fish_breeds_id');
-
-        $prevYearBreeds = (clone $baseQuery)->select('fish_breeds_id', DB::raw('count(*) as count'))
-            ->reorder()
-            ->whereNotNull('fish_breeds_id')
-            ->whereRaw('year(caught) = ?', [$prevYear])
-            ->groupBy('fish_breeds_id')
-            ->pluck('count', 'fish_breeds_id');
-
-        /** @var \Illuminate\Database\Eloquent\Collection<int, Record> $allBreedsWithCatches */
-        $allBreedsWithCatches = (clone $baseQuery)->select('fish_breeds_id', DB::raw('count(*) as total_count'))
+        // 5. Macro Target Species Shifts & Trends (Consolidated Single SQL Query with Conditional Aggregation)
+        $topSpeciesRecords = (clone $baseQuery)
+            ->select(
+                'fish_breeds_id',
+                DB::raw('count(*) as total_count'),
+                DB::raw("COALESCE(SUM(CASE WHEN YEAR(caught) = {$latestYear} THEN 1 ELSE 0 END), 0) as curr_count"),
+                DB::raw("COALESCE(SUM(CASE WHEN YEAR(caught) = {$prevYear} THEN 1 ELSE 0 END), 0) as prev_count")
+            )
             ->reorder()
             ->whereNotNull('fish_breeds_id')
             ->groupBy('fish_breeds_id')
@@ -98,10 +139,9 @@ class CatchTelemetryService
             ->with('fishBreed')
             ->get();
 
-        $speciesTrends = $allBreedsWithCatches->map(function (Record $item) use ($currentYearBreeds, $prevYearBreeds, $totalCatches) {
-            $breedId = (string) $item->fish_breeds_id;
-            $currCount = (int) ($currentYearBreeds[$breedId] ?? 0);
-            $prevCount = (int) ($prevYearBreeds[$breedId] ?? 0);
+        $speciesTrends = $topSpeciesRecords->map(function (Record $item) use ($totalCatches) {
+            $currCount = (int) ($item->curr_count ?? 0);
+            $prevCount = (int) ($item->prev_count ?? 0);
             $totalCount = (int) ($item->total_count ?? 0);
             $percentage = $totalCatches > 0 ? round(($totalCount / $totalCatches) * 100, 1) : 0.0;
             $shift = $prevCount > 0 ? (int) round((($currCount - $prevCount) / $prevCount) * 100) : ($currCount > 0 ? 100 : 0);
@@ -116,26 +156,34 @@ class CatchTelemetryService
             ];
         });
 
-        // 6. Atmospheric & Weather Telemetry Calculations
+        // 6. Atmospheric & Weather Telemetry Calculations (Consolidated Single SQL Pass)
         $weatherJoinedRecords = DB::table('records')
             ->join('lake_daily_weather', function ($join) {
                 $join->on('records.lakes_id', '=', 'lake_daily_weather.lakes_id')
-                     ->on(DB::raw('DATE(records.caught)'), '=', 'lake_daily_weather.date');
+                     ->on('records.caught', '=', 'lake_daily_weather.date');
             })
             ->whereNull('records.deleted_at');
 
-        $weatherCoverageCount = (clone $weatherJoinedRecords)->count();
-        $weatherCoverageRate = $totalCatches > 0 ? (int) round(($weatherCoverageCount / $totalCatches) * 100) : 0;
+        $weatherSummary = (clone $weatherJoinedRecords)
+            ->selectRaw('
+                COUNT(*) as coverage_count,
+                COALESCE(AVG(lake_daily_weather.air_temp_mean), 0) as avg_air_temp,
+                COALESCE(AVG(lake_daily_weather.barometric_pressure), 0) as avg_pressure,
+                COALESCE(AVG(lake_daily_weather.wind_speed_max), 0) as avg_wind
+            ')
+            ->first();
 
-        $avgAirTemp = round((float) ((clone $weatherJoinedRecords)->avg('lake_daily_weather.air_temp_mean') ?? 0), 1);
-        $avgBarometricPressure = round((float) ((clone $weatherJoinedRecords)->avg('lake_daily_weather.barometric_pressure') ?? 0), 1);
-        $avgWindSpeed = round((float) ((clone $weatherJoinedRecords)->avg('lake_daily_weather.wind_speed_max') ?? 0), 1);
+        $weatherCoverageCount = (int) ($weatherSummary->coverage_count ?? 0);
+        $weatherCoverageRate = $totalCatches > 0 ? (int) round(($weatherCoverageCount / $totalCatches) * 100) : 0;
+        $avgAirTemp = round((float) ($weatherSummary->avg_air_temp ?? 0), 1);
+        $avgBarometricPressure = round((float) ($weatherSummary->avg_pressure ?? 0), 1);
+        $avgWindSpeed = round((float) ($weatherSummary->avg_wind ?? 0), 1);
 
         // Query Best Lake per Weather Condition
         $bestLakePerCondition = DB::table('records')
             ->join('lake_daily_weather', function ($join) {
                 $join->on('records.lakes_id', '=', 'lake_daily_weather.lakes_id')
-                     ->on(DB::raw('DATE(records.caught)'), '=', 'lake_daily_weather.date');
+                     ->on('records.caught', '=', 'lake_daily_weather.date');
             })
             ->join('lakes', 'records.lakes_id', '=', 'lakes.id')
             ->whereNull('records.deleted_at')

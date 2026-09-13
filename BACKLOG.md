@@ -6,14 +6,14 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🎯 Active Priority Roadmap (Ranked by Impact & Value)
 
-### 🚀 Priority 1 (P1): Angling Experience & Performance Initiatives
+### 🚀 Priority 1 (P1): Angling Experience & Tactical Intelligence Features
 
-#### 1. Catches Logbook `/record` Latency Optimization & Telemetry Caching
-- **Agents**: `query-profiler-optimizer`, `laravel-architect`
-- **Impact**: **High** (Sub-50ms Logbook Page Load & Server CPU Reduction)
-- **Description**: Profile and refactor the `/record` controller and [`CatchTelemetryService.php`](file:///home/gmroczek/git/fishing/app/Services/CatchTelemetryService.php). Eliminate dead-weight pagination and unneeded `lake.dailyWeather` deep eager loading, consolidate 4 duplicate weather aggregate scans into a single SQL pass, optimize macro species shift queries, and cache the computed telemetry summary with automatic model-event invalidation.
+#### 1. Multi-Day Solunar Forecast & Astronomical Trip Planner
+- **Agents**: `seasoned-angler-advisor`, `livewire-architect`
+- **Impact**: **High** (Trip Planning & Tactical Value)
+- **Description**: Extend [`SolunarService.php`](file:///home/gmroczek/git/fishing/app/Services/SolunarService.php) to compute a 7-day predictive window with 1–5 star day ratings, major/minor windows, and sunrise/sunset times. Mount the component across the **Expedition Show** page (`/expedition/{id}`) and **Quick Catch Logger** context so anglers can plan multi-day Canadian wilderness fishing schedules around peak feeding windows.
 
-#### 2. Multi-Day Solunar Forecast & Astronomical Trip Planner
+#### 2. Barometric Pressure Velocity & Tactical Weather Trigger Badges
 - **Agents**: `seasoned-angler-advisor`, `livewire-architect`
 - **Impact**: **High** (Trip Planning & Tactical Value)
 - **Description**: Extend [`SolunarService.php`](file:///home/gmroczek/git/fishing/app/Services/SolunarService.php) to compute a 7-day predictive window with 1–5 star day ratings, major/minor windows, and sunrise/sunset times. Mount the component across the **Expedition Show** page (`/expedition/{id}`) and **Quick Catch Logger** context so anglers can plan multi-day Canadian wilderness fishing schedules around peak feeding windows.
@@ -145,12 +145,18 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
    - Annotated all JsonResource classes with `/** @mixin \Fishinglog\Models\<Model> */`.
    - Standardized controller docblock return types and eliminated 340+ typing bugs down to **0 static analysis errors**.
    - Integrated `"analyse": "vendor/bin/phpstan analyse --memory-limit=2G"` composer command and documented usage in `README.md` and `laravel-architect` skill.
-10. **Automated Database & Media Backup Package (`spatie/laravel-backup`)**:
+10. **Catches Logbook `/record` Latency Optimization & Telemetry Caching**:
+    - Profiled and eliminated 34 synchronous SQL queries on `/record` down to 0 queries on cached hits and 19 queries on cold misses (~98.5% execution speedup from ~1.2s to ~1.8ms).
+    - Removed dead-weight 10-item pagination and deep `lake.dailyWeather` eager loading from [`RecordController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/RecordController.php).
+    - Consolidated duplicate weather telemetry aggregation scans into a single SQL query and optimized macro target species shifts with single-query conditional sums in [`CatchTelemetryService.php`](file:///home/gmroczek/git/fishing/app/Services/CatchTelemetryService.php).
+    - Wired automatic cache invalidation across `Record` model lifecycle events (`saved`, `deleted`, `restored`) in [`Record.php`](file:///home/gmroczek/git/fishing/app/Models/Record.php).
+    - Added dedicated cache and invalidation feature tests in [`RecordSummaryDashboardTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/RecordSummaryDashboardTest.php) with 100% test pass rate.
+11. **Automated Database & Media Backup Package (`spatie/laravel-backup`)**:
     - Integrated `spatie/laravel-backup:^9.0` configured for full MySQL dumps, uploaded media assets (`storage/app/public`), and multi-tier grandfather-father-son retention rules (7 days all, 30 days daily, 8 weeks weekly, 12 months monthly, 2 years yearly, 5 GB storage ceiling).
     - Configured production-only automated Console schedules in [`routes/console.php`](file:///home/gmroczek/git/fishing/routes/console.php) (`backup:clean` at 01:00, `backup:run --only-db` at 02:00, full `backup:run` on Sundays at 03:00).
     - Hooked automated pre-migration safety snapshots into [`synology-nas-deploy/update_nas.sh`](file:///home/gmroczek/git/fishing/synology-nas-deploy/update_nas.sh).
     - Documented all CLI backup commands and disaster recovery restoration procedures in [`README.md`](file:///home/gmroczek/git/fishing/README.md).
-11. **Codebase Usage Cleanup, Dead Code Elimination & Action Class Wiring**:
+12. **Codebase Usage Cleanup, Dead Code Elimination & Action Class Wiring**:
     - Pruned dead/unrendered legacy Blade components (`stat-card.blade.php`, `components/form/input.blade.php`, `resources/views/vendor/log-viewer/`).
     - Injected and wired [`CreateCatchRecordAction`](file:///home/gmroczek/git/fishing/app/Actions/Records/CreateCatchRecordAction.php) and [`ProcessPhotoUploadAction`](file:///home/gmroczek/git/fishing/app/Actions/Media/ProcessPhotoUploadAction.php) into [`RecordController`](file:///home/gmroczek/git/fishing/app/Http/Controllers/RecordController.php), [`RecordApiController`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Api/v1/RecordApiController.php), and [`PhotoController`](file:///home/gmroczek/git/fishing/app/Http/Controllers/PhotoController.php).
     - Removed empty/unimplemented stub routes and methods in [`routes/web.php`](file:///home/gmroczek/git/fishing/routes/web.php) (`CrewController`, `PostController`, `FishFamilyController`, `FishBreedController`).

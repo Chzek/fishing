@@ -60,4 +60,30 @@ class RecordSummaryDashboardTest extends TestCase
         $response->assertSee('Walleye');
         $response->assertSee('Open Logbook Directory');
     }
+
+    #[Test]
+    public function catch_telemetry_is_cached_and_invalidated_on_record_changes()
+    {
+        \Fishinglog\Services\CatchTelemetryService::clearCache();
+        $this->assertFalse(\Illuminate\Support\Facades\Cache::has(\Fishinglog\Services\CatchTelemetryService::CACHE_KEY));
+
+        // 1. Initial hit populates cache
+        $this->actingAs($this->user)->get('/record')->assertStatus(200);
+        $this->assertTrue(\Illuminate\Support\Facades\Cache::has(\Fishinglog\Services\CatchTelemetryService::CACHE_KEY));
+
+        // 2. Creating a record clears the cache
+        $record = Record::factory()->create([
+            'length' => 28.0,
+            'caught' => '2026-07-01',
+        ]);
+        $this->assertFalse(\Illuminate\Support\Facades\Cache::has(\Fishinglog\Services\CatchTelemetryService::CACHE_KEY));
+
+        // 3. Next hit repopulates cache
+        $this->actingAs($this->user)->get('/record')->assertStatus(200);
+        $this->assertTrue(\Illuminate\Support\Facades\Cache::has(\Fishinglog\Services\CatchTelemetryService::CACHE_KEY));
+
+        // 4. Deleting a record clears the cache
+        $record->delete();
+        $this->assertFalse(\Illuminate\Support\Facades\Cache::has(\Fishinglog\Services\CatchTelemetryService::CACHE_KEY));
+    }
 }

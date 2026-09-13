@@ -43,25 +43,9 @@ class RecordController extends Controller
             return redirect()->route('record.directory', $request->query());
         }
 
-        $recordsQuery = Record::with(['angler', 'lake.dailyWeather', 'fishBreed', 'lure'])
-            ->orderBy('caught', 'desc')
-            ->orderBy('lakes_id', 'asc')
-            ->orderBy('anglers_id', 'asc');
+        $telemetry = $telemetryService->getOrCalculateTelemetry();
 
-        $filteredRecords = $pipeline->send($recordsQuery)
-            ->through([
-                SortBy::class,
-                FilterBySearch::class,
-                FilterByLength::class,
-                FilterByAngler::class,
-                \Fishinglog\Pipes\Filters\FilterByLure::class,
-            ])
-            ->thenReturn();
-
-        $records = (clone $filteredRecords)->paginate(10)->withQueryString();
-        $telemetry = $telemetryService->calculateTelemetry($filteredRecords);
-
-        return view('record.index', array_merge(['records' => $records], $telemetry));
+        return view('record.index', $telemetry);
     }
 
     /**
