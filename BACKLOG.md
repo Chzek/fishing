@@ -242,6 +242,11 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - Added strict date normalization (`YYYY-MM-DD`) and regex validation supporting both string dates and `\DateTimeInterface` objects.
     - Optimized [`FetchMissingWeatherCommand.php`](file:///home/gmroczek/git/fishing/app/Console/Commands/FetchMissingWeatherCommand.php) to deduplicate distinct `(lakes_id, DATE(caught))` queries at the SQL layer.
     - Verified all 878 mappable historical catches are now 100% weather-synced (0 pending fetchable), with dedicated feature tests in [`WeatherTelemetryTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/WeatherTelemetryTest.php).
+32. **Synology NAS Sync Spatial Location Geometry Push Bugfix**:
+    - Resolved HTTP 500 error during upstream push of `lakes` and `records` caused by raw array serialization of spatial `location` geometry (`['type' => 'Point', 'coordinates' => [...]]`).
+    - Updated [`NasSyncService.php`](file:///home/gmroczek/git/fishing/app/Services/NasSyncService.php) and [`SyncApiController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Api/v1/SyncApiController.php) to omit raw array spatial payloads and let the model's `saving` lifecycle hook automatically build `Point($latitude, $longitude, 4326)`.
+    - Executed live two-way sync against Synology NAS successfully syncing all pending outbox records (3 pushed, 5 pulled, 0 remaining pending).
+    - Verified with all 37 NAS feature tests passing in [`AdminNasSyncConsoleTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AdminNasSyncConsoleTest.php), [`NasMediaChunkSyncTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasMediaChunkSyncTest.php), [`NasSyncApiTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncApiTest.php), and [`NasSyncServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncServiceTest.php).
 
 
 

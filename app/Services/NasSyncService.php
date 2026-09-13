@@ -313,6 +313,11 @@ class NasSyncService
                         ? $item->makeVisible(['password', 'remember_token'])->toArray()
                         : $item->toArray();
 
+                    // Strip array location object so receiver calculates Spatial Point cleanly from latitude and longitude
+                    if (isset($data['location']) && is_array($data['location'])) {
+                        unset($data['location']);
+                    }
+
                     // Track media assets for SHA-256 chunked streaming
                     if ($key === 'photos' && !empty($item->path) && Storage::disk('public')->exists($item->path)) {
                         $hash = $this->mediaSyncManager->computeHash($item->path);

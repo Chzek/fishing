@@ -128,6 +128,11 @@ class SyncApiController extends Controller
                 $columns = \Illuminate\Support\Facades\Schema::getColumnListing($entity->getTable());
                 $filtered = array_intersect_key($attributes, array_flip($columns));
 
+                // Strip raw array spatial location object to allow latitude/longitude to cleanly populate Spatial Point
+                if (isset($filtered['location']) && is_array($filtered['location'])) {
+                    unset($filtered['location']);
+                }
+
                 if ($key === 'users') {
                     if (!$existing && empty($filtered['password'])) {
                         $filtered['password'] = \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(32));
@@ -213,6 +218,10 @@ class SyncApiController extends Controller
                 $data = method_exists($item, 'makeVisible')
                     ? $item->makeVisible(['password', 'remember_token'])->toArray()
                     : $item->toArray();
+
+                if (isset($data['location']) && is_array($data['location'])) {
+                    unset($data['location']);
+                }
 
                 if ($key === 'photos' && !empty($item->path) && \Illuminate\Support\Facades\Storage::disk('public')->exists($item->path)) {
                     $data['file_base64'] = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($item->path));
