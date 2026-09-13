@@ -64,7 +64,7 @@ class SolunarForecastTest extends TestCase
             ->assertSet('collapsed', false);
     }
 
-    public function test_lake_show_page_renders_solunar_widget(): void
+    public function test_expedition_show_page_renders_solunar_widget(): void
     {
         $user = User::factory()->create();
         $lake = Lake::create([
@@ -72,12 +72,26 @@ class SolunarForecastTest extends TestCase
             'latitude' => 48.1500,
             'longitude' => -84.8500,
         ]);
+        $expedition = \Fishinglog\Models\Expedition::create([
+            'description' => 'Hawk Lake Voyage',
+            'start' => '2026-08-01',
+            'finish' => '2026-08-05',
+        ]);
+        \Fishinglog\Models\Record::create([
+            'anglers_id' => \Fishinglog\Models\Angler::factory()->create()->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => \Fishinglog\Models\FishBreed::factory()->create()->id,
+            'length' => 20.0,
+            'caught' => '2026-08-02',
+            'latitude' => 48.1500,
+            'longitude' => -84.8500,
+        ]);
 
-        $response = $this->actingAs($user)->get('/lake/' . $lake->id);
+        $response = $this->actingAs($user)->get('/expedition/' . $expedition->id);
 
         $response->assertStatus(200);
-        $response->assertSee('Solunar');
         $response->assertSee('Feeding Forecast');
+        $response->assertSee('Major Feed');
         $response->assertSee('Hawk Lake');
     }
 }

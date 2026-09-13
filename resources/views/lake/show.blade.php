@@ -208,36 +208,6 @@
         </div>
     @endif
 
-    <!-- Solunar & Moon Phase Feeding Forecast Matrix -->
-    @livewire('widgets.solunar-forecast', ['lakeId' => (string) $lake->id])
-
-    @if($latestWeather)
-        <!-- Atmospheric Telemetry & Tactical Barometer Feeding Triggers -->
-        <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200/80 space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0">
-                        <x-lucide-cloud-sun class="w-5 h-5" />
-                    </div>
-                    <div>
-                        <h2 class="text-base font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-                            <span>Atmospheric Telemetry & Tactical Weather Triggers</span>
-                        </h2>
-                        <p class="text-xs text-slate-500 mt-0.5">Recorded on {{ \Illuminate\Support\Carbon::parse($latestWeather->date)->format('M j, Y') }} &bull; Pressure velocity telemetry & feeding triggers</p>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <span class="px-3 py-1 bg-slate-100 text-slate-800 border border-slate-200 text-xs font-bold rounded-xl font-mono">
-                        {{ $latestWeather->weather_condition }}
-                    </span>
-                </div>
-            </div>
-
-            <!-- Tactical Advice & Velocity Card -->
-            <x-tacticalPressureBadge :weather="$latestWeather" :showAdvice="true" />
-        </div>
-    @endif
 
     <!-- Catches Logbook Directory Quick Access Banner Card -->
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
