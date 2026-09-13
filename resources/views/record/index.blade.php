@@ -106,9 +106,14 @@
                 <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 font-mono">Lunker</span>
             </div>
             @if($longestCatch)
-                <div class="space-y-1 pt-1">
-                    <div class="text-2xl font-black text-slate-900 font-mono leading-tight whitespace-nowrap">{{ $longestCatch->length }}″</div>
-                    <div class="text-xs font-bold text-teal-600 truncate" title="{{ $longestCatch->fishBreed->name }}">{{ $longestCatch->fishBreed->name }}</div>
+                <div class="space-y-1.5 pt-1">
+                    <div class="flex items-center justify-between gap-2.5">
+                        <div class="min-w-0 flex-1">
+                            <div class="text-2xl font-black text-slate-900 font-mono leading-tight whitespace-nowrap">{{ $longestCatch->length }}″</div>
+                            <div class="text-xs font-bold text-teal-600 truncate" title="{{ $longestCatch->fishBreed->name }}">{{ $longestCatch->fishBreed->name }}</div>
+                        </div>
+                        <x-fishAvatar :breed="$longestCatch->fishBreed" size="md" />
+                    </div>
                     <div class="text-[11px] text-slate-500 pt-1.5 border-t border-slate-100 truncate">
                         👤 {{ $longestCatch->angler->full_name }} • 🏞️ {{ $longestCatch->lake->name }}
                     </div>
@@ -127,9 +132,14 @@
                 <span class="text-xs font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200 font-mono">Weight</span>
             </div>
             @if($heaviestCatch)
-                <div class="space-y-1 pt-1">
-                    <div class="text-2xl font-black text-slate-900 font-mono leading-tight whitespace-nowrap">{{ $heaviestCatch->weight }} lbs</div>
-                    <div class="text-xs font-bold text-sky-600 truncate" title="{{ $heaviestCatch->fishBreed->name }}">{{ $heaviestCatch->fishBreed->name }}</div>
+                <div class="space-y-1.5 pt-1">
+                    <div class="flex items-center justify-between gap-2.5">
+                        <div class="min-w-0 flex-1">
+                            <div class="text-2xl font-black text-slate-900 font-mono leading-tight whitespace-nowrap">{{ $heaviestCatch->weight }} lbs</div>
+                            <div class="text-xs font-bold text-sky-600 truncate" title="{{ $heaviestCatch->fishBreed->name }}">{{ $heaviestCatch->fishBreed->name }}</div>
+                        </div>
+                        <x-fishAvatar :breed="$heaviestCatch->fishBreed" size="md" />
+                    </div>
                     <div class="text-[11px] text-slate-500 pt-1.5 border-t border-slate-100 truncate">
                         👤 {{ $heaviestCatch->angler->full_name }} • 🏞️ {{ $heaviestCatch->lake->name }}
                     </div>
