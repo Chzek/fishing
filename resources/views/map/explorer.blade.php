@@ -285,6 +285,92 @@
 
         markersLayer = L.layerGroup().addTo(explorerMap);
         let fmzLayer = L.layerGroup();
+        let canadaGpsLayer = L.layerGroup();
+
+        // Helper for Garmin Waypoint Category Styles
+        function getGarminSymbolConfig(sym) {
+            switch (sym) {
+                case 'Fishing Area':
+                    return { icon: '🎣', bg: 'bg-teal-500', border: 'border-teal-300', text: 'Fishing Spot' };
+                case 'Boat Ramp':
+                    return { icon: '🚤', bg: 'bg-emerald-600', border: 'border-emerald-300', text: 'Boat Ramp' };
+                case 'Reef':
+                    return { icon: '🪨', bg: 'bg-amber-600', border: 'border-amber-300', text: 'Reef / Structure' };
+                case 'Lodging':
+                    return { icon: '⛺', bg: 'bg-indigo-600', border: 'border-indigo-300', text: 'Lodging / Camp' };
+                case 'Trail Head':
+                case 'Parking Area':
+                    return { icon: '🅿️', bg: 'bg-blue-600', border: 'border-blue-300', text: 'Access / Trail' };
+                case 'Dam':
+                case 'Water Source':
+                    return { icon: '💧', bg: 'bg-cyan-600', border: 'border-cyan-300', text: 'Water Feature' };
+                default:
+                    return { icon: '📍', bg: 'bg-slate-700', border: 'border-slate-400', text: 'Garmin Waypoint' };
+            }
+        }
+
+        // Load Canada GPS GeoJSON Layer (Waypoints & Tracks)
+        fetch('/json/canada-gps-layer.geojson')
+            .then(res => res.json())
+            .then(geoJson => {
+                const canadaGpsData = L.geoJSON(geoJson, {
+                    pointToLayer: function (feature, latlng) {
+                        const cfg = getGarminSymbolConfig(feature.properties.sym);
+                        const customIcon = L.divIcon({
+                            className: 'garmin-gps-marker',
+                            html: `<div class="w-6 h-6 rounded-full ${cfg.bg} border-2 ${cfg.border} shadow-md flex items-center justify-center text-xs select-none cursor-pointer hover:scale-125 transition-transform">${cfg.icon}</div>`,
+                            iconSize: [24, 24],
+                            iconAnchor: [12, 12]
+                        });
+                        return L.marker(latlng, { icon: customIcon });
+                    },
+                    style: function (feature) {
+                        if (feature.geometry.type === 'LineString') {
+                            const isRoute = feature.properties.feature_type === 'route';
+                            return {
+                                color: isRoute ? '#f59e0b' : '#06b6d4',
+                                weight: isRoute ? 3.5 : 2.5,
+                                opacity: 0.85,
+                                dashArray: isRoute ? '6, 6' : null
+                            };
+                        }
+                    },
+                    onEachFeature: function (feature, layer) {
+                        if (feature.geometry.type === 'Point') {
+                            const cfg = getGarminSymbolConfig(feature.properties.sym);
+                            const eleText = feature.properties.ele ? `${Math.round(feature.properties.ele)}m ele` : '';
+                            const timeText = feature.properties.time ? new Date(feature.properties.time).toLocaleDateString() : '';
+                            layer.bindPopup(`
+                                <div class="p-1.5 text-slate-900 font-sans space-y-1 min-w-[180px]">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="bg-teal-100 text-teal-800 text-[10px] font-bold px-1.5 py-0.5 rounded">${cfg.text}</span>
+                                        <span class="text-[10px] text-slate-500 font-mono">${eleText}</span>
+                                    </div>
+                                    <div class="font-bold text-xs text-slate-900">${feature.properties.name || 'Waypoint'}</div>
+                                    ${feature.properties.desc ? `<div class="text-[11px] text-slate-600">${feature.properties.desc}</div>` : ''}
+                                    ${timeText ? `<div class="text-[10px] text-slate-400">Logged: ${timeText}</div>` : ''}
+                                </div>
+                            `);
+                        } else if (feature.geometry.type === 'LineString') {
+                            const isRoute = feature.properties.feature_type === 'route';
+                            layer.bindPopup(`
+                                <div class="p-1 text-slate-900 font-sans space-y-1">
+                                    <span class="${isRoute ? 'bg-amber-100 text-amber-800' : 'bg-cyan-100 text-cyan-800'} text-[10px] font-bold px-1.5 py-0.5 rounded font-mono">${isRoute ? '🧭 Route' : '🗺️ Garmin Track'}</span>
+                                    <div class="font-bold text-xs pt-0.5">${feature.properties.name}</div>
+                                    <div class="text-[11px] text-slate-600">${feature.properties.point_count || 0} GPS Points</div>
+                                </div>
+                            `);
+                        }
+                    }
+                });
+
+                canadaGpsData.addTo(canadaGpsLayer);
+                canadaGpsLayer.addTo(explorerMap);
+
+                // Add to Layer Switcher
+                layerControl.addOverlay(canadaGpsLayer, "📍 Canada GPS (Waypoints & Tracks)");
+            })
+            .catch(err => console.log('Canada GPS GeoJSON layer load status:', err));
 
         // Load FMZ GeoJSON boundaries overlay
         fetch('/json/ontario-fmz-boundaries-web.geojson')

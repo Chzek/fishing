@@ -36,7 +36,8 @@ class MapExplorerTest extends TestCase
         $response->assertSee('filter-angler');
         $response->assertSee('filter-lure');
         $response->assertSee('filter-trophy');
-        $response->assertSee('filter-year');
+        $response->assertSee('/json/canada-gps-layer.geojson');
+        $response->assertSee('Canada GPS (Waypoints & Tracks)', false);
         $response->assertSee('Samantha R. Fisher');
         $response->assertDontSee('Angler #' . $angler->id);
     }

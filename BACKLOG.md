@@ -231,6 +231,12 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - **P2.5**: Modernized all 14 Eloquent models (`Lake`, `Record`, `Angler`, `Lure`, `Photo`, `Expedition`, `FishingRule`, `FishingZone`, `LakeDailyWeather`, `FishBreed`, `FishFamily`, `Crew`, `Post`, `User`) to native Laravel 12 `protected function casts(): array`.
     - **P2.6**: Standardized [`PhotoController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/PhotoController.php) with dedicated [`StorePhotoRequest.php`](file:///home/gmroczek/git/fishing/app/Http/Requests/StorePhotoRequest.php).
     - Reached **257 passing tests (1049 assertions)** with **0 failures** and **0 PHPStan errors (level 5)**.
+30. **Canada Garmin GPX Extraction & Interactive Map Explorer Layer**:
+    - Converted and extracted 100% of Garmin GPX coordinates (`Canada.gpx`) into a structured GeoJSON FeatureCollection ([`canada-gps-layer.geojson`](file:///home/gmroczek/git/fishing/public/json/canada-gps-layer.geojson)).
+    - Extracted 138 waypoints categorized with custom Garmin symbol metadata (`Fishing Area`, `Boat Ramp`, `Reef`, `Lodging`, `Trail Head`, `Water Source`, etc.) including elevations and timestamps.
+    - Extracted 31 navigation/lake tracks and routes spanning Catfish Lake, access trails, and regional corridors (3,896 coordinate track points).
+    - Integrated as an interactive overlay layer (`📍 Canada GPS (Waypoints & Tracks)`) in the Leaflet Map Explorer ([`explorer.blade.php`](file:///home/gmroczek/git/fishing/resources/views/map/explorer.blade.php)) with dynamic custom divIcons, rich waypoint detail popups, track polylines, and layer switcher controls.
+    - Verified with feature tests in [`MapExplorerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/MapExplorerTest.php) with the full test suite passing at **270 tests (1173 assertions)**.
 
 
 
