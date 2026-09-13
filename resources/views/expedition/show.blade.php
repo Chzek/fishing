@@ -108,8 +108,9 @@
         </div>
 
         <!-- ⚡ Top Rod MVP -->
-        <div class="bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent bg-white p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-2">
-            <div class="flex items-center justify-between">
+        <div class="bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent bg-white p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-2 relative overflow-hidden">
+            <x-watermarkTopRod />
+            <div class="flex items-center justify-between relative z-10">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1">
                     ⚡ Top Rod MVP
                 </span>
@@ -117,7 +118,7 @@
             </div>
 
             @if($topRod && $topRod->angler)
-                <div class="space-y-1 pt-1">
+                <div class="space-y-1 pt-1 relative z-10">
                     <div class="flex items-baseline gap-1.5">
                         <span class="text-3xl font-black text-slate-900 font-mono">{{ $topRod->catch_count }}</span>
                         <span class="text-xs font-bold text-slate-500">catches</span>
@@ -129,7 +130,7 @@
                     </div>
                 </div>
             @else
-                <div class="text-xs text-slate-400 py-3 italic">No catches logged.</div>
+                <div class="text-xs text-slate-400 py-3 italic relative z-10">No catches logged.</div>
             @endif
         </div>
 

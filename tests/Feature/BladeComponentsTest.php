@@ -52,6 +52,22 @@ class BladeComponentsTest extends TestCase
         $view = $this->blade('<x-fishAvatar />');
         $view->assertSee('<svg', false);
     }
+
+    #[Test]
+    public function watermark_components_render_correctly()
+    {
+        $tape = $this->blade('<x-watermarkTapeMeasure />');
+        $tape->assertSee('<svg', false);
+        $tape->assertSee('viewBox="0 0 400 180"', false);
+
+        $dial = $this->blade('<x-watermarkDialScale />');
+        $dial->assertSee('<svg', false);
+        $dial->assertSee('viewBox="0 0 140 140"', false);
+
+        $topRod = $this->blade('<x-watermarkTopRod />');
+        $topRod->assertSee('<svg', false);
+        $topRod->assertSee('viewBox="0 0 400 180"', false);
+    }
 }
 
 
