@@ -107,11 +107,9 @@
             </div>
             @if($longestCatch)
                 <div class="space-y-1 pt-1">
-                    <div class="flex items-baseline gap-1.5">
-                        <span class="text-2xl font-black text-slate-900 font-mono">{{ $longestCatch->length }}″</span>
-                        <span class="text-xs font-bold text-teal-600 truncate max-w-[120px]">{{ $longestCatch->fishBreed->name }}</span>
-                    </div>
-                    <div class="text-[11px] text-slate-500 pt-1 border-t border-slate-100 truncate">
+                    <div class="text-2xl font-black text-slate-900 font-mono leading-tight whitespace-nowrap">{{ $longestCatch->length }}″</div>
+                    <div class="text-xs font-bold text-teal-600 truncate" title="{{ $longestCatch->fishBreed->name }}">{{ $longestCatch->fishBreed->name }}</div>
+                    <div class="text-[11px] text-slate-500 pt-1.5 border-t border-slate-100 truncate">
                         👤 {{ $longestCatch->angler->full_name }} • 🏞️ {{ $longestCatch->lake->name }}
                     </div>
                 </div>
@@ -130,11 +128,9 @@
             </div>
             @if($heaviestCatch)
                 <div class="space-y-1 pt-1">
-                    <div class="flex items-baseline gap-1.5">
-                        <span class="text-2xl font-black text-slate-900 font-mono">{{ $heaviestCatch->weight }} lbs</span>
-                        <span class="text-xs font-bold text-sky-600 truncate max-w-[110px]">{{ $heaviestCatch->fishBreed->name }}</span>
-                    </div>
-                    <div class="text-[11px] text-slate-500 pt-1 border-t border-slate-100 truncate">
+                    <div class="text-2xl font-black text-slate-900 font-mono leading-tight whitespace-nowrap">{{ $heaviestCatch->weight }} lbs</div>
+                    <div class="text-xs font-bold text-sky-600 truncate" title="{{ $heaviestCatch->fishBreed->name }}">{{ $heaviestCatch->fishBreed->name }}</div>
+                    <div class="text-[11px] text-slate-500 pt-1.5 border-t border-slate-100 truncate">
                         👤 {{ $heaviestCatch->angler->full_name }} • 🏞️ {{ $heaviestCatch->lake->name }}
                     </div>
                 </div>
