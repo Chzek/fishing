@@ -67,6 +67,14 @@ class BladeComponentsTest extends TestCase
         $topRod = $this->blade('<x-watermarkTopRod />');
         $topRod->assertSee('<svg', false);
         $topRod->assertSee('viewBox="0 0 400 180"', false);
+
+        $can = $this->blade('<x-watermarkPouringCan />');
+        $can->assertSee('<svg', false);
+        $can->assertSee('BLUE');
+
+        $lure = $this->blade('<x-watermarkLure category="crankbait" />');
+        $lure->assertSee('<svg', false);
+        $lure->assertSee('viewBox="0 0 400 180"', false);
     }
 }
 

@@ -135,8 +135,14 @@
         </div>
 
         <!-- 🎣 Hot Lure -->
-        <div class="bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent bg-white p-5 rounded-2xl border border-purple-200 shadow-sm space-y-2">
-            <div class="flex items-center justify-between">
+        <div class="bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent bg-white p-5 rounded-2xl border border-purple-200 shadow-sm space-y-2 relative overflow-hidden">
+            @if($hotLure && $hotLure->lure)
+                <x-watermarkLure :category="$hotLure->lure->category ?? 'lure'" />
+            @else
+                <x-watermarkPouringCan />
+            @endif
+
+            <div class="flex items-center justify-between relative z-10">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-purple-800 flex items-center gap-1">
                     🎣 MVP Hot Lure
                 </span>
@@ -144,7 +150,7 @@
             </div>
 
             @if($hotLure && $hotLure->lure)
-                <div class="space-y-1 pt-1">
+                <div class="space-y-1 pt-1 relative z-10">
                     <div class="text-lg font-black text-slate-900 line-clamp-1" title="{{ $hotLure->lure->displayName }}">
                         {{ $hotLure->lure->name }}
                     </div>
@@ -155,7 +161,7 @@
                     </div>
                 </div>
             @else
-                <div class="text-xs text-slate-400 py-3 italic">No lure data recorded.</div>
+                <div class="text-xs text-slate-400 py-3 italic relative z-10">No lure data recorded.</div>
             @endif
         </div>
     </div>

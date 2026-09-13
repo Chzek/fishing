@@ -6,9 +6,14 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🎯 Active Priority Roadmap (Ranked by Impact & Value)
 
-### 🚀 Priority 1 (P1): Angling Experience & Tactical Intelligence Features
+### 🚀 Priority 1 (P1): Angling Experience & Performance Initiatives
 
-#### 1. Multi-Day Solunar Forecast & Astronomical Trip Planner
+#### 1. Catches Logbook `/record` Latency Optimization & Telemetry Caching
+- **Agents**: `query-profiler-optimizer`, `laravel-architect`
+- **Impact**: **High** (Sub-50ms Logbook Page Load & Server CPU Reduction)
+- **Description**: Profile and refactor the `/record` controller and [`CatchTelemetryService.php`](file:///home/gmroczek/git/fishing/app/Services/CatchTelemetryService.php). Eliminate dead-weight pagination and unneeded `lake.dailyWeather` deep eager loading, consolidate 4 duplicate weather aggregate scans into a single SQL pass, optimize macro species shift queries, and cache the computed telemetry summary with automatic model-event invalidation.
+
+#### 2. Multi-Day Solunar Forecast & Astronomical Trip Planner
 - **Agents**: `seasoned-angler-advisor`, `livewire-architect`
 - **Impact**: **High** (Trip Planning & Tactical Value)
 - **Description**: Extend [`SolunarService.php`](file:///home/gmroczek/git/fishing/app/Services/SolunarService.php) to compute a 7-day predictive window with 1–5 star day ratings, major/minor windows, and sunrise/sunset times. Mount the component across the **Expedition Show** page (`/expedition/{id}`) and **Quick Catch Logger** context so anglers can plan multi-day Canadian wilderness fishing schedules around peak feeding windows.
@@ -97,9 +102,11 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
    - Wired bidirectional automatic lifecycle synchronization between traditional `latitude`/`longitude` floats and spatial `Point` objects for 100% backward compatibility with existing web forms, APIs, and two-way Synology NAS synchronization.
    - Refactored `Lake::nearby()` to execute native spherical distance queries (`whereDistanceSphere`, `withDistanceSphere`, `orderByDistanceSphere`), eliminating legacy CPU-bound Haversine trigonometry.
    - Verified with dedicated feature tests ([`SpatialModelTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/SpatialModelTest.php) and [`OfflineMapTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/OfflineMapTest.php)).
-3. **Personal Best Trophy Cards Grayscale Watermark Graphics**:
-   - Engineered scalable, vector Blade components ([`watermarkTapeMeasure.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/watermarkTapeMeasure.blade.php) and [`watermarkDialScale.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/watermarkDialScale.blade.php)) with diagonal ribbon rotation and vintage platform scale line-art in subtle slate-gray styling.
+3. **Personal Best & Brag Board Trophy Cards Grayscale Watermark Graphics**:
+   - Engineered scalable, vector Blade components ([`watermarkTapeMeasure.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/watermarkTapeMeasure.blade.php), [`watermarkDialScale.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/watermarkDialScale.blade.php), [`watermarkTopRod.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/watermarkTopRod.blade.php), [`watermarkLure.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/watermarkLure.blade.php), and [`watermarkPouringCan.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/watermarkPouringCan.blade.php)).
+   - Features diagonal tape ribbons, vintage platform scale dials, deep-flex rod blanks with fly reels, tacklebox lure category watermarks (crankbait, spinnerbait, spoon, jig), and a clean minimalist pouring beer can homage ("BLUE") for empty bait states.
    - Seamlessly integrated across Personal Best cards on Lake Show, Expedition Show, Angler Profile, and User Profile views.
+   - Covered with full Blade component test assertions in [`BladeComponentsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/BladeComponentsTest.php).
 4. **AI Development Infrastructure & Agent Skills Integration (`laravel/boost`)**:
    - Installed `laravel/boost:^2.8` and `laravel/mcp` as development dependencies within Laravel Sail.
    - Configured [`boost.json`](file:///home/gmroczek/git/fishing/boost.json) and [`AGENTS.md`](file:///home/gmroczek/git/fishing/AGENTS.md) scoped specifically for **Antigravity**.
