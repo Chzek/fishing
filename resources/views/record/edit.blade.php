@@ -60,7 +60,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
                     <label for="caught" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Catch Date</label>
-                    <input type="date" id="caught" name="caught" value="{{ old('caught', $record->caught) }}" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    <input type="date" id="caught" name="caught" value="{{ old('caught', $record->caught ? ($record->caught instanceof \DateTimeInterface ? $record->caught->format('Y-m-d') : substr((string) $record->caught, 0, 10)) : '') }}" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                 </div>
 
                 <div class="space-y-1.5">

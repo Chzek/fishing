@@ -125,4 +125,18 @@ class RecordControllerTest extends TestCase
             'length' => 24.0,
         ]);
     }
+
+    #[Test]
+    public function authenticated_user_can_view_edit_record_with_populated_date()
+    {
+        $this->actingAs($this->user);
+
+        $record = Record::factory()->create([
+            'caught' => '2026-06-15 14:30:00',
+        ]);
+
+        $response = $this->get('/record/' . $record->id . '/edit');
+        $response->assertStatus(200);
+        $response->assertSee('value="2026-06-15"', false);
+    }
 }

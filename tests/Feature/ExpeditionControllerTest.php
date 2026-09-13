@@ -93,4 +93,22 @@ class ExpeditionControllerTest extends TestCase
             'description' => 'Updated Trip Description',
         ]);
     }
+
+    #[Test]
+    public function authenticated_user_can_view_edit_expedition_with_populated_dates()
+    {
+        $this->actingAs($this->user);
+
+        $expedition = Expedition::create([
+            'description' => 'Guys Trip 2026',
+            'start' => '2026-08-10',
+            'finish' => '2026-08-16',
+        ]);
+
+        $response = $this->get('/expedition/' . $expedition->id . '/edit');
+        $response->assertStatus(200);
+        $response->assertSee('value="2026-08-10"', false);
+        $response->assertSee('value="2026-08-16"', false);
+        $response->assertSee('value="Guys Trip 2026"', false);
+    }
 }

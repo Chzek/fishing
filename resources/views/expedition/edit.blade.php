@@ -29,12 +29,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
                     <label for="start" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Start Date</label>
-                    <input type="date" id="start" name="start" value="{{ old('start', $expedition->start) }}" required class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    <input type="date" id="start" name="start" value="{{ old('start', $expedition->start ? ($expedition->start instanceof \DateTimeInterface ? $expedition->start->format('Y-m-d') : substr((string) $expedition->start, 0, 10)) : '') }}" required class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                 </div>
 
                 <div class="space-y-1.5">
                     <label for="finish" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Finish Date</label>
-                    <input type="date" id="finish" name="finish" value="{{ old('finish', $expedition->finish) }}" required class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    <input type="date" id="finish" name="finish" value="{{ old('finish', $expedition->finish ? ($expedition->finish instanceof \DateTimeInterface ? $expedition->finish->format('Y-m-d') : substr((string) $expedition->finish, 0, 10)) : '') }}" required class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                 </div>
             </div>
 

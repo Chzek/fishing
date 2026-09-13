@@ -64,7 +64,7 @@
 
                 <div class="space-y-1.5">
                     <label for="birthdate" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Birthday</label>
-                    <input type="date" id="birthdate" name="birthdate" value="{{ old('birthdate', $angler->birthdate) }}" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    <input type="date" id="birthdate" name="birthdate" value="{{ old('birthdate', $angler->birthdate ? ($angler->birthdate instanceof \DateTimeInterface ? $angler->birthdate->format('Y-m-d') : substr((string) $angler->birthdate, 0, 10)) : '') }}" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                 </div>
             </div>
 
