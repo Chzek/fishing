@@ -425,19 +425,7 @@
                                                         @php
                                                             $isSelected = (string)$variant->id === (string)$activeVariant->id;
                                                             $colorName = strtolower($variant->color ?: 'standard');
-                                                            
-                                                            $swatchGradient = match(true) {
-                                                                str_contains($colorName, 'firetiger') => 'from-lime-400 via-yellow-400 to-emerald-600',
-                                                                str_contains($colorName, 'perch') => 'from-amber-400 via-yellow-600 to-emerald-800',
-                                                                str_contains($colorName, 'blue') || str_contains($colorName, 'chrome') => 'from-sky-300 via-blue-500 to-indigo-800',
-                                                                str_contains($colorName, 'olive') || str_contains($colorName, 'green') => 'from-emerald-300 via-teal-700 to-slate-900',
-                                                                str_contains($colorName, 'red') || str_contains($colorName, 'craw') => 'from-rose-500 via-red-700 to-amber-900',
-                                                                str_contains($colorName, 'chartreuse') => 'from-yellow-300 via-lime-400 to-emerald-500',
-                                                                str_contains($colorName, 'bone') || str_contains($colorName, 'white') => 'from-slate-100 via-amber-50 to-slate-300',
-                                                                str_contains($colorName, 'gold') => 'from-yellow-200 via-amber-400 to-yellow-700',
-                                                                str_contains($colorName, 'silver') || str_contains($colorName, 'shad') => 'from-slate-200 via-slate-400 to-slate-600',
-                                                                default => 'from-slate-500 via-slate-600 to-slate-700',
-                                                            };
+                                                            $swatchGradient = $variant->swatch_gradient;
                                                         @endphp
 
                                                         <button 
