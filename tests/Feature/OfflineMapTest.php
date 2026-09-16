@@ -21,6 +21,8 @@ class OfflineMapTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Offline Map Region Downloader');
         $response->assertSee('Wawa, Hawk Junction & White River Region', false);
+        $response->assertSee('Bathymetry Pack', false);
+        $response->assertSee('Bathymetry & Contours', false);
     }
 
     public function test_can_create_lake_with_coordinates_structure_and_max_depth(): void
