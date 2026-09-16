@@ -39,7 +39,6 @@ class MapExplorerTest extends TestCase
         $response->assertSee('/json/canada-gps-layer.geojson');
         $response->assertSee('Canada GPS (Waypoints & Tracks)', false);
         $response->assertSee('Bathymetry & Contours', false);
-        $response->assertSee('OpenSeaMap', false);
         $response->assertSee('Samantha R. Fisher');
         $response->assertDontSee('Angler #' . $angler->id);
     }

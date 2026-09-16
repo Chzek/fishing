@@ -256,8 +256,8 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - Updated expedition details header date range in [`expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php) to format `start` and `finish` as clean dates.
     - Updated feature assertions in [`GenericDataTableLivewireTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/GenericDataTableLivewireTest.php).
 35. **Map Explorer, Lake Dossier & Offline Downloader Bathymetry Basemap Integration**:
-    - Integrated OpenTopoMap Bathymetry & Relief basemap (`🌊 Bathymetry & Contours`) and OpenSeaMap Nautical Soundings into [`explorer.blade.php`](file:///home/gmroczek/git/fishing/resources/views/map/explorer.blade.php) and [`lake/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/show.blade.php).
-    - Removed synthetic vector overlay lines from map views to maintain high data accuracy across backcountry Algoma waters.
+    - Integrated OpenTopoMap Bathymetry & Relief basemap (`🌊 Bathymetry & Contours`) into [`explorer.blade.php`](file:///home/gmroczek/git/fishing/resources/views/map/explorer.blade.php) and [`lake/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/show.blade.php).
+    - Removed synthetic vector overlay lines and OpenSeaMap nautical soundings from map views to maintain clean, focused data accuracy across backcountry Algoma waters.
     - Added Bathymetry & Contours Pack to the Offline Region Map Downloader ([`map/offline.blade.php`](file:///home/gmroczek/git/fishing/resources/views/map/offline.blade.php)) enabling seamless pre-caching for boat/offline usage.
     - Optimized [`ExplorerController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/ExplorerController.php) seasons query using fast distinct SQL year selection (`Record::whereNotNull('caught')->selectRaw('DISTINCT YEAR(caught) as yr')...`).
     - Verified with all 275 tests (1,200 assertions) passing cleanly.

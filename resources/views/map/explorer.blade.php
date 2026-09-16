@@ -284,19 +284,11 @@
             attribution: 'Source: Esri, Maxar'
         });
 
-        // OpenSeaMap Nautical Seamarks & Marine Soundings
-        const seamarkOverlay = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
-            maxZoom: 16,
-            attribution: 'Map data: &copy; OpenSeaMap contributors'
-        });
-
         const layerControl = L.control.layers({
             "🗺️ Topo / Terrain": topoLayer,
             "🌊 Bathymetry & Contours": bathyBaseLayer,
             "🛰️ Satellite Imagery": satLayer
-        }, {
-            "⚓ OpenSeaMap Nautical Soundings": seamarkOverlay
-        }, { position: 'bottomleft' }).addTo(explorerMap);
+        }, null, { position: 'bottomleft' }).addTo(explorerMap);
 
         markersLayer = L.layerGroup().addTo(explorerMap);
         let fmzLayer = L.layerGroup();

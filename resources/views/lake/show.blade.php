@@ -260,19 +260,11 @@
             attribution: 'Source: Esri, Maxar'
         });
 
-        // OpenSeaMap Nautical Seamarks & Marine Soundings
-        const seamarkOverlay = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
-            maxZoom: 16,
-            attribution: 'Map data: &copy; OpenSeaMap contributors'
-        });
-
         const layerControl = L.control.layers({
             "🌊 Bathymetry & Contours": bathyBaseLayer,
             "🗺️ Topo / Waterbody": topoLayer,
             "🛰️ Satellite Imagery": satLayer
-        }, {
-            "⚓ OpenSeaMap Nautical Soundings": seamarkOverlay
-        }, { position: 'bottomleft' }).addTo(map);
+        }, null, { position: 'bottomleft' }).addTo(map);
 
         // Target Lake Marker (prominent pin with higher zIndex)
         L.marker([lat, lng], { zIndexOffset: 1000 }).addTo(map)
