@@ -252,6 +252,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - Updated `scopePendingUpstream` and `scopeSynced` to include `withTrashed()` so soft-deleted records are properly surfaced in Outbox counts and pushed to the NAS server.
     - Added `withTrashed()` resolution when finding existing models during push and pull ingest in [`NasSyncService.php`](file:///home/gmroczek/git/fishing/app/Services/NasSyncService.php) and [`SyncApiController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Api/v1/SyncApiController.php), preventing SQL duplicate key exceptions.
     - Verified full soft-delete and restore sync cycle against live Synology NAS, with all 37 NAS feature tests passing.
-
-
-
+34. **GenericDataTable & Expeditions Date Formatting Polish**:
+    - Enhanced `'type' => 'date'` column rendering in [`generic-data-table.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/components/generic-data-table.blade.php) using Carbon to format dates cleanly as `M j, Y` without unwanted time components (`00:00:00`), resolving issue on `/expeditions` and other date-bearing data tables.
+    - Updated expedition details header date range in [`expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php) to format `start` and `finish` as clean dates.
+    - Updated feature assertions in [`GenericDataTableLivewireTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/GenericDataTableLivewireTest.php).

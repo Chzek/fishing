@@ -19,7 +19,7 @@
                 </h1>
                 <p class="text-xs text-teal-400 font-medium mt-1 flex items-center gap-2">
                     <x-lucide-calendar class="w-3.5 h-3.5" />
-                    <span>{{ $expedition->start }} &mdash; {{ $expedition->finish }}</span>
+                    <span>{{ $expedition->start ? \Illuminate\Support\Carbon::parse($expedition->start)->format('M j, Y') : '—' }} &mdash; {{ $expedition->finish ? \Illuminate\Support\Carbon::parse($expedition->finish)->format('M j, Y') : '—' }}</span>
                     <span>•</span>
                     <span class="font-bold text-white font-mono">{{ $totalRecords }} Total Catches</span>
                     <span>•</span>

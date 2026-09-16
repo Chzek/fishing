@@ -195,11 +195,16 @@ class GenericDataTableLivewireTest extends TestCase
             'modelClass' => \Fishinglog\Models\Expedition::class,
             'columns' => [
                 ['key' => 'description', 'label' => 'Trip Description', 'searchable' => true],
+                ['key' => 'start', 'label' => 'Start Date', 'type' => 'date', 'sortable' => true],
+                ['key' => 'finish', 'label' => 'Finish Date', 'type' => 'date', 'sortable' => true],
             ],
             'itemName' => 'expeditions',
         ])
         ->assertStatus(200)
-        ->assertSee('Wilderness Fly Fishing Trip 2026');
+        ->assertSee('Wilderness Fly Fishing Trip 2026')
+        ->assertSee('Jun 1, 2026')
+        ->assertSee('Jun 7, 2026')
+        ->assertDontSee('00:00:00');
     }
 
     #[Test]

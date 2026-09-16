@@ -614,7 +614,20 @@
                                     </span>
                                 @elseif($type === 'date')
                                     <span class="font-mono text-slate-600">
-                                        {{ $val ?? '—' }}
+                                        @if(!empty($val))
+                                            @php
+                                                try {
+                                                    $formattedDate = $val instanceof \DateTimeInterface 
+                                                        ? $val->format('M j, Y') 
+                                                        : \Illuminate\Support\Carbon::parse($val)->format('M j, Y');
+                                                } catch (\Throwable $e) {
+                                                    $formattedDate = $val;
+                                                }
+                                            @endphp
+                                            {{ $formattedDate }}
+                                        @else
+                                            —
+                                        @endif
                                     </span>
                                 @elseif($type === 'coordinates')
                                     @if($record->latitude && $record->longitude)
