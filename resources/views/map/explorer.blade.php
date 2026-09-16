@@ -268,24 +268,130 @@
 
         // ESRI Topo Layer
         const topoLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 15,
+            maxZoom: 16,
             attribution: 'Tiles &copy; Esri, NRCan CanVec'
         }).addTo(explorerMap);
 
+        // OpenTopoMap Bathymetry & Relief Contour Base Layer
+        const bathyBaseLayer = L.tileLayer('https://tile.opentopomap.org/{z}/{x}/{y}.png', {
+            maxZoom: 16,
+            attribution: 'Map data: &copy; OpenStreetMap, SRTM | Style: &copy; OpenTopoMap'
+        });
+
         // ESRI Satellite Layer
         const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 15,
+            maxZoom: 16,
             attribution: 'Source: Esri, Maxar'
         });
 
+        // OpenSeaMap Nautical Seamarks & Marine Soundings
+        const seamarkOverlay = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
+            maxZoom: 16,
+            attribution: 'Map data: &copy; OpenSeaMap contributors'
+        });
+
         const layerControl = L.control.layers({
-            "🗺️ Topo": topoLayer,
-            "🛰️ Satellite": satLayer
+            "🗺️ Topo / Terrain": topoLayer,
+            "🌊 Bathymetry & Contours": bathyBaseLayer,
+            "🛰️ Satellite Imagery": satLayer
         }, null, { position: 'bottomleft' }).addTo(explorerMap);
 
         markersLayer = L.layerGroup().addTo(explorerMap);
+        let bathymetryLayer = L.layerGroup();
         let fmzLayer = L.layerGroup();
         let canadaGpsLayer = L.layerGroup();
+
+        // Load Bathymetry & Depth Contours GeoJSON Overlay
+        fetch('/json/bathymetry-contours.geojson')
+            .then(res => res.json())
+            .then(geoJson => {
+                const bathyData = L.geoJSON(geoJson, {
+                    style: function (feature) {
+                        if (feature.geometry.type === 'LineString') {
+                            const depth = feature.properties.depth_ft || 10;
+                            let strokeColor = '#38bdf8';
+                            let weight = 2.5;
+                            if (depth >= 60) {
+                                strokeColor = '#1e3a8a';
+                                weight = 3.5;
+                            } else if (depth >= 30) {
+                                strokeColor = '#1d4ed8';
+                                weight = 3.0;
+                            } else if (depth >= 15) {
+                                strokeColor = '#0284c7';
+                                weight = 2.5;
+                            } else if (depth >= 10) {
+                                strokeColor = '#0ea5e9';
+                                weight = 2.0;
+                            }
+                            return {
+                                color: feature.properties.color || strokeColor,
+                                weight: weight,
+                                opacity: 0.9,
+                                dashArray: feature.properties.contour_type === 'shallow_shelf' ? '4, 4' : null
+                            };
+                        }
+                    },
+                    pointToLayer: function (feature, latlng) {
+                        const structType = feature.properties.structure_type || 'reef';
+                        let icon = '🪨';
+                        let bg = 'bg-amber-600';
+                        let border = 'border-amber-300';
+                        if (structType === 'dropoff') {
+                            icon = '📉';
+                            bg = 'bg-sky-600';
+                            border = 'border-sky-300';
+                        } else if (structType === 'deep_hole') {
+                            icon = '🕳️';
+                            bg = 'bg-indigo-700';
+                            border = 'border-indigo-300';
+                        } else if (structType === 'shoal') {
+                            icon = '🏖️';
+                            bg = 'bg-teal-600';
+                            border = 'border-teal-300';
+                        }
+                        const customIcon = L.divIcon({
+                            className: 'bathy-structure-marker',
+                            html: `<div class="w-6 h-6 rounded-full ${bg} border-2 ${border} shadow-md flex items-center justify-center text-xs select-none cursor-pointer hover:scale-125 transition-transform">${icon}</div>`,
+                            iconSize: [24, 24],
+                            iconAnchor: [12, 12]
+                        });
+                        return L.marker(latlng, { icon: customIcon });
+                    },
+                    onEachFeature: function (feature, layer) {
+                        if (feature.geometry.type === 'Point') {
+                            const p = feature.properties;
+                            layer.bindPopup(`
+                                <div class="p-1.5 text-slate-900 font-sans space-y-1 min-w-[200px]">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="bg-sky-100 text-sky-800 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase font-mono">${p.structure_type || 'Structure'}</span>
+                                        <span class="text-xs font-black text-blue-700 font-mono">${p.depth_ft} ft / ${p.depth_m}m</span>
+                                    </div>
+                                    <div class="font-bold text-xs text-slate-900">${p.name || 'Underwater Structure'}</div>
+                                    <div class="text-[10px] text-teal-700 font-semibold">${p.waterbody || 'Lake'}</div>
+                                    ${p.desc ? `<div class="text-[11px] text-slate-600 pt-0.5">${p.desc}</div>` : ''}
+                                </div>
+                            `);
+                        } else if (feature.geometry.type === 'LineString') {
+                            const p = feature.properties;
+                            layer.bindPopup(`
+                                <div class="p-1 text-slate-900 font-sans space-y-1">
+                                    <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-1.5 py-0.5 rounded font-mono">🌊 Depth Contour</span>
+                                    <div class="font-bold text-xs pt-0.5">${p.waterbody || 'Lake'} &bull; <span class="text-blue-700 font-mono">${p.depth_ft} ft</span> (${p.depth_m}m)</div>
+                                    <div class="text-[11px] text-slate-600">${p.label || 'Isobath line'}</div>
+                                </div>
+                            `);
+                        }
+                    }
+                });
+
+                bathyData.addTo(bathymetryLayer);
+                bathymetryLayer.addTo(explorerMap);
+
+                layerControl.addOverlay(bathymetryLayer, "🌊 Bathymetric Contours & Reefs");
+                layerControl.addOverlay(seamarkOverlay, "⚓ OpenSeaMap Nautical Soundings");
+            })
+            .catch(err => console.log('Bathymetry GeoJSON overlay load status:', err));
 
         // Helper for Garmin Waypoint Category Styles
         function getGarminSymbolConfig(sym) {

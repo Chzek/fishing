@@ -1,0 +1,363 @@
+{
+  "type": "FeatureCollection",
+  "name": "Wawa & Algoma District Lake Bathymetry and Depth Contours",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Catfish Lake",
+        "depth_ft": 5,
+        "depth_m": 1.5,
+        "contour_type": "shallow_shelf",
+        "color": "#38bdf8",
+        "label": "5 ft Contour"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-84.8120, 48.0945],
+          [-84.8080, 48.0955],
+          [-84.8020, 48.0940],
+          [-84.7960, 48.0920],
+          [-84.7930, 48.0880],
+          [-84.7950, 48.0850],
+          [-84.8010, 48.0860],
+          [-84.8070, 48.0875],
+          [-84.8115, 48.0910],
+          [-84.8120, 48.0945]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Catfish Lake",
+        "depth_ft": 10,
+        "depth_m": 3.0,
+        "contour_type": "depth_contour",
+        "color": "#0ea5e9",
+        "label": "10 ft Contour"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-84.8095, 48.0935],
+          [-84.8060, 48.0942],
+          [-84.8015, 48.0928],
+          [-84.7965, 48.0905],
+          [-84.7950, 48.0875],
+          [-84.7965, 48.0860],
+          [-84.8015, 48.0872],
+          [-84.8060, 48.0885],
+          [-84.8090, 48.0910],
+          [-84.8095, 48.0935]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Catfish Lake",
+        "depth_ft": 20,
+        "depth_m": 6.1,
+        "contour_type": "depth_contour",
+        "color": "#0284c7",
+        "label": "20 ft Contour"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-84.8070, 48.0920],
+          [-84.8040, 48.0928],
+          [-84.8005, 48.0915],
+          [-84.7975, 48.0890],
+          [-84.7970, 48.0870],
+          [-84.8010, 48.0880],
+          [-84.8045, 48.0895],
+          [-84.8068, 48.0908],
+          [-84.8070, 48.0920]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Catfish Lake",
+        "depth_ft": 35,
+        "depth_m": 10.7,
+        "contour_type": "deep_basin",
+        "color": "#1e40af",
+        "label": "35 ft Deep Basin"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-84.8045, 48.0912],
+          [-84.8020, 48.0918],
+          [-84.7995, 48.0902],
+          [-84.7990, 48.0885],
+          [-84.8015, 48.0890],
+          [-84.8040, 48.0900],
+          [-84.8045, 48.0912]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Catfish Lake",
+        "name": "Central Hump / Submerged Rock Reef",
+        "depth_ft": 8,
+        "depth_m": 2.4,
+        "structure_type": "reef",
+        "desc": "Prominent rock structure rising from 30ft basin to 8ft crest. Prime Walleye & Smallmouth ambush point."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-84.8012, 48.0907]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Catfish Lake",
+        "name": "North Basin Deep Hole",
+        "depth_ft": 48,
+        "depth_m": 14.6,
+        "structure_type": "deep_hole",
+        "desc": "Maximum depth sounding in North Basin. Summer Lake Trout sanctuary hole."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-84.8025, 48.0915]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Catfish Lake",
+        "name": "South Bay Weed Edge Drop-off",
+        "depth_ft": 14,
+        "depth_m": 4.3,
+        "structure_type": "dropoff",
+        "desc": "Sharp transition from 6ft cabbage weed flats into 20ft deep channel. Outstanding Pike corridor."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-84.7972, 48.0870]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Lake Superior",
+        "depth_ft": 30,
+        "depth_m": 9.1,
+        "contour_type": "shelf",
+        "color": "#0284c7",
+        "label": "30 ft Nearshore Shelf"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-84.8750, 47.9400],
+          [-84.8620, 47.9350],
+          [-84.8520, 47.9280],
+          [-84.8450, 47.9200],
+          [-84.8400, 47.9100]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Lake Superior",
+        "depth_ft": 60,
+        "depth_m": 18.3,
+        "contour_type": "trolling_contour",
+        "color": "#1d4ed8",
+        "label": "60 ft Thermocline Contour"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-84.8850, 47.9420],
+          [-84.8700, 47.9370],
+          [-84.8580, 47.9290],
+          [-84.8500, 47.9190],
+          [-84.8460, 47.9070]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Lake Superior",
+        "depth_ft": 120,
+        "depth_m": 36.6,
+        "contour_type": "deep_shelf",
+        "color": "#1e3a8a",
+        "label": "120 ft Deep Trench"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-84.9000, 47.9450],
+          [-84.8820, 47.9390],
+          [-84.8680, 47.9310],
+          [-84.8590, 47.9180],
+          [-84.8530, 47.9030]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Lake Superior",
+        "name": "Michipicoten Bay River Mouth Shoal",
+        "depth_ft": 12,
+        "depth_m": 3.7,
+        "structure_type": "shoal",
+        "desc": "Sand and gravel delta bar at river outlet. High current seam for staging Salmon and Steelhead."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-84.8552, 47.9292]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Michipicoten River",
+        "depth_ft": 15,
+        "depth_m": 4.6,
+        "contour_type": "river_channel",
+        "color": "#0284c7",
+        "label": "15 ft Channel Trench"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-84.7920, 47.9180],
+          [-84.7960, 47.9190],
+          [-84.8010, 47.9205],
+          [-84.8080, 47.9220],
+          [-84.8150, 47.9235]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Steephill Dam",
+        "depth_ft": 25,
+        "depth_m": 7.6,
+        "contour_type": "flooded_channel",
+        "color": "#0284c7",
+        "label": "25 ft Old River Bed"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-84.7430, 48.0730],
+          [-84.7400, 48.0750],
+          [-84.7386, 48.0759],
+          [-84.7350, 48.0780],
+          [-84.7320, 48.0810]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Steephill Dam",
+        "name": "Tailrace Current Seam & Rock Wall",
+        "depth_ft": 32,
+        "depth_m": 9.8,
+        "structure_type": "dropoff",
+        "desc": "Deep rock plunge pool below dam structure. High-oxygen predator congregation area."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-84.7386, 48.0759]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Lookskin Lake",
+        "depth_ft": 15,
+        "depth_m": 4.6,
+        "contour_type": "depth_contour",
+        "color": "#0284c7",
+        "label": "15 ft Contour"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-84.6220, 48.1060],
+          [-84.6180, 48.1070],
+          [-84.6140, 48.1050],
+          [-84.6130, 48.1020],
+          [-84.6170, 48.1010],
+          [-84.6210, 48.1030],
+          [-84.6220, 48.1060]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Lookskin Lake",
+        "name": "East Arm Rock Saddle",
+        "depth_ft": 10,
+        "depth_m": 3.0,
+        "structure_type": "reef",
+        "desc": "Narrow underwater saddle connecting main lake to east bay. Exceptional transition area."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-84.6164, 48.1040]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Kabenug Lake",
+        "depth_ft": 20,
+        "depth_m": 6.1,
+        "contour_type": "depth_contour",
+        "color": "#0284c7",
+        "label": "20 ft Mid-Lake Contour"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-84.9620, 48.2980],
+          [-84.9580, 48.2990],
+          [-84.9530, 48.2970],
+          [-84.9500, 48.2930],
+          [-84.9540, 48.2910],
+          [-84.9600, 48.2940],
+          [-84.9620, 48.2980]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "waterbody": "Kabenug Lake",
+        "name": "North Point Drop-off Reef",
+        "depth_ft": 11,
+        "depth_m": 3.4,
+        "structure_type": "reef",
+        "desc": "Submerged rocky point extending 150 yards out into 40ft main lake basin."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-84.9559, 48.2955]
+      }
+    }
+  ]
+}

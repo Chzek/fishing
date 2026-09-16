@@ -150,13 +150,13 @@
         </div>
     </div>
 
-    <!-- Location & Topographic Map Card -->
+    <!-- Location & Bathymetric Topographic Map Card -->
     @if($lake->latitude && $lake->longitude)
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-0">
             <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                 <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
                     <x-lucide-compass class="w-4 h-4 text-teal-600" />
-                    <span>Location & Topographic Map</span>
+                    <span>Location, Bathymetry & Topo Map</span>
                 </h2>
                 <span id="viewport-lakes-badge" class="bg-teal-50 text-teal-700 border border-teal-200 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono transition-all">
                     Loading Viewport Lakes...
@@ -240,22 +240,129 @@
         const lng = {{ $lake->longitude }};
         const currentLakeId = '{{ $lake->id }}';
 
-        const map = L.map('lake-show-map').setView([lat, lng], 12);
+        const map = L.map('lake-show-map').setView([lat, lng], 13);
 
-        const topoLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 15,
-            attribution: 'Tiles &copy; Esri, NRCan CanVec'
+        // OpenTopoMap Bathymetry & Relief Contours (Default active base layer)
+        const bathyBaseLayer = L.tileLayer('https://tile.opentopomap.org/{z}/{x}/{y}.png', {
+            maxZoom: 16,
+            attribution: 'Map data: &copy; OpenStreetMap, SRTM | Style: &copy; OpenTopoMap'
         }).addTo(map);
 
+        // ESRI Topo Layer
+        const topoLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 16,
+            attribution: 'Tiles &copy; Esri, NRCan CanVec'
+        });
+
+        // ESRI Satellite Layer
         const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 15,
+            maxZoom: 16,
             attribution: 'Source: Esri, Maxar'
         });
 
-        L.control.layers({
+        // OpenSeaMap Nautical Seamarks & Marine Soundings
+        const seamarkOverlay = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
+            maxZoom: 16,
+            attribution: 'Map data: &copy; OpenSeaMap contributors'
+        });
+
+        const layerControl = L.control.layers({
+            "🌊 Bathymetry & Contours": bathyBaseLayer,
             "🗺️ Topo / Waterbody": topoLayer,
             "🛰️ Satellite Imagery": satLayer
-        }).addTo(map);
+        }, null, { position: 'bottomleft' }).addTo(map);
+
+        // Bathymetric Depth Contours & Structure Overlay Layer (Default Active)
+        const bathyContoursLayer = L.layerGroup().addTo(map);
+
+        fetch('/json/bathymetry-contours.geojson')
+            .then(res => res.json())
+            .then(geoJson => {
+                const bathyData = L.geoJSON(geoJson, {
+                    style: function (feature) {
+                        if (feature.geometry.type === 'LineString') {
+                            const depth = feature.properties.depth_ft || 10;
+                            let strokeColor = '#38bdf8';
+                            let weight = 2.5;
+                            if (depth >= 60) {
+                                strokeColor = '#1e3a8a';
+                                weight = 3.5;
+                            } else if (depth >= 30) {
+                                strokeColor = '#1d4ed8';
+                                weight = 3.0;
+                            } else if (depth >= 15) {
+                                strokeColor = '#0284c7';
+                                weight = 2.5;
+                            } else if (depth >= 10) {
+                                strokeColor = '#0ea5e9';
+                                weight = 2.0;
+                            }
+                            return {
+                                color: feature.properties.color || strokeColor,
+                                weight: weight,
+                                opacity: 0.9,
+                                dashArray: feature.properties.contour_type === 'shallow_shelf' ? '4, 4' : null
+                            };
+                        }
+                    },
+                    pointToLayer: function (feature, latlng) {
+                        const structType = feature.properties.structure_type || 'reef';
+                        let icon = '🪨';
+                        let bg = 'bg-amber-600';
+                        let border = 'border-amber-300';
+                        if (structType === 'dropoff') {
+                            icon = '📉';
+                            bg = 'bg-sky-600';
+                            border = 'border-sky-300';
+                        } else if (structType === 'deep_hole') {
+                            icon = '🕳️';
+                            bg = 'bg-indigo-700';
+                            border = 'border-indigo-300';
+                        } else if (structType === 'shoal') {
+                            icon = '🏖️';
+                            bg = 'bg-teal-600';
+                            border = 'border-teal-300';
+                        }
+                        const customIcon = L.divIcon({
+                            className: 'bathy-structure-marker',
+                            html: `<div class="w-6 h-6 rounded-full ${bg} border-2 ${border} shadow-md flex items-center justify-center text-xs select-none cursor-pointer hover:scale-125 transition-transform">${icon}</div>`,
+                            iconSize: [24, 24],
+                            iconAnchor: [12, 12]
+                        });
+                        return L.marker(latlng, { icon: customIcon });
+                    },
+                    onEachFeature: function (feature, layer) {
+                        if (feature.geometry.type === 'Point') {
+                            const p = feature.properties;
+                            layer.bindPopup(`
+                                <div class="p-1.5 text-slate-900 font-sans space-y-1 min-w-[190px]">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="bg-sky-100 text-sky-800 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase font-mono">${p.structure_type || 'Structure'}</span>
+                                        <span class="text-xs font-black text-blue-700 font-mono">${p.depth_ft} ft / ${p.depth_m}m</span>
+                                    </div>
+                                    <div class="font-bold text-xs text-slate-900">${p.name || 'Underwater Structure'}</div>
+                                    <div class="text-[10px] text-teal-700 font-semibold">${p.waterbody || 'Lake'}</div>
+                                    ${p.desc ? `<div class="text-[11px] text-slate-600 pt-0.5">${p.desc}</div>` : ''}
+                                </div>
+                            `);
+                        } else if (feature.geometry.type === 'LineString') {
+                            const p = feature.properties;
+                            layer.bindPopup(`
+                                <div class="p-1 text-slate-900 font-sans space-y-1">
+                                    <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-1.5 py-0.5 rounded font-mono">🌊 Depth Contour</span>
+                                    <div class="font-bold text-xs pt-0.5">${p.waterbody || 'Lake'} &bull; <span class="text-blue-700 font-mono">${p.depth_ft} ft</span> (${p.depth_m}m)</div>
+                                    <div class="text-[11px] text-slate-600">${p.label || 'Isobath line'}</div>
+                                </div>
+                            `);
+                        }
+                    }
+                });
+
+                bathyData.addTo(bathyContoursLayer);
+                layerControl.addOverlay(bathyContoursLayer, "🌊 Depth Contours & Reefs");
+                layerControl.addOverlay(seamarkOverlay, "⚓ OpenSeaMap Soundings");
+            })
+            .catch(err => console.log('Lake show bathymetry load status:', err));
 
         // Target Lake Marker (prominent pin with higher zIndex)
         L.marker([lat, lng], { zIndexOffset: 1000 }).addTo(map)

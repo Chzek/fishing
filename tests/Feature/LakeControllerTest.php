@@ -64,6 +64,9 @@ class LakeControllerTest extends TestCase
         $response = $this->get('/lake/' . $this->lake->id);
         $response->assertStatus(200);
         $response->assertSee($this->lake->name);
+        $response->assertSee('Location, Bathymetry & Topo Map', false);
+        $response->assertSee('/json/bathymetry-contours.geojson');
+        $response->assertSee('Bathymetry & Contours', false);
     }
 
     #[Test]

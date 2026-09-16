@@ -20,15 +20,10 @@ class ExplorerController extends Controller
         $lures = Lure::orderBy('name', 'asc')->get();
         
         $years = Record::whereNotNull('caught')
-            ->get()
-            ->map(function ($r) {
-                return is_a($r->caught, \DateTimeInterface::class) 
-                    ? (int) $r->caught->format('Y') 
-                    : (int) substr((string) $r->caught, 0, 4);
-            })
-            ->filter(fn($y) => $y > 1900)
-            ->unique()
-            ->sortDesc()
+            ->selectRaw('DISTINCT YEAR(caught) as yr')
+            ->whereRaw('YEAR(caught) > 1900')
+            ->orderByDesc('yr')
+            ->pluck('yr')
             ->values();
 
         return view('map.explorer', [
