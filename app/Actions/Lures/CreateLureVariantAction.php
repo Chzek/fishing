@@ -18,6 +18,12 @@ class CreateLureVariantAction
     {
         $created = collect();
 
+        $name = trim($attributes['name']);
+        $brand = isset($attributes['brand']) ? trim((string)$attributes['brand']) : null;
+        if (!empty($brand) && str_starts_with(strtolower($name), strtolower($brand) . ' ')) {
+            $name = trim(substr($name, strlen($brand)));
+        }
+
         if (!empty($colorsInput)) {
             $rawColors = explode(',', $colorsInput);
             foreach ($rawColors as $rawColor) {
@@ -25,12 +31,12 @@ class CreateLureVariantAction
                 if (!empty($color)) {
                     $lure = Lure::firstOrCreate(
                         [
-                            'name' => $attributes['name'],
+                            'name' => $name,
                             'color' => $color,
                             'size' => $attributes['size'] ?? null,
                         ],
                         [
-                            'brand' => $attributes['brand'] ?? null,
+                            'brand' => $brand ?: null,
                             'category' => $attributes['category'] ?? 'Other',
                             'weight' => $attributes['weight'] ?? ($attributes['size'] ?? null),
                             'depth_range' => $attributes['depth_range'] ?? null,
@@ -41,8 +47,8 @@ class CreateLureVariantAction
             }
         } else {
             $lure = Lure::create([
-                'name' => $attributes['name'],
-                'brand' => $attributes['brand'] ?? null,
+                'name' => $name,
+                'brand' => $brand ?: null,
                 'category' => $attributes['category'] ?? 'Other',
                 'color' => $attributes['color'] ?? null,
                 'size' => $attributes['size'] ?? null,

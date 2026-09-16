@@ -42,13 +42,14 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($modelsGroup as $modelName => $variants)
                 @php
-                    $modelBrand = $variants->first()->brand;
+                    $firstVariant = $variants->first();
+                    $modelBrand = $firstVariant->brand;
                     $modelCatches = $variants->sum('records_count');
                 @endphp
                 <div class="bg-slate-50/70 border border-slate-200/80 rounded-xl p-4 flex items-center justify-between gap-3 hover:border-teal-300 transition-colors">
                     <div>
                         <div class="flex items-center gap-1.5">
-                            <h3 class="font-bold text-slate-900 text-sm">{{ $modelName }}</h3>
+                            <h3 class="font-bold text-slate-900 text-sm">{{ $firstVariant->name }}</h3>
                             @if($modelBrand)
                                 <span class="text-[10px] font-bold text-slate-500 font-mono">({{ $modelBrand }})</span>
                             @endif
@@ -57,7 +58,7 @@
                             {{ $variants->count() }} Variant(s) • <strong class="text-teal-700">{{ $modelCatches }} catch{{ $modelCatches === 1 ? '' : 'es' }}</strong>
                         </span>
                     </div>
-                    <a href="/lure/model/{{ urlencode($modelName) }}" class="px-2.5 py-1 bg-white border border-slate-200 text-teal-600 hover:text-teal-700 font-bold text-xs rounded-lg shadow-2xs transition-colors shrink-0">
+                    <a href="/lure/model/{{ urlencode($firstVariant->name) }}" class="px-2.5 py-1 bg-white border border-slate-200 text-teal-600 hover:text-teal-700 font-bold text-xs rounded-lg shadow-2xs transition-colors shrink-0">
                         Model Telemetry →
                     </a>
                 </div>

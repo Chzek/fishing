@@ -53,6 +53,19 @@ class P0ArchitectureRefactoringTest extends TestCase
         $this->assertDatabaseHas('lures', ['name' => 'Batch Senko', 'color' => 'Green Pumpkin']);
         $this->assertDatabaseHas('lures', ['name' => 'Batch Senko', 'color' => 'Watermelon Red']);
         $this->assertDatabaseHas('lures', ['name' => 'Batch Senko', 'color' => 'Black Blue Flake']);
+
+        // 3. Normalizes redundant brand prefix in model name
+        $normalizedLures = $action->execute([
+            'name' => 'Rapala Shad Rap',
+            'brand' => 'Rapala',
+            'category' => 'Crankbait',
+            'color' => 'Bleeding Olive',
+        ]);
+        $this->assertDatabaseHas('lures', [
+            'brand' => 'Rapala',
+            'name' => 'Shad Rap',
+            'color' => 'Bleeding Olive',
+        ]);
     }
 
     #[Test]

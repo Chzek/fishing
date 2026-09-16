@@ -296,7 +296,7 @@
                                     $modelDepth = $firstVariant->depth_range ?: 'Variable Depth';
                                     $modelSize = $firstVariant->size ?: ($firstVariant->weight ?: 'Standard Size');
                                     $modelCatches = $variants->sum('records_count');
-                                    $modelKey = ($modelBrand ? trim($modelBrand) . ' ' : '') . trim($modelName);
+                                    $modelKey = ($modelBrand ? trim($modelBrand) . ' ' : '') . trim($firstVariant->name);
                                     
                                     // Determine currently active selected variant for this model
                                     $selectedVariantId = $selectedVariantIds[$modelKey] ?? $firstVariant->id;
@@ -311,7 +311,7 @@
                                         <div>
                                             <div class="text-[11px] font-mono uppercase tracking-wider text-teal-600 font-bold">Lure Model</div>
                                             <div class="flex items-center gap-2.5 mt-0.5">
-                                                <h3 class="font-extrabold text-slate-900 text-lg tracking-tight">{{ $modelName }}</h3>
+                                                <h3 class="font-extrabold text-slate-900 text-lg tracking-tight">{{ $firstVariant->name }}</h3>
                                                 @if($modelBrand)
                                                     <span class="px-2 py-0.5 bg-teal-50 text-teal-700 font-bold text-[10px] uppercase tracking-wider rounded border border-teal-200 font-mono">
                                                         {{ $modelBrand }}
@@ -322,7 +322,7 @@
 
                                         <div class="flex items-center gap-2 shrink-0">
                                             <a 
-                                                href="/lure/model/{{ urlencode($modelName) }}" 
+                                                href="/lure/model/{{ urlencode($firstVariant->name) }}" 
                                                 class="px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
                                                 title="View Model Telemetry Dossier"
                                             >
@@ -486,7 +486,7 @@
                                             <div class="flex items-center gap-2">
                                                 <button 
                                                     type="button" 
-                                                    wire:click="openAddVariantModal('{{ addslashes($modelBrand ?? '') }}', '{{ addslashes($modelName) }}', '{{ addslashes($categoryName) }}', '{{ addslashes($activeVariant->depth_range ?? '') }}', '{{ addslashes($activeVariant->weight ?: ($activeVariant->size ?: '')) }}')"
+                                                    wire:click="openAddVariantModal('{{ addslashes($modelBrand ?? '') }}', '{{ addslashes($firstVariant->name) }}', '{{ addslashes($categoryName) }}', '{{ addslashes($activeVariant->depth_range ?? '') }}', '{{ addslashes($activeVariant->weight ?: ($activeVariant->size ?: '')) }}')"
                                                     class="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 hover:text-teal-700 font-semibold text-xs rounded-xl border border-slate-200 shadow-2xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                                                 >
                                                     <x-lucide-plus class="w-3.5 h-3.5 text-teal-600" />

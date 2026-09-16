@@ -160,6 +160,13 @@ class LureCatalog extends Component
         ?string $depthRange = null,
         ?string $weight = null
     ): void {
+        $brand = trim($brand);
+        $name = trim($name);
+
+        if (!empty($brand) && str_starts_with(strtolower($name), strtolower($brand) . ' ')) {
+            $name = trim(substr($name, strlen($brand)));
+        }
+
         $this->targetModelBrand = $brand;
         $this->targetModelName = $name;
         $this->targetModelCategory = $category;
@@ -185,9 +192,16 @@ class LureCatalog extends Component
             'targetModelName' => 'required|string',
         ]);
 
+        $name = trim($this->targetModelName);
+        $brand = trim($this->targetModelBrand);
+
+        if (!empty($brand) && str_starts_with(strtolower($name), strtolower($brand) . ' ')) {
+            $name = trim(substr($name, strlen($brand)));
+        }
+
         $attributes = [
-            'name' => $this->targetModelName,
-            'brand' => $this->targetModelBrand ?: null,
+            'name' => $name,
+            'brand' => $brand ?: null,
             'category' => $this->targetModelCategory ?: 'Other',
             'depth_range' => $this->targetModelDepth ?: null,
             'size' => $this->newVariantSize ?: null,
@@ -196,7 +210,7 @@ class LureCatalog extends Component
 
         $created = $action->execute($attributes, $this->newVariantColors);
 
-        $this->statusMessage = sprintf('Added %d new colorway variant(s) to %s!', $created->count(), $this->targetModelName);
+        $this->statusMessage = sprintf('Added %d new colorway variant(s) to %s!', $created->count(), $name);
         $this->showAddVariantModal = false;
         $this->newVariantColors = '';
     }

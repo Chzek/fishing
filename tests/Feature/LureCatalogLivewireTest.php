@@ -249,5 +249,39 @@ class LureCatalogLivewireTest extends TestCase
             ->call('removeDepth')
             ->assertSet('selectedDepth', 'all');
     }
+
+    public function test_lure_catalog_prevents_brand_duplication_when_adding_colorway_variant(): void
+    {
+        $user = User::factory()->create();
+
+        Lure::create([
+            'name' => 'Ned Rig',
+            'brand' => 'Z-Man',
+            'category' => 'Soft Plastic',
+            'color' => 'Chartreuse',
+            'size' => '1/10 oz',
+            'weight' => '1/10 oz',
+        ]);
+
+        // Even if passed "Z-Man Ned Rig" or "Ned Rig" with brand "Z-Man", it should sanitize and save as "Ned Rig"
+        Livewire::actingAs($user)
+            ->test(LureCatalog::class)
+            ->call('openAddVariantModal', 'Z-Man', 'Z-Man Ned Rig', 'Soft Plastic', null, '1/10 oz')
+            ->assertSet('targetModelBrand', 'Z-Man')
+            ->assertSet('targetModelName', 'Ned Rig')
+            ->set('newVariantColors', 'Perch')
+            ->call('saveVariant')
+            ->assertSet('showAddVariantModal', false);
+
+        $this->assertDatabaseHas('lures', [
+            'brand' => 'Z-Man',
+            'name' => 'Ned Rig',
+            'color' => 'Perch',
+        ]);
+
+        $this->assertDatabaseMissing('lures', [
+            'name' => 'Z-Man Ned Rig',
+        ]);
+    }
 }
 
