@@ -61,9 +61,22 @@
                 </div>
             </div>
 
-            <div class="space-y-1.5 pt-1">
-                <label for="avatar" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Profile Photo Avatar</label>
-                <input type="file" id="avatar" name="avatar" class="w-full p-2 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-700">
+            <div class="space-y-2 pt-2 border-t border-slate-100">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Profile Photo Avatar</label>
+                <div class="flex flex-col sm:flex-row items-center gap-4 p-3 bg-slate-50 rounded-2xl border border-slate-200/60">
+                    <div class="w-16 h-16 rounded-full bg-slate-200 border-2 border-slate-300 text-slate-400 flex items-center justify-center shrink-0">
+                        <x-lucide-user class="w-8 h-8" />
+                    </div>
+                    <div class="flex-1 w-full">
+                        <x-photo-upload-input 
+                            name="avatar" 
+                            id="angler-avatar-uploader" 
+                            :multiple="false"
+                            label="Upload or Take Avatar" 
+                            hint="Take a selfie or choose from album. Auto-compressed." 
+                        />
+                    </div>
+                </div>
             </div>
 
             <div class="pt-4 flex items-center gap-3">

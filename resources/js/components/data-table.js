@@ -53,7 +53,8 @@ export default function dataTable(config = {}) {
         },
 
         toggleColumn(colKey) {
-            this.visibleColumns[colKey] = !this.isColumnVisible(colKey);
+            const nextVal = !this.isColumnVisible(colKey);
+            this.visibleColumns = { ...this.visibleColumns, [colKey]: nextVal };
             localStorage.setItem(`fishing_table_cols_${this.tableId}`, JSON.stringify(this.visibleColumns));
         },
 
@@ -67,7 +68,7 @@ export default function dataTable(config = {}) {
             this.columns.forEach(col => {
                 defaults[col.key] = col.visible !== false;
             });
-            this.visibleColumns = defaults;
+            this.visibleColumns = { ...defaults };
             localStorage.removeItem(`fishing_table_cols_${this.tableId}`);
         }
     };

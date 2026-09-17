@@ -31,6 +31,7 @@ class GenericDataTable extends Component
 
     public string $itemName = 'items';
 
+    #[Url(history: true)]
     public int $perPage = 15;
 
     public string $defaultSortBy = 'id';
@@ -326,6 +327,11 @@ class GenericDataTable extends Component
             }
         }
         return null;
+    }
+
+    public function updatedPerPage(): void
+    {
+        $this->resetPage();
     }
 
     public function updatedFilterState(): void

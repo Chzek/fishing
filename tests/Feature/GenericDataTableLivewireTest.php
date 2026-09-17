@@ -353,4 +353,31 @@ class GenericDataTableLivewireTest extends TestCase
         ->assertSee('Samantha Walker')
         ->assertSee('/angler/' . $angler->id . '/profile');
     }
+
+    #[Test]
+    public function generic_data_table_updates_per_page_and_resets_pagination()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        // Create 30 lakes to test pagination across pages
+        Lake::factory()->count(30)->create();
+
+        Livewire::test(GenericDataTable::class, [
+            'modelClass' => Lake::class,
+            'columns' => [
+                ['key' => 'name', 'label' => 'Lake Name', 'searchable' => true],
+            ],
+            'itemName' => 'lakes',
+            'perPage' => 15,
+        ])
+        ->assertStatus(200)
+        ->assertSee('Show:')
+        ->assertSee('Columns')
+        ->call('gotoPage', 2)
+        ->assertSet('paginators.page', 2)
+        ->set('perPage', 25)
+        ->assertSet('paginators.page', 1)
+        ->assertSet('perPage', 25);
+    }
 }

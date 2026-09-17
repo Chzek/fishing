@@ -111,4 +111,15 @@ class ExpeditionControllerTest extends TestCase
         $response->assertSee('value="2026-08-16"', false);
         $response->assertSee('value="Guys Trip 2026"', false);
     }
+
+    #[Test]
+    public function authenticated_user_can_view_create_expedition_form()
+    {
+        $this->actingAs($this->user);
+
+        $response = $this->get('/expedition/create');
+        $response->assertStatus(200);
+        $response->assertSee('Create Expedition Trip');
+        $response->assertSee('Plan a wilderness trip');
+    }
 }

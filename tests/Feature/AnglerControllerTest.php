@@ -118,5 +118,29 @@ class AnglerControllerTest extends TestCase
         $this->assertEquals('Geren P. Mroczek', $angler->fullName);
         $this->assertEquals('Mroczek, Geren P.', $angler->formalName);
     }
+
+    #[Test]
+    public function authenticated_user_can_view_create_angler_form()
+    {
+        $this->be($this->user);
+
+        $response = $this->get('/angler/create');
+        $response->assertStatus(200);
+        $response->assertSee('Create Angler Profile');
+        $response->assertSee('Profile Photo Avatar');
+        $response->assertSee('angler-avatar-uploader');
+    }
+
+    #[Test]
+    public function authenticated_user_can_view_edit_angler_form()
+    {
+        $this->be($this->user);
+
+        $response = $this->get('/angler/' . $this->angler->id . '/edit');
+        $response->assertStatus(200);
+        $response->assertSee('Edit Angler Profile');
+        $response->assertSee('Profile Photo Avatar');
+        $response->assertSee('angler-avatar-uploader');
+    }
 }
 

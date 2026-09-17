@@ -86,4 +86,28 @@ class LakeControllerTest extends TestCase
             'name' => 'Updated Lake Name',
         ]);
     }
+
+    #[Test]
+    public function authenticated_user_can_view_create_lake_form()
+    {
+        $this->actingAs($this->user);
+
+        $response = $this->get('/lake/create');
+        $response->assertStatus(200);
+        $response->assertSee('Log New Lake / Waterbody');
+        $response->assertSee('Use Current GPS Location');
+        $response->assertSee('lake-picker-map');
+    }
+
+    #[Test]
+    public function authenticated_user_can_view_edit_lake_form()
+    {
+        $this->actingAs($this->user);
+
+        $response = $this->get('/lake/' . $this->lake->id . '/edit');
+        $response->assertStatus(200);
+        $response->assertSee('Edit Lake: ' . $this->lake->name);
+        $response->assertSee('Use Current GPS Location');
+        $response->assertSee('lake-picker-map');
+    }
 }

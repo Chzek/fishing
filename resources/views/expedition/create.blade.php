@@ -36,11 +36,23 @@
                 </div>
             </div>
 
-            <div class="pt-4">
-                <button type="submit" class="w-full py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer">Create Expedition</button>
+            <div class="pt-4 flex items-center gap-3">
+                <button type="submit" class="flex-1 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm rounded-xl shadow transition-colors cursor-pointer">Create Expedition</button>
+                <a href="/expedition" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl border border-slate-200 transition-colors">Cancel</a>
             </div>
 
         </form>
+
+        @if (isset($errors) && $errors->any())
+            <div class="bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl p-4 space-y-1">
+                <strong class="font-bold">Please correct the errors below:</strong>
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </div>
 </div>
 @endsection

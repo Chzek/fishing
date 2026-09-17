@@ -13,6 +13,7 @@
                     <p class="text-xs text-slate-500">{{ $expedition->description }}</p>
                 </div>
             </div>
+            <a href="/expedition/{{ $expedition->id }}" class="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">Return</a>
         </div>
 
         <form action="{{ url('/expedition') }}" method="POST" class="space-y-4">
@@ -43,6 +44,17 @@
             </div>
 
         </form>
+
+        @if (isset($errors) && $errors->any())
+            <div class="bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xl p-4 space-y-1">
+                <strong class="font-bold">Please correct the errors below:</strong>
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </div>
 </div>
 @endsection

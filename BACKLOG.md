@@ -31,17 +31,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **Interactive Map Layer**: Render private, high-definition (1-foot / 3-foot) bathymetric contours on both the **Map Explorer** (`/map/explorer`) and **Lake Dossier** (`/lake/{id}`) with custom color ramping, depth labels in feet, and bottom hardness / weedline overlays.
   * **Offline Support**: Integrate custom lake contours into the Offline Region Downloader (`/map/offline`) for 100% offline navigation out on the water.
 
-#### 2. Livewire Data Table Preferences Persistence (`GenericDataTable`)
-- **Agents**: `livewire-architect`
-- **Impact**: **Medium** (User Experience)
-- **Description**: Persist table density (compact/comfortable/spacious), per-page limit, and column visibility in session/localStorage so anglers' customized table layouts persist across sessions and page reloads.
-
-#### 3. Modernize Remaining Legacy Create/Edit Forms to Dark Telemetry Tokens
-- **Agents**: `ui-ux-auditor`, `tailwindcss-development`
-- **Impact**: **Medium** (Visual Consistency)
-- **Description**: Upgrade the remaining legacy forms ([`lake/create.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/create.blade.php), [`angler/create.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/create.blade.php), [`expedition/create.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/create.blade.php)) to Option C dark frosted cards (`bg-slate-900 border-slate-800 text-slate-100`) with consistent inputs and error states.
-
-#### 4. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
+#### 2. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (Database Query Optimization)
 - **Description**: Consolidate the 5 separate count and aggregation queries in `LakeController@show` (total catches, longest catch, heaviest catch, unique visits, unique anglers) into a consolidated single-pass aggregation query.
@@ -265,3 +255,14 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - Added Bathymetry & Contours Pack to the Offline Region Map Downloader ([`map/offline.blade.php`](file:///home/gmroczek/git/fishing/resources/views/map/offline.blade.php)) enabling seamless pre-caching for boat/offline usage.
     - Optimized [`ExplorerController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/ExplorerController.php) seasons query using fast distinct SQL year selection (`Record::whereNotNull('caught')->selectRaw('DISTINCT YEAR(caught) as yr')...`).
     - Verified with all 275 tests (1,200 assertions) passing cleanly.
+36. **Livewire GenericDataTable Preferences Persistence (P2.2)**:
+    - Added `#[Url(history: true)]` URL query syncing to `$perPage` in [`GenericDataTable.php`](file:///home/gmroczek/git/fishing/app/Livewire/Components/GenericDataTable.php) alongside dynamic pagination reset (`updatedPerPage()`) to prevent out-of-bounds pagination slicing.
+    - Added interactive `perPage` dropdown selector (`15`, `25`, `50`, `100` items/page) to the pagination toolbar ribbon in [`generic-data-table.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/components/generic-data-table.blade.php).
+    - Modernized [`data-table.js`](file:///home/gmroczek/git/fishing/resources/js/components/data-table.js) Alpine controller to guarantee immediate reactive column toggling (`visibleColumns` object immutability) and `localStorage` persistence across all table instances.
+    - Added comprehensive Livewire tests in [`GenericDataTableLivewireTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/GenericDataTableLivewireTest.php).
+37. **Form Modernization for Lake, Angler, and Expedition Entities (P2.3)**:
+    - Upgraded [`angler/create.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/create.blade.php) and [`angler/edit.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/edit.blade.php) to incorporate `<x-photo-upload-input>` with client-side canvas compression for angler avatars.
+    - Standardized design tokens, error alert banners, and action buttons across [`lake/create.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/create.blade.php), [`lake/edit.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/edit.blade.php), [`expedition/create.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/create.blade.php), and [`expedition/edit.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/edit.blade.php).
+    - Expanded test coverage across [`LakeControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/LakeControllerTest.php), [`AnglerControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AnglerControllerTest.php), and [`ExpeditionControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/ExpeditionControllerTest.php).
+    - Full test suite passing at **281 tests (1,224 assertions)**.
+

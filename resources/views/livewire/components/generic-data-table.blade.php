@@ -1,4 +1,4 @@
-<div x-data="dataTable({ tableId: '{{ str_replace('\\', '_', $modelClass) }}', defaultDensity: 'normal' })" class="space-y-4">
+<div x-data="dataTable({ tableId: '{{ str_replace('\\', '_', $modelClass) }}', defaultDensity: 'normal', columns: {{ \Illuminate\Support\Js::from($columns) }} })" class="space-y-4">
     <!-- Livewire Interactive Toolbar styled with x-table.wrapper design system -->
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
         <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
@@ -742,14 +742,28 @@
         </table>
     </div>
 
-    <!-- Bottom Toolbar Container with Pagination & Relocated Density Toggle -->
+    <!-- Bottom Toolbar Container with Pagination, Per-Page Selector & Density Toggle -->
     <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
         <div class="flex-1">
             {{ $records->links('livewire.pagination.tailwind') }}
         </div>
 
-        <!-- Relocated Density Toggle -->
-        <div class="flex items-center justify-end shrink-0">
+        <!-- Per-Page Selector & Density Toggle -->
+        <div class="flex items-center justify-between md:justify-end gap-3 shrink-0">
+            <div class="flex items-center gap-1.5 text-xs text-slate-600 font-medium">
+                <span>Show:</span>
+                <select 
+                    wire:model.live="perPage" 
+                    class="h-8 px-2 rounded-lg border border-slate-200/80 bg-white text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 shadow-2xs cursor-pointer"
+                >
+                    <option value="15">15</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <span class="text-slate-400">/ page</span>
+            </div>
+
             <div class="inline-flex rounded-lg border border-slate-200/80 bg-white p-0.5 shadow-2xs">
                 <button 
                     type="button" 
