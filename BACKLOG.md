@@ -22,10 +22,14 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### ⚙️ Priority 2 (P2): Frontend Reactivity, Livewire DX & Visual Polish
 
-#### 1. Map Explorer Bathymetry Tile Switcher & Fast SQL Year Query
-- **Agents**: `query-profiler-optimizer`, `ui-ux-auditor`
-- **Impact**: **Medium** (Performance & Navigation Usability)
-- **Description**: In [`ExplorerController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/ExplorerController.php), replace `Record::whereNotNull('caught')->get()->map(...)` (loading all records into PHP memory) with a fast query: `Record::whereNotNull('caught')->selectRaw('DISTINCT YEAR(caught) as yr')->pluck('yr')`. Add a Leaflet tile layer selector supporting OpenStreetMap, Esri Satellite Imagery, and Topographic / Contour layers.
+#### 1. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
+- **Agents**: `seasoned-angler-advisor`, `laravel-architect`, `ui-ux-auditor`
+- **Impact**: **High** (Custom Fishery Intelligence & Depth Mapping)
+- **Description**: Build an ingestion pipeline for personal Humminbird Helix AutoChart Live sonar data (`acdata` folder / AutoChart Zero Line SD card, AutoChart PC exports, CSV/XYZ soundings, and GeoJSON contour vectors):
+  * **File Ingestion & Parsing**: Support uploading AutoChart exports (XYZ soundings `[Lat, Lng, Depth, Hardness]`, `.acd` track logs, and shapefile/GeoJSON contour layers).
+  * **Lake Association & Storage**: Link imported contour maps and depth points directly to specific `Lake` records in the database.
+  * **Interactive Map Layer**: Render private, high-definition (1-foot / 3-foot) bathymetric contours on both the **Map Explorer** (`/map/explorer`) and **Lake Dossier** (`/lake/{id}`) with custom color ramping, depth labels in feet, and bottom hardness / weedline overlays.
+  * **Offline Support**: Integrate custom lake contours into the Offline Region Downloader (`/map/offline`) for 100% offline navigation out on the water.
 
 #### 2. Livewire Data Table Preferences Persistence (`GenericDataTable`)
 - **Agents**: `livewire-architect`
