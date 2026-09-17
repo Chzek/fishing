@@ -154,15 +154,10 @@ class QuickCatchModal extends Component
         /** @var Record $record */
         $record = $createRecordAction->execute($validated);
 
-        // Check if this catch achieves a Personal Best or Trophy milestone
+        // Check if this catch achieves a Personal Best or Trophy milestone for modal celebration UI
         try {
             $milestone = $record->checkTrophyMilestone();
             if ($milestone) {
-                /** @var \Fishinglog\Models\User|null $user */
-                $user = Auth::user() ?? $record->angler?->user;
-                if ($user) {
-                    $user->notify(new TrophyCatchLogged($record, $milestone));
-                }
                 $this->trophyMilestone = array_merge($milestone, [
                     'record_id' => $record->id,
                     'species_name' => $record->fishBreed ? $record->fishBreed->name : 'Fish',

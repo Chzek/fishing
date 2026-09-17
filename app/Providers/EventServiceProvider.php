@@ -18,6 +18,11 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        \Fishinglog\Events\CatchLoggedEvent::class => [
+            \Fishinglog\Listeners\CheckTrophyMilestoneListener::class,
+            \Fishinglog\Listeners\InvalidateTelemetryCacheListener::class,
+            \Fishinglog\Listeners\FetchCatchWeatherListener::class,
+        ],
     ];
 
     /**

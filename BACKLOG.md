@@ -40,17 +40,12 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### 🛠️ Priority 3 (P3): Architecture, Events, Synology NAS & DevOps
 
-#### 1. Decoupled Domain Event Pipeline (`CatchLoggedEvent`)
-- **Agents**: `laravel-architect`
-- **Impact**: **Medium** (Clean Architecture)
-- **Description**: Dispatch `CatchLoggedEvent` from [`CreateCatchRecordAction.php`](file:///home/gmroczek/git/fishing/app/Actions/Records/CreateCatchRecordAction.php) with dedicated listeners: `CheckTrophyMilestoneListener`, `InvalidateTelemetryCacheListener`, and `FetchCatchWeatherListener`.
-
-#### 2. Low-Bandwidth Chunked NAS Outbox Push & Scheduled Sync Health Webhook
+#### 1. Low-Bandwidth Chunked NAS Outbox Push & Scheduled Sync Health Webhook
 - **Agents**: `nas-sync-architect`
 - **Impact**: **Medium** (Remote Data Integrity)
 - **Description**: Add chunked outbox streaming (50 records per payload) for low-bandwidth cellular / boat satellite connections, and add a scheduled health monitor triggering notifications if NAS sync is unreachable or failing for >24 hours.
 
-#### 3. Automated Backup Verification & Restore Drill Command (`backup:verify`)
+#### 2. Automated Backup Verification & Restore Drill Command (`backup:verify`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Low-Medium** (Disaster Recovery Verification)
 - **Description**: Create an `artisan backup:verify` command that unzips recent Spatie backup archives in a temporary staging environment to verify SQL dump validity and image asset completeness.
@@ -265,4 +260,13 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - Standardized design tokens, error alert banners, and action buttons across [`lake/create.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/create.blade.php), [`lake/edit.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/edit.blade.php), [`expedition/create.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/create.blade.php), and [`expedition/edit.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/edit.blade.php).
     - Expanded test coverage across [`LakeControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/LakeControllerTest.php), [`AnglerControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AnglerControllerTest.php), and [`ExpeditionControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/ExpeditionControllerTest.php).
     - Full test suite passing at **281 tests (1,224 assertions)**.
+38. **Decoupled Domain Event Pipeline (`CatchLoggedEvent`) (P3.1)**:
+    - Implemented [`CatchLoggedEvent`](file:///home/gmroczek/git/fishing/app/Events/CatchLoggedEvent.php) dispatched by [`CreateCatchRecordAction.php`](file:///home/gmroczek/git/fishing/app/Actions/Records/CreateCatchRecordAction.php) whenever a catch is registered across any system entry point.
+    - Created dedicated listeners in `app/Listeners/`:
+      * [`CheckTrophyMilestoneListener.php`](file:///home/gmroczek/git/fishing/app/Listeners/CheckTrophyMilestoneListener.php): Evaluates personal bests/trophy benchmarks and dispatches `TrophyCatchLogged` notification to the appropriate angler user account.
+      * [`InvalidateTelemetryCacheListener.php`](file:///home/gmroczek/git/fishing/app/Listeners/InvalidateTelemetryCacheListener.php): Clears `angler_stats_overview` and flushes `CatchTelemetryService` leaderboards.
+      * [`FetchCatchWeatherListener.php`](file:///home/gmroczek/git/fishing/app/Listeners/FetchCatchWeatherListener.php): Automatically triggers Open-Meteo daily weather synchronization for the catch's waterbody and timestamp.
+    - Streamlined [`RecordController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/RecordController.php), [`QuickCatchModal.php`](file:///home/gmroczek/git/fishing/app/Livewire/Modals/QuickCatchModal.php), and [`RecordApiController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Api/v1/RecordApiController.php) to eliminate duplicated secondary side-effects.
+    - Added dedicated feature tests in [`CatchLoggedEventPipelineTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/CatchLoggedEventPipelineTest.php) with the full test suite passing at **286 tests (1,230 assertions)** and **0 PHPStan errors (Level 5)**.
+
 

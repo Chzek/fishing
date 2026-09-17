@@ -28,7 +28,7 @@ class RecordApiController extends Controller
         return new RecordResource($record);
     }
 
-    public function store(StoreRecordRequest $request, WeatherTelemetryService $weatherService, CreateCatchRecordAction $createRecordAction)
+    public function store(StoreRecordRequest $request, CreateCatchRecordAction $createRecordAction)
     {
         // 1. Check idempotency by Client UUID
         if ($request->filled('client_id')) {
@@ -52,13 +52,8 @@ class RecordApiController extends Controller
                 ->additional(['status' => 'duplicate_ignored']);
         }
 
-        // 3. Create new record via Action
+        // 3. Create new record via Action (triggers CatchLoggedEvent for trophies, cache & weather)
         $record = $createRecordAction->execute($request->validated());
-
-        // 4. Attempt weather telemetry lookup (gracefully succeeds offline)
-        if ($record->lake) {
-            $weatherService->fetchForLakeAndDate($record->lake, $record->caught);
-        }
 
         return (new RecordResource($record->load(['angler', 'lake.dailyWeather', 'fishBreed', 'lure'])))
             ->additional(['status' => 'created']);

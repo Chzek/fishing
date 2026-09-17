@@ -27,6 +27,7 @@ use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
  * @property Point|null $location
  * @property bool $released
  * @property \Illuminate\Support\Carbon|null $caught
+ * @property string|null $caught_date
  * @property string|null $trip_id
  * @property int|null $month_num
  * @property float|null $max_length

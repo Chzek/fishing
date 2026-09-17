@@ -36,7 +36,7 @@ trait HasUuidAndSyncTracking
                 }
             });
 
-            static::restored(function ($model) {
+            static::registerModelEvent('restored', function ($model) {
                 $model->newQueryWithoutScopes()
                     ->where($model->getKeyName(), $model->getKey())
                     ->update(['sync_status' => 'pending_upstream']);
