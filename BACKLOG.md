@@ -60,7 +60,15 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **44px Tap Target Enforcement**: Audit and expand touch boundaries on all mobile filter pills, table sorting chevrons, and pagination buttons.
   * **WCAG AAA Sunlight Contrast**: Elevate secondary text contrast ratios to $\ge 7:1$ to prevent washout on polarized mobile screens.
 
-#### 5. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
+#### 5. Fish Species Illustration Asset Pipeline: Alpha Transparency & WebP/PNG Conversion
+- **Agents**: `ui-ux-auditor`, `laravel-architect`
+- **Impact**: **Medium** (Visual Polish & Dark Mode Aesthetic)
+- **Description**: Upgrade the fish species and lure asset library with true alpha transparency:
+  * **Background Removal**: Strip solid white JPEG backgrounds from all 18+ species side-profile illustrations (`public/images/fish/`) and avatar thumbnails (`public/images/fish/avatars/`).
+  * **Modern Alpha Format**: Convert assets to transparent `.webp` / `.png` with lossless compression, updated in `FishBreed` model fallback resolution.
+  * **Subtle Dark Mode Glow / Drop Shadow**: Apply subtle ambient illumination filters so dark-scaled species (e.g., Largemouth Bass, Walleye) remain distinctly visible against dark slate backgrounds.
+
+#### 6. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
 - **Agents**: `seasoned-angler-advisor`, `laravel-architect`, `ui-ux-auditor`
 - **Impact**: **High** (Custom Fishery Intelligence & Depth Mapping)
 - **Description**: Build an ingestion pipeline for personal Humminbird Helix AutoChart Live sonar data (`acdata` folder / AutoChart Zero Line SD card, AutoChart PC exports, CSV/XYZ soundings, and GeoJSON contour vectors):
@@ -69,7 +77,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **Interactive Map Layer**: Render private, high-definition (1-foot / 3-foot) bathymetric contours on both the **Map Explorer** (`/map/explorer`) and **Lake Dossier** (`/lake/{id}`) with custom color ramping, depth labels in feet, and bottom hardness / weedline overlays.
   * **Offline Support**: Integrate custom lake contours into the Offline Region Downloader (`/map/offline`) for 100% offline navigation out on the water.
 
-#### 6. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
+#### 7. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (Database Query Optimization)
 - **Description**: Consolidate the 5 separate count and aggregation queries in `LakeController@show` (total catches, longest catch, heaviest catch, unique visits, unique anglers) into a consolidated single-pass aggregation query.
