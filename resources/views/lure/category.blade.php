@@ -67,21 +67,21 @@
     </div>
 
     <!-- Catches Logbook Table for this Category -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4 transition-colors">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
             <div>
-                <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                    <x-lucide-history class="w-4 h-4 text-teal-600" />
+                <h2 class="font-bold text-slate-900 dark:text-slate-100 text-sm flex items-center gap-2">
+                    <x-lucide-history class="w-4 h-4 text-teal-600 dark:text-teal-400" />
                     <span>Catches Landed on {{ $category }} Lures</span>
                 </h2>
-                <p class="text-xs text-slate-500">Logbook entries logged using any {{ $category }} lure</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Logbook entries logged using any {{ $category }} lure</p>
             </div>
         </div>
 
         @if($catches->count() > 0)
-            <div class="overflow-x-auto rounded-xl border border-slate-200/80">
-                <table class="w-full text-left text-xs text-slate-700">
-                    <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/80">
+            <div class="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-800 transition-colors">
+                <table class="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+                    <thead class="bg-slate-50 dark:bg-slate-950/70 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-200/80 dark:border-slate-800">
                         <tr>
                             <th scope="col" class="py-3 px-4">Date Landed</th>
                             <th scope="col" class="py-3 px-4">Angler</th>
@@ -91,29 +91,29 @@
                             <th scope="col" class="py-3 px-4 text-right">Action</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 bg-white">
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/70 bg-white dark:bg-slate-900 transition-colors">
                         @foreach($catches as $catch)
-                            <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="py-3.5 px-4 font-mono font-bold text-slate-900">
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                <td class="py-3.5 px-4 font-mono font-bold text-slate-900 dark:text-slate-100">
                                     {{ $catch->caught ? \Carbon\Carbon::parse($catch->caught)->format('M j, Y') : '—' }}
                                 </td>
-                                <td class="py-3.5 px-4 font-bold text-slate-900">
+                                <td class="py-3.5 px-4 font-bold text-slate-900 dark:text-slate-100">
                                     {{ $catch->angler?->fullName ?? 'Unknown' }}
                                 </td>
-                                <td class="py-3.5 px-4 font-bold text-teal-700">
+                                <td class="py-3.5 px-4 font-bold text-teal-700 dark:text-teal-400">
                                     {{ $catch->fishBreed?->name ?? 'Unspecified' }}
                                 </td>
-                                <td class="py-3.5 px-4 font-medium text-slate-700">
+                                <td class="py-3.5 px-4 font-medium text-slate-700 dark:text-slate-300">
                                     {{ $catch->lake?->name ?? '—' }}
                                 </td>
-                                <td class="py-3.5 px-4 text-center font-mono font-bold text-slate-900">
+                                <td class="py-3.5 px-4 text-center font-mono font-bold text-slate-900 dark:text-slate-100">
                                     {{ $catch->length ? number_format($catch->length, 1) . '"' : '—' }}
                                     @if($catch->weight)
-                                        <span class="text-slate-400 font-normal"> / {{ number_format($catch->weight, 1) }} lbs.</span>
+                                        <span class="text-slate-400 dark:text-slate-500 font-normal"> / {{ number_format($catch->weight, 1) }} lbs.</span>
                                     @endif
                                 </td>
                                 <td class="py-3.5 px-4 text-right">
-                                    <a href="/record/show/{{ $catch->id }}" class="px-2.5 py-1.5 bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-700 font-bold text-[11px] rounded-lg border border-slate-200 transition-colors inline-flex items-center gap-1">
+                                    <a href="/record/show/{{ $catch->id }}" class="px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-teal-50 dark:hover:bg-teal-950/60 hover:text-teal-700 dark:hover:text-teal-300 text-slate-700 dark:text-slate-300 font-bold text-[11px] rounded-lg border border-slate-200 dark:border-slate-700 transition-colors inline-flex items-center gap-1">
                                         <span>Dossier</span>
                                         <x-lucide-arrow-right class="w-3 h-3" />
                                     </a>
@@ -125,8 +125,8 @@
             </div>
 
             @if($catches->hasPages())
-                <div class="pt-4 flex items-center justify-between border-t border-slate-100">
-                    <span class="text-xs text-slate-500">Showing {{ $catches->firstItem() }} to {{ $catches->lastItem() }} of {{ $catches->total() }} Catches</span>
+                <div class="pt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+                    <span class="text-xs text-slate-500 dark:text-slate-400">Showing {{ $catches->firstItem() }} to {{ $catches->lastItem() }} of {{ $catches->total() }} Catches</span>
                     <div>{{ $catches->links() }}</div>
                 </div>
             @endif

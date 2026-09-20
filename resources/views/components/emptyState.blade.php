@@ -13,13 +13,13 @@
     };
 @endphp
 
-<div {{ $attributes->merge(['class' => 'bg-white rounded-2xl p-8 border border-slate-200/80 shadow-sm text-center space-y-3']) }}>
-    <div class="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200/80 text-slate-400 flex items-center justify-center mx-auto shadow-inner">
+<div {{ $attributes->merge(['class' => 'bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm text-center space-y-3 transition-colors']) }}>
+    <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-400 dark:text-slate-500 flex items-center justify-center mx-auto shadow-inner">
         <x-dynamic-component :component="'lucide-' . $safeIcon" class="w-6 h-6" />
     </div>
     <div class="space-y-1 max-w-sm mx-auto">
-        <h3 class="text-sm font-bold text-slate-900 tracking-tight">{{ $title }}</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">{{ $description }}</p>
+        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight">{{ $title }}</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{{ $description }}</p>
     </div>
     @if($actionUrl)
         <div class="pt-2">

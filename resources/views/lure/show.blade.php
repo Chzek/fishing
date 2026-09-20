@@ -78,9 +78,9 @@
         </div>
 
         @if($catches->count() > 0)
-            <div class="overflow-x-auto rounded-xl border border-slate-200/80">
-                <table class="w-full text-left text-xs text-slate-700">
-                    <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-200/80">
+            <div class="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-800 transition-colors">
+                <table class="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+                    <thead class="bg-slate-50 dark:bg-slate-950/70 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-200/80 dark:border-slate-800">
                         <tr>
                             <th scope="col" class="py-3 px-4">Date Landed</th>
                             <th scope="col" class="py-3 px-4">Angler</th>
@@ -91,17 +91,17 @@
                             <th scope="col" class="py-3 px-4 text-right">Action</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 bg-white">
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/70 bg-white dark:bg-slate-900 transition-colors">
                         @foreach($catches as $catch)
-                            <tr class="hover:bg-slate-50/80 transition-colors">
-                                <td class="py-3.5 px-4 font-mono font-bold text-slate-900">
+                            <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
+                                <td class="py-3.5 px-4 font-mono font-bold text-slate-900 dark:text-slate-100">
                                     {{ $catch->caught ? \Carbon\Carbon::parse($catch->caught)->format('M j, Y') : '—' }}
                                 </td>
                                 <td class="py-3.5 px-4">
                                     @if($catch->angler)
                                         <div class="flex items-center gap-2">
                                             <x-anglerAvatar :angler="$catch->angler" size="sm" />
-                                            <a href="/angler/{{ $catch->angler->id }}/profile" class="font-bold text-slate-900 hover:text-teal-600">
+                                            <a href="/angler/{{ $catch->angler->id }}/profile" class="font-bold text-slate-900 dark:text-slate-100 hover:text-teal-600 dark:hover:text-teal-400">
                                                 {{ $catch->angler->fullName }}
                                             </a>
                                         </div>
@@ -111,34 +111,34 @@
                                 </td>
                                 <td class="py-3.5 px-4">
                                     @if($catch->fishBreed)
-                                        <a href="/fish/{{ $catch->fishBreed->id }}" class="inline-flex items-center gap-1.5 font-bold text-teal-700 hover:underline">
-                                            <x-lucide-fish class="w-3.5 h-3.5 text-teal-600" />
+                                        <a href="/fish/{{ $catch->fishBreed->id }}" class="inline-flex items-center gap-1.5 font-bold text-teal-700 dark:text-teal-400 hover:underline">
+                                            <x-lucide-fish class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                                             <span>{{ $catch->fishBreed->name }}</span>
                                         </a>
                                     @else
                                         <span class="text-slate-400">Unspecified</span>
                                     @endif
                                 </td>
-                                <td class="py-3.5 px-4 font-medium text-slate-700">
+                                <td class="py-3.5 px-4 font-medium text-slate-700 dark:text-slate-300">
                                     @if($catch->lake)
-                                        <a href="/lake/{{ $catch->lake->id }}" class="hover:text-teal-600 font-semibold">
+                                        <a href="/lake/{{ $catch->lake->id }}" class="hover:text-teal-600 dark:hover:text-teal-400 font-semibold">
                                             {{ $catch->lake->name }}
                                         </a>
                                     @else
                                         <span class="text-slate-400">—</span>
                                     @endif
                                 </td>
-                                <td class="py-3.5 px-4 text-center font-mono font-bold text-slate-900">
+                                <td class="py-3.5 px-4 text-center font-mono font-bold text-slate-900 dark:text-slate-100">
                                     {{ $catch->length ? number_format($catch->length, 1) . '"' : '—' }}
                                     @if($catch->weight)
-                                        <span class="text-slate-400 font-normal"> / {{ number_format($catch->weight, 1) }} lbs.</span>
+                                        <span class="text-slate-400 dark:text-slate-500 font-normal"> / {{ number_format($catch->weight, 1) }} lbs.</span>
                                     @endif
                                 </td>
-                                <td class="py-3.5 px-4 text-center font-mono text-sky-700 font-semibold">
+                                <td class="py-3.5 px-4 text-center font-mono text-sky-700 dark:text-sky-400 font-semibold">
                                     {{ $catch->temperature ? round($catch->temperature) . '°F' : '—' }}
                                 </td>
                                 <td class="py-3.5 px-4 text-right">
-                                    <a href="/record/show/{{ $catch->id }}" class="px-2.5 py-1.5 bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-700 font-bold text-[11px] rounded-lg border border-slate-200 transition-colors inline-flex items-center gap-1">
+                                    <a href="/record/show/{{ $catch->id }}" class="px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-teal-50 dark:hover:bg-teal-950/60 hover:text-teal-700 dark:hover:text-teal-300 text-slate-700 dark:text-slate-300 font-bold text-[11px] rounded-lg border border-slate-200 dark:border-slate-700 transition-colors inline-flex items-center gap-1">
                                         <span>Dossier</span>
                                         <x-lucide-arrow-right class="w-3 h-3" />
                                     </a>
@@ -150,8 +150,8 @@
             </div>
 
             @if($catches->hasPages())
-                <div class="pt-4 flex items-center justify-between border-t border-slate-100">
-                    <span class="text-xs text-slate-500">Showing {{ $catches->firstItem() }} to {{ $catches->lastItem() }} of {{ $catches->total() }} Catches</span>
+                <div class="pt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+                    <span class="text-xs text-slate-500 dark:text-slate-400">Showing {{ $catches->firstItem() }} to {{ $catches->lastItem() }} of {{ $catches->total() }} Catches</span>
                     <div>{{ $catches->links() }}</div>
                 </div>
             @endif

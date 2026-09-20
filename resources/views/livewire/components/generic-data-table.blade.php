@@ -1,22 +1,22 @@
 <div x-data="dataTable({ tableId: '{{ str_replace('\\', '_', $modelClass) }}', defaultDensity: 'normal', columns: {{ \Illuminate\Support\Js::from($columns) }} })" class="space-y-4">
     <!-- Livewire Interactive Toolbar styled with x-table.wrapper design system -->
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 transition-colors">
         <div class="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
             <!-- Database Search Input -->
             <div class="inline-flex items-center flex-1 min-w-[200px] max-w-md shadow-2xs rounded-lg">
                 <div class="relative flex-1">
-                    <x-lucide-search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <x-lucide-search class="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input 
                         type="text" 
                         wire:model.live.debounce.300ms="search" 
                         placeholder="{{ $searchPlaceholder }}" 
-                        class="w-full h-9 pl-9 pr-8 text-xs rounded-lg border border-slate-200 bg-white font-medium text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
+                        class="w-full h-9 pl-9 pr-8 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
                     />
                     @if($search)
                         <button 
                             wire:click="$set('search', '')" 
                             type="button"
-                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 cursor-pointer transition-colors"
                             title="Clear search"
                         >
                             <x-lucide-x class="w-3.5 h-3.5" />
@@ -33,7 +33,7 @@
                 @endphp
                 @if($fKey)
                     @if($fType === 'select')
-                        <select wire:model.live="filterState.{{ $fKey }}" class="h-9 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                        <select wire:model.live="filterState.{{ $fKey }}" class="h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 font-semibold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-teal-500/20 cursor-pointer transition-colors">
                             <option value="">{{ $flt['label'] ?? 'All ' . ucfirst($fKey) }}</option>
                             @foreach(($flt['options'] ?? []) as $optVal => $optLabel)
                                 <option value="{{ $optVal }}">{{ $optLabel }}</option>
@@ -44,8 +44,8 @@
                             $opKey = $flt['operatorKey'] ?? ($fKey . 'Operator');
                         @endphp
                         <div class="flex items-center gap-1.5 shrink-0">
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">{{ $flt['label'] ?? ucfirst($fKey) }}</span>
-                            <select wire:model.live="filterState.{{ $opKey }}" class="h-9 px-2 text-xs rounded-lg border border-slate-200 bg-white font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20 cursor-pointer">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ $flt['label'] ?? ucfirst($fKey) }}</span>
+                            <select wire:model.live="filterState.{{ $opKey }}" class="h-9 px-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-teal-500/20 cursor-pointer transition-colors">
                                 <option value=">">&gt;</option>
                                 <option value="=">=</option>
                                 <option value="<">&lt;</option>
@@ -55,7 +55,7 @@
                                 step="0.25" 
                                 wire:model.live.debounce.300ms="filterState.{{ $fKey }}" 
                                 placeholder="{{ $flt['placeholder'] ?? 'Value...' }}" 
-                                class="h-9 px-2.5 w-20 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-800 focus:ring-2 focus:ring-teal-500/20"
+                                class="h-9 px-2.5 w-20 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 font-mono text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-teal-500/20 transition-colors"
                             />
                         </div>
                     @elseif($fType === 'date_range')
@@ -70,9 +70,9 @@
                             <button 
                                 @click="open = !open" 
                                 type="button" 
-                                class="h-9 px-3 text-xs rounded-lg border border-slate-200 bg-white font-semibold text-slate-700 hover:bg-slate-50 focus:ring-2 focus:ring-teal-500/20 flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+                                class="h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 flex items-center gap-2 transition-all cursor-pointer shadow-xs"
                             >
-                                <x-lucide-calendar class="w-3.5 h-3.5 text-teal-600" />
+                                <x-lucide-calendar class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                                 <span>
                                     @switch($activePreset)
                                         @case('today') Today @break
@@ -97,122 +97,122 @@
                                 x-transition:leave="transition ease-in duration-75"
                                 x-transition:leave-start="transform opacity-100 scale-100"
                                 x-transition:leave-end="transform opacity-0 scale-95"
-                                class="absolute left-0 top-full mt-1.5 w-60 rounded-xl bg-white border border-slate-200/90 shadow-xl z-50 p-1.5 space-y-0.5"
+                                class="absolute left-0 top-full mt-1.5 w-60 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-xl z-50 p-1.5 space-y-0.5"
                                 style="display: none;"
                             >
-                                <div class="px-2.5 py-1.5 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Filter by Date</div>
+                                <div class="px-2.5 py-1.5 text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Filter by Date</div>
 
                                 <button 
                                     @click="$wire.set('filterState.{{ $pKey }}', ''); open = false;" 
                                     type="button" 
-                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ empty($activePreset) ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ empty($activePreset) ? 'bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 font-bold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     <div class="flex items-center gap-2">
                                         <x-lucide-layers class="w-3.5 h-3.5 text-slate-400" />
                                         <span>All Dates</span>
                                     </div>
                                     @if(empty($activePreset))
-                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                                     @endif
                                 </button>
 
                                 <button 
                                     @click="$wire.set('filterState.{{ $pKey }}', 'today'); open = false;" 
                                     type="button" 
-                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'today' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'today' ? 'bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 font-bold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     <div class="flex items-center gap-2">
                                         <x-lucide-clock class="w-3.5 h-3.5 text-slate-400" />
                                         <span>Today</span>
                                     </div>
                                     @if($activePreset === 'today')
-                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                                     @endif
                                 </button>
 
                                 <button 
                                     @click="$wire.set('filterState.{{ $pKey }}', 'yesterday'); open = false;" 
                                     type="button" 
-                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'yesterday' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'yesterday' ? 'bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 font-bold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     <div class="flex items-center gap-2">
                                         <x-lucide-history class="w-3.5 h-3.5 text-slate-400" />
                                         <span>Yesterday</span>
                                     </div>
                                     @if($activePreset === 'yesterday')
-                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                                     @endif
                                 </button>
 
                                 <button 
                                     @click="$wire.set('filterState.{{ $pKey }}', 'this_week'); open = false;" 
                                     type="button" 
-                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'this_week' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'this_week' ? 'bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 font-bold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     <div class="flex items-center gap-2">
                                         <x-lucide-calendar-days class="w-3.5 h-3.5 text-slate-400" />
                                         <span>Last 7 Days</span>
                                     </div>
                                     @if($activePreset === 'this_week')
-                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                                     @endif
                                 </button>
 
                                 <button 
                                     @click="$wire.set('filterState.{{ $pKey }}', 'this_month'); open = false;" 
                                     type="button" 
-                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'this_month' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'this_month' ? 'bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 font-bold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     <div class="flex items-center gap-2">
                                         <x-lucide-calendar-range class="w-3.5 h-3.5 text-slate-400" />
                                         <span>This Month (30 Days)</span>
                                     </div>
                                     @if($activePreset === 'this_month')
-                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                                     @endif
                                 </button>
 
                                 <button 
                                     @click="$wire.set('filterState.{{ $pKey }}', 'this_season'); open = false;" 
                                     type="button" 
-                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'this_season' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'this_season' ? 'bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 font-bold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     <div class="flex items-center gap-2">
                                         <x-lucide-sun class="w-3.5 h-3.5 text-slate-400" />
                                         <span>This Season ({{ date('Y') }})</span>
                                     </div>
                                     @if($activePreset === 'this_season')
-                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                                     @endif
                                 </button>
 
                                 <button 
                                     @click="$wire.set('filterState.{{ $pKey }}', 'last_season'); open = false;" 
                                     type="button" 
-                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'last_season' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'last_season' ? 'bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 font-bold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     <div class="flex items-center gap-2">
                                         <x-lucide-snowflake class="w-3.5 h-3.5 text-slate-400" />
                                         <span>Last Season ({{ date('Y') - 1 }})</span>
                                     </div>
                                     @if($activePreset === 'last_season')
-                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                                     @endif
                                 </button>
 
-                                <div class="my-1 border-t border-slate-100"></div>
+                                <div class="my-1 border-t border-slate-100 dark:border-slate-800"></div>
 
                                 <button 
                                     @click="$wire.set('filterState.{{ $pKey }}', 'custom'); open = false;" 
                                     type="button" 
-                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'custom' ? 'bg-teal-50 text-teal-700 font-bold' : 'text-slate-700 hover:bg-slate-100' }}"
+                                    class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer {{ $activePreset === 'custom' ? 'bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 font-bold' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' }}"
                                 >
                                     <div class="flex items-center gap-2">
                                         <x-lucide-sliders class="w-3.5 h-3.5 text-slate-400" />
                                         <span>Custom Range...</span>
                                     </div>
                                     @if($activePreset === 'custom')
-                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600" />
+                                        <x-lucide-check class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                                     @endif
                                 </button>
                             </div>
@@ -222,14 +222,14 @@
                                     <input 
                                         type="date" 
                                         wire:model.live="filterState.{{ $sKey }}" 
-                                        class="h-9 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
+                                        class="h-9 px-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 font-mono text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-teal-500/20 transition-colors"
                                         title="Start Date"
                                     />
                                     <span class="text-slate-400 text-xs">–</span>
                                     <input 
                                         type="date" 
                                         wire:model.live="filterState.{{ $eKey }}" 
-                                        class="h-9 px-2 text-xs rounded-lg border border-slate-200 bg-white font-mono text-slate-700 focus:ring-2 focus:ring-teal-500/20"
+                                        class="h-9 px-2 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 font-mono text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-teal-500/20 transition-colors"
                                         title="End Date"
                                     />
                                 </div>
@@ -240,14 +240,14 @@
                             type="text" 
                             wire:model.live.debounce.300ms="filterState.{{ $fKey }}" 
                             placeholder="{{ $flt['label'] ?? 'Filter...' }}" 
-                            class="h-9 px-3 text-xs rounded-lg border border-slate-200 bg-white font-medium text-slate-800 focus:ring-2 focus:ring-teal-500/20"
+                            class="h-9 px-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 font-medium text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-teal-500/20 transition-colors"
                         />
                     @elseif($fType === 'boolean')
-                        <label class="inline-flex items-center gap-1.5 px-2.5 h-9 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                        <label class="inline-flex items-center gap-1.5 px-2.5 h-9 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/90 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer select-none transition-colors">
                             <input 
                                 type="checkbox" 
                                 wire:model.live="filterState.{{ $fKey }}" 
-                                class="rounded text-teal-600 focus:ring-teal-500 border-slate-300 w-3.5 h-3.5"
+                                class="rounded text-teal-600 focus:ring-teal-500 border-slate-300 dark:border-slate-600 w-3.5 h-3.5 bg-white dark:bg-slate-700"
                             />
                             <span>{{ $flt['label'] ?? ucfirst($fKey) }}</span>
                         </label>
@@ -259,7 +259,7 @@
                 <button 
                     wire:click="resetFilters" 
                     type="button" 
-                    class="text-xs text-slate-500 hover:text-slate-800 font-medium transition-colors underline cursor-pointer"
+                    class="text-xs text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 font-medium transition-colors underline cursor-pointer"
                 >
                     Reset Filters
                 </button>
@@ -269,18 +269,20 @@
         <!-- Right Side Controls: Row Counter & Column Visibility Picker -->
         <div class="flex items-center justify-between sm:justify-end gap-2.5 shrink-0 text-xs">
             <!-- Row Counter -->
-            <div class="flex items-center gap-1.5 text-slate-500 font-medium font-mono text-[11px] bg-white px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-2xs">
+            <div class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-medium font-mono text-[11px] bg-white dark:bg-slate-800/90 px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-slate-700 shadow-2xs transition-colors">
                 <span class="w-2 h-2 rounded-full {{ ($search || $family) ? 'bg-amber-400' : 'bg-teal-500' }}"></span>
                 <span>{{ number_format($totalCount) }} {{ $itemName }}</span>
-            </div>            <!-- Column Visibility Picker -->
+            </div>
+
+            <!-- Column Visibility Picker -->
             <div class="relative" x-data="{ open: false }">
                 <button 
                     type="button" 
                     @click="open = !open" 
-                    class="h-8 px-2.5 bg-white hover:bg-slate-100 text-slate-700 font-semibold rounded-lg border border-slate-200/80 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                    class="h-8 px-2.5 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold rounded-lg border border-slate-200/80 dark:border-slate-700 shadow-2xs flex items-center gap-1.5 transition-colors cursor-pointer"
                     title="Toggle columns"
                 >
-                    <x-lucide-columns-3 class="w-3.5 h-3.5 text-slate-500" />
+                    <x-lucide-columns-3 class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                     <span class="hidden md:inline">Columns</span>
                 </button>
 
@@ -288,29 +290,29 @@
                     x-show="open" 
                     @click.outside="open = false" 
                     x-transition 
-                    class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-slate-200 p-2 z-30 space-y-1"
+                    class="absolute right-0 mt-1 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 p-2 z-30 space-y-1"
                     style="display: none;"
                 >
-                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-2 py-1 border-b border-slate-100">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2 py-1 border-b border-slate-100 dark:border-slate-800">
                         Visible Columns
                     </div>
                     <template x-for="col in columns" :key="col.key">
-                        <label class="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 text-xs font-medium text-slate-700 cursor-pointer select-none">
+                        <label class="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-700 dark:text-slate-200 cursor-pointer select-none transition-colors">
                             <input 
                                 type="checkbox" 
                                 :checked="isColumnVisible(col.key)" 
                                 @change="toggleColumn(col.key)" 
-                                class="rounded text-teal-600 focus:ring-teal-500 border-slate-300 w-3.5 h-3.5"
+                                class="rounded text-teal-600 focus:ring-teal-500 border-slate-300 dark:border-slate-600 w-3.5 h-3.5 bg-white dark:bg-slate-700"
                             />
                             <span x-text="col.label"></span>
                         </label>
                     </template>
 
-                    <div class="pt-1 mt-1 border-t border-slate-100 flex justify-end">
+                    <div class="pt-1 mt-1 border-t border-slate-100 dark:border-slate-800 flex justify-end">
                         <button 
                             type="button" 
                             @click="resetColumnState()" 
-                            class="w-full text-left px-2 py-1 text-[11px] font-semibold text-slate-500 hover:text-slate-800 hover:underline transition-colors"
+                            class="w-full text-left px-2 py-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:underline transition-colors"
                         >
                             Reset Defaults
                         </button>
@@ -321,10 +323,10 @@
     </div>
 
     <!-- Data Table Container -->
-    <div wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-150" class="overflow-x-auto rounded-xl border border-slate-200/80 shadow-2xs bg-white">
-        <table class="w-full text-left text-sm text-slate-700">
-            <thead class="bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200/80 relative z-20">
-                <tr>
+    <div wire:loading.class="opacity-60 pointer-events-none transition-opacity duration-150" class="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs bg-white dark:bg-slate-900 transition-colors">
+        <table class="w-full text-left text-sm text-slate-700 dark:text-slate-300">
+            <thead class="bg-slate-50 dark:bg-slate-950 text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-wider border-b border-slate-200/80 dark:border-slate-800 relative z-20 transition-colors">
+                <tr class="bg-slate-50 dark:bg-slate-950 border-b border-slate-200/80 dark:border-slate-800">
                     @foreach($columns as $col)
                         @php
                             $align = $col['align'] ?? 'left';
@@ -340,18 +342,18 @@
                             data-col="{{ $colKey }}" 
                             data-col-label="{{ $col['label'] }}" 
                             x-show="isColumnVisible('{{ $colKey }}')" 
-                            class="py-3 px-4 {{ $alignClass }} {{ $isSortable ? 'select-none cursor-pointer group' : '' }}"
+                            class="py-3 px-4 {{ $alignClass }} {{ $isSortable ? 'select-none cursor-pointer group' : '' }} dark:text-slate-300"
                             @if($isSortable) wire:click="sortByColumn('{{ $colKey }}', $event.shiftKey)" @endif
                         >
                             <div 
                                 x-data="{ open: false }" 
                                 @mouseenter="open = true" 
                                 @mouseleave="open = false" 
-                                class="relative inline-flex items-center gap-1.5 {{ $align === 'center' ? 'justify-center' : ($align === 'right' ? 'justify-end' : 'justify-start') }} hover:text-teal-600"
+                                class="relative inline-flex items-center gap-1.5 {{ $align === 'center' ? 'justify-center' : ($align === 'right' ? 'justify-end' : 'justify-start') }} hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
                             >
-                                <span>{{ $col['label'] }}</span>
+                                <span class="dark:text-slate-300 group-hover:dark:text-teal-400">{{ $col['label'] }}</span>
                                 @if($colKey === 'dailyWeather' || ($col['type'] ?? '') === 'weather_badge')
-                                    <x-lucide-info class="w-3.5 h-3.5 text-slate-400 hover:text-teal-500 shrink-0 transition-colors cursor-help" />
+                                    <x-lucide-info class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 hover:text-teal-500 dark:hover:text-teal-400 shrink-0 transition-colors cursor-help" />
 
                                     <!-- Alpine.js Floating Temperature Legend Popover Card -->
                                     <div 
@@ -383,25 +385,25 @@
                                 @endif
                                 @if($isSortable)
                                     @if($sortDir)
-                                        <span class="text-teal-600 font-bold text-[10px] bg-teal-50 px-1 py-0.5 rounded border border-teal-200/60 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
+                                        <span class="text-teal-600 dark:text-teal-400 font-bold text-[10px] bg-teal-50 dark:bg-teal-950/80 px-1 py-0.5 rounded border border-teal-200/60 dark:border-teal-800/80 inline-flex items-center gap-0.5" title="Shift+Click for multi-column sort">
                                             @if($sortIdx)
-                                                <span class="text-[9px] text-teal-800 font-mono font-bold">{{ $sortIdx }}</span>
+                                                <span class="text-[9px] text-teal-800 dark:text-teal-300 font-mono font-bold">{{ $sortIdx }}</span>
                                             @endif
                                             <span>{{ strtolower($sortDir) === 'asc' ? '▲' : '▼' }}</span>
                                         </span>
                                     @else
-                                        <span class="text-slate-300 group-hover:text-slate-500 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
+                                        <span class="text-slate-300 dark:text-slate-600 group-hover:text-slate-500 dark:group-hover:text-slate-400 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">⇅</span>
                                     @endif
                                 @endif
                             </div>
                         </th>
                     @endforeach
-                    <th scope="col" class="py-3 px-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+                    <th scope="col" class="py-3 px-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-300 uppercase tracking-wider dark:bg-slate-950">Actions</th>
                 </tr>
             </thead>
-            <tbody x-ref="tbody" class="divide-y divide-slate-100 bg-white">
+            <tbody x-ref="tbody" class="divide-y divide-slate-100 dark:divide-slate-800/70 bg-white dark:bg-slate-900 transition-colors">
                 @forelse($records as $record)
-                    <tr wire:key="row-{{ $record->id ?? $loop->index }}" class="hover:bg-slate-50/70 transition-colors">
+                    <tr wire:key="row-{{ $record->id ?? $loop->index }}" class="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors">
                         @foreach($columns as $col)
                             @php
                                 $colKey = $col['key'];
@@ -417,69 +419,69 @@
                                 class="py-3.5 px-4 {{ $alignClass }} whitespace-nowrap text-xs"
                             >
                                 @if($type === 'expedition_desc')
-                                    <div class="flex items-center gap-2 font-bold text-slate-900">
-                                        <x-lucide-ship class="w-4 h-4 text-teal-600 shrink-0" />
-                                        <a href="{{ url('/expedition/' . $record->id) }}" class="hover:text-teal-600 hover:underline">
+                                    <div class="flex items-center gap-2 font-bold text-slate-900 dark:text-slate-100">
+                                        <x-lucide-ship class="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
+                                        <a href="{{ url('/expedition/' . $record->id) }}" class="hover:text-teal-600 dark:hover:text-teal-400 hover:underline">
                                             {{ $val ?? '—' }}
                                         </a>
                                     </div>
                                 @elseif($type === 'lake_name')
-                                    <div class="flex items-center gap-2 font-bold text-slate-900">
+                                    <div class="flex items-center gap-2 font-bold text-slate-900 dark:text-slate-100">
                                         @if(!empty($record->latitude) && !empty($record->longitude) && (float)$record->latitude != 0.0 && (float)$record->longitude != 0.0)
-                                            <x-lucide-map-pin class="w-4 h-4 text-emerald-600 shrink-0" title="GPS Coordinates: {{ $record->latitude }}, {{ $record->longitude }}" />
+                                             <x-lucide-map-pin class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" title="GPS Coordinates: {{ $record->latitude }}, {{ $record->longitude }}" />
                                         @else
                                             <x-lucide-map-pin-off class="w-4 h-4 text-slate-400 shrink-0" title="No GPS Coordinates" />
                                         @endif
-                                        <a href="{{ url('/lake/' . $record->id) }}" class="hover:text-teal-600 hover:underline">
+                                        <a href="{{ url('/lake/' . $record->id) }}" class="hover:text-teal-600 dark:hover:text-teal-400 hover:underline">
                                             {{ $val ?? '—' }}
                                         </a>
                                     </div>
                                 @elseif($type === 'species_avatar')
                                     <div class="flex items-center gap-3">
                                         <x-fishAvatar :breed="$record" size="sm" />
-                                        <a href="{{ url('/fish/' . $record->id) }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline text-xs sm:text-sm">
+                                        <a href="{{ url('/fish/' . $record->id) }}" class="font-bold text-slate-900 dark:text-slate-100 hover:text-teal-600 dark:hover:text-teal-400 hover:underline text-xs sm:text-sm">
                                             {{ $val ?? '—' }}
                                         </a>
                                     </div>
                                 @elseif($type === 'family_badge')
-                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md border border-transparent dark:border-slate-700/80">
                                         {{ $record->family?->name ?? 'N/A' }}
                                     </span>
                                 @elseif($type === 'lunker_record')
-                                    <span class="font-mono text-slate-700 font-semibold">
+                                    <span class="font-mono text-slate-700 dark:text-slate-300 font-semibold">
                                         {{ $val ? $val . ' in.' : '—' }}
                                     </span>
                                 @elseif($type === 'heavy_record')
-                                    <span class="font-mono text-slate-700 font-semibold">
+                                    <span class="font-mono text-slate-700 dark:text-slate-300 font-semibold">
                                         {{ $val ? $val . ' lbs.' : '—' }}
                                     </span>
                                 @elseif($type === 'user_account')
-                                    <div class="flex items-center gap-2 font-bold text-slate-900">
+                                    <div class="flex items-center gap-2 font-bold text-slate-900 dark:text-slate-100">
                                         <span>{{ $val }}</span>
                                         @if(!$record->angler)
-                                            <span class="text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300 px-1.5 py-0.2 rounded-md">
+                                            <span class="text-[9px] font-bold uppercase tracking-wider bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800/60 px-1.5 py-0.2 rounded-md">
                                                 Unlinked
                                             </span>
                                         @endif
                                     </div>
                                 @elseif($type === 'user_email')
                                     <div>
-                                        <div class="font-mono text-slate-800">{{ $val }}</div>
+                                        <div class="font-mono text-slate-800 dark:text-slate-200">{{ $val }}</div>
                                         <div class="mt-0.5 flex items-center gap-2">
                                             @if($record->isRegistered())
-                                                <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Verified</span>
+                                                <span class="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/60">Verified</span>
                                             @else
-                                                <span class="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Pending Verification</span>
+                                                <span class="text-[10px] font-semibold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800/60">Pending Verification</span>
                                             @endif
                                         </div>
                                     </div>
                                 @elseif($type === 'user_role')
                                     @if($record->isAdmin())
-                                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-teal-800 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200">
-                                            <x-lucide-shield class="w-3.5 h-3.5 text-teal-600" /> Administrator
+                                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 px-2.5 py-1 rounded-lg border border-teal-200 dark:border-teal-800/60">
+                                            <x-lucide-shield class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" /> Administrator
                                         </span>
                                     @else
-                                        <span class="text-[11px] font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+                                        <span class="text-[11px] font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700">
                                             Standard User
                                         </span>
                                     @endif
@@ -493,11 +495,11 @@
                                         <div class="flex items-center gap-2">
                                             <x-anglerAvatar :angler="$angObj" size="xs" />
                                             @if($angProfileId)
-                                                <a href="{{ url('/angler/' . $angProfileId . '/profile') }}" class="font-bold text-slate-900 hover:text-teal-600 hover:underline">
+                                                <a href="{{ url('/angler/' . $angProfileId . '/profile') }}" class="font-bold text-slate-900 dark:text-slate-100 hover:text-teal-600 dark:hover:text-teal-400 hover:underline">
                                                     {{ $angName }}
                                                 </a>
                                             @else
-                                                <span class="font-semibold text-slate-900">{{ $angName }}</span>
+                                                <span class="font-semibold text-slate-900 dark:text-slate-100">{{ $angName }}</span>
                                             @endif
                                         </div>
                                     @else
@@ -515,7 +517,7 @@
                                         <form action="{{ route('admin.users.link') }}" method="POST" class="flex items-center gap-1.5">
                                             @csrf
                                             <input type="hidden" name="user_id" value="{{ $record->id }}">
-                                            <select name="angler_id" class="h-8 px-2 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                                            <select name="angler_id" class="h-8 px-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors">
                                                 <option value="">Unlink Angler...</option>
                                                 @foreach($allAnglers as $ang)
                                                     <option value="{{ $ang->id }}" {{ $record->angler && $record->angler->id == $ang->id ? 'selected' : '' }}>
@@ -529,13 +531,13 @@
                                         </form>
                                     </div>
                                 @elseif($type === 'lake_link')
-                                    <a href="{{ $record->lake ? url('/lake/' . $record->lake->id) : '#' }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
+                                    <a href="{{ $record->lake ? url('/lake/' . $record->lake->id) : '#' }}" class="font-semibold text-slate-900 dark:text-slate-100 hover:text-teal-600 dark:hover:text-teal-400 hover:underline">
                                         {{ $record->lake?->name ?? ($val ?? '—') }}
                                     </a>
                                 @elseif($type === 'species_name')
                                     <div class="inline-flex items-center gap-2">
                                         <x-fishAvatar :breed="$record->fishBreed" size="sm" />
-                                        <a href="{{ $record->fishBreed ? url('/fish/' . $record->fishBreed->id) : '#' }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
+                                        <a href="{{ $record->fishBreed ? url('/fish/' . $record->fishBreed->id) : '#' }}" class="font-semibold text-slate-900 dark:text-slate-100 hover:text-teal-600 dark:hover:text-teal-400 hover:underline">
                                             {{ $record->fishBreed?->name ?? ($val ?? '—') }}
                                         </a>
                                     </div>
@@ -558,62 +560,62 @@
                                         <span class="text-slate-400 text-[11px] italic">—</span>
                                     @endif
                                 @elseif($type === 'catch_length_weight')
-                                    <span class="font-mono text-slate-700 font-semibold">
+                                    <span class="font-mono text-slate-700 dark:text-slate-300 font-semibold">
                                         {{ $record->length ? $record->length . ' in.' : '—' }} / {{ $record->weight ? $record->weight . ' lbs.' : '—' }}
                                     </span>
                                 @elseif($type === 'link')
                                     @php
                                         $urlPath = isset($col['urlPrefix']) ? $col['urlPrefix'] . '/' . data_get($record, $col['urlParam'] ?? 'id') : '#';
                                     @endphp
-                                    <a href="{{ url($urlPath) }}" class="font-semibold text-slate-900 hover:text-teal-600 hover:underline">
+                                    <a href="{{ url($urlPath) }}" class="font-semibold text-slate-900 dark:text-slate-100 hover:text-teal-600 dark:hover:text-teal-400 hover:underline">
                                         {{ $val ?? '—' }}
                                     </a>
                                 @elseif($type === 'release_status' || $colKey === 'released')
                                     @if($val)
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs">
-                                            <x-lucide-rotate-ccw class="w-3 h-3 text-amber-600" />
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60 shadow-2xs">
+                                            <x-lucide-rotate-ccw class="w-3 h-3 text-amber-600 dark:text-amber-400" />
                                             <span>Released</span>
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs">
-                                            <x-lucide-shopping-bag class="w-3 h-3 text-emerald-600" />
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 shadow-2xs">
+                                            <x-lucide-shopping-bag class="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                                             <span>Kept</span>
                                         </span>
                                     @endif
                                 @elseif($type === 'boolean')
                                     @if($val)
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                            <x-lucide-check class="w-3 h-3 text-emerald-600" />
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+                                            <x-lucide-check class="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                                             <span>Yes</span>
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
                                             <x-lucide-x class="w-3 h-3 text-slate-400" />
                                             <span>No</span>
                                         </span>
                                     @endif
                                 @elseif($type === 'badge')
                                     @if($val === 1 || $val === '1' || $val === true)
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-2xs">
-                                            <x-lucide-rotate-ccw class="w-3 h-3 text-amber-600" />
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60 shadow-2xs">
+                                            <x-lucide-rotate-ccw class="w-3 h-3 text-amber-600 dark:text-amber-400" />
                                             <span>Released</span>
                                         </span>
                                     @elseif($val === 0 || $val === '0' || $val === false)
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs">
-                                            <x-lucide-shopping-bag class="w-3 h-3 text-emerald-600" />
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 shadow-2xs">
+                                            <x-lucide-shopping-bag class="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                                             <span>Kept</span>
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-teal-50 text-teal-700 border border-teal-200/80">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200/80 dark:border-teal-800/60">
                                             {{ $val ?? '—' }}
                                         </span>
                                     @endif
                                 @elseif($type === 'count')
-                                    <span class="font-mono font-bold text-slate-800">
+                                    <span class="font-mono font-bold text-slate-800 dark:text-slate-200">
                                         {{ number_format((int) ($val ?? 0)) }}
                                     </span>
                                 @elseif($type === 'date')
-                                    <span class="font-mono text-slate-600">
+                                    <span class="font-mono text-slate-600 dark:text-slate-400">
                                         @if(!empty($val))
                                             @php
                                                 try {
@@ -631,14 +633,14 @@
                                     </span>
                                 @elseif($type === 'coordinates')
                                     @if($record->latitude && $record->longitude)
-                                        <span class="inline-flex items-center gap-1 font-mono text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                        <span class="inline-flex items-center gap-1 font-mono text-[11px] text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/60">
                                             📍 {{ number_format($record->latitude, 4) }}, {{ number_format($record->longitude, 4) }}
                                         </span>
                                     @else
                                         <span class="text-slate-400 text-xs">Lake Default</span>
                                     @endif
                                 @else
-                                    <span class="font-medium text-slate-700">
+                                    <span class="font-medium text-slate-700 dark:text-slate-300">
                                         {{ $val ?? '—' }}
                                     </span>
                                 @endif
@@ -661,7 +663,7 @@
                                         @csrf
                                         <input type="hidden" name="type" value="{{ $modelType }}">
                                         <input type="hidden" name="id" value="{{ $record->id }}">
-                                        <button type="submit" class="px-2.5 py-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors cursor-pointer">
+                                        <button type="submit" class="px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/60 rounded-lg transition-colors cursor-pointer">
                                             Restore
                                         </button>
                                     </form>
@@ -670,7 +672,7 @@
                                         @method('DELETE')
                                         <input type="hidden" name="type" value="{{ $modelType }}">
                                         <input type="hidden" name="id" value="{{ $record->id }}">
-                                        <button type="submit" class="px-2.5 py-1 text-[11px] font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors cursor-pointer">
+                                        <button type="submit" class="px-2.5 py-1 text-[11px] font-bold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-800/60 rounded-lg transition-colors cursor-pointer">
                                             Purge
                                         </button>
                                     </form>
@@ -680,23 +682,23 @@
                                     $tbl = $record->getTable();
                                 @endphp
                                 @if($tbl === 'lakes')
-                                    <a href="{{ url('/lake/' . $record->id) }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
+                                    <a href="{{ url('/lake/' . $record->id) }}" class="text-teal-600 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 font-semibold hover:underline">
                                         View Details →
                                     </a>
                                 @elseif($tbl === 'anglers')
-                                    <a href="{{ url('/angler/' . $record->id . '/profile') }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
+                                    <a href="{{ url('/angler/' . $record->id . '/profile') }}" class="text-teal-600 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 font-semibold hover:underline">
                                         View Profile →
                                     </a>
                                 @elseif($tbl === 'expeditions')
-                                    <a href="{{ url('/expedition/' . $record->id) }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
+                                    <a href="{{ url('/expedition/' . $record->id) }}" class="text-teal-600 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 font-semibold hover:underline">
                                         View Trip →
                                     </a>
                                 @elseif($tbl === 'fish_breeds')
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <a href="{{ url('/fish/' . $record->id) }}" class="p-1.5 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="View Dossier">
+                                        <a href="{{ url('/fish/' . $record->id) }}" class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/50 rounded-lg transition-colors" title="View Dossier">
                                             <x-lucide-eye class="w-4 h-4" />
                                         </a>
-                                        <a href="{{ url('/fish/breed/' . $record->id . '/edit') }}" class="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors" title="Edit Species">
+                                        <a href="{{ url('/fish/breed/' . $record->id . '/edit') }}" class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" title="Edit Species">
                                             <x-lucide-edit-3 class="w-4 h-4" />
                                         </a>
                                     </div>
@@ -706,7 +708,7 @@
                                             <!-- Toggle Admin Privileges -->
                                             <form action="{{ route('admin.users.toggle-admin', $record) }}" method="POST" class="inline" onsubmit="return confirm('Change admin privileges for {{ $record->name }}?')">
                                                 @csrf
-                                                <button type="submit" class="h-8 px-2.5 rounded-xl border text-xs font-semibold transition-colors cursor-pointer {{ $record->isAdmin() ? 'text-amber-800 bg-amber-50 hover:bg-amber-100 border-amber-200' : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border-slate-200' }}">
+                                                <button type="submit" class="h-8 px-2.5 rounded-xl border text-xs font-semibold transition-colors cursor-pointer {{ $record->isAdmin() ? 'text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 border-amber-200 dark:border-amber-800/60' : 'text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700' }}">
                                                     {{ $record->isAdmin() ? 'Demote' : 'Make Admin' }}
                                                 </button>
                                             </form>
@@ -715,7 +717,7 @@
                                             <form action="{{ route('admin.users.delete', $record) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to PERMANENTLY remove user account {{ $record->name }}?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="h-8 px-2.5 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 font-bold text-xs rounded-xl transition-colors cursor-pointer" title="Delete User">
+                                                <button type="submit" class="h-8 px-2.5 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/60 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/60 font-bold text-xs rounded-xl transition-colors cursor-pointer" title="Delete User">
                                                     Delete
                                                 </button>
                                             </form>
@@ -724,7 +726,7 @@
                                         <span class="text-slate-400 text-xs italic">Current User</span>
                                     @endif
                                 @else
-                                    <a href="{{ url('/' . $tbl . '/' . $record->id) }}" class="text-teal-600 hover:text-teal-900 font-semibold hover:underline">
+                                    <a href="{{ url('/' . $tbl . '/' . $record->id) }}" class="text-teal-600 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 font-semibold hover:underline">
                                         View →
                                     </a>
                                 @endif
@@ -743,18 +745,18 @@
     </div>
 
     <!-- Bottom Toolbar Container with Pagination, Per-Page Selector & Density Toggle -->
-    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 transition-colors">
         <div class="flex-1">
             {{ $records->links('livewire.pagination.tailwind') }}
         </div>
 
         <!-- Per-Page Selector & Density Toggle -->
         <div class="flex items-center justify-between md:justify-end gap-3 shrink-0">
-            <div class="flex items-center gap-1.5 text-xs text-slate-600 font-medium">
+            <div class="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 font-medium">
                 <span>Show:</span>
                 <select 
                     wire:model.live="perPage" 
-                    class="h-8 px-2 rounded-lg border border-slate-200/80 bg-white text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 shadow-2xs cursor-pointer"
+                    class="h-8 px-2 rounded-lg border border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800/90 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 shadow-2xs cursor-pointer transition-colors"
                 >
                     <option value="15">15</option>
                     <option value="25">25</option>
@@ -764,11 +766,11 @@
                 <span class="text-slate-400">/ page</span>
             </div>
 
-            <div class="inline-flex rounded-lg border border-slate-200/80 bg-white p-0.5 shadow-2xs">
+            <div class="inline-flex rounded-lg border border-slate-200/80 dark:border-slate-700 bg-white dark:bg-slate-800/90 p-0.5 shadow-2xs transition-colors">
                 <button 
                     type="button" 
                     @click="setDensity('compact')" 
-                    :class="density === 'compact' ? 'bg-slate-900 text-white font-bold' : 'text-slate-500 hover:text-slate-800'" 
+                    :class="density === 'compact' ? 'bg-slate-900 dark:bg-teal-600 text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'" 
                     class="px-2.5 py-1 rounded text-[11px] font-medium transition-colors cursor-pointer"
                     title="Compact density"
                 >
@@ -777,7 +779,7 @@
                 <button 
                     type="button" 
                     @click="setDensity('normal')" 
-                    :class="density === 'normal' ? 'bg-slate-900 text-white font-bold' : 'text-slate-500 hover:text-slate-800'" 
+                    :class="density === 'normal' ? 'bg-slate-900 dark:bg-teal-600 text-white font-bold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'" 
                     class="px-2.5 py-1 rounded text-[11px] font-medium transition-colors cursor-pointer"
                     title="Comfortable density"
                 >

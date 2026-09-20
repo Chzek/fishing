@@ -332,5 +332,11 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - Configured class-based dark mode selector `@variant dark (&:where(.dark, .dark *));` in [`resources/css/app.css`](file:///home/gmroczek/git/fishing/resources/css/app.css).
     - Added comprehensive feature tests in [`ThemeEngineTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/ThemeEngineTest.php).
     - Verified with all **294 tests passing (1,265 assertions)** and **0 PHPStan errors (Level 5)**.
-
-
+41. **GenericDataTable & Sub-Tables Dark Mode Overhaul (P2.3)**:
+    - Applied comprehensive `dark:` styling across [`generic-data-table.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/components/generic-data-table.blade.php) covering the interactive top toolbar, search input, clear button, dynamic filter selects, operator number inputs, date range popovers, row counter pills, and column visibility picker.
+    - Reinforced table headers (`<thead>`, `<tr>`, `<th>`) with solid dark backgrounds (`dark:bg-slate-950`), high-contrast column labels (`dark:text-slate-300`), active sort indicators (`dark:bg-teal-950/80 dark:text-teal-300`), and subtle borders (`dark:border-slate-800`).
+    - Styled all 15+ column cell formatters (species/angler avatars, links, family badges, unlinked pills, user role badges, GPS coordinates, weather and pressure badges, and admin user assignment forms).
+    - Overhauled bottom pagination footer and per-page / density toggles in [`tailwind.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/pagination/tailwind.blade.php).
+    - Standardized static table styling and empty states in [`emptyState.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/emptyState.blade.php), [`lure/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lure/show.blade.php), [`lure/model.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lure/model.blade.php), [`lure/category.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lure/category.blade.php), and [`sync-diagnostic-console.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/admin/sync-diagnostic-console.blade.php).
+    - Compiled production Tailwind CSS assets (`public/build/assets/app-*.css`) with zero layout shifts.
+    - Maintained 100% test pass rate (**294 passing tests, 1,265 assertions**) and **0 PHPStan errors (Level 5)**.

@@ -309,7 +309,7 @@
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="border-b border-slate-100 bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-500 font-mono">
+                    <tr class="border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/70 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono transition-colors">
                         <th class="py-3 px-5">Entity / Model</th>
                         <th class="py-3 px-4">Sync Progress</th>
                         <th class="py-3 px-4 text-center">Synced</th>
@@ -319,13 +319,13 @@
                         <th class="py-3 px-5 text-right">Status</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 text-xs text-slate-700 font-sans">
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800/70 text-xs text-slate-700 dark:text-slate-300 font-sans transition-colors">
                     @forelse($displayMatrix as $item)
-                        <tr class="hover:bg-slate-50/60 transition-colors {{ $item['pending'] > 0 ? 'bg-amber-50/30' : '' }}">
+                        <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors {{ $item['pending'] > 0 ? 'bg-amber-50/30 dark:bg-amber-950/20' : '' }}">
                             <!-- Model Label & Key -->
                             <td class="py-3.5 px-5">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold {{ $item['pending'] > 0 ? 'bg-amber-100 text-amber-700' : 'bg-teal-50 text-teal-700' }}">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold {{ $item['pending'] > 0 ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300' : 'bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300' }}">
                                         @if($item['key'] === 'records')
                                             <x-lucide-fish class="w-4 h-4" />
                                         @elseif($item['key'] === 'photos')
@@ -349,8 +349,8 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <div class="font-bold text-slate-900">{{ $item['label'] }}</div>
-                                        <div class="text-[10px] font-mono text-slate-400">{{ $item['key'] }} ({{ number_format($item['total']) }})</div>
+                                        <div class="font-bold text-slate-900 dark:text-slate-100">{{ $item['label'] }}</div>
+                                        <div class="text-[10px] font-mono text-slate-400 dark:text-slate-500">{{ $item['key'] }} ({{ number_format($item['total']) }})</div>
                                     </div>
                                 </div>
                             </td>
@@ -359,50 +359,50 @@
                             <td class="py-3.5 px-4 min-w-[140px]">
                                 <div class="space-y-1">
                                     <div class="flex items-center justify-between text-[10px] font-mono font-bold">
-                                        <span class="{{ $item['percent'] === 100 ? 'text-emerald-600' : 'text-amber-600' }}">{{ $item['percent'] }}%</span>
-                                        <span class="text-slate-400">{{ number_format($item['synced']) }}/{{ number_format($item['total']) }}</span>
+                                        <span class="{{ $item['percent'] === 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400' }}">{{ $item['percent'] }}%</span>
+                                        <span class="text-slate-400 dark:text-slate-500">{{ number_format($item['synced']) }}/{{ number_format($item['total']) }}</span>
                                     </div>
-                                    <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                    <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
                                         <div class="h-1.5 rounded-full transition-all duration-300 {{ $item['percent'] === 100 ? 'bg-emerald-500' : 'bg-amber-500' }}" style="width: {{ $item['percent'] }}%"></div>
                                     </div>
                                 </div>
                             </td>
 
                             <!-- Synced Count -->
-                            <td class="py-3.5 px-4 text-center font-mono font-semibold text-slate-800">
+                            <td class="py-3.5 px-4 text-center font-mono font-semibold text-slate-800 dark:text-slate-200">
                                 {{ number_format($item['synced']) }}
                             </td>
 
                             <!-- Pending Count -->
                             <td class="py-3.5 px-4 text-center">
                                 @if($item['pending'] > 0)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold font-mono bg-amber-100 text-amber-800 border border-amber-300">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold font-mono bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800/60">
                                         {{ number_format($item['pending']) }} pending
                                     </span>
                                 @else
-                                    <span class="font-mono text-slate-400 text-[11px]">0</span>
+                                    <span class="font-mono text-slate-400 dark:text-slate-500 text-[11px]">0</span>
                                 @endif
                             </td>
 
                             <!-- Local Activity Timestamp -->
-                            <td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">
+                            <td class="py-3.5 px-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
                                 {{ $item['latest_local'] }}
                             </td>
 
                             <!-- Synced Timestamp -->
-                            <td class="py-3.5 px-4 text-slate-500 font-mono text-[11px]">
+                            <td class="py-3.5 px-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
                                 {{ $item['latest_synced'] }}
                             </td>
 
                             <!-- Status Badge -->
                             <td class="py-3.5 px-5 text-right">
                                 @if($item['pending'] === 0)
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
                                         <x-lucide-check class="w-3 h-3" />
                                         SYNCED
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-amber-50 text-amber-700 border border-amber-200">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
                                         <x-lucide-clock class="w-3 h-3" />
                                         OUTBOX
                                     </span>
@@ -411,10 +411,10 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-8 text-slate-400">
+                            <td colspan="7" class="text-center py-8 text-slate-400 dark:text-slate-500">
                                 <div class="flex flex-col items-center justify-center gap-2">
                                     <x-lucide-check-circle-2 class="w-8 h-8 text-emerald-500" />
-                                    <p class="font-medium text-slate-600 text-xs">No pending sync records found across all models.</p>
+                                    <p class="font-medium text-slate-600 dark:text-slate-400 text-xs">No pending sync records found across all models.</p>
                                 </div>
                             </td>
                         </tr>
@@ -424,7 +424,7 @@
         </div>
 
         <!-- Footer / Legend -->
-        <div class="p-4 bg-slate-50/60 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-500">
+        <div class="p-4 bg-slate-50/60 dark:bg-slate-950/70 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-slate-400 transition-colors">
             <div class="flex items-center gap-3">
                 <span class="flex items-center gap-1">
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -435,8 +435,8 @@
                     <span>Pending upstream push</span>
                 </span>
             </div>
-            <div class="font-mono text-[10px] text-slate-400">
-                Last Synchronized: <strong class="text-slate-600">{{ $lastSyncedAt ? \Illuminate\Support\Carbon::parse($lastSyncedAt)->diffForHumans() : 'Never' }}</strong>
+            <div class="font-mono text-[10px] text-slate-400 dark:text-slate-500">
+                Last Synchronized: <strong class="text-slate-600 dark:text-slate-300">{{ $lastSyncedAt ? \Illuminate\Support\Carbon::parse($lastSyncedAt)->diffForHumans() : 'Never' }}</strong>
             </div>
         </div>
     </div>
