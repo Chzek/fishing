@@ -16,6 +16,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string $email
  * @property string $password
  * @property string $type
+ * @property string $theme_preference
  * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property string|null $remember_token
  * @property-read \Fishinglog\Models\Angler|null $angler
@@ -35,7 +36,16 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var list<string>
      */
     protected $fillable = [
-        'id', 'sync_status', 'synced_at', 'name', 'email', 'password', 'type',
+        'id', 'sync_status', 'synced_at', 'name', 'email', 'password', 'type', 'theme_preference',
+    ];
+
+    /**
+     * The model's default values for attributes.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'theme_preference' => 'system',
     ];
 
     /**

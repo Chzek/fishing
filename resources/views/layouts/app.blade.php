@@ -14,6 +14,33 @@
 
     <title>{{ config('app.name', 'Fishing Logbook') }}</title>
 
+    <!-- Zero-FOUC Theme Engine Initializer -->
+    <script>
+        (function() {
+            const userPref = '{{ auth()->check() ? (auth()->user()->theme_preference ?? "system") : "" }}';
+            const stored = localStorage.getItem('theme');
+            const theme = stored || userPref || 'system';
+            const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            // Real-time listener for OS system theme shifts
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                const currentTheme = localStorage.getItem('theme') || userPref || 'system';
+                if (currentTheme === 'system') {
+                    if (e.matches) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                }
+            });
+        })();
+    </script>
+
     <!-- Vite Scripts & Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="{{ asset('js/offline-sync.js') }}" defer></script>
@@ -30,8 +57,8 @@
     <!-- Livewire 3 Styles -->
     @livewireStyles
 </head>
-<body class="h-full bg-slate-100 font-sans antialiased text-slate-900" x-data="{ mobileMenuOpen: false }">
-    <div id="app" class="flex min-h-screen flex-col lg:flex-row bg-slate-100">
+<body class="h-full bg-slate-100 dark:bg-slate-950 font-sans antialiased text-slate-900 dark:text-slate-100" x-data="{ mobileMenuOpen: false }">
+    <div id="app" class="flex min-h-screen flex-col lg:flex-row bg-slate-100 dark:bg-slate-950">
         
         <!-- Desktop Sidebar (Option C Design) -->
         <aside class="hidden lg:flex lg:flex-col lg:w-64 bg-slate-900 text-slate-300 min-h-screen border-r border-slate-800 shrink-0">
@@ -168,6 +195,12 @@
                 <div class="mb-3 flex items-center justify-between">
                     <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sync Telemetry</span>
                     @livewire('ui.offline-sync-indicator', ['compact' => false, 'showLabel' => true])
+                </div>
+
+                <!-- 3-Way Theme Preference Switcher -->
+                <div class="mb-3.5 space-y-1">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Theme Preference</span>
+                    @livewire('ui.theme-switcher')
                 </div>
 
                 @auth
@@ -324,6 +357,12 @@
                         </a>
                     </div>
                 @endif
+                <!-- 3-Way Theme Preference Switcher -->
+                <div class="pt-3 border-t border-slate-800 space-y-1">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block px-1">Theme Preference</span>
+                    @livewire('ui.theme-switcher', ['compact' => false])
+                </div>
+
                 <div class="pt-2 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
                     <span>Logged in as <strong>{{ Auth::user()->name }}</strong></span>
                     <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="text-red-400 hover:underline">Logout</a>

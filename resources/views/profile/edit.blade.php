@@ -69,38 +69,79 @@
                 </div>
             </div>
 
-            <hr class="border-slate-100">
+            <hr class="border-slate-100 dark:border-slate-800">
 
-            <!-- Section 2: Password Security -->
+            <!-- Section 2: Interface & Theme Preference -->
             <div class="space-y-4">
                 <div>
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-teal-700 flex items-center gap-1.5">
-                        <x-lucide-key-round class="w-4 h-4 text-teal-600" /> Change Password
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-teal-700 dark:text-teal-400 flex items-center gap-1.5">
+                        <x-lucide-palette class="w-4 h-4 text-teal-600 dark:text-teal-400" /> Interface & Theme Preference
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Select your default theme mode across devices.</p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="theme_preference" value="system" {{ old('theme_preference', $user->theme_preference ?? 'system') === 'system' ? 'checked' : '' }} class="sr-only peer">
+                        <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-teal-500 peer-checked:bg-teal-50/50 dark:peer-checked:bg-teal-950/40 peer-checked:ring-2 peer-checked:ring-teal-500/20 text-center transition-all">
+                            <x-lucide-monitor class="w-5 h-5 mx-auto mb-1.5 text-slate-500 peer-checked:text-teal-600 dark:peer-checked:text-teal-400" />
+                            <span class="text-xs font-bold text-slate-800 dark:text-white block">System Auto</span>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">Match OS Setting</span>
+                        </div>
+                    </label>
+
+                    <label class="cursor-pointer">
+                        <input type="radio" name="theme_preference" value="light" {{ old('theme_preference', $user->theme_preference ?? 'system') === 'light' ? 'checked' : '' }} class="sr-only peer">
+                        <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-amber-500 peer-checked:bg-amber-50/50 dark:peer-checked:bg-amber-950/40 peer-checked:ring-2 peer-checked:ring-amber-500/20 text-center transition-all">
+                            <x-lucide-sun class="w-5 h-5 mx-auto mb-1.5 text-slate-500 peer-checked:text-amber-600 dark:peer-checked:text-amber-400" />
+                            <span class="text-xs font-bold text-slate-800 dark:text-white block">Light Mode</span>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">Outdoor Sunlight</span>
+                        </div>
+                    </label>
+
+                    <label class="cursor-pointer">
+                        <input type="radio" name="theme_preference" value="dark" {{ old('theme_preference', $user->theme_preference ?? 'system') === 'dark' ? 'checked' : '' }} class="sr-only peer">
+                        <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-indigo-500 peer-checked:bg-indigo-50/50 dark:peer-checked:bg-indigo-950/40 peer-checked:ring-2 peer-checked:ring-indigo-500/20 text-center transition-all">
+                            <x-lucide-moon class="w-5 h-5 mx-auto mb-1.5 text-slate-500 peer-checked:text-indigo-600 dark:peer-checked:text-indigo-400" />
+                            <span class="text-xs font-bold text-slate-800 dark:text-white block">Dark Mode</span>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">Night Cockpit</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <hr class="border-slate-100 dark:border-slate-800">
+
+            <!-- Section 3: Password Security -->
+            <div class="space-y-4">
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-teal-700 dark:text-teal-400 flex items-center gap-1.5">
+                        <x-lucide-key-round class="w-4 h-4 text-teal-600 dark:text-teal-400" /> Change Password
                     </h2>
                     <p class="text-xs text-slate-400 mt-0.5">Leave blank if you do not wish to change your password.</p>
                 </div>
 
                 <div class="space-y-1.5">
-                    <label for="current_password" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Current Password</label>
-                    <input type="password" id="current_password" name="current_password" placeholder="••••••••" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    <label for="current_password" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" placeholder="••••••••" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900 text-slate-800 dark:text-white text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1.5">
-                        <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-700">New Password</label>
-                        <input type="password" id="password" name="password" placeholder="Minimum 8 characters" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                        <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">New Password</label>
+                        <input type="password" id="password" name="password" placeholder="Minimum 8 characters" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900 text-slate-800 dark:text-white text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                     </div>
 
                     <div class="space-y-1.5">
-                        <label for="password_confirmation" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Confirm New Password</label>
-                        <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                        <label for="password_confirmation" class="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Confirm New Password</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900 text-slate-800 dark:text-white text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                     </div>
                 </div>
             </div>
 
-            <div class="pt-4 flex items-center gap-3 border-t border-slate-100">
+            <div class="pt-4 flex items-center gap-3 border-t border-slate-100 dark:border-slate-800">
                 <button type="submit" class="flex-1 py-3 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-sm rounded-xl shadow transition-all cursor-pointer">Save Account Preferences</button>
-                <a href="/profile" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl border border-slate-200 transition-colors">Cancel</a>
+                <a href="/profile" class="px-5 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm rounded-xl border border-slate-200 dark:border-slate-700 transition-colors">Cancel</a>
             </div>
         </form>
     </div>

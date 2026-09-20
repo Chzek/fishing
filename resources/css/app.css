@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
     --color-brand-teal: #0d9488;
     --color-brand-teal-light: #14b8a6;

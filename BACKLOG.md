@@ -32,14 +32,15 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **Unified Hero Banner (`<x-pageHero>`)**: Standardized dark telemetry banners with actions and metric slots across all views (`/profile`, `/record`, `/angler/stats`, `/lake`, `/lake/{id}`, `/expedition`, `/expedition/{id}`, `/angler`).
   * **Typography Consistency**: Enforce `font-mono tracking-tight` for all quantitative measurements (inches, lbs, hPa, percentages, dates).
 
-#### 2. System / Light / Dark 3-Way Theme Engine & Livewire Volt Switcher
+#### 2. [COMPLETED] System / Light / Dark 3-Way Theme Engine & Livewire Switcher
 - **Agents**: `ui-ux-auditor`, `livewire-architect`, `laravel-architect`
 - **Impact**: **High** (Outdoor Sunlight Readability & Night Mode Ergonomics)
+- **Status**: **Completed & Verified** (294 tests passing, 1,265 assertions, PHPStan level 5 clean)
 - **Description**: Implement a complete 3-way theme preference engine (`System`, `Light`, `Dark`):
-  * **Zero-FOUC Script**: Inline `<head>` script evaluating `localStorage` and `prefers-color-scheme` before DOM rendering.
-  * **Database & User Profile Persistence**: Add `theme_preference` column (`system`, `light`, `dark`) to `users` table and `/profile/edit`.
-  * **Livewire Volt 3-Way Switcher**: Single-file Volt component (`resources/views/livewire/theme-switcher.blade.php`) mounted in the Desktop Sidebar footer, Mobile Drawer, and User Profile view.
-  * **Tailwind CSS v4 Dark Token Layering**: Audit and apply `dark:` utility variants across all views, data tables, and slide-over modals.
+  * **Zero-FOUC Script**: Inline `<head>` script in `layouts/app.blade.php` evaluating `localStorage` and `prefers-color-scheme` before DOM rendering, with dynamic OS theme change listeners.
+  * **Database & User Profile Persistence**: Added `theme_preference` column (`system`, `light`, `dark`) to `users` table, User model fillable/attributes defaults, and `/profile/edit` account preferences form.
+  * **Livewire 3-Way Switcher**: Reactive Livewire component (`ThemeSwitcher.php` and `resources/views/livewire/ui/theme-switcher.blade.php`) with sub-second Alpine client DOM sync mounted in Desktop Sidebar footer, Mobile Drawer, and Profile view.
+  * **Tailwind CSS v4 Dark Token Layering**: Configured `@variant dark (&:where(.dark, .dark *));` in `resources/css/app.css` ensuring full class-based dark mode activation across the application.
 
 #### 3. Interactive JavaScript Telemetry Visualizations (Chart.js & Livewire/Alpine)
 - **Agents**: `ui-ux-auditor`, `livewire-architect`, `seasoned-angler-advisor`
@@ -322,5 +323,14 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * Expedition Directory Index ([`expedition/index.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/index.blade.php))
     - Expanded unit and feature test coverage in [`BladeComponentsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/BladeComponentsTest.php).
     - Verified entire test suite passing cleanly at **289 passing tests (1,249 assertions)** and **0 PHPStan errors (Level 5)**.
+40. **System / Light / Dark 3-Way Theme Engine & Livewire Switcher (P2.2)**:
+    - Implemented instant Zero-FOUC `<head>` theme engine in [`layouts/app.blade.php`](file:///home/gmroczek/git/fishing/resources/views/layouts/app.blade.php) with real-time `matchMedia` listeners for dynamic OS system dark/light switching.
+    - Added database migration (`2026_09_20_000001_add_theme_preference_to_users_table.php`) adding `theme_preference` column (`system`, `light`, `dark`) with model defaults in [`User.php`](file:///home/gmroczek/git/fishing/app/Models/User.php) and [`UserFactory.php`](file:///home/gmroczek/git/fishing/database/factories/UserFactory.php).
+    - Built reactive 3-way Livewire theme switcher component ([`ThemeSwitcher.php`](file:///home/gmroczek/git/fishing/app/Livewire/Ui/ThemeSwitcher.php) and [`theme-switcher.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/ui/theme-switcher.blade.php)) with sub-second Alpine client DOM sync.
+    - Mounted switcher in Desktop Sidebar footer, Mobile Drawer, and User Account Preferences ([`profile/edit.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/edit.blade.php)).
+    - Updated [`ProfileController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/ProfileController.php) to validate and save user theme preferences.
+    - Configured class-based dark mode selector `@variant dark (&:where(.dark, .dark *));` in [`resources/css/app.css`](file:///home/gmroczek/git/fishing/resources/css/app.css).
+    - Added comprehensive feature tests in [`ThemeEngineTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/ThemeEngineTest.php).
+    - Verified with all **294 tests passing (1,265 assertions)** and **0 PHPStan errors (Level 5)**.
 
 

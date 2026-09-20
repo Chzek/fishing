@@ -188,6 +188,7 @@ class ProfileController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'theme_preference' => 'nullable|string|in:system,light,dark',
             'current_password' => 'nullable|required_with:password|string',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
@@ -201,6 +202,9 @@ class ProfileController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
+        if ($request->filled('theme_preference')) {
+            $user->theme_preference = $request->theme_preference;
+        }
         $user->save();
 
         return redirect('/profile/edit')->with('status', 'Account preferences and password updated successfully.');
