@@ -55,7 +55,7 @@ class RecordSummaryDashboardTest extends TestCase
         $response->assertSee('Top 5 Angler Producers');
         $response->assertSee('Top 5 Waterbodies');
         $response->assertSee('Macro Species Target Shifts');
-        $response->assertSee('Weather Condition Distribution & Top Producing Lakes', false);
+        $response->assertSee('Weather Condition Distribution & Top Producing Lakes');
         $response->assertSee('Wawa Lake');
         $response->assertSee('Walleye');
         $response->assertSee('Open Logbook Directory');

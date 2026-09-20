@@ -3,21 +3,12 @@
 @section('content')
 <div class="space-y-6">
     <!-- Lake Detail Hero Card -->
-    <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center shrink-0">
-                <x-lucide-waves class="w-6 h-6" />
-            </div>
-            <div>
-                <h1 class="text-2xl font-extrabold text-white tracking-tight">{{ $lake->name }}</h1>
-                <p class="text-xs font-medium text-teal-400 mt-1 flex items-center gap-1.5">
-                    <x-lucide-map-pin class="w-3.5 h-3.5 text-teal-400" />
-                    <span>Canadian Angling Waterbody & Telemetry</span>
-                </p>
-            </div>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+    <x-pageHero
+        :title="$lake->name"
+        subtitle="Canadian Angling Waterbody & Telemetry"
+        icon="lucide-waves"
+    >
+        <x-slot:actions>
             <a href="/lake/{{ $lake->id }}/visits" class="px-4 py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold text-xs rounded-xl shadow-lg shadow-teal-950/40 transition-all flex items-center gap-1.5">
                 <x-lucide-calendar class="w-4 h-4 text-teal-200" />
                 <span>Visits Log</span>
@@ -37,36 +28,34 @@
             <a href="/lake" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl border border-slate-700 transition-colors">
                 Back
             </a>
-        </div>
-    </div>
+        </x-slot:actions>
+    </x-pageHero>
 
     <!-- Lake Badges -->
     @if($lake->structure || $lake->max_depth || ($lake->latitude && $lake->longitude) || $lake->fishingZone)
         <div class="flex flex-wrap items-center gap-2 text-xs">
             @if($lake->fishingZone)
-                <a href="{{ url('/fishing-zone/' . $lake->fishingZone->id) }}" class="bg-indigo-50 text-indigo-800 border border-indigo-200 hover:bg-indigo-100 px-3 py-1.5 rounded-xl font-semibold transition-colors flex items-center gap-1.5 shadow-2xs">
-                    <x-lucide-shield class="w-3.5 h-3.5 text-indigo-600" />
-                    <span>Zone: <strong class="font-mono">{{ $lake->fishingZone->code }}</strong> — {{ $lake->fishingZone->name }}</span>
-                    <x-lucide-arrow-up-right class="w-3 h-3 text-indigo-500" />
+                <a href="{{ url('/fishing-zone/' . $lake->fishingZone->id) }}" class="inline-flex">
+                    <x-badge variant="indigo" size="md" icon="lucide-shield">
+                        Zone: <strong class="font-mono">{{ $lake->fishingZone->code }}</strong> — {{ $lake->fishingZone->name }}
+                        <x-lucide-arrow-up-right class="w-3 h-3 text-indigo-500 ml-1 inline" />
+                    </x-badge>
                 </a>
             @endif
             @if($lake->structure)
-                <span class="bg-teal-50 text-teal-800 border border-teal-200 px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1 shadow-2xs">
-                    <x-lucide-layers class="w-3.5 h-3.5 text-teal-600" />
-                    <span>Bottom Cover: <strong>{{ $lake->structure }}</strong></span>
-                </span>
+                <x-badge variant="teal" size="md" icon="lucide-layers">
+                    Bottom Cover: <strong>{{ $lake->structure }}</strong>
+                </x-badge>
             @endif
             @if($lake->max_depth)
-                <span class="bg-slate-100 text-slate-800 border border-slate-200 px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1 shadow-2xs">
-                    <x-lucide-ruler class="w-3.5 h-3.5 text-slate-600" />
-                    <span>Max Depth: <strong>{{ $lake->max_depth }} ft</strong></span>
-                </span>
+                <x-badge variant="slate" size="md" icon="lucide-ruler">
+                    Max Depth: <strong>{{ $lake->max_depth }} ft</strong>
+                </x-badge>
             @endif
             @if($lake->latitude && $lake->longitude)
-                <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1 shadow-2xs font-mono">
-                    <x-lucide-map-pin class="w-3.5 h-3.5 text-emerald-600" />
-                    <span>GPS: <strong>{{ number_format($lake->latitude, 4) }}°N, {{ number_format($lake->longitude, 4) }}°W</strong></span>
-                </span>
+                <x-badge variant="emerald" size="md" icon="lucide-map-pin" :fontMono="true">
+                    GPS: <strong>{{ number_format($lake->latitude, 4) }}°N, {{ number_format($lake->longitude, 4) }}°W</strong>
+                </x-badge>
             @endif
         </div>
     @endif
@@ -74,76 +63,78 @@
     <!-- Key Trophy Metrics Grid (Angler Profile Match) -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         <!-- Card 1: Total Fish Logged -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between">
-            <div>
-                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Total Production</span>
-                <span class="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1 block">{{ number_format($count) }}</span>
-                <span class="text-[11px] text-teal-600 font-semibold mt-1 inline-flex items-center gap-1">
-                    <x-lucide-calendar class="w-3 h-3" /> {{ $visits }} Visit(s) • {{ $anglers }} Angler(s)
-                </span>
+        <x-card>
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Total Production</span>
+                    <span class="text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight mt-1 block">{{ number_format($count) }}</span>
+                    <span class="text-[11px] text-teal-600 dark:text-teal-400 font-semibold mt-1 inline-flex items-center gap-1">
+                        <x-lucide-calendar class="w-3 h-3" /> {{ $visits }} Visit(s) • {{ $anglers }} Angler(s)
+                    </span>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400 border border-teal-100 dark:border-teal-900/60 flex items-center justify-center shrink-0">
+                    <x-lucide-fish class="w-6 h-6" />
+                </div>
             </div>
-            <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
-                <x-lucide-fish class="w-6 h-6" />
-            </div>
-        </div>
+        </x-card>
 
         <!-- Card 2: Lunker Legend (Longest Catch) -->
-        <div class="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent bg-white p-5 rounded-2xl border border-amber-200 shadow-sm space-y-2 relative overflow-hidden">
+        <div class="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent bg-white dark:bg-slate-900 p-5 rounded-2xl border border-amber-200 dark:border-amber-800/40 shadow-sm space-y-2 relative overflow-hidden">
             <x-watermarkTapeMeasure />
             <div class="flex items-center justify-between relative z-10">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1">
                     👑 Lunker Legend
                 </span>
-                <span class="text-xs font-black text-amber-600 bg-amber-100 px-2.5 py-0.5 rounded-full font-mono">Length</span>
+                <x-badge variant="amber" size="xs" label="Length" :fontMono="true" />
             </div>
             @isset($longest)
                 <div class="space-y-1 pt-1 relative z-10">
                     <div class="flex items-baseline gap-1.5">
-                        <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($longest->length, 1) }}</span>
-                        <span class="text-xs font-bold text-slate-500">inches</span>
+                        <span class="text-3xl font-black text-slate-900 dark:text-white font-mono">{{ number_format($longest->length, 1) }}</span>
+                        <span class="text-xs font-bold text-slate-500 dark:text-slate-400">inches</span>
                     </div>
-                    <div class="text-xs font-bold text-teal-700">{{ $longest->fishBreed->name ?? 'Fish' }}</div>
-                    <div class="pt-2 border-t border-amber-100/80 flex items-center justify-between text-xs text-slate-600">
+                    <div class="text-xs font-bold text-teal-700 dark:text-teal-400">{{ $longest->fishBreed->name ?? 'Fish' }}</div>
+                    <div class="pt-2 border-t border-amber-100/80 dark:border-amber-900/40 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
                         <span class="flex items-center gap-1 truncate">
                             <x-lucide-user class="w-3 h-3 text-slate-400 shrink-0" />
                             <span class="truncate font-medium">{{ $longest->angler->full_name ?? 'Angler' }}</span>
                         </span>
-                        <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $longest->caught }}</span>
+                        <span class="font-mono text-[11px] text-slate-400 dark:text-slate-500 shrink-0">{{ $longest->caught }}</span>
                     </div>
                 </div>
             @else
-                <div class="py-4 text-center text-slate-400 text-xs italic relative z-10">
+                <div class="py-4 text-center text-slate-400 dark:text-slate-500 text-xs italic relative z-10">
                     No length record logged yet.
                 </div>
             @endisset
         </div>
 
         <!-- Card 3: Heavyweight Champ (Fattest Catch) -->
-        <div class="bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-transparent bg-white p-5 rounded-2xl border border-sky-200 shadow-sm space-y-2 relative overflow-hidden">
+        <div class="bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-transparent bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sky-200 dark:border-sky-800/40 shadow-sm space-y-2 relative overflow-hidden">
             <x-watermarkDialScale />
             <div class="flex items-center justify-between relative z-10">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-sky-800 flex items-center gap-1">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-sky-800 dark:text-sky-400 flex items-center gap-1">
                     🏋️ Heavyweight Champ
                 </span>
-                <span class="text-xs font-black text-sky-600 bg-sky-100 px-2.5 py-0.5 rounded-full font-mono">Weight</span>
+                <x-badge variant="sky" size="xs" label="Weight" :fontMono="true" />
             </div>
             @if(isset($fattest) && !is_null($fattest->weight))
                 <div class="space-y-1 pt-1 relative z-10">
                     <div class="flex items-baseline gap-1.5">
-                        <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($fattest->weight, 1) }}</span>
-                        <span class="text-xs font-bold text-slate-500">lbs.</span>
+                        <span class="text-3xl font-black text-slate-900 dark:text-white font-mono">{{ number_format($fattest->weight, 1) }}</span>
+                        <span class="text-xs font-bold text-slate-500 dark:text-slate-400">lbs.</span>
                     </div>
-                    <div class="text-xs font-bold text-teal-700">{{ $fattest->fishBreed->name ?? 'Fish' }}</div>
-                    <div class="pt-2 border-t border-sky-100/80 flex items-center justify-between text-xs text-slate-600">
+                    <div class="text-xs font-bold text-teal-700 dark:text-teal-400">{{ $fattest->fishBreed->name ?? 'Fish' }}</div>
+                    <div class="pt-2 border-t border-sky-100/80 dark:border-sky-900/40 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
                         <span class="flex items-center gap-1 truncate">
                             <x-lucide-user class="w-3 h-3 text-slate-400 shrink-0" />
                             <span class="truncate font-medium">{{ $fattest->angler->full_name ?? 'Angler' }}</span>
                         </span>
-                        <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $fattest->caught }}</span>
+                        <span class="font-mono text-[11px] text-slate-400 dark:text-slate-500 shrink-0">{{ $fattest->caught }}</span>
                     </div>
                 </div>
             @else
-                <div class="py-4 text-center text-slate-400 text-xs italic relative z-10">
+                <div class="py-4 text-center text-slate-400 dark:text-slate-500 text-xs italic relative z-10">
                     No weight record logged yet.
                 </div>
             @endif
@@ -152,57 +143,45 @@
 
     <!-- Location & Bathymetric Topographic Map Card -->
     @if($lake->latitude && $lake->longitude)
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-0">
-            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
-                <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                    <x-lucide-compass class="w-4 h-4 text-teal-600" />
-                    <span>Location, Bathymetry & Topo Map</span>
-                </h2>
-                <span id="viewport-lakes-badge" class="bg-teal-50 text-teal-700 border border-teal-200 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono transition-all">
+        <x-card title="Location, Bathymetry & Topo Map" icon="lucide-compass">
+            <x-slot:actions>
+                <span id="viewport-lakes-badge" class="bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono transition-all">
                     Loading Viewport Lakes...
                 </span>
-            </div>
+            </x-slot:actions>
 
-            <div id="lake-show-map" class="w-full h-[420px]"></div>
-        </div>
+            <div id="lake-show-map" class="w-full h-[420px] rounded-xl overflow-hidden"></div>
+        </x-card>
     @endif
 
     <!-- Species Statistics Grid -->
     @if(isset($stats) && count($stats) > 0)
         <div class="space-y-4">
-            <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                <x-lucide-fish class="w-4.5 h-4.5 text-teal-600" />
+            <h2 class="text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                <x-lucide-fish class="w-4.5 h-4.5 text-teal-600 dark:text-teal-400" />
                 <span>Species Statistics</span>
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 @foreach($stats as $stat)
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-3">
-                        <h3 class="font-bold text-slate-900 text-sm border-b border-slate-100 pb-2 flex items-center justify-between">
-                            <span class="flex items-center gap-2">
-                                <x-lucide-dna class="w-4 h-4 text-emerald-600" />
-                                <span>{{ $stat->fishBreed->name }}</span>
-                            </span>
-                            <span class="bg-teal-50 text-teal-700 font-mono text-xs font-bold px-2.5 py-0.5 rounded-full border border-teal-200">{{ $stat->cnt }} Total</span>
-                        </h3>
-
+                    <x-card :title="$stat->fishBreed->name" icon="lucide-dna" iconColor="emerald" :badge="$stat->cnt . ' Total'" badgeVariant="teal">
                         <div class="grid grid-cols-2 gap-3 text-center text-xs">
-                            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60">
-                                <span class="text-[10px] uppercase font-bold text-slate-400 block">Avg. Length</span>
-                                <span class="text-base font-black text-slate-900 font-mono block mt-0.5">{{ $stat->avg_length }} in.</span>
-                                <span class="text-[10px] text-slate-500 font-mono">{{ $stat->min_length }}/{{ $stat->max_length }} (Min/Max)</span>
+                            <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-800">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block">Avg. Length</span>
+                                <span class="text-base font-black text-slate-900 dark:text-white font-mono block mt-0.5">{{ $stat->avg_length }} in.</span>
+                                <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono">{{ $stat->min_length }}/{{ $stat->max_length }} (Min/Max)</span>
                             </div>
-                            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60">
-                                <span class="text-[10px] uppercase font-bold text-slate-400 block">Avg. Weight</span>
+                            <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-800">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block">Avg. Weight</span>
                                 @if(!is_null($stat->avg_weight))
-                                    <span class="text-base font-black text-slate-900 font-mono block mt-0.5">{{ $stat->avg_weight }} lbs.</span>
-                                    <span class="text-[10px] text-slate-500 font-mono">{{ $stat->min_weight }}/{{ $stat->max_weight }} (Min/Max)</span>
+                                    <span class="text-base font-black text-slate-900 dark:text-white font-mono block mt-0.5">{{ $stat->avg_weight }} lbs.</span>
+                                    <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono">{{ $stat->min_weight }}/{{ $stat->max_weight }} (Min/Max)</span>
                                 @else
-                                    <span class="text-xs text-slate-400 block py-1.5">—</span>
+                                    <span class="text-xs text-slate-400 dark:text-slate-500 block py-1.5">—</span>
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 @endforeach
             </div>
         </div>
@@ -210,25 +189,27 @@
 
 
     <!-- Catches Logbook Directory Quick Access Banner Card -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-        <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
-                <x-lucide-book-open class="w-6 h-6" />
+    <x-card>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400 border border-teal-100 dark:border-teal-900/60 flex items-center justify-center shrink-0">
+                    <x-lucide-book-open class="w-6 h-6" />
+                </div>
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+                        <span>Catches Logbook Directory</span>
+                        <x-badge variant="teal" size="sm" :label="number_format($count) . ' Catches'" :fontMono="true" />
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Explore all catch records logged at {{ $lake->name }} with weather telemetry, lures, and species history.</p>
+                </div>
             </div>
-            <div>
-                <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
-                    <span>Catches Logbook Directory</span>
-                    <span class="bg-teal-50 text-teal-700 border border-teal-200 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono">{{ number_format($count) }} Catches</span>
-                </h2>
-                <p class="text-xs text-slate-500 mt-1">Explore all catch records logged at {{ $lake->name }} with weather telemetry, lures, and species history.</p>
-            </div>
-        </div>
 
-        <a href="{{ url('/record/directory') }}?lake={{ $lake->id }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all shrink-0">
-            <span>View Lake Catches</span>
-            <x-lucide-arrow-right class="w-4 h-4 text-teal-400" />
-        </a>
-    </div>
+            <a href="{{ url('/record/directory') }}?lake={{ $lake->id }}" class="inline-flex items-center gap-2 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all shrink-0">
+                <span>View Lake Catches</span>
+                <x-lucide-arrow-right class="w-4 h-4 text-teal-400" />
+            </a>
+        </div>
+    </x-card>
 </div>
 @endsection
 

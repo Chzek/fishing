@@ -22,7 +22,44 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### ⚙️ Priority 2 (P2): Frontend Reactivity, Livewire DX & Visual Polish
 
-#### 1. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
+#### 1. [COMPLETED] Design Token & Blade Component Standardization (`<x-card>`, `<x-badge>`, `<x-pageHero>`)
+- **Agents**: `ui-ux-auditor`, `laravel-architect`
+- **Impact**: **High** (UI Consistency & Design Token Alignment)
+- **Status**: **Completed & Verified** (289 tests passing, 1,249 assertions, PHPStan level 5 clean)
+- **Description**: Consolidate repetitive HTML markup across all resource index, show, and form pages into encapsulated Blade components:
+  * **Unified Card Container (`<x-card>`)**: Standardized surface tokens (`bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4`), optional headers, icons, iconColor tints, badges, and action slots.
+  * **High-Contrast Badges (`<x-badge>`)**: Standardized pill sizes (`sm`, `md`, `lg`), outdoor-safe contrast ratios across 8 color variants (`teal`, `emerald`, `amber`, `sky`, `purple`, `rose`, `indigo`, `slate`), fontMono numeric typography, and inline dynamic icons.
+  * **Unified Hero Banner (`<x-pageHero>`)**: Standardized dark telemetry banners with actions and metric slots across all views (`/profile`, `/record`, `/angler/stats`, `/lake`, `/lake/{id}`, `/expedition`, `/expedition/{id}`, `/angler`).
+  * **Typography Consistency**: Enforce `font-mono tracking-tight` for all quantitative measurements (inches, lbs, hPa, percentages, dates).
+
+#### 2. System / Light / Dark 3-Way Theme Engine & Livewire Volt Switcher
+- **Agents**: `ui-ux-auditor`, `livewire-architect`, `laravel-architect`
+- **Impact**: **High** (Outdoor Sunlight Readability & Night Mode Ergonomics)
+- **Description**: Implement a complete 3-way theme preference engine (`System`, `Light`, `Dark`):
+  * **Zero-FOUC Script**: Inline `<head>` script evaluating `localStorage` and `prefers-color-scheme` before DOM rendering.
+  * **Database & User Profile Persistence**: Add `theme_preference` column (`system`, `light`, `dark`) to `users` table and `/profile/edit`.
+  * **Livewire Volt 3-Way Switcher**: Single-file Volt component (`resources/views/livewire/theme-switcher.blade.php`) mounted in the Desktop Sidebar footer, Mobile Drawer, and User Profile view.
+  * **Tailwind CSS v4 Dark Token Layering**: Audit and apply `dark:` utility variants across all views, data tables, and slide-over modals.
+
+#### 3. Interactive JavaScript Telemetry Visualizations (Chart.js & Livewire/Alpine)
+- **Agents**: `ui-ux-auditor`, `livewire-architect`, `seasoned-angler-advisor`
+- **Impact**: **High** (Tactical Angling Analytics & Data Science)
+- **Description**: Replace static SVG/CSS charts with interactive, hardware-accelerated Chart.js canvases wrapped in reactive Alpine.js components:
+  * **Species Ratio Interactive Donut**: Hover slice details, species percentage breakdown, and animated transitions.
+  * **Daily / Monthly Catch Cadence Bars**: Animated multi-series bar charts with trip pace metrics.
+  * **Barometric Pressure vs Catch Velocity**: 24-hour dual Y-axis spline/bar chart correlating pressure drops with strike frequency.
+  * **Water Temperature × Lure Category Matrix**: Strike zone heatmap identifying high-probability tackle per water temp band.
+  * **Angler Multi-Skill Radar**: 5-axis crew comparison chart (Lunker Max, Volume, C&R %, Species Diversity, Active Waters).
+
+#### 4. Outdoor Boat Usability & Responsive Table-to-Card Stack
+- **Agents**: `ui-ux-auditor`, `livewire-architect`, `seasoned-angler-advisor`
+- **Impact**: **Medium-High** (Mobile & Boat Cockpit Usability)
+- **Description**: Optimize user experience for open-water boat navigation under direct sunlight and high glare:
+  * **Mobile Card Stack**: Automatically collapse dense data tables into vertical card feeds on viewports `< 640px` to eliminate horizontal panning on mobile devices.
+  * **44px Tap Target Enforcement**: Audit and expand touch boundaries on all mobile filter pills, table sorting chevrons, and pagination buttons.
+  * **WCAG AAA Sunlight Contrast**: Elevate secondary text contrast ratios to $\ge 7:1$ to prevent washout on polarized mobile screens.
+
+#### 5. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
 - **Agents**: `seasoned-angler-advisor`, `laravel-architect`, `ui-ux-auditor`
 - **Impact**: **High** (Custom Fishery Intelligence & Depth Mapping)
 - **Description**: Build an ingestion pipeline for personal Humminbird Helix AutoChart Live sonar data (`acdata` folder / AutoChart Zero Line SD card, AutoChart PC exports, CSV/XYZ soundings, and GeoJSON contour vectors):
@@ -31,7 +68,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **Interactive Map Layer**: Render private, high-definition (1-foot / 3-foot) bathymetric contours on both the **Map Explorer** (`/map/explorer`) and **Lake Dossier** (`/lake/{id}`) with custom color ramping, depth labels in feet, and bottom hardness / weedline overlays.
   * **Offline Support**: Integrate custom lake contours into the Offline Region Downloader (`/map/offline`) for 100% offline navigation out on the water.
 
-#### 2. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
+#### 6. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (Database Query Optimization)
 - **Description**: Consolidate the 5 separate count and aggregation queries in `LakeController@show` (total catches, longest catch, heaviest catch, unique visits, unique anglers) into a consolidated single-pass aggregation query.
@@ -60,7 +97,8 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 | [`blade-ui-kit/blade-lucide-icons`](https://github.com/blade-ui-kit/blade-lucide-icons) | Blade / UI | Server-rendered Lucide icons (`<x-lucide-fish />`) eliminating JS DOM injection delays & SVG duplication. | **Completed** |
 | [`larastan/larastan`](https://github.com/larastan/larastan) *(dev)* | Static Analysis | Strict level typing, Eloquent relationship validation, and null safety checks across all 13 models & services. | **Completed** |
 | [`matanyadaev/laravel-eloquent-spatial`](https://github.com/matanyadaev/laravel-eloquent-spatial) | GIS / Mapping | Native MySQL 8 spatial geometry (`Point`, `Polygon`) with spherical distance scopes (`whereDistanceSphere`) for sub-millisecond waypoint & nearby radius lookups. | **Completed** |
-| [`livewire/volt`](https://github.com/livewire/volt) | Livewire DX | Single-file reactive components for lightweight boat widgets (Barometer Telemetry, species badges). | **P3 (DX)** |
+| [`livewire/volt`](https://github.com/livewire/volt) | Livewire DX | Single-file reactive components for lightweight boat widgets (Theme Switcher, Solunar date controls). | **P2 (Active)** |
+| [`chart.js`](https://www.chartjs.org/) | Frontend / Charts | Hardware-accelerated, lightweight HTML5 canvas telemetry charts (Barometer vs Strike, Species Donuts, Radar). | **P2 (Active)** |
 | [`laravel/boost`](https://github.com/laravel/boost) *(dev)* | AI Tooling / MCP | Embedded MCP server and AI guidelines/skills for Antigravity-assisted development. | **Completed** |
 
 ---
@@ -268,5 +306,21 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * [`FetchCatchWeatherListener.php`](file:///home/gmroczek/git/fishing/app/Listeners/FetchCatchWeatherListener.php): Automatically triggers Open-Meteo daily weather synchronization for the catch's waterbody and timestamp.
     - Streamlined [`RecordController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/RecordController.php), [`QuickCatchModal.php`](file:///home/gmroczek/git/fishing/app/Livewire/Modals/QuickCatchModal.php), and [`RecordApiController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Api/v1/RecordApiController.php) to eliminate duplicated secondary side-effects.
     - Added dedicated feature tests in [`CatchLoggedEventPipelineTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/CatchLoggedEventPipelineTest.php) with the full test suite passing at **286 tests (1,230 assertions)** and **0 PHPStan errors (Level 5)**.
+39. **Design Token & Blade Component Standardization (`<x-card>`, `<x-badge>`, `<x-pageHero>`) (P2.1)**:
+    - Designed and implemented universal encapsulated Blade UI components with dark mode support (`dark:`) and outdoor boat high-contrast tokens:
+      * [`card.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/card.blade.php): Surface card container with support for header titles, subtitles, dynamic Lucide icons, icon tinting, pill badges, action links/slots, and footer telemetry ribbons.
+      * [`badge.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/badge.blade.php): Standardized pill badges supporting 8 distinct palette variants (`teal`, `emerald`, `amber`, `sky`, `purple`, `rose`, `indigo`, `slate`), 3 sizes (`sm`, `md`, `lg`), `font-mono` numeric typography, and inline dynamic icons.
+      * [`pageHero.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/pageHero.blade.php): Standardized page-level dark telemetry hero banner with support for action buttons, badge pill indicators, and custom telemetry metric slots.
+    - Refactored all major application views to adopt these standardized components:
+      * Angler Profile & Account Dossier ([`profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php))
+      * Angler Analytics & Production Summary ([`angler/stats.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/stats.blade.php))
+      * Angler Directory Index ([`angler/index.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/index.blade.php))
+      * Catches Analytics & Production Dashboard ([`record/index.blade.php`](file:///home/gmroczek/git/fishing/resources/views/record/index.blade.php))
+      * Lake Dossier & Bathymetric Telemetry ([`lake/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/show.blade.php))
+      * Lake Directory Index ([`lake/index.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/index.blade.php))
+      * Expedition Detail & Multi-Day Log ([`expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php))
+      * Expedition Directory Index ([`expedition/index.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/index.blade.php))
+    - Expanded unit and feature test coverage in [`BladeComponentsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/BladeComponentsTest.php).
+    - Verified entire test suite passing cleanly at **289 passing tests (1,249 assertions)** and **0 PHPStan errors (Level 5)**.
 
 
