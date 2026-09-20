@@ -242,52 +242,52 @@
         <!-- 🌊 TOP WATERS & SPECIES DIVERSITY GRID -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- 🌊 Top Fished Waters -->
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                        <x-lucide-waves class="w-4 h-4 text-teal-600" />
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4 transition-colors">
+                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <h2 class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                        <x-lucide-waves class="w-4 h-4 text-teal-600 dark:text-teal-400" />
                         <span>Top Fished Waters</span>
                     </h2>
-                    <span class="text-[11px] text-slate-400 font-mono font-semibold">{{ count($topWaters) }} Waters</span>
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500 font-mono font-semibold">{{ count($topWaters) }} Waters</span>
                 </div>
 
                 @if(count($topWaters) > 0)
                     <div class="space-y-3">
                         @foreach($topWaters as $idx => $tw)
-                            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/60">
+                            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
                                 <div class="flex items-center gap-3">
-                                    <span class="w-6 h-6 rounded-lg bg-teal-500/10 text-teal-700 font-mono font-bold text-xs flex items-center justify-center border border-teal-500/20">
+                                    <span class="w-6 h-6 rounded-lg bg-teal-500/10 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono font-bold text-xs flex items-center justify-center border border-teal-500/20 dark:border-teal-800/80">
                                         #{{ $idx + 1 }}
                                     </span>
                                     <div>
-                                        <a href="/lake/{{ $tw->lake->id }}" class="font-bold text-slate-900 text-xs hover:text-teal-600 hover:underline">
+                                        <a href="/lake/{{ $tw->lake->id }}" class="font-bold text-slate-900 dark:text-white text-xs hover:text-teal-600 dark:hover:text-teal-400 hover:underline">
                                             {{ $tw->lake->name ?? 'Unknown Lake' }}
                                         </a>
-                                        <span class="text-[10px] text-slate-500 block">Lake Record PB: <strong class="font-mono text-slate-800">{{ $tw->longest ? $tw->longest . ' in.' : '—' }}</strong></span>
+                                        <span class="text-[10px] text-slate-500 dark:text-slate-400 block">Lake Record PB: <strong class="font-mono text-slate-800 dark:text-slate-200">{{ $tw->longest ? $tw->longest . ' in.' : '—' }}</strong></span>
                                     </div>
                                 </div>
                                 <div class="text-right font-mono">
-                                    <span class="text-xs font-bold text-teal-700 block">{{ $tw->catches }} fish</span>
+                                    <span class="text-xs font-bold text-teal-700 dark:text-teal-400 block">{{ $tw->catches }} fish</span>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 @else
-                    <div class="text-center py-8 text-slate-400 text-xs italic">
+                    <div class="text-center py-8 text-slate-400 dark:text-slate-500 text-xs italic">
                         No waterbody data logged.
                     </div>
                 @endif
             </div>
 
             <!-- 🐟 Angler Species Diversity Breakdown -->
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4 flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4 flex flex-col justify-between transition-colors">
                 <div>
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                        <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                            <x-lucide-pie-chart class="w-4 h-4 text-teal-600" />
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                        <h2 class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                            <x-lucide-pie-chart class="w-4 h-4 text-teal-600 dark:text-teal-400" />
                             <span>Angler Species Ratio</span>
                         </h2>
-                        <span class="text-[11px] text-slate-400 font-mono font-semibold">{{ count($speciesDistribution) }} Species</span>
+                        <span class="text-[11px] text-slate-400 dark:text-slate-500 font-mono font-semibold">{{ count($speciesDistribution) }} Species</span>
                     </div>
 
                     @if(count($speciesDistribution) > 0)
@@ -308,11 +308,11 @@
 
                         <div class="flex flex-col sm:flex-row items-center gap-5 pt-2">
                             <!-- Donut Pie Chart -->
-                            <div class="relative w-32 h-32 rounded-full shadow-md border-4 border-white shrink-0" style="background: conic-gradient({{ $conicStyle }});">
-                                <div class="absolute inset-3 rounded-full bg-white flex flex-col items-center justify-center border border-slate-100 shadow-inner">
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase">Species</span>
-                                    <span class="text-lg font-black text-slate-900 font-mono leading-none my-0.5">{{ count($speciesDistribution) }}</span>
-                                    <span class="text-[10px] text-teal-600 font-bold font-mono">{{ $record_count }} fish</span>
+                            <div class="relative w-32 h-32 rounded-full shadow-md border-4 border-white dark:border-slate-900 shrink-0" style="background: conic-gradient({{ $conicStyle }});">
+                                <div class="absolute inset-3 rounded-full bg-white dark:bg-slate-900 flex flex-col items-center justify-center border border-slate-100 dark:border-slate-800 shadow-inner">
+                                    <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase">Species</span>
+                                    <span class="text-lg font-black text-slate-900 dark:text-white font-mono leading-none my-0.5">{{ count($speciesDistribution) }}</span>
+                                    <span class="text-[10px] text-teal-600 dark:text-teal-400 font-bold font-mono">{{ $record_count }} fish</span>
                                 </div>
                             </div>
 
@@ -326,18 +326,18 @@
                                     <div class="flex items-center justify-between text-xs px-1">
                                         <div class="flex items-center gap-2 min-w-0">
                                             <span class="w-2.5 h-2.5 rounded-full {{ $colorClass }} shrink-0"></span>
-                                            <span class="font-bold text-slate-800 truncate">{{ $sp->fishBreed->name ?? 'Unknown' }}</span>
+                                            <span class="font-bold text-slate-800 dark:text-slate-200 truncate">{{ $sp->fishBreed->name ?? 'Unknown' }}</span>
                                         </div>
                                         <div class="flex items-center gap-2 font-mono shrink-0">
-                                            <span class="text-slate-500 text-[11px]">{{ $sp->count }}</span>
-                                            <strong class="text-slate-900 w-8 text-right">{{ $pct }}%</strong>
+                                            <span class="text-slate-500 dark:text-slate-400 text-[11px]">{{ $sp->count }}</span>
+                                            <strong class="text-slate-900 dark:text-white w-8 text-right">{{ $pct }}%</strong>
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
                         </div>
                     @else
-                        <div class="text-center py-8 text-slate-400 text-xs italic">
+                        <div class="text-center py-8 text-slate-400 dark:text-slate-500 text-xs italic">
                             No species breakdown data available.
                         </div>
                     @endif
@@ -348,16 +348,16 @@
                     @php
                         $topSpecies = $speciesDistribution->first();
                     @endphp
-                    <div class="pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
-                        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-0.5">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Dominant Target</span>
-                            <strong class="text-xs font-black text-slate-900 truncate block">{{ $topSpecies->fishBreed->name ?? 'None' }}</strong>
-                            <span class="text-[10px] text-teal-600 font-bold font-mono block">{{ round(($topSpecies->count / $record_count) * 100) }}% share ({{ $topSpecies->count }} fish)</span>
+                    <div class="pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2 text-xs">
+                        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 space-y-0.5">
+                            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Dominant Target</span>
+                            <strong class="text-xs font-black text-slate-900 dark:text-white truncate block">{{ $topSpecies->fishBreed->name ?? 'None' }}</strong>
+                            <span class="text-[10px] text-teal-600 dark:text-teal-400 font-bold font-mono block">{{ round(($topSpecies->count / $record_count) * 100) }}% share ({{ $topSpecies->count }} fish)</span>
                         </div>
-                        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-0.5">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Species Diversity</span>
-                            <strong class="text-xs font-black text-slate-900 font-mono block">{{ count($speciesDistribution) }} Breeds Logged</strong>
-                            <span class="text-[10px] text-slate-500 font-mono block">{{ $record_count }} total catches</span>
+                        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 space-y-0.5">
+                            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Species Diversity</span>
+                            <strong class="text-xs font-black text-slate-900 dark:text-white font-mono block">{{ count($speciesDistribution) }} Breeds Logged</strong>
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono block">{{ $record_count }} total catches</span>
                         </div>
                     </div>
                 @endif
@@ -365,23 +365,23 @@
         </div>
 
         <!-- Catches Logbook Quick Access Banner Card -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 transition-colors">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center shrink-0">
+                <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 border border-teal-100 dark:border-teal-800/80 flex items-center justify-center shrink-0">
                     <x-lucide-list class="w-6 h-6" />
                 </div>
                 <div>
-                    <h2 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
                         <span>Angler Catches Logbook</span>
-                        <span class="bg-teal-50 text-teal-700 border border-teal-200 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono">{{ $record_count }} Catches</span>
+                        <span class="bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/80 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono">{{ $record_count }} Catches</span>
                     </h2>
-                    <p class="text-xs text-slate-500 mt-1">Explore this angler's complete catch logbook with weather telemetry, lake locations, lure history, and search filters.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Explore this angler's complete catch logbook with weather telemetry, lake locations, lure history, and search filters.</p>
                 </div>
             </div>
 
-            <a href="{{ url('/record/directory') }}?angler={{ $angler->id }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all shrink-0">
+            <a href="{{ url('/record/directory') }}?angler={{ $angler->id }}" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 dark:bg-teal-600 dark:hover:bg-teal-500 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-md transition-all shrink-0">
                 <span>View Full Logbook</span>
-                <x-lucide-arrow-right class="w-4 h-4 text-teal-400" />
+                <x-lucide-arrow-right class="w-4 h-4 text-teal-400 dark:text-teal-100" />
             </a>
         </div>
 
