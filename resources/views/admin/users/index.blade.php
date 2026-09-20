@@ -18,6 +18,10 @@
         </div>
 
         <div class="flex items-center gap-2">
+            <a href="{{ route('admin.backups') }}" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
+                <x-lucide-hard-drive-download class="w-3.5 h-3.5 text-emerald-400" />
+                <span>Backups</span>
+            </a>
             <a href="{{ route('admin.trash') }}" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5">
                 <x-lucide-trash-2 class="w-3.5 h-3.5 text-rose-400" />
                 <span>Trash Archive</span>

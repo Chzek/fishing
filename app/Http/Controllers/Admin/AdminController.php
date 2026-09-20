@@ -71,6 +71,25 @@ class AdminController extends Controller
             ->whereNull('lake_daily_weather.id')
             ->count();
 
+        $backupCount = 0;
+        $backupSizeFormatted = '0 MB';
+        $backupHealthy = true;
+        try {
+            $backupConfig = \Spatie\Backup\Config\Config::fromArray(config('backup'));
+            $statuses = \Spatie\Backup\Tasks\Monitor\BackupDestinationStatusFactory::createForMonitorConfig($backupConfig->monitoredBackups);
+            foreach ($statuses as $status) {
+                $dest = $status->backupDestination();
+                $backupCount += $dest->backups()->count();
+                $usedBytes = $dest->usedStorage();
+                $backupSizeFormatted = round($usedBytes / 1024 / 1024, 1) . ' MB';
+                if (!$status->isHealthy()) {
+                    $backupHealthy = false;
+                }
+            }
+        } catch (\Throwable $e) {
+            $backupHealthy = false;
+        }
+
         return view('admin.index', [
             'anglers' => $anglers,
             'lakes' => $lakes,
@@ -94,6 +113,9 @@ class AdminController extends Controller
             'missingCoordsRecordsCount' => $missingCoordsRecordsCount,
             'unreadNotifications' => auth()->user()->unreadNotifications,
             'unlinkedUsersCount' => User::doesntHave('angler')->count(),
+            'backupCount' => $backupCount,
+            'backupSizeFormatted' => $backupSizeFormatted,
+            'backupHealthy' => $backupHealthy,
         ]);
     }
 

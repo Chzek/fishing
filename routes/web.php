@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Fishinglog\Http\Controllers\Admin\AdminController;
+use Fishinglog\Http\Controllers\Admin\AdminBackupController;
 use Fishinglog\Http\Controllers\Angler\AnglerController;
 use Fishinglog\Http\Controllers\Angler\AnglerProfileController;
 use Fishinglog\Http\Controllers\Angler\AnglerStatsController;
@@ -80,6 +81,13 @@ Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/trash', [AdminController::class, 'trash'])->name('admin.trash');
     Route::post('/trash/restore', [AdminController::class, 'restore'])->name('admin.trash.restore');
     Route::delete('/trash/force-delete', [AdminController::class, 'forceDelete'])->name('admin.trash.force-delete');
+
+    // Spatie / NAS Backups Management
+    Route::get('/backups', [AdminBackupController::class, 'index'])->name('admin.backups');
+    Route::post('/backups/create', [AdminBackupController::class, 'create'])->name('admin.backups.create');
+    Route::post('/backups/clean', [AdminBackupController::class, 'clean'])->name('admin.backups.clean');
+    Route::get('/backups/download', [AdminBackupController::class, 'download'])->name('admin.backups.download');
+    Route::delete('/backups/delete', [AdminBackupController::class, 'destroy'])->name('admin.backups.delete');
 });
 
 Route::group(['middleware' => 'auth'], function () {

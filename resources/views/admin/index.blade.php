@@ -23,6 +23,10 @@
                 <x-lucide-users class="w-4 h-4 text-teal-400" />
                 <span>User Linking</span>
             </a>
+            <a href="{{ route('admin.backups') }}" class="inline-flex items-center gap-2 px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-colors">
+                <x-lucide-hard-drive-download class="w-4 h-4 text-emerald-400" />
+                <span>NAS Backups ({{ $backupCount }})</span>
+            </a>
             <a href="{{ route('admin.trash') }}" class="inline-flex items-center gap-2 px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl border border-slate-700 transition-colors">
                 <x-lucide-trash-2 class="w-4 h-4 text-rose-400" />
                 <span>Trash Bin ({{ $trashedCount }})</span>
@@ -102,8 +106,8 @@
         </div>
     @endif
 
-    <!-- Synchronization Engine Consoles Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Synchronization & Infrastructure Consoles Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Two-Way Sync Console -->
         <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col justify-between space-y-4">
             <div class="space-y-1">
@@ -275,6 +279,39 @@
             <a href="{{ url('/pulse') }}" class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl shadow-lg transition-all shrink-0 cursor-pointer">
                 <x-lucide-bar-chart-3 class="w-4 h-4" />
                 <span>Open Pulse Dashboard →</span>
+            </a>
+        </div>
+
+        <!-- NAS & Spatie Database Backups Card -->
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <x-lucide-hard-drive-download class="w-5 h-5 text-emerald-400" />
+                        <h2 class="text-base font-bold text-white">NAS & Spatie Backups</h2>
+                    </div>
+                    @if($backupHealthy)
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono">
+                            ● {{ $backupCount }} Snapshots ({{ $backupSizeFormatted }})
+                        </span>
+                    @else
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono">
+                            ▲ Attention Needed
+                        </span>
+                    @endif
+                </div>
+                <p class="text-xs text-slate-300">
+                    Automated and on-demand database snapshots, storage disk health telemetry, and retention strategy enforcement.
+                </p>
+                <div class="pt-1 flex items-center gap-2 text-xs text-emerald-300/80 font-mono">
+                    <x-lucide-shield-check class="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Disk: backups (storage/app/backups)</span>
+                </div>
+            </div>
+
+            <a href="{{ route('admin.backups') }}" class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition-all shrink-0 cursor-pointer">
+                <x-lucide-archive class="w-4 h-4" />
+                <span>Open Backups Console →</span>
             </a>
         </div>
     </div>
