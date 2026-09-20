@@ -11,23 +11,23 @@
 
 @php
     $colorClasses = match ($color) {
-        'emerald' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-        'sky' => 'bg-sky-50 text-sky-600 border-sky-100',
-        'amber' => 'bg-amber-50 text-amber-600 border-amber-100',
-        'purple' => 'bg-purple-50 text-purple-600 border-purple-100',
-        'rose' => 'bg-rose-50 text-rose-600 border-rose-100',
-        'indigo' => 'bg-indigo-50 text-indigo-600 border-indigo-100',
-        default => 'bg-teal-50 text-teal-600 border-teal-100',
+        'emerald' => 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800/60',
+        'sky' => 'bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 border-sky-100 dark:border-sky-800/60',
+        'amber' => 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-800/60',
+        'purple' => 'bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-800/60',
+        'rose' => 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-800/60',
+        'indigo' => 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-100 dark:border-indigo-800/60',
+        default => 'bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 border-teal-100 dark:border-teal-800/60',
     };
 
     $subtextColor = match ($color) {
-        'emerald' => 'text-emerald-600',
-        'sky' => 'text-sky-600',
-        'amber' => 'text-amber-600',
-        'purple' => 'text-purple-600',
-        'rose' => 'text-rose-600',
-        'indigo' => 'text-indigo-600',
-        default => 'text-teal-600',
+        'emerald' => 'text-emerald-600 dark:text-emerald-400',
+        'sky' => 'text-sky-600 dark:text-sky-400',
+        'amber' => 'text-amber-600 dark:text-amber-400',
+        'purple' => 'text-purple-600 dark:text-purple-400',
+        'rose' => 'text-rose-600 dark:text-rose-400',
+        'indigo' => 'text-indigo-600 dark:text-indigo-400',
+        default => 'text-teal-600 dark:text-teal-400',
     };
 
     $safeIcon = match ($icon) {
@@ -41,10 +41,10 @@
     };
 @endphp
 
-<div {{ $attributes->merge(['class' => 'bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex items-center justify-between space-y-0']) }}>
+<div {{ $attributes->merge(['class' => 'bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 flex items-center justify-between space-y-0 transition-colors']) }}>
     <div class="space-y-1">
-        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">{{ $label }}</span>
-        <span class="text-3xl font-black text-slate-900 font-mono tracking-tight block">{{ is_numeric($value) ? number_format($value) : $value }}</span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">{{ $label }}</span>
+        <span class="text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight block">{{ is_numeric($value) ? number_format($value) : $value }}</span>
         @if($subtext)
             <span class="text-[11px] font-semibold mt-1 inline-flex items-center gap-1 {{ $subtextColor }}">
                 @if($safeSubtextIcon)
@@ -54,7 +54,7 @@
             </span>
         @endif
         @if($actionUrl && $actionLabel)
-            <a href="{{ $actionUrl }}" class="text-[11px] font-bold text-teal-600 hover:underline block pt-0.5">
+            <a href="{{ $actionUrl }}" class="text-[11px] font-bold text-teal-600 dark:text-teal-400 hover:underline block pt-0.5">
                 {{ $actionLabel }}
             </a>
         @endif

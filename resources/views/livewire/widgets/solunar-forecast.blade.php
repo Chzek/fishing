@@ -1,36 +1,36 @@
-<div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 transition-all">
+<div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm p-4 sm:p-5 transition-all">
     <!-- Header Row -->
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-100">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-100 dark:border-slate-800">
         <div class="flex items-center gap-2">
-            <h3 class="font-black text-slate-900 text-sm sm:text-base tracking-tight">
+            <h3 class="font-black text-slate-900 dark:text-white text-sm sm:text-base tracking-tight">
                 Solunar & Moon Phase Feeding Forecast
             </h3>
-            <span class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-lg font-mono">
-                <x-lucide-map-pin class="w-3 h-3 text-teal-600 shrink-0" />
+            <span class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 px-2.5 py-0.5 rounded-lg font-mono">
+                <x-lucide-map-pin class="w-3 h-3 text-teal-600 dark:text-teal-400 shrink-0" />
                 <span>{{ $lakeName }}</span>
-                <span class="text-slate-300">·</span>
-                <span class="text-teal-700 font-bold bg-teal-50 border border-teal-200/60 px-1 py-0.2 rounded text-[10px]">{{ $solunar['timezoneAbbr'] }}</span>
+                <span class="text-slate-300 dark:text-slate-600">·</span>
+                <span class="text-teal-700 dark:text-teal-400 font-bold bg-teal-50 dark:bg-teal-950/60 border border-teal-200/60 dark:border-teal-800/60 px-1 py-0.2 rounded text-[10px]">{{ $solunar['timezoneAbbr'] }}</span>
             </span>
         </div>
 
         <!-- Date Controls & Day Rating -->
         <div class="flex items-center gap-2 self-stretch sm:self-auto justify-between sm:justify-end">
             <!-- Reactive Date Navigator -->
-            <div class="inline-flex items-center bg-slate-50 border border-slate-200/80 rounded-xl p-1 text-xs font-semibold">
-                <button type="button" wire:click="previousDay" class="p-1 text-slate-500 hover:text-slate-900 hover:bg-white rounded-lg transition-colors cursor-pointer" title="Previous Day">
+            <div class="inline-flex items-center bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 rounded-xl p-1 text-xs font-semibold">
+                <button type="button" wire:click="previousDay" class="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" title="Previous Day">
                     <x-lucide-chevron-left class="w-4 h-4" />
                 </button>
-                <button type="button" wire:click="today" class="px-2 py-0.5 text-xs font-bold rounded-lg transition-colors cursor-pointer {{ $isToday ? 'bg-white text-teal-700 shadow-2xs' : 'text-slate-600 hover:text-slate-900' }}">
+                <button type="button" wire:click="today" class="px-2 py-0.5 text-xs font-bold rounded-lg transition-colors cursor-pointer {{ $isToday ? 'bg-white dark:bg-slate-700 text-teal-700 dark:text-teal-400 shadow-2xs' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white' }}">
                     Today
                 </button>
-                <button type="button" wire:click="nextDay" class="p-1 text-slate-500 hover:text-slate-900 hover:bg-white rounded-lg transition-colors cursor-pointer" title="Next Day">
+                <button type="button" wire:click="nextDay" class="p-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-colors cursor-pointer" title="Next Day">
                     <x-lucide-chevron-right class="w-4 h-4" />
                 </button>
-                <input type="date" wire:model.live="date" class="ml-1 text-[11px] font-mono bg-white border border-slate-200 rounded-lg px-2 py-0.5 text-slate-700 focus:ring-1 focus:ring-teal-500 focus:border-teal-500" />
+                <input type="date" wire:model.live="date" class="ml-1 text-[11px] font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-0.5 text-slate-700 dark:text-slate-200 focus:ring-1 focus:ring-teal-500 focus:border-teal-500 [color-scheme:light] dark:[color-scheme:dark]" />
             </div>
 
             <!-- Day Rating Badge -->
-            <div class="flex items-center gap-1.5 bg-slate-900 text-white px-2.5 py-1 rounded-xl text-xs font-bold border border-slate-800 shrink-0">
+            <div class="flex items-center gap-1.5 bg-slate-900 dark:bg-slate-950 text-white px-2.5 py-1 rounded-xl text-xs font-bold border border-slate-800 shrink-0">
                 <span class="text-amber-400 font-mono">{{ $solunar['rating']['score'] }}/5</span>
                 <span class="text-[10px] uppercase font-black text-emerald-400 tracking-wider hidden sm:inline">{{ $solunar['rating']['label'] }}</span>
             </div>
@@ -39,14 +39,14 @@
 
     @if(!empty($multiDayForecast) && count($multiDayForecast['forecast']) > 1)
         <!-- Compact Single-Line Multi-Day Astronomical Strip -->
-        <div class="mb-3.5 pb-2.5 border-b border-slate-100">
+        <div class="mb-3.5 pb-2.5 border-b border-slate-100 dark:border-slate-800">
             <div class="flex items-center justify-between gap-2 mb-1.5">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-                    <x-lucide-calendar-days class="w-3 h-3 text-teal-600" />
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                    <x-lucide-calendar-days class="w-3 h-3 text-teal-600 dark:text-teal-400" />
                     {{ $multiDayForecast['daysCount'] }}-Day Trip Feeding Outlook
                 </span>
                 @if($multiDayForecast['peakDay'])
-                    <span class="text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-md flex items-center gap-1">
+                    <span class="text-[10px] font-semibold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800/80 px-2 py-0.5 rounded-md flex items-center gap-1">
                         <span>🔥 Trip Peak:</span>
                         <strong>{{ date('M j', strtotime($multiDayForecast['peakDay']['date'])) }} ({{ $multiDayForecast['peakDay']['score'] }}★)</strong>
                     </span>
@@ -63,20 +63,20 @@
                     <button 
                         type="button" 
                         wire:click="setDate('{{ $dayItem['date'] }}')"
-                        class="px-2.5 py-1.5 rounded-lg text-center transition-all cursor-pointer shrink-0 border relative {{ $isSelected ? 'bg-slate-900 text-white border-slate-800 shadow-sm ring-2 ring-teal-500/40' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/70' }}"
+                        class="px-2.5 py-1.5 rounded-lg text-center transition-all cursor-pointer shrink-0 border relative {{ $isSelected ? 'bg-slate-900 dark:bg-slate-800 text-white border-slate-800 dark:border-slate-700 shadow-sm ring-2 ring-teal-500/40' : 'bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-200/70 dark:border-slate-700' }}"
                         title="{{ $carbonD->format('l, M j, Y') }}: {{ $dayItem['rating']['score'] }}/5 Stars ({{ $dayItem['rating']['label'] }})"
                     >
                         @if($isPeak)
-                            <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500 ring-1 ring-white" title="Trip Peak Feeding Day"></span>
+                            <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500 ring-1 ring-white dark:ring-slate-900" title="Trip Peak Feeding Day"></span>
                         @endif
 
-                        <div class="text-[9px] font-mono uppercase font-bold {{ $isSelected ? 'text-teal-300' : 'text-slate-400' }} leading-none">
+                        <div class="text-[9px] font-mono uppercase font-bold {{ $isSelected ? 'text-teal-300' : 'text-slate-400 dark:text-slate-500' }} leading-none">
                             {{ $carbonD->format('D, M j') }}
                         </div>
 
                         <div class="flex items-center justify-center gap-1 mt-1 leading-none">
                             <span class="text-xs">{{ $dayItem['moon']['emoji'] }}</span>
-                            <span class="text-[11px] font-mono font-black {{ $isSelected ? 'text-amber-400' : 'text-amber-600' }}">
+                            <span class="text-[11px] font-mono font-black {{ $isSelected ? 'text-amber-400' : 'text-amber-600 dark:text-amber-400' }}">
                                 {{ $dayItem['rating']['score'] }}★
                             </span>
                         </div>
@@ -89,7 +89,7 @@
     <!-- Main 4-Column Layout -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6 items-center">
         <!-- 1. Moon Phase Card (Col Span 4) -->
-        <div class="md:col-span-4 bg-slate-50/80 border border-slate-200/80 rounded-xl p-3 flex items-center gap-3.5">
+        <div class="md:col-span-4 bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 rounded-xl p-3 flex items-center gap-3.5">
             <div class="relative w-10 h-10 shrink-0 flex items-center justify-center">
                 <svg viewBox="0 0 32 32" class="w-9 h-9 drop-shadow-xs">
                     <!-- Dark moon disc base -->
@@ -103,8 +103,8 @@
                 </svg>
             </div>
             <div class="min-w-0">
-                <h4 class="text-xs font-bold text-slate-900">Moon Phase</h4>
-                <p class="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                <h4 class="text-xs font-bold text-slate-900 dark:text-white">Moon Phase</h4>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
                     {{ $solunar['moon']['phase'] }} &ndash; {{ $solunar['moon']['illumination'] }}% Illuminated
                 </p>
             </div>
@@ -112,8 +112,8 @@
 
         <!-- 2. Major Feed (Col Span 2) -->
         <div class="md:col-span-2">
-            <h4 class="text-xs font-bold text-slate-900">Major Feed</h4>
-            <div class="mt-1 space-y-0.5 text-xs text-slate-700 font-mono font-medium">
+            <h4 class="text-xs font-bold text-slate-900 dark:text-white">Major Feed</h4>
+            <div class="mt-1 space-y-0.5 text-xs text-slate-700 dark:text-slate-300 font-mono font-medium">
                 @foreach($solunar['majorWindows'] as $maj)
                     <div>{{ $maj['start'] }} - {{ $maj['end'] }}</div>
                 @endforeach
@@ -122,8 +122,8 @@
 
         <!-- 3. Minor Feed (Col Span 2) -->
         <div class="md:col-span-2">
-            <h4 class="text-xs font-bold text-slate-900">Minor Feed</h4>
-            <div class="mt-1 space-y-0.5 text-xs text-slate-700 font-mono font-medium">
+            <h4 class="text-xs font-bold text-slate-900 dark:text-white">Minor Feed</h4>
+            <div class="mt-1 space-y-0.5 text-xs text-slate-700 dark:text-slate-300 font-mono font-medium">
                 @foreach($solunar['minorWindows'] as $min)
                     <div>{{ $min['start'] }} - {{ $min['end'] }}</div>
                 @endforeach
@@ -174,8 +174,8 @@
             class="md:col-span-4 flex flex-col justify-center"
         >
             <div class="flex items-center justify-between mb-1.5">
-                <h4 class="text-xs font-bold text-slate-900">24-hour Bite timeline</h4>
-                <span class="text-[10px] text-slate-600 font-medium hidden sm:inline">Hover chart for exact time</span>
+                <h4 class="text-xs font-bold text-slate-900 dark:text-white">24-hour Bite timeline</h4>
+                <span class="text-[10px] text-slate-600 dark:text-slate-400 font-medium hidden sm:inline">Hover chart for exact time</span>
             </div>
 
             <div 
@@ -222,8 +222,8 @@
                         class="absolute top-0 -translate-x-1/2 flex flex-col items-center pointer-events-none z-10 transition-opacity" 
                         style="left: {{ $currentPercent }}%;"
                     >
-                        <span class="text-[8px] font-bold text-slate-800 leading-none">Current</span>
-                        <span class="text-[7px] text-slate-900 leading-none mt-0.5">▼</span>
+                        <span class="text-[8px] font-bold text-slate-800 dark:text-slate-200 leading-none">Current</span>
+                        <span class="text-[7px] text-slate-900 dark:text-teal-400 leading-none mt-0.5">▼</span>
                     </div>
                 @endif
 
@@ -251,7 +251,7 @@
                 </div>
 
                 <!-- 24-Hour Timeline Ticks -->
-                <div class="flex justify-between text-[10px] font-mono font-medium text-slate-500 mt-1.5 px-0.5 select-none">
+                <div class="flex justify-between text-[10px] font-mono font-medium text-slate-500 dark:text-slate-400 mt-1.5 px-0.5 select-none">
                     <span>12 AM</span>
                     <span class="hidden sm:inline">3 AM</span>
                     <span>6 AM</span>

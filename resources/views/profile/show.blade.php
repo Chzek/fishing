@@ -132,7 +132,7 @@
                                         <x-lucide-map-pin class="w-3 h-3 text-slate-400 shrink-0" />
                                         <span class="truncate font-medium">{{ $personalBest['byLength']->lake->name ?? 'Lake' }}</span>
                                     </span>
-                                    <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $personalBest['byLength']->caught }}</span>
+                                    <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ \Illuminate\Support\Carbon::parse($personalBest['byLength']->caught)->format('M j, Y') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -166,7 +166,7 @@
                                         <x-lucide-map-pin class="w-3 h-3 text-slate-400 shrink-0" />
                                         <span class="truncate font-medium">{{ $personalBest['byWeight']->lake->name ?? 'Lake' }}</span>
                                     </span>
-                                    <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $personalBest['byWeight']->caught }}</span>
+                                    <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ \Illuminate\Support\Carbon::parse($personalBest['byWeight']->caught)->format('M j, Y') }}</span>
                                 </div>
                             </div>
                         </div>

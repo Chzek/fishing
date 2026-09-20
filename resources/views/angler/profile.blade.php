@@ -52,7 +52,7 @@
         <!-- Personal Best Trophies Cards Section -->
         <div class="space-y-4">
             <div class="flex items-center justify-between">
-                <h2 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                <h2 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                     <x-lucide-trophy class="w-5 h-5 text-amber-500" />
                     <span>Personal Best Trophies</span>
                 </h2>
@@ -60,29 +60,29 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <!-- 👑 Trophy By Length -->
-                <div class="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent bg-white p-5 rounded-2xl border border-amber-200 shadow-sm space-y-2 relative overflow-hidden">
+                <div class="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent bg-white dark:bg-slate-900 p-5 rounded-2xl border border-amber-200 dark:border-amber-800/80 shadow-sm space-y-2 relative overflow-hidden transition-colors">
                     <x-watermarkTapeMeasure />
                     <div class="flex items-center justify-between relative z-10">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1">
                             👑 Lunker Legend
                         </span>
-                        <span class="text-xs font-black text-amber-600 bg-amber-100 px-2.5 py-0.5 rounded-full">Length</span>
+                        <x-badge variant="amber" size="sm" fontMono>Length</x-badge>
                     </div>
                     @if(isset($personalBest['byLength']) && $personalBest['byLength'])
                         <div class="flex items-center gap-3.5 pt-1 relative z-10">
                             <x-fishAvatar :breed="$personalBest['byLength']->fishBreed" size="xl" class="shadow-sm ring-2 ring-amber-400/40" />
                             <div class="space-y-1 min-w-0 flex-1">
                                 <div class="flex items-baseline gap-1.5">
-                                    <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($personalBest['byLength']->length, 1) }}</span>
-                                    <span class="text-xs font-bold text-slate-500">inches</span>
+                                    <span class="text-3xl font-black text-slate-900 dark:text-white font-mono">{{ number_format($personalBest['byLength']->length, 1) }}</span>
+                                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400">inches</span>
                                 </div>
-                                <div class="text-xs font-bold text-teal-700 truncate">{{ $personalBest['byLength']->fishBreed->name ?? 'Fish' }}</div>
-                                <div class="pt-2 border-t border-amber-100/80 flex items-center justify-between text-xs text-slate-600">
+                                <div class="text-xs font-bold text-teal-700 dark:text-teal-400 truncate">{{ $personalBest['byLength']->fishBreed->name ?? 'Fish' }}</div>
+                                <div class="pt-2 border-t border-amber-100/80 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
                                     <span class="flex items-center gap-1 truncate">
                                         <x-lucide-map-pin class="w-3 h-3 text-slate-400 shrink-0" />
                                         <span class="truncate font-medium">{{ $personalBest['byLength']->lake->name ?? 'Lake' }}</span>
                                     </span>
-                                    <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $personalBest['byLength']->caught }}</span>
+                                    <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $personalBest['byLength']->caught ? (\Illuminate\Support\Carbon::parse($personalBest['byLength']->caught)->format('M j, Y')) : '—' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -94,29 +94,29 @@
                 </div>
 
                 <!-- 🏋️ Trophy By Weight -->
-                <div class="bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-transparent bg-white p-5 rounded-2xl border border-sky-200 shadow-sm space-y-2 relative overflow-hidden">
+                <div class="bg-gradient-to-br from-sky-500/10 via-sky-500/5 to-transparent bg-white dark:bg-slate-900 p-5 rounded-2xl border border-sky-200 dark:border-sky-800/80 shadow-sm space-y-2 relative overflow-hidden transition-colors">
                     <x-watermarkDialScale />
                     <div class="flex items-center justify-between relative z-10">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-sky-800 flex items-center gap-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-sky-800 dark:text-sky-400 flex items-center gap-1">
                             🏋️ Heavyweight Champ
                         </span>
-                        <span class="text-xs font-black text-sky-600 bg-sky-100 px-2.5 py-0.5 rounded-full">Weight</span>
+                        <x-badge variant="sky" size="sm" fontMono>Weight</x-badge>
                     </div>
                     @if(isset($personalBest['byWeight']) && $personalBest['byWeight'])
                         <div class="flex items-center gap-3.5 pt-1 relative z-10">
                             <x-fishAvatar :breed="$personalBest['byWeight']->fishBreed" size="xl" class="shadow-sm ring-2 ring-sky-400/40" />
                             <div class="space-y-1 min-w-0 flex-1">
                                 <div class="flex items-baseline gap-1.5">
-                                    <span class="text-3xl font-black text-slate-900 font-mono">{{ number_format($personalBest['byWeight']->weight, 1) }}</span>
-                                    <span class="text-xs font-bold text-slate-500">lbs.</span>
+                                    <span class="text-3xl font-black text-slate-900 dark:text-white font-mono">{{ number_format($personalBest['byWeight']->weight, 1) }}</span>
+                                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400">lbs.</span>
                                 </div>
-                                <div class="text-xs font-bold text-teal-700 truncate">{{ $personalBest['byWeight']->fishBreed->name ?? 'Fish' }}</div>
-                                <div class="pt-2 border-t border-sky-100/80 flex items-center justify-between text-xs text-slate-600">
+                                <div class="text-xs font-bold text-teal-700 dark:text-teal-400 truncate">{{ $personalBest['byWeight']->fishBreed->name ?? 'Fish' }}</div>
+                                <div class="pt-2 border-t border-sky-100/80 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
                                     <span class="flex items-center gap-1 truncate">
                                         <x-lucide-map-pin class="w-3 h-3 text-slate-400 shrink-0" />
                                         <span class="truncate font-medium">{{ $personalBest['byWeight']->lake->name ?? 'Lake' }}</span>
                                     </span>
-                                    <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $personalBest['byWeight']->caught }}</span>
+                                    <span class="font-mono text-[11px] text-slate-400 shrink-0">{{ $personalBest['byWeight']->caught ? (\Illuminate\Support\Carbon::parse($personalBest['byWeight']->caught)->format('M j, Y')) : '—' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -128,19 +128,19 @@
                 </div>
 
                 <!-- 🌊 Trophy Top Hotspot Lake -->
-                <div class="bg-gradient-to-br from-teal-500/10 via-teal-500/5 to-transparent bg-white p-5 rounded-2xl border border-teal-200 shadow-sm space-y-2">
+                <div class="bg-gradient-to-br from-teal-500/10 via-teal-500/5 to-transparent bg-white dark:bg-slate-900 p-5 rounded-2xl border border-teal-200 dark:border-teal-800/80 shadow-sm space-y-2 transition-colors">
                     <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-teal-800 flex items-center gap-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-teal-800 dark:text-teal-400 flex items-center gap-1">
                             🔥 Top Hotspot
                         </span>
-                        <span class="text-xs font-black text-teal-600 bg-teal-100 px-2.5 py-0.5 rounded-full">Water</span>
+                        <x-badge variant="teal" size="sm" fontMono>Water</x-badge>
                     </div>
                     @if(isset($personalBest['lakeWithMostCatches']) && $personalBest['lakeWithMostCatches'])
                         <div class="space-y-1 pt-1">
-                            <div class="text-xl font-extrabold text-slate-900 truncate tracking-tight">{{ $personalBest['lakeWithMostCatches']->name }}</div>
-                            <div class="text-xs font-bold text-teal-700">Most Successful Angling Water</div>
-                            <div class="pt-2 border-t border-teal-100/80 flex items-center gap-1.5 text-xs text-slate-600">
-                                <x-lucide-check-circle-2 class="w-3.5 h-3.5 text-teal-600" />
+                            <div class="text-xl font-extrabold text-slate-900 dark:text-white truncate tracking-tight">{{ $personalBest['lakeWithMostCatches']->name }}</div>
+                            <div class="text-xs font-bold text-teal-700 dark:text-teal-400">Most Successful Angling Water</div>
+                            <div class="pt-2 border-t border-teal-100/80 dark:border-slate-800 flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
+                                <x-lucide-check-circle-2 class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                                 <span class="font-medium">High catch probability location</span>
                             </div>
                         </div>
@@ -156,41 +156,41 @@
         <!-- 🎣 ANGLER PRODUCTION & GEAR TELEMETRY GRID -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- 📏 Cumulative Length Landed -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-2 transition-colors">
                 <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                        <x-lucide-ruler class="w-3.5 h-3.5 text-teal-600" /> Lifetime Production
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                        <x-lucide-ruler class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" /> Lifetime Production
                     </span>
-                    <span class="text-xs font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">Production</span>
+                    <x-badge variant="teal" size="sm">Production</x-badge>
                 </div>
                 <div class="space-y-1 pt-1">
                     <div class="flex items-baseline gap-1.5">
-                        <span class="text-2xl font-black text-slate-900 font-mono">{{ $totalFeet }}</span>
-                        <span class="text-xs font-bold text-slate-500">ft. landed</span>
+                        <span class="text-2xl font-black text-slate-900 dark:text-white font-mono">{{ $totalFeet }}</span>
+                        <span class="text-xs font-bold text-slate-500 dark:text-slate-400">ft. landed</span>
                     </div>
-                    <div class="text-xs text-slate-500 flex items-center gap-2 pt-1 border-t border-slate-100">
-                        <span>Total: <strong class="font-mono text-slate-800">{{ $totalInches }} in.</strong></span>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
+                        <span>Total: <strong class="font-mono text-slate-800 dark:text-slate-200">{{ $totalInches }} in.</strong></span>
                         <span>•</span>
-                        <span>Avg: <strong class="font-mono text-slate-800">{{ $avgLength > 0 ? $avgLength . ' in.' : '—' }}</strong></span>
+                        <span>Avg: <strong class="font-mono text-slate-800 dark:text-slate-200">{{ $avgLength > 0 ? $avgLength . ' in.' : '—' }}</strong></span>
                     </div>
                 </div>
             </div>
 
             <!-- 🎣 MVP Go-To Lure -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-2 transition-colors">
                 <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                        <x-lucide-fishing-hook class="w-3.5 h-3.5 text-amber-500" /> MVP Go-To Lure
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                        <x-lucide-fishing-hook class="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" /> MVP Go-To Lure
                     </span>
-                    <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">Tackle</span>
+                    <x-badge variant="amber" size="sm">Tackle</x-badge>
                 </div>
                 @if($mvpLure && $mvpLure->lure)
                     <div class="space-y-1 pt-1">
-                        <div class="text-sm font-bold text-slate-900 truncate">{{ $mvpLure->lure->name }}</div>
-                        <div class="text-xs text-teal-700 font-bold font-mono">{{ $mvpLure->catches }} fish landed</div>
-                        <div class="text-[11px] text-slate-500 pt-1 border-t border-slate-100 flex items-center justify-between">
+                        <div class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ $mvpLure->lure->name }}</div>
+                        <div class="text-xs text-teal-700 dark:text-teal-400 font-bold font-mono">{{ $mvpLure->catches }} fish landed</div>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                             <span>Lure PB:</span>
-                            <strong class="font-mono text-slate-800">{{ $mvpLure->longest ? $mvpLure->longest . ' in.' : '—' }}</strong>
+                            <strong class="font-mono text-slate-800 dark:text-slate-200">{{ $mvpLure->longest ? $mvpLure->longest . ' in.' : '—' }}</strong>
                         </div>
                     </div>
                 @else
@@ -199,37 +199,37 @@
             </div>
 
             <!-- 🌱 Conservation C&R Rate -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-2 transition-colors">
                 <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                        <x-lucide-heart class="w-3.5 h-3.5 text-emerald-500" /> C&R Conservation
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                        <x-lucide-heart class="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" /> C&R Conservation
                     </span>
-                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Conservation</span>
+                    <x-badge variant="emerald" size="sm">Conservation</x-badge>
                 </div>
                 <div class="space-y-1 pt-1">
                     <div class="flex items-baseline gap-1.5">
-                        <span class="text-2xl font-black text-slate-900 font-mono">{{ $releaseRate }}%</span>
-                        <span class="text-xs font-bold text-emerald-600">released</span>
+                        <span class="text-2xl font-black text-slate-900 dark:text-white font-mono">{{ $releaseRate }}%</span>
+                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">released</span>
                     </div>
-                    <div class="text-xs text-slate-500 pt-1 border-t border-slate-100">
-                        <strong class="font-mono text-slate-800">{{ $releasedCount }}</strong> of {{ $record_count }} fish safely released
+                    <div class="text-xs text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
+                        <strong class="font-mono text-slate-800 dark:text-slate-200">{{ $releasedCount }}</strong> of {{ $record_count }} fish safely released
                     </div>
                 </div>
             </div>
 
             <!-- 🗓️ Seasonal Peak Month -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-2">
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-2 transition-colors">
                 <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                        <x-lucide-calendar class="w-3.5 h-3.5 text-sky-500" /> Peak Month
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                        <x-lucide-calendar class="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" /> Peak Month
                     </span>
-                    <span class="text-xs font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">Season</span>
+                    <x-badge variant="sky" size="sm">Season</x-badge>
                 </div>
                 @if($peakMonthName)
                     <div class="space-y-1 pt-1">
-                        <div class="text-xl font-extrabold text-slate-900 tracking-tight">{{ $peakMonthName }}</div>
-                        <div class="text-xs text-sky-700 font-medium">Highest Production Month</div>
-                        <div class="text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+                        <div class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">{{ $peakMonthName }}</div>
+                        <div class="text-xs text-sky-700 dark:text-sky-400 font-medium">Highest Production Month</div>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
                             Peak strike window season
                         </div>
                     </div>
