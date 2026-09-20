@@ -22,38 +22,38 @@
     <!-- FMZ List Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         @foreach($fishingZones as $zone)
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 hover:border-teal-500/40 transition-all space-y-4 flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 hover:border-teal-500/40 dark:hover:border-teal-500/40 transition-all space-y-4 flex flex-col justify-between">
                 <div class="space-y-3">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-black text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200 font-mono">
+                        <span class="text-xs font-black text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 px-2.5 py-1 rounded-lg border border-teal-200 dark:border-teal-800/80 font-mono">
                             {{ $zone->code }}
                         </span>
-                        <span class="text-xs text-slate-500 font-medium flex items-center gap-1">
-                            <x-lucide-map-pin class="w-3.5 h-3.5 text-slate-400" />
+                        <span class="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1">
+                            <x-lucide-map-pin class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
                             {{ $zone->province_state }}, {{ $zone->country }}
                         </span>
                     </div>
 
-                    <h2 class="text-base font-bold text-slate-900 leading-tight">
-                        <a href="{{ url('/fishing-zone/' . $zone->id) }}" class="hover:text-teal-600 hover:underline">
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white leading-tight">
+                        <a href="{{ url('/fishing-zone/' . $zone->id) }}" class="hover:text-teal-600 dark:hover:text-teal-400 hover:underline">
                             {{ $zone->name }}
                         </a>
                     </h2>
 
                     @if($zone->description)
-                        <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">
+                        <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 leading-relaxed">
                             {{ $zone->description }}
                         </p>
                     @endif
                 </div>
 
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span class="text-slate-500 font-medium flex items-center gap-1.5">
-                        <x-lucide-waves class="w-3.5 h-3.5 text-teal-600" />
-                        <strong class="font-mono text-slate-800">{{ $zone->lakes_count }}</strong> Lakes
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
+                    <span class="text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5">
+                        <x-lucide-waves class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+                        <strong class="font-mono text-slate-800 dark:text-slate-200">{{ $zone->lakes_count }}</strong> Lakes
                     </span>
 
-                    <a href="{{ url('/fishing-zone/' . $zone->id) }}" class="text-teal-600 hover:text-teal-700 font-bold flex items-center gap-1">
+                    <a href="{{ url('/fishing-zone/' . $zone->id) }}" class="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-bold flex items-center gap-1">
                         <span>Details</span>
                         <x-lucide-arrow-right class="w-3.5 h-3.5" />
                     </a>

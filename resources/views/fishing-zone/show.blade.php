@@ -33,13 +33,13 @@
 
     <!-- Species Regulations & Limits Card with Local Search & Multi-Sort -->
     @if(isset($fishingZone->rules) && count($fishingZone->rules) > 0)
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <x-lucide-book-open class="w-5 h-5 text-indigo-600" />
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+                <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <x-lucide-book-open class="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                     <span>Species Regulations & Possession Limits ({{ $fishingZone->code }})</span>
                 </h2>
-                <span class="text-xs font-mono font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
+                <span class="text-xs font-mono font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800/80">
                     {{ count($fishingZone->rules) }} Species Guidelines
                 </span>
             </div>
@@ -62,13 +62,13 @@
     @endif
 
     <!-- Assigned Lakes in Zone -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                <x-lucide-waves class="w-5 h-5 text-teal-600" />
+    <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+            <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <x-lucide-waves class="w-5 h-5 text-teal-600 dark:text-teal-400" />
                 <span>Registered Waterbodies in {{ $fishingZone->code }}</span>
             </h2>
-            <span class="text-xs font-mono font-bold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
+            <span class="text-xs font-mono font-bold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 px-2.5 py-0.5 rounded-full border border-teal-200 dark:border-teal-800/80">
                 {{ count($fishingZone->lakes) }} Lakes
             </span>
         </div>
@@ -87,10 +87,10 @@
             ])
 
         @else
-            <div class="py-8 text-center text-slate-400 text-xs italic space-y-2">
-                <x-lucide-info class="w-8 h-8 text-slate-300 mx-auto" />
+            <div class="py-8 text-center text-slate-400 dark:text-slate-500 text-xs italic space-y-2">
+                <x-lucide-info class="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
                 <p>No registered lakes currently tagged in {{ $fishingZone->code }}.</p>
-                <a href="{{ url('/lake/create') }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-600 hover:underline">
+                <a href="{{ url('/lake/create') }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-600 dark:text-teal-400 hover:underline">
                     <x-lucide-plus class="w-3.5 h-3.5" />
                     <span>Register New Lake & Tag {{ $fishingZone->code }}</span>
                 </a>

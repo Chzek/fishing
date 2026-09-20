@@ -25,27 +25,27 @@
     <x-statusAlert />
 
     <!-- Category Tabs -->
-    <div class="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs font-bold">
-        <button @click="tab = 'records'" :class="tab === 'records' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'" class="px-3.5 py-2 rounded-xl border transition-colors cursor-pointer">
+    <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 text-xs font-bold">
+        <button @click="tab = 'records'" :class="tab === 'records' ? 'bg-slate-900 dark:bg-slate-800 text-white border-slate-900 dark:border-slate-700' : 'bg-slate-100 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-800'" class="px-3.5 py-2 rounded-xl border transition-colors cursor-pointer">
             Catches ({{ count($trashedCatches) }})
         </button>
-        <button @click="tab = 'lakes'" :class="tab === 'lakes' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'" class="px-3.5 py-2 rounded-xl border transition-colors cursor-pointer">
+        <button @click="tab = 'lakes'" :class="tab === 'lakes' ? 'bg-slate-900 dark:bg-slate-800 text-white border-slate-900 dark:border-slate-700' : 'bg-slate-100 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-800'" class="px-3.5 py-2 rounded-xl border transition-colors cursor-pointer">
             Lakes ({{ count($trashedLakes) }})
         </button>
-        <button @click="tab = 'anglers'" :class="tab === 'anglers' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'" class="px-3.5 py-2 rounded-xl border transition-colors cursor-pointer">
+        <button @click="tab = 'anglers'" :class="tab === 'anglers' ? 'bg-slate-900 dark:bg-slate-800 text-white border-slate-900 dark:border-slate-700' : 'bg-slate-100 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-800'" class="px-3.5 py-2 rounded-xl border transition-colors cursor-pointer">
             Anglers ({{ count($trashedAnglers) }})
         </button>
-        <button @click="tab = 'lures'" :class="tab === 'lures' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'" class="px-3.5 py-2 rounded-xl border transition-colors cursor-pointer">
+        <button @click="tab = 'lures'" :class="tab === 'lures' ? 'bg-slate-900 dark:bg-slate-800 text-white border-slate-900 dark:border-slate-700' : 'bg-slate-100 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-800'" class="px-3.5 py-2 rounded-xl border transition-colors cursor-pointer">
             Lures ({{ count($trashedLures) }})
         </button>
-        <button @click="tab = 'expeditions'" :class="tab === 'expeditions' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'" class="px-3.5 py-2 rounded-xl border transition-colors cursor-pointer">
+        <button @click="tab = 'expeditions'" :class="tab === 'expeditions' ? 'bg-slate-900 dark:bg-slate-800 text-white border-slate-900 dark:border-slate-700' : 'bg-slate-100 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-800'" class="px-3.5 py-2 rounded-xl border transition-colors cursor-pointer">
             Expeditions ({{ count($trashedExpeditions) }})
         </button>
     </div>
 
     <!-- Catches Tab -->
-    <div x-show="tab === 'records'" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-        <h2 class="font-bold text-slate-900 text-sm">Soft-Deleted Catches</h2>
+    <div x-show="tab === 'records'" class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4 transition-colors">
+        <h2 class="font-bold text-slate-900 dark:text-white text-sm">Soft-Deleted Catches</h2>
         @livewire('components.generic-data-table', [
             'modelClass' => \Fishinglog\Models\Record::class,
             'onlyTrashed' => true,
@@ -64,8 +64,8 @@
     </div>
 
     <!-- Lakes Tab -->
-    <div x-show="tab === 'lakes'" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-        <h2 class="font-bold text-slate-900 text-sm">Soft-Deleted Lakes & Waterbodies</h2>
+    <div x-show="tab === 'lakes'" class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4 transition-colors">
+        <h2 class="font-bold text-slate-900 dark:text-white text-sm">Soft-Deleted Lakes & Waterbodies</h2>
         @livewire('components.generic-data-table', [
             'modelClass' => \Fishinglog\Models\Lake::class,
             'onlyTrashed' => true,
@@ -80,8 +80,8 @@
     </div>
 
     <!-- Anglers Tab -->
-    <div x-show="tab === 'anglers'" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-        <h2 class="font-bold text-slate-900 text-sm">Soft-Deleted Angler Profiles</h2>
+    <div x-show="tab === 'anglers'" class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4 transition-colors">
+        <h2 class="font-bold text-slate-900 dark:text-white text-sm">Soft-Deleted Angler Profiles</h2>
         @livewire('components.generic-data-table', [
             'modelClass' => \Fishinglog\Models\Angler::class,
             'onlyTrashed' => true,
@@ -96,8 +96,8 @@
     </div>
 
     <!-- Lures Tab -->
-    <div x-show="tab === 'lures'" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-        <h2 class="font-bold text-slate-900 text-sm">Soft-Deleted Lures</h2>
+    <div x-show="tab === 'lures'" class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4 transition-colors">
+        <h2 class="font-bold text-slate-900 dark:text-white text-sm">Soft-Deleted Lures</h2>
         @livewire('components.generic-data-table', [
             'modelClass' => \Fishinglog\Models\Lure::class,
             'onlyTrashed' => true,
@@ -112,8 +112,8 @@
     </div>
 
     <!-- Expeditions Tab -->
-    <div x-show="tab === 'expeditions'" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-        <h2 class="font-bold text-slate-900 text-sm">Soft-Deleted Expeditions</h2>
+    <div x-show="tab === 'expeditions'" class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4 transition-colors">
+        <h2 class="font-bold text-slate-900 dark:text-white text-sm">Soft-Deleted Expeditions</h2>
         @livewire('components.generic-data-table', [
             'modelClass' => \Fishinglog\Models\Expedition::class,
             'onlyTrashed' => true,

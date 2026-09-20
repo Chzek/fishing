@@ -59,19 +59,19 @@
     </div>
 
     <!-- Compact Catches Log Table View -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4 transition-colors">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
             <div>
-                <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                    <x-lucide-history class="w-4 h-4 text-teal-600" />
+                <h2 class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                    <x-lucide-history class="w-4 h-4 text-teal-600 dark:text-teal-400" />
                     <span>Catches Landed Using {{ $lure->displayName }}</span>
                 </h2>
-                <p class="text-xs text-slate-500">High-density logbook table view for tackle telemetry analysis</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">High-density logbook table view for tackle telemetry analysis</p>
             </div>
 
             <div class="flex items-center gap-2">
-                <a href="/record/directory?lure_id={{ $lure->id }}" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-colors flex items-center gap-1">
-                    <x-lucide-filter class="w-3.5 h-3.5 text-teal-600" />
+                <a href="/record/directory?lure_id={{ $lure->id }}" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1">
+                    <x-lucide-filter class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
                     <span>View in Catches Directory →</span>
                 </a>
             </div>

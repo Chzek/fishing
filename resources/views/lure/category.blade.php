@@ -30,13 +30,13 @@
     </div>
 
     <!-- Lure Models in this Category -->
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-                <x-lucide-box class="w-4 h-4 text-teal-600" />
+    <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4 transition-colors">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h2 class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                <x-lucide-box class="w-4 h-4 text-teal-600 dark:text-teal-400" />
                 <span>Lure Models in {{ $category }} Tray</span>
             </h2>
-            <span class="text-xs text-slate-400 font-mono">{{ $modelsGroup->count() }} Model(s)</span>
+            <span class="text-xs text-slate-400 dark:text-slate-500 font-mono">{{ $modelsGroup->count() }} Model(s)</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -46,19 +46,19 @@
                     $modelBrand = $firstVariant->brand;
                     $modelCatches = $variants->sum('records_count');
                 @endphp
-                <div class="bg-slate-50/70 border border-slate-200/80 rounded-xl p-4 flex items-center justify-between gap-3 hover:border-teal-300 transition-colors">
+                <div class="bg-slate-50/70 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 rounded-xl p-4 flex items-center justify-between gap-3 hover:border-teal-300 dark:hover:border-teal-500 transition-colors">
                     <div>
                         <div class="flex items-center gap-1.5">
-                            <h3 class="font-bold text-slate-900 text-sm">{{ $firstVariant->name }}</h3>
+                            <h3 class="font-bold text-slate-900 dark:text-white text-sm">{{ $firstVariant->name }}</h3>
                             @if($modelBrand)
-                                <span class="text-[10px] font-bold text-slate-500 font-mono">({{ $modelBrand }})</span>
+                                <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 font-mono">({{ $modelBrand }})</span>
                             @endif
                         </div>
-                        <span class="text-xs text-slate-500 font-mono block mt-0.5">
-                            {{ $variants->count() }} Variant(s) • <strong class="text-teal-700">{{ $modelCatches }} catch{{ $modelCatches === 1 ? '' : 'es' }}</strong>
+                        <span class="text-xs text-slate-500 dark:text-slate-400 font-mono block mt-0.5">
+                            {{ $variants->count() }} Variant(s) • <strong class="text-teal-700 dark:text-teal-400">{{ $modelCatches }} catch{{ $modelCatches === 1 ? '' : 'es' }}</strong>
                         </span>
                     </div>
-                    <a href="/lure/model/{{ urlencode($firstVariant->name) }}" class="px-2.5 py-1 bg-white border border-slate-200 text-teal-600 hover:text-teal-700 font-bold text-xs rounded-lg shadow-2xs transition-colors shrink-0">
+                    <a href="/lure/model/{{ urlencode($firstVariant->name) }}" class="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-bold text-xs rounded-lg shadow-2xs transition-colors shrink-0">
                         Model Telemetry →
                     </a>
                 </div>
