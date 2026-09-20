@@ -227,7 +227,5 @@ return [
                 '#^/pulse$#', // Pulse dashboard...
             ],
         ],
-
-        Fishinglog\Recorders\OutdatedRecorder::class => [],
     ],
 ];
