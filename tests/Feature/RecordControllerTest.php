@@ -106,7 +106,7 @@ class RecordControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        $response = $this->put('/record', [
+        $response = $this->put('/record/' . $this->record->id, [
             'id' => $this->record->id,
             'anglers_id' => $this->record->anglers_id,
             'lakes_id' => $this->record->lakes_id,
@@ -138,5 +138,23 @@ class RecordControllerTest extends TestCase
         $response = $this->get('/record/' . $record->id . '/edit');
         $response->assertStatus(200);
         $response->assertSee('value="2026-06-15"', false);
+    }
+
+    #[Test]
+    public function authenticated_user_can_view_create_form_with_sticky_defaults_from_previous_catch()
+    {
+        $this->actingAs($this->user);
+
+        $previousRecord = Record::factory()->create([
+            'caught' => '2026-09-27 00:00:00',
+        ]);
+
+        $response = $this->get('/record/create?record=' . $previousRecord->id);
+        $response->assertStatus(200);
+        $response->assertSee('Paper Logbook Fast Mode');
+        $response->assertSee('value="2026-09-27"', false);
+        $response->assertSee('value="' . $previousRecord->anglers_id . '" selected', false);
+        $response->assertSee('value="' . $previousRecord->lakes_id . '" selected', false);
+        $response->assertSee('value="' . $previousRecord->fish_breeds_id . '" selected', false);
     }
 }

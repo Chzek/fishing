@@ -180,6 +180,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{record}/edit', [RecordController::class, 'edit'])->name('record.edit');
 
         Route::post('/', [RecordController::class, 'store']);
+        Route::match(['put', 'patch'], '/{record}', [RecordController::class, 'update'])->name('record.update');
         Route::put('/', [RecordController::class, 'update']);
         Route::delete('/{record}', [RecordController::class, 'destroy']);
     });

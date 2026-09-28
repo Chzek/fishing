@@ -16,6 +16,23 @@
             <a href="/record" class="text-xs font-semibold text-slate-500 hover:text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">Cancel</a>
         </div>
 
+        @if($record->exists || request()->filled('record'))
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-teal-50/90 dark:bg-teal-950/40 border border-teal-200/80 dark:border-teal-800/60 rounded-xl text-xs text-teal-900 dark:text-teal-200 shadow-sm">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                        <x-lucide-clipboard-check class="w-4 h-4" />
+                    </div>
+                    <div>
+                        <span class="font-bold">Paper Logbook Fast Mode:</span>
+                        <span class="text-teal-700 dark:text-teal-300 ml-1">Retained Angler, Lake, Species, Lure & Date from previous entry.</span>
+                    </div>
+                </div>
+                <a href="{{ url('/record/create') }}" class="px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-[11px] rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm transition-colors text-center shrink-0">
+                    Clear Defaults
+                </a>
+            </div>
+        @endif
+
         <form action="{{ url('/record') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
 
@@ -24,7 +41,7 @@
                     <label for="anglers_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Angler</label>
                     <select id="anglers_id" name="anglers_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                         @foreach($anglers as $val => $label)
-                            <option value="{{ $val }}" {{ old('anglers_id') == $val ? 'selected' : '' }}>{{ $label }}</option>
+                            <option value="{{ $val }}" {{ (old('anglers_id', $record->anglers_id) == $val) ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -33,7 +50,7 @@
                     <label for="lakes_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lake / Water</label>
                     <select id="lakes_id" name="lakes_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                         @foreach($lakes as $val => $label)
-                            <option value="{{ $val }}" {{ old('lakes_id') == $val ? 'selected' : '' }}>{{ $label }}</option>
+                            <option value="{{ $val }}" {{ (old('lakes_id', $record->lakes_id) == $val) ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -44,21 +61,21 @@
                     <label for="fish_breeds_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Fish Species</label>
                     <select id="fish_breeds_id" name="fish_breeds_id" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                         @foreach($fishes as $val => $label)
-                            <option value="{{ $val }}" {{ old('fish_breeds_id') == $val ? 'selected' : '' }}>{{ $label }}</option>
+                            <option value="{{ $val }}" {{ (old('fish_breeds_id', $record->fish_breeds_id) == $val) ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
                 
                 <div class="space-y-1.5">
                     <label for="lures_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Lure / Bait (Optional)</label>
-                    <livewire:ui.lure-selector name="lures_id" :selected-id="old('lures_id')" />
+                    <livewire:ui.lure-selector name="lures_id" :selected-id="old('lures_id', $record->lures_id)" />
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-1.5">
                     <label for="caught" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Catch Date</label>
-                    <input type="date" id="caught" name="caught" value="{{ old('caught', date('Y-m-d')) }}" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
+                    <input type="date" id="caught" name="caught" value="{{ old('caught', $record->caught ? ($record->caught instanceof \DateTimeInterface ? $record->caught->format('Y-m-d') : substr((string)$record->caught, 0, 10)) : date('Y-m-d')) }}" class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500">
                 </div>
 
                 <div class="space-y-1.5">

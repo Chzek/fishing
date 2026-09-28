@@ -147,7 +147,10 @@ class RecordController extends Controller
      */
     public function create(Request $request)
     {
-        $record = Record::find($request->record);
+        $record = null;
+        if ($request->filled('record')) {
+            $record = Record::find($request->record);
+        }
 
         if ($record == null) {
             $record = new Record;
