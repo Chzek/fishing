@@ -101,11 +101,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/stats', [AnglerStatsController::class, 'index'])->name('angler.stats');
         Route::get('/create', [AnglerController::class, 'create']);
         Route::get('/{angler}', [AnglerProfileController::class, 'show']);
-        Route::get('/{angler}/edit', [AnglerController::class, 'edit']);
-        Route::post('/', [AnglerController::class, 'store']);
+        Route::get('/{angler}/edit', [AnglerController::class, 'edit'])->name('angler.edit');
+        Route::post('/', [AnglerController::class, 'store'])->name('angler.store');
+        Route::match(['put', 'patch'], '/{angler}', [AnglerController::class, 'update'])->name('angler.update');
         Route::put('/', [AnglerController::class, 'update']);
-        Route::delete('/{angler}', [AnglerController::class, 'destroy']);
-        Route::get('/{angler}/profile', [AnglerProfileController::class, 'show']);
+        Route::delete('/{angler}', [AnglerController::class, 'destroy'])->name('angler.destroy');
+        Route::get('/{angler}/profile', [AnglerProfileController::class, 'show'])->name('angler.profile');
 
         Route::post('/avatar', [AnglerController::class, 'updateAvatar'])->name('angler.avatar.update');
     });

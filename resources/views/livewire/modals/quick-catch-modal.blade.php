@@ -383,7 +383,7 @@
                     <div class="space-y-1.5">
                         <label for="modal_weight" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">Weight (Lbs - Optional)</label>
                         <div class="relative">
-                            <input type="number" step="0.1" id="modal_weight" wire:model="weight" placeholder="e.g. 4.2"
+                            <input type="number" step="0.01" id="modal_weight" wire:model="weight" placeholder="e.g. 4.25"
                                    class="w-full h-11 pl-3 pr-10 rounded-xl border border-slate-700 bg-slate-950 text-white font-mono font-bold text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
                             <span class="absolute right-3 top-3 text-xs font-bold text-slate-400">lbs.</span>
                         </div>

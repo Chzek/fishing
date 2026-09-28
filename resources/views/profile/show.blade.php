@@ -157,7 +157,7 @@
                             <x-fishAvatar :breed="$personalBest['byWeight']->fishBreed" size="xl" class="shadow-sm ring-2 ring-sky-400/40" />
                             <div class="space-y-1 min-w-0 flex-1">
                                 <div class="flex items-baseline gap-1.5">
-                                    <span class="text-3xl font-black text-slate-900 dark:text-white font-mono">{{ number_format($personalBest['byWeight']->weight, 1) }}</span>
+                                    <span class="text-3xl font-black text-slate-900 dark:text-white font-mono">{{ number_format($personalBest['byWeight']->weight, 2) }}</span>
                                     <span class="text-xs font-bold text-slate-500 dark:text-slate-400">lbs</span>
                                 </div>
                                 <div class="text-xs font-bold text-sky-700 dark:text-sky-400 truncate">{{ $personalBest['byWeight']->fishBreed->name ?? 'Fish' }}</div>

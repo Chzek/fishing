@@ -102,7 +102,7 @@
             <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
                 <div>
                     <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Record Weight</span>
-                    <span class="text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight mt-1 block">{{ $fattest ? number_format($fattest, 1) . ' lbs' : '—' }}</span>
+                    <span class="text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tight mt-1 block">{{ $fattest ? number_format($fattest, 2) . ' lbs' : '—' }}</span>
                     <span class="text-[11px] text-amber-600 dark:text-amber-400 font-semibold mt-1 inline-flex items-center gap-1 truncate max-w-[150px]" title="{{ $heaviestTrophy?->angler?->fullName ? 'By ' . $heaviestTrophy->angler->fullName : 'No data' }}">
                         <x-lucide-award class="w-3 h-3 shrink-0" /> <span class="truncate">{{ $heaviestTrophy?->angler?->fullName ? 'By ' . $heaviestTrophy->angler->fullName : 'No data' }}</span>
                     </span>
@@ -197,7 +197,7 @@
                         <span class="text-[10px] font-bold uppercase tracking-wider bg-amber-600 text-white px-2 py-0.5 rounded-md shadow-2xs">
                             Weight Champion
                         </span>
-                        <span class="text-xs font-mono font-bold text-amber-900 dark:text-amber-300">{{ $fattest ? number_format($fattest, 1) . ' lbs.' : '—' }}</span>
+                        <span class="text-xs font-mono font-bold text-amber-900 dark:text-amber-300">{{ $fattest ? number_format($fattest, 2) . ' lbs.' : '—' }}</span>
                     </div>
 
                     @if($heaviestTrophy && $heaviestTrophy->angler)
@@ -249,7 +249,7 @@
                             </div>
 
                             <div class="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 font-mono border-t border-slate-200/50 dark:border-slate-700/50 pt-1.5">
-                                <span>{{ $trophy->weight ? number_format($trophy->weight, 1) . ' lbs' : 'Length-only' }}</span>
+                                <span>{{ $trophy->weight ? number_format($trophy->weight, 2) . ' lbs' : 'Length-only' }}</span>
                                 <span>{{ $trophy->caught ? \Illuminate\Support\Carbon::parse($trophy->caught)->format('M Y') : '—' }}</span>
                             </div>
                         </div>

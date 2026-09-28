@@ -101,6 +101,27 @@
             </div>
         @endif
     </div>
+
+    <!-- Danger Zone: Delete Angler -->
+    <div class="bg-rose-50/70 dark:bg-rose-950/30 rounded-2xl p-6 border border-rose-200/80 dark:border-rose-900/60 space-y-4 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                <x-lucide-alert-triangle class="w-5 h-5" />
+            </div>
+            <div>
+                <h2 class="text-sm font-bold text-slate-900 dark:text-white">Delete Angler Profile</h2>
+                <p class="text-xs text-slate-600 dark:text-slate-400">Soft-delete this angler profile. Logged catches will remain safely recorded in the database.</p>
+            </div>
+        </div>
+        <form action="{{ url('/angler/' . $angler->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to remove {{ addslashes($angler->fullName) }}?')">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 cursor-pointer">
+                <x-lucide-trash-2 class="w-4 h-4" />
+                <span>Delete Angler Profile</span>
+            </button>
+        </form>
+    </div>
 </div>
 @endsection
 

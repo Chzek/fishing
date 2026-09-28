@@ -141,6 +141,22 @@ class AnglerControllerTest extends TestCase
         $response->assertSee('Edit Angler Profile');
         $response->assertSee('Profile Photo Avatar');
         $response->assertSee('angler-avatar-uploader');
+        $response->assertSee('Delete Angler Profile');
+    }
+
+    #[Test]
+    public function authenticated_user_can_delete_an_angler()
+    {
+        $this->be($this->user);
+
+        $angler = Angler::factory()->create();
+
+        $response = $this->delete('/angler/' . $angler->id);
+        $response->assertRedirect('/angler');
+
+        $this->assertSoftDeleted('anglers', [
+            'id' => $angler->id,
+        ]);
     }
 }
 

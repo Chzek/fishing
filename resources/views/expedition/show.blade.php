@@ -86,7 +86,7 @@
             @if($heavyweight)
                 <div class="space-y-1 pt-1 relative z-10">
                     <div class="flex items-baseline gap-1.5">
-                        <span class="text-3xl font-black text-slate-900 dark:text-white font-mono">{{ number_format($heavyweight->weight, 1) }}</span>
+                        <span class="text-3xl font-black text-slate-900 dark:text-white font-mono">{{ number_format($heavyweight->weight, 2) }}</span>
                         <span class="text-xs font-bold text-slate-500 dark:text-slate-400">lbs.</span>
                     </div>
                     <div class="text-xs font-bold text-teal-700 dark:text-teal-400">{{ $heavyweight->fishBreed->name ?? 'Fish' }}</div>

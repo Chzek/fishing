@@ -6,30 +6,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🎯 Active Priority Roadmap (Ranked by Impact & Value)
 
-### 🇨🇦 Priority 1 (P1 - Canada Field Sprint): In-Trip Usability, Catch Repairs & Immediate Paper Logbook Entry
-
-#### 1. Angler Soft-Deletion & Management Capability
-- **Agents**: `laravel-architect`, `ui-ux-auditor`
-- **Impact**: **Medium-High** (Data Hygiene & Management)
-- **Description**: Add Angler deletion/removal actions in the Angler Edit view and `GenericDataTable` with modal confirmation, hooking into `HasUuidAndSyncTracking` soft-deletes and Synology NAS sync outbox tracking.
-
-#### 2. Dark Mode Form & Visual Contrast Fixes (Tacklebox Modal & Watermark Tape)
-- **Agents**: `ui-ux-auditor`, `livewire-architect`
-- **Impact**: **Medium-High** (Dark Mode Usability & Visual Excellence)
-- **Description**:
-  - **Tacklebox Modal Input**: Fix `focus:bg-white` conflict in `tacklebox/lure-catalog.blade.php` (+ Add Colorway Variant modal) where typed text is white on white background when focused.
-  - **Watermark Tape Measure**: Redesign `<x-watermarkTapeMeasure />` SVG strokes and background fill (`fill="#ffffff"` opacity) so dark mode renders crisp metallic/gold ruler ticks and legible inch markings instead of a flat washed-out grey stripe.
-
-#### 3. Fish Scale Weight Decimal Precision (2 Decimal Places Alignment)
-- **Agents**: `laravel-architect`, `seasoned-angler-advisor`, `ui-ux-auditor`
-- **Impact**: **Medium** (Scale Precision & Telemetry Accuracy)
-- **Description**:
-  - Align UI inputs with digital boat scales to 2 decimal places (`step="0.01"` across Quick Catch, Quick Modal, and Standard Logger).
-  - Update view formatting to preserve two decimal places without cutting hundredths (e.g., `4.25 lbs` or `12.50 lbs`).
-
----
-
-### 🏆 Priority 2 (P2): Notifications, Logbook Leaderboards & Angler Intelligence
+### 🏆 Priority 1 (P1): Notifications, Logbook Leaderboards & Angler Intelligence
 
 #### 1. Admin Overview "Notifications" Hub & Personalized Angler Milestone Alerts
 - **Agents**: `laravel-architect`, `ui-ux-auditor`
@@ -46,7 +23,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ---
 
-### 🚀 Priority 3 (P3): Tactical Intelligence & Visual Visualizations
+### 🚀 Priority 2 (P2): Tactical Intelligence & Visual Visualizations
 
 #### 1. FMZ Fishing Regulations Warning & Slot Limit Compliance Alerts
 - **Agents**: `seasoned-angler-advisor`, `laravel-architect`
@@ -389,3 +366,17 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - Created full pre-update database backup snapshot via Spatie (`backup:run --only-db`).
     - Added feature tests in [`RecordControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/RecordControllerTest.php) covering parameterized PUT updates and sticky pre-population rendering.
     - Verified with **305 passing tests (1,306 assertions)** with **0 failures** and **0 PHPStan errors (Level 5)**.
+47. **Angler Soft-Deletion Management, Dark Mode Visual Polish & 2-Decimal Scale Alignment (P1.3, P1.4, P1.5)**:
+    - **Angler Soft-Deletion & Management Actions**:
+      * Added Danger Zone card with confirmation dialog to [`angler/edit.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/edit.blade.php) invoking `DELETE /angler/{id}`.
+      * Enhanced [`generic-data-table.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/components/generic-data-table.blade.php) with dedicated Angler row actions (View Profile, Edit Details, and Soft-Delete Angler) hooked into Synology NAS sync outbox tracking.
+      * Registered standard named routes (`angler.update`, `angler.destroy`, etc.) in [`routes/web.php`](file:///home/gmroczek/git/fishing/routes/web.php).
+      * Added test assertions in [`AnglerControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AnglerControllerTest.php) verifying soft-deletion and unlinking safeguards.
+    - **Dark Mode Form & Watermark Visual Polish**:
+      * Resolved white-on-white text clash during input focus in Tacklebox Colorway Variant modal within [`resources/views/livewire/tacklebox/lure-catalog.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/tacklebox/lure-catalog.blade.php) (`dark:focus:bg-slate-800 dark:text-white`).
+      * Overhauled [`resources/views/components/watermarkTapeMeasure.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/watermarkTapeMeasure.blade.php) with high-contrast metallic amber styling (`dark:fill-amber-400/[0.08]`, `dark:stroke-amber-400/30`, `dark:fill-amber-300/80`), replacing the washed out grey stripe with crisp ruler ticks and legible inch markings.
+    - **Fish Scale 2-Decimal Weight Precision Alignment**:
+      * Updated all catch logging forms and slide-over drawers to `step="0.01"` and `placeholder="e.g. 4.25"` in [`quick-catch-modal.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/modals/quick-catch-modal.blade.php) and [`record/quick.blade.php`](file:///home/gmroczek/git/fishing/resources/views/record/quick.blade.php).
+      * Standardized weight formatting to 2 decimal places (`number_format(..., 2)`) across all leaderboards and dossier cards ([`profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php), [`expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php), [`lake/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/show.blade.php), [`fish/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/fish/show.blade.php)).
+      * Updated [`FishBreedControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/FishBreedControllerTest.php) assertions.
+    - Verified entire test suite passing with **306 passing tests (1,310 assertions)** and **0 PHPStan errors (Level 5)**.

@@ -219,7 +219,7 @@ class FishBreedControllerTest extends TestCase
         $response->assertSee('Length Champion', false);
         $response->assertSee('21.3 inches', false);
         $response->assertSee('Bob Angler');
-        $response->assertSee('5.4 lbs');
+        $response->assertSee('5.40 lbs');
 
         // Verify Tactical Lure & Tackle Matrix
         $response->assertSee('Productive Tackle & Lures', false);

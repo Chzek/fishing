@@ -210,7 +210,7 @@
                 <div class="space-y-1.5">
                     <label for="weight" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Weight (Pounds - Optional)</label>
                     <div class="relative">
-                        <input type="number" step="0.1" id="weight" name="weight" class="w-full h-11 pl-3.5 pr-12 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-mono font-bold text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors" placeholder="e.g. 4.2">
+                        <input type="number" step="0.01" id="weight" name="weight" class="w-full h-11 pl-3.5 pr-12 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 font-mono font-bold text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors" placeholder="e.g. 4.25">
                         <span class="absolute right-3.5 top-2.5 text-xs font-bold text-slate-400">lbs.</span>
                     </div>
                 </div>

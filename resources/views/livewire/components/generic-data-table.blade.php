@@ -686,9 +686,21 @@
                                         View Details →
                                     </a>
                                 @elseif($tbl === 'anglers')
-                                    <a href="{{ url('/angler/' . $record->id . '/profile') }}" class="text-teal-600 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 font-semibold hover:underline">
-                                        View Profile →
-                                    </a>
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <a href="{{ url('/angler/' . $record->id . '/profile') }}" class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/50 rounded-lg transition-colors" title="View Profile">
+                                            <x-lucide-eye class="w-4 h-4" />
+                                        </a>
+                                        <a href="{{ url('/angler/' . $record->id . '/edit') }}" class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" title="Edit Angler">
+                                            <x-lucide-edit-3 class="w-4 h-4" />
+                                        </a>
+                                        <form action="{{ url('/angler/' . $record->id) }}" method="POST" class="inline" onsubmit="return confirm('Remove angler {{ addslashes($record->name ?? $record->fullName) }}? Catches associated with this angler will remain intact.')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-1.5 text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg transition-colors cursor-pointer" title="Remove Angler">
+                                                <x-lucide-trash-2 class="w-4 h-4" />
+                                            </button>
+                                        </form>
+                                    </div>
                                 @elseif($tbl === 'expeditions')
                                     <a href="{{ url('/expedition/' . $record->id) }}" class="text-teal-600 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 font-semibold hover:underline">
                                         View Trip →

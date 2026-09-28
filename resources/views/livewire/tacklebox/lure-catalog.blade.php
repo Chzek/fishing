@@ -547,7 +547,7 @@
                             id="newVariantColors" 
                             wire:model="newVariantColors" 
                             placeholder="e.g. Firetiger, Bleeding Olive Flash, Perch" 
-                            class="w-full h-11 px-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-850 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            class="w-full h-11 px-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
                             autofocus
                         >
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 block">Enter one color, or multiple comma-separated colors to batch create variants.</span>
@@ -564,7 +564,7 @@
                                 id="newVariantSize" 
                                 wire:model="newVariantSize" 
                                 placeholder="e.g. 3/16 oz, 2.5 in" 
-                                class="w-full h-11 px-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-850 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                                class="w-full h-11 px-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors"
                             >
                         </div>
 
