@@ -99,6 +99,24 @@ class AnglerProfileController extends Controller
             ->with('fishBreed')
             ->get();
 
+        // Calculate species personal bests for trophy board
+        $speciesPbs = Record::where('anglers_id', $angler->id)
+            ->whereNotNull('length')
+            ->select('fish_breeds_id', DB::raw('MAX(length) as max_length'))
+            ->groupBy('fish_breeds_id')
+            ->get()
+            ->map(function ($item) use ($angler) {
+                return Record::where('anglers_id', $angler->id)
+                    ->where('fish_breeds_id', $item->fish_breeds_id)
+                    ->where('length', $item->max_length)
+                    ->with(['lake', 'fishBreed'])
+                    ->latest('caught')
+                    ->first();
+            })
+            ->filter()
+            ->sortByDesc('length')
+            ->values();
+
         $topTrophies = app(\Fishinglog\Services\TrophyScoringService::class)->getTopNormalizedCatches(
             Record::where('anglers_id', $angler->id),
             5
@@ -124,6 +142,7 @@ class AnglerProfileController extends Controller
             'peakMonthName' => $peakMonthName,
             'topWaters' => $topWaters,
             'speciesDistribution' => $speciesDistribution,
+            'speciesPbs' => $speciesPbs,
             'topTrophies' => $topTrophies,
         ]);
     }

@@ -99,7 +99,9 @@ class AnglerControllerTest extends TestCase
         $response->assertSeeText($this->angler->lastName);
         $response->assertSeeText('Angler Catches Logbook');
         $response->assertViewHas('topTrophies');
+        $response->assertViewHas('speciesPbs');
         $response->assertSee('Top 5 All-Time Trophies');
+        $response->assertSee('Species Personal Bests (PB)');
         $response->assertDontSee('(Normalized Scoring)');
     }
 

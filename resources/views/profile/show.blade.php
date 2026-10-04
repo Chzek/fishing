@@ -203,38 +203,43 @@
             </div>
         </div>
 
-        <!-- Top 5 All-Time Trophies -->
-        @if(!empty($topTrophies) && $topTrophies->count() > 0)
-            <x-card title="Top 5 All-Time Trophies" subtitle="Your career-best catches ranked across species" icon="trophy" iconColor="amber" badge="{{ $topTrophies->count() }} Trophies" badgeVariant="amber">
-                <div class="space-y-2.5">
-                    @foreach($topTrophies as $rank => $trophy)
-                        <x-specimenCard :rank="$rank" :record="$trophy" layout="row" :showAngler="false" :showLake="true" :showScore="true" />
-                    @endforeach
-                </div>
-            </x-card>
-        @endif
+        <!-- 🏆 TROPHY INTELLIGENCE GRID: Top 5 Trophies & Species Personal Bests -->
+        @if((!empty($topTrophies) && $topTrophies->count() > 0) || (!empty($speciesPbs) && $speciesPbs->count() > 0))
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                <!-- Top 5 All-Time Trophies -->
+                @if(!empty($topTrophies) && $topTrophies->count() > 0)
+                    <x-card title="Top 5 All-Time Trophies" subtitle="Your career-best catches ranked across species" icon="trophy" iconColor="amber" badge="{{ $topTrophies->count() }} Trophies" badgeVariant="amber">
+                        <div class="space-y-2.5">
+                            @foreach($topTrophies as $rank => $trophy)
+                                <x-specimenCard :rank="$rank" :record="$trophy" layout="row" :showAngler="false" :showLake="true" :showScore="true" />
+                            @endforeach
+                        </div>
+                    </x-card>
+                @endif
 
-        <!-- Species Personal Best Trophy Board -->
-        @if(!empty($speciesPbs) && $speciesPbs->count() > 0)
-            <x-card title="Species Personal Bests (PB)" subtitle="Your longest recorded catches per species" icon="award" iconColor="amber" badge="{{ $speciesPbs->count() }} Species PB(s)" badgeVariant="amber">
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    @foreach($speciesPbs as $pb)
-                        <a href="{{ url('/record/' . $pb->id) }}" class="group bg-slate-50 dark:bg-slate-800/60 hover:bg-teal-50/60 dark:hover:bg-teal-950/40 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80 hover:border-teal-300 dark:hover:border-teal-600 transition-all flex items-center gap-3">
-                            <x-fishAvatar :fish="$pb->fishBreed" size="md" />
-                            <div class="min-w-0 flex-1">
-                                <div class="flex items-center justify-between gap-1">
-                                    <span class="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-teal-700 dark:group-hover:text-teal-300 transition-colors">{{ $pb->fishBreed->name ?? 'Fish' }}</span>
-                                    <span class="text-xs font-black text-slate-900 dark:text-white font-mono bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 shadow-2xs">{{ number_format($pb->length, 1) }}"</span>
-                                </div>
-                                <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 flex items-center gap-1">
-                                    <x-lucide-map-pin class="w-3 h-3 text-slate-400 shrink-0" />
-                                    <span class="truncate">{{ $pb->lake->name ?? 'Waterbody' }}</span>
-                                </div>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-            </x-card>
+                <!-- Species Personal Best Trophy Board -->
+                @if(!empty($speciesPbs) && $speciesPbs->count() > 0)
+                    <x-card title="Species Personal Bests (PB)" subtitle="Your longest recorded catches per species" icon="award" iconColor="amber" badge="{{ $speciesPbs->count() }} Species PB(s)" badgeVariant="amber">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            @foreach($speciesPbs as $pb)
+                                <a href="{{ url('/record/' . $pb->id) }}" class="group bg-slate-50 dark:bg-slate-800/60 hover:bg-teal-50/60 dark:hover:bg-teal-950/40 p-3 rounded-xl border border-slate-200/80 dark:border-slate-700/80 hover:border-teal-300 dark:hover:border-teal-600 transition-all flex items-center gap-2.5">
+                                    <x-fishAvatar :fish="$pb->fishBreed" size="md" />
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center justify-between gap-1">
+                                            <span class="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-teal-700 dark:group-hover:text-teal-300 transition-colors">{{ $pb->fishBreed->name ?? 'Fish' }}</span>
+                                            <span class="text-xs font-black text-slate-900 dark:text-white font-mono bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 shadow-2xs">{{ number_format($pb->length, 1) }}"</span>
+                                        </div>
+                                        <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 flex items-center gap-1">
+                                            <x-lucide-map-pin class="w-3 h-3 text-slate-400 shrink-0" />
+                                            <span class="truncate">{{ $pb->lake->name ?? 'Waterbody' }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </x-card>
+                @endif
+            </div>
         @endif
 
         <!-- 🎣 ANGLER PRODUCTION & GEAR TELEMETRY GRID -->
