@@ -54,7 +54,7 @@ return [
              * MySQL, PostgreSQL, SQLite and Mongo databases are supported.
              */
             'databases' => [
-                'mysql',
+                env('DB_CONNECTION', 'mysql'),
             ],
         ],
 

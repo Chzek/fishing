@@ -40,7 +40,28 @@ return [
         ],
 
         'mysql' => [
-            'driver' => 'mysql',
+            'driver' => env('DB_MYSQL_DRIVER', 'mysql'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+            'dump' => array_filter([
+                'dump_binary_path' => env('DUMP_BINARY_PATH'),
+                'use_single_transaction' => true,
+                'timeout' => (int) env('DUMP_TIMEOUT', 300),
+                'add_extra_option' => env('DUMP_EXTRA_OPTIONS'),
+            ], fn ($value) => $value !== null && $value !== ''),
+        ],
+
+        'mariadb' => [
+            'driver' => 'mariadb',
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'forge'),

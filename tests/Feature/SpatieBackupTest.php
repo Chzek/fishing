@@ -57,4 +57,20 @@ class SpatieBackupTest extends TestCase
         $dumper = \Spatie\Backup\Tasks\Backup\DbDumperFactory::createFromConnection('mysql');
         $this->assertInstanceOf(\Spatie\DbDumper\Databases\MySql::class, $dumper);
     }
+
+    /**
+     * Test that MariaDB database connection includes dump options for Spatie backup.
+     */
+    public function test_mariadb_dump_configuration_is_defined(): void
+    {
+        $dumpConfig = config('database.connections.mariadb.dump');
+
+        $this->assertIsArray($dumpConfig);
+        $this->assertArrayHasKey('use_single_transaction', $dumpConfig);
+        $this->assertTrue($dumpConfig['use_single_transaction']);
+        $this->assertEquals(300, $dumpConfig['timeout']);
+
+        $dumper = \Spatie\Backup\Tasks\Backup\DbDumperFactory::createFromConnection('mariadb');
+        $this->assertInstanceOf(\Spatie\DbDumper\Databases\MariaDb::class, $dumper);
+    }
 }
