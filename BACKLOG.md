@@ -57,21 +57,18 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   - Fix artifact in `resources/views/fish/index.blade.php` where switching to Table View renders the `GenericDataTable` component while leaving the legacy Blade pagination (`$fishes->links()`) and HTTP GET family filter pills rendered simultaneously.
   - Standardize `/fish` to use `GenericDataTable` as the primary directory view or encapsulate grid/table view modes cleanly within a reactive Livewire component with unified pagination and family filtering.
 
+#### 8. Self-Service Password Reset Flow & Admin User Password Management Tooling
+- **Agents**: `laravel-architect`, `ui-ux-auditor`
+- **Impact**: **Medium-High** (User Account Administration & Support)
+- **Description**:
+  - Register standard authentication password reset routes (`password.request`, `password.email`, `password.reset`, `password.update`) in `routes/web.php` backed by `ForgotPasswordController` and `ResetPasswordController`.
+  - Add an Admin "Reset User Password" modal action on `/admin/users` allowing administrators to generate temporary passwords or send one-time reset links immediately for locked-out members.
+
 ---
 
 ### 🚀 Priority 2 (P2): Tactical Intelligence, UI/UX & Spatial Visualizations
 
-#### 1. FMZ Fishing Regulations Warning & Slot Limit Compliance Alerts
-- **Agents**: `seasoned-angler-advisor`, `laravel-architect`
-- **Impact**: **High** (Legal & Conservation Compliance)
-- **Description**: Connect existing `FishingRule` and `FishingZone` relations to the Quick Catch Modal and Lake Dossier to provide real-time slot limit compliance warnings (e.g., Ontario FMZ 2 / FMZ 4 Walleye slot: *None between 16.1" and 22.0"*) and season open/close indicators during catch logging.
-
-#### 2. Trophy Catch Brag Card Generator & Chartplotter GPX/CSV Export
-- **Agents**: `ui-ux-auditor`, `laravel-architect`
-- **Impact**: **Medium-High** (Social Sharing & Marine Navigation Integration)
-- **Description**: Generate a downloadable high-resolution branded brag card (catch length/weight, lake, lure, solunar rating, photo) for social sharing, and implement 1-click GPX/CSV waypoint export formatted specifically for Garmin, Humminbird, and Lowrance chartplotters.
-
-#### 3. Map Explorer Context Menu: 1-Click "Create Lake" & "Quick Catch" Pinning
+#### 1. Map Explorer Context Menu: 1-Click "Create Lake" & "Quick Catch" Pinning
 - **Agents**: `ui-ux-auditor`, `livewire-architect`
 - **Impact**: **High** (Field Mapping & Catch Logging Speed)
 - **Description**:
@@ -80,21 +77,21 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     1. **"Add Lake Here"**: Opens lake creation pre-populated with clicked coordinates.
     2. **"Log Catch Here"**: Dispatches `open-quick-catch` with GPS coordinates pre-filled.
 
-#### 4. Fullscreen Catch & Expedition Media Lightbox / Multi-Photo Carousel (`<x-media-lightbox />`)
+#### 2. Fullscreen Catch & Expedition Media Lightbox / Multi-Photo Carousel (`<x-media-lightbox />`)
 - **Agents**: `ui-ux-auditor`, `livewire-architect`
 - **Impact**: **Medium-High** (Photo Gallery UX & Boat Sharing)
 - **Description**:
   - Build a global, responsive Alpine.js media lightbox component for viewing catch photos, expedition gallery snapshots, and journal scans in high resolution.
   - Support multi-photo sets with previous/next carousel controls, thumbnail navigation strip, keyboard shortcuts (`←`/`→`/`Esc`), touch swipe gestures, and photo metadata telemetry overlay (Angler, Species, Length/Weight, Lake, Date).
 
-#### 5. Lake & Expedition Dossier Spatial Map Rebalancing (2-Column Taller Aspect Layout)
+#### 3. Lake & Expedition Dossier Spatial Map Rebalancing (2-Column Taller Aspect Layout)
 - **Agents**: `ui-ux-auditor`, `seasoned-angler-advisor`
 - **Impact**: **Medium** (Dossier Layout & Cartographic Usability)
 - **Description**:
   - Restructure map presentation on `/lake/{id}` and `/expedition/{id}` from narrow, full-width strips (420px) to a responsive 2-column grid layout (e.g. 2/3 map canvas + 1/3 companion telemetry/trophy card stack).
   - Increase map height to 520px–600px for expanded bathymetric and track visibility without excessive page scrolling.
 
-#### 6. Lake Directory Species Biodiversity Columns, Filtering & Map Popovers
+#### 4. Lake Directory Species Biodiversity Columns, Filtering & Map Popovers
 - **Agents**: `laravel-architect`, `ui-ux-auditor`
 - **Impact**: **Medium** (Fishery Intelligence & Search)
 - **Description**:
@@ -102,7 +99,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   - Integrate a "Filter by Species" dropdown in `GenericDataTable` for lakes.
   - Enhance Map Explorer push-pin popovers with species avatar badges to quickly identify target fisheries on the water.
 
-#### 7. Interactive JavaScript Telemetry Visualizations (Chart.js & Livewire/Alpine)
+#### 5. Interactive JavaScript Telemetry Visualizations (Chart.js & Livewire/Alpine)
 - **Agents**: `ui-ux-auditor`, `livewire-architect`, `seasoned-angler-advisor`
 - **Impact**: **High** (Tactical Angling Analytics & Data Science)
 - **Description**: Replace static SVG/CSS charts with interactive, hardware-accelerated Chart.js canvases wrapped in reactive Alpine.js components:
@@ -112,7 +109,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **Water Temperature × Lure Category Matrix**: Strike zone heatmap identifying high-probability tackle per water temp band.
   * **Angler Multi-Skill Radar**: 5-axis crew comparison chart (Lunker Max, Volume, C&R %, Species Diversity, Active Waters).
 
-#### 8. Outdoor Boat Usability & Responsive Table-to-Card Stack
+#### 6. Outdoor Boat Usability & Responsive Table-to-Card Stack
 - **Agents**: `ui-ux-auditor`, `livewire-architect`, `seasoned-angler-advisor`
 - **Impact**: **Medium-High** (Mobile & Boat Cockpit Usability)
 - **Description**: Optimize user experience for open-water boat navigation under direct sunlight and high glare:
@@ -120,7 +117,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **44px Tap Target Enforcement**: Audit and expand touch boundaries on all mobile filter pills, table sorting chevrons, and pagination buttons.
   * **WCAG AAA Sunlight Contrast**: Elevate secondary text contrast ratios to $\ge 7:1$ to prevent washout on polarized mobile screens.
 
-#### 9. Fish Species Illustration Asset Pipeline: Alpha Transparency & WebP/PNG Conversion
+#### 7. Fish Species Illustration Asset Pipeline: Alpha Transparency & WebP/PNG Conversion
 - **Agents**: `ui-ux-auditor`, `laravel-architect`
 - **Impact**: **Medium** (Visual Polish & Dark Mode Aesthetic)
 - **Description**: Upgrade the fish species and lure asset library with true alpha transparency:
@@ -128,7 +125,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **Modern Alpha Format**: Convert assets to transparent `.webp` / `.png` with lossless compression, updated in `FishBreed` model fallback resolution.
   * **Subtle Dark Mode Glow / Drop Shadow**: Apply subtle ambient illumination filters so dark-scaled species (e.g., Largemouth Bass, Walleye) remain distinctly visible against dark slate backgrounds.
 
-#### 10. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
+#### 8. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
 - **Agents**: `seasoned-angler-advisor`, `laravel-architect`, `ui-ux-auditor`
 - **Impact**: **High** (Custom Fishery Intelligence & Depth Mapping)
 - **Description**: Build an ingestion pipeline for personal Humminbird Helix AutoChart Live sonar data (`acdata` folder / AutoChart Zero Line SD card, AutoChart PC exports, CSV/XYZ soundings, and GeoJSON contour vectors):
@@ -137,7 +134,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **Interactive Map Layer**: Render private, high-definition (1-foot / 3-foot) bathymetric contours on both the **Map Explorer** (`/map/explorer`) and **Lake Dossier** (`/lake/{id}`) with custom color ramping, depth labels in feet, and bottom hardness / weedline overlays.
   * **Offline Support**: Integrate custom lake contours into the Offline Region Downloader (`/map/offline`) for 100% offline navigation out on the water.
 
-#### 11. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
+#### 9. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (Database Query Optimization)
 - **Description**: Consolidate the 5 separate count and aggregation queries in `LakeController@show` (total catches, longest catch, heaviest catch, unique visits, unique anglers) into a consolidated single-pass aggregation query.
@@ -186,22 +183,29 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   - Support photographing journal pages and transcribing them via AI vision/OCR into structured `JournalEntry` records (or templated `Post` records) attached to `Expedition` models.
   - Store original photo references (`photo_id`), transcription text, transcription dates, and structured metadata (weather observations, boat pairings, camp quotes, daily prompt questions).
 
-#### 4. Self-Service Password Reset Flow & Admin User Password Management Tooling
-- **Agents**: `laravel-architect`
-- **Impact**: **Medium** (User Account Administration & Support)
-- **Description**:
-  - Register standard authentication password reset routes (`password.request`, `password.email`, `password.reset`, `password.update`) in `routes/web.php` backed by `ForgotPasswordController` and `ResetPasswordController`.
-  - Add an Admin "Reset User Password" modal action on `/admin/users` allowing administrators to generate temporary passwords or send one-time reset links immediately for locked-out members.
-
-#### 5. Low-Bandwidth Chunked NAS Outbox Push & Scheduled Sync Health Webhook
+#### 4. Low-Bandwidth Chunked NAS Outbox Push & Scheduled Sync Health Webhook
 - **Agents**: `nas-sync-architect`
 - **Impact**: **Medium** (Remote Data Integrity)
 - **Description**: Add chunked outbox streaming (50 records per payload) for low-bandwidth cellular / boat satellite connections, and add a scheduled health monitor triggering notifications if NAS sync is unreachable or failing for >24 hours.
 
-#### 6. Automated Backup Verification & Restore Drill Command (`backup:verify`)
+#### 5. Automated Backup Verification & Restore Drill Command (`backup:verify`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Low-Medium** (Disaster Recovery Verification)
 - **Description**: Create an `artisan backup:verify` command that unzips recent Spatie backup archives in a temporary staging environment to verify SQL dump validity and image asset completeness.
+
+---
+
+### ⏳ Deferred / Postponed (Future Consideration)
+
+#### 1. FMZ Fishing Regulations Warning & Slot Limit Compliance Alerts *(Deferred from P2.1)*
+- **Agents**: `seasoned-angler-advisor`, `laravel-architect`
+- **Impact**: **High** (Legal & Conservation Compliance)
+- **Description**: Connect existing `FishingRule` and `FishingZone` relations to the Quick Catch Modal and Lake Dossier to provide real-time slot limit compliance warnings (e.g., Ontario FMZ 2 / FMZ 4 Walleye slot: *None between 16.1" and 22.0"*) and season open/close indicators during catch logging.
+
+#### 2. Trophy Catch Brag Card Generator & Chartplotter GPX/CSV Export *(Deferred from P2.2)*
+- **Agents**: `ui-ux-auditor`, `laravel-architect`
+- **Impact**: **Medium-High** (Social Sharing & Marine Navigation Integration)
+- **Description**: Generate a downloadable high-resolution branded brag card (catch length/weight, lake, lure, solunar rating, photo) for social sharing, and implement 1-click GPX/CSV waypoint export formatted specifically for Garmin, Humminbird, and Lowrance chartplotters.
 
 ---
 
