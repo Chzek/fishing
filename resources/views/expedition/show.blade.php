@@ -166,6 +166,29 @@
         </div>
     </div>
 
+    <!-- 🏆 Expedition Best Catches (Trophy Normalized Strip) -->
+    @if(isset($topCatches) && $topCatches->count() > 0)
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <h2 class="text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                    <x-lucide-trophy class="w-5 h-5 text-amber-500" />
+                    <span>Expedition Best Catches</span>
+                    <span class="text-xs font-mono font-normal text-slate-500 dark:text-slate-400 hidden sm:inline">&bull; Species Normalized</span>
+                </h2>
+                <a href="#catches-section" class="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline flex items-center gap-1">
+                    <span>View All Trip Catches</span>
+                    <x-lucide-arrow-down class="w-3.5 h-3.5" />
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                @foreach($topCatches as $rank => $catch)
+                    <x-specimenCard :rank="$rank" :record="$catch" :showSpecies="true" :showLake="true" :showScore="true" />
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <!-- 3-COLUMN ANALYTICS DASHBOARD GRID -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Col 1: Daily Catch Cadence Graph -->

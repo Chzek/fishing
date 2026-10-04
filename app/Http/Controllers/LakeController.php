@@ -97,11 +97,10 @@ class LakeController extends Controller
             ->distinct('anglers_id')
             ->count('anglers_id');
 
-        $topCatches = Record::with(['angler', 'fishBreed', 'lake'])
-            ->where('lakes_id', $lake->id)
-            ->orderBy('length', 'desc')
-            ->limit(5)
-            ->get();
+        $topCatches = app(\Fishinglog\Services\TrophyScoringService::class)->getTopNormalizedCatches(
+            Record::where('lakes_id', $lake->id),
+            5
+        );
 
         $nearbyLakes = Lake::nearby($lake->latitude, $lake->longitude, 2.0, $lake->id);
 

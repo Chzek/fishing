@@ -4,6 +4,7 @@
     'showLake' => false,
     'showSpecies' => false,
     'showAngler' => true,
+    'showScore' => false,
     'subtitle' => null,
 ])
 
@@ -31,15 +32,24 @@
     $length = (float) ($record->length ?? 0);
     $weight = (float) ($record->weight ?? 0);
     $caughtDate = $record->caught ? \Illuminate\Support\Carbon::parse($record->caught)->format('M Y') : 'Historical';
+    $trophyScore = (float) ($record->trophy_score ?? 0);
+    $trophyTier = $record->trophy_tier ?? ['is_trophy' => false, 'label' => 'Standard'];
 @endphp
 
 <div {{ $attributes->merge(['class' => 'p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 hover:border-amber-300 dark:hover:border-amber-500 transition-all flex flex-col justify-between relative group shadow-2xs']) }}>
     <div>
-        <!-- Top Row: Rank badge on left, Length & Weight stack on right -->
+        <!-- Top Row: Rank & Score badge on left, Length & Weight stack on right -->
         <div class="flex items-start justify-between gap-2 mb-2">
-            <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black font-mono shrink-0 {{ $rankIndex === 0 ? 'bg-amber-400 text-slate-900 shadow-2xs ring-1 ring-amber-500/50' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
-                #{{ $rankNumber }}
-            </span>
+            <div class="flex items-center gap-1.5 shrink-0 flex-wrap">
+                <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black font-mono shrink-0 {{ $rankIndex === 0 ? 'bg-amber-400 text-slate-900 shadow-2xs ring-1 ring-amber-500/50' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
+                    #{{ $rankNumber }}
+                </span>
+                @if($showScore && $trophyScore > 0)
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-black font-mono tracking-tight {{ $trophyTier['is_trophy'] ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700' : 'bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600' }}" title="Trophy Rating Score: {{ $trophyScore }}% of Master Angler Benchmark ({{ $trophyTier['label'] }})">
+                        {{ number_format($trophyScore, 1) }} pts
+                    </span>
+                @endif
+            </div>
             <div class="text-right font-mono shrink-0 leading-tight">
                 @if($length > 0)
                     <strong class="text-base font-black text-amber-600 dark:text-amber-400 block">{{ number_format($length, 1) }}"</strong>

@@ -102,6 +102,12 @@ class ExpeditionController extends Controller
         ->whereNotNull('longitude')
         ->get();
 
+        $topCatches = app(\Fishinglog\Services\TrophyScoringService::class)->getTopNormalizedCatches(
+            Record::where('caught', '>=', $expedition->start)
+                ->where('caught', '<=', $expedition->finish),
+            5
+        );
+
         return view('expedition.show', [
             'totalRecords' => $totalRecords,
             'releasedCount' => $releasedCount,
@@ -121,6 +127,7 @@ class ExpeditionController extends Controller
             'crewLeaderboard' => $crewLeaderboard,
             'recordsWithGps' => $recordsWithGps,
             'visitedLakes' => $visitedLakes,
+            'topCatches' => $topCatches,
             'stats' => $this->stats($expedition),
         ]);
     }

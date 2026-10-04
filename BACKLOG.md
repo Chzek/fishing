@@ -124,16 +124,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     * **Conservationist**: Catch-and-Release milestones (1, 5, 10, 25, 50, 100+ releases).
   - **Architecture**: Domain event listener on `CatchLoggedEvent` processing rules via `BadgeEvaluatorService`, stored in `badges` and `angler_badges` pivot tables.
 
-#### 2. Species-Normalized Trophy Scoring Engine ("Expedition Best Catch")
-- **Agents**: `seasoned-angler-advisor`, `laravel-architect`
-- **Impact**: **Medium-High** (Inter-Species Fair Competition & Trip Accolades)
-- **Description**:
-  - Develop a normalized relative trophy scoring formula ($S \in [0, 100]$) to rank catches fairly across species with differing biological maximums (e.g. comparing a 24" Walleye against a 34" Northern Pike).
-  - Calculate normalized score as a weighted sum of length and weight relative to Ontario Master Angler benchmarks:
-    $$\text{Score} = w_L \left(\frac{\text{Length}}{\text{Benchmark}_L}\right) \times 100 + w_W \left(\frac{\text{Weight}}{\text{Benchmark}_W}\right) \times 100$$
-  - Provide an Admin configuration panel (`/admin/trophy-weights`) to adjust species multipliers and baseline benchmarks.
-
-#### 3. Handwritten Expedition Journal AI OCR & Structured Transcription Pipeline
+#### 2. Handwritten Expedition Journal AI OCR & Structured Transcription Pipeline
 - **Agents**: `laravel-architect`, `ui-ux-auditor`
 - **Impact**: **Medium-High** (Historical Logbook Digitization & Trip Archive)
 - **Description**:
@@ -141,12 +132,12 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   - Support photographing journal pages and transcribing them via AI vision/OCR into structured `JournalEntry` records (or templated `Post` records) attached to `Expedition` models.
   - Store original photo references (`photo_id`), transcription text, transcription dates, and structured metadata (weather observations, boat pairings, camp quotes, daily prompt questions).
 
-#### 4. Low-Bandwidth Chunked NAS Outbox Push & Scheduled Sync Health Webhook
+#### 3. Low-Bandwidth Chunked NAS Outbox Push & Scheduled Sync Health Webhook
 - **Agents**: `nas-sync-architect`
 - **Impact**: **Medium** (Remote Data Integrity)
 - **Description**: Add chunked outbox streaming (50 records per payload) for low-bandwidth cellular / boat satellite connections, and add a scheduled health monitor triggering notifications if NAS sync is unreachable or failing for >24 hours.
 
-#### 5. Automated Backup Verification & Restore Drill Command (`backup:verify`)
+#### 4. Automated Backup Verification & Restore Drill Command (`backup:verify`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Low-Medium** (Disaster Recovery Verification)
 - **Description**: Create an `artisan backup:verify` command that unzips recent Spatie backup archives in a temporary staging environment to verify SQL dump validity and image asset completeness.
@@ -507,5 +498,21 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * Backed by eager-loaded `$topCatches` query (`Record::with(['angler', 'fishBreed', 'lake'])->where('lakes_id', $lake->id)->orderBy('length', 'desc')->limit(5)->get()`).
     - Added comprehensive unit and feature test coverage in [`BladeComponentsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/BladeComponentsTest.php), [`LakeControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/LakeControllerTest.php), and [`FishBreedControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/FishBreedControllerTest.php).
     - Verified entire test suite (**326 passing tests, 1,420 assertions**) with **0 failures** and **0 PHPStan errors (Level 5)**.
+53. **Species-Normalized Trophy Scoring Engine ("Expedition Best Catch") (P3.2)**:
+    - Built comprehensive length-normalized scoring system ($\text{Score} = (\text{Length} / L_{bench}) \times 100$) eliminating apex predator bias across mixed-species waters and trips.
+    - **Database Migration & Backfill**:
+      * Added `trophy_length_bench` and `trophy_weight_bench` to `fish_breeds` table.
+      * Backfilled official Ontario Master Angler benchmark sizes across all 18 freshwater species.
+    - **`TrophyScoringService` Architecture** ([`app/Services/TrophyScoringService.php`](file:///home/gmroczek/git/fishing/app/Services/TrophyScoringService.php)):
+      * Implemented `calculateScore()`, `getTrophyTier()` (Master Angler 🏆, Gold Class 🥇, Silver Class 🥈, Standard), `getTopNormalizedCatches()`, and `estimateWeight()` biological power-curve regressions.
+      * Multi-tier tie-breakers: `trophy_score DESC` $\to$ `weight DESC` $\to$ `length DESC` $\to$ `caught DESC`.
+    - **UI Touchpoints & Component Enhancements**:
+      * Enhanced `<x-specimenCard>` with `:showScore="true"` prop to render high-contrast score pills (`105.0 pts`).
+      * Upgraded `/lake/{id}` (Lake Dossier) to rank Top 5 Lake Catches by normalized trophy score.
+      * Upgraded `/expedition/{id}` (Expedition Dossier) with the new **"Expedition Best Catches"** trophy-normalized strip using `<x-specimenCard :showSpecies="true" :showLake="true" :showScore="true" />`.
+    - **Documentation**: Documented the full scoring methodology, formula, benchmarks, and tier standards in [`README.md`](file:///home/gmroczek/git/fishing/README.md).
+    - **Comprehensive Test Suite**: Added `TrophyScoringServiceTest.php` and feature tests in `ExpeditionControllerTest.php`, `LakeControllerTest.php`, and `BladeComponentsTest.php`.
+    - Verified entire test suite (**332 passing tests, 1,466 assertions**) with **0 failures** and **0 PHPStan errors (Level 5)**.
+
 
 

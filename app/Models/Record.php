@@ -44,6 +44,8 @@ use MatanYadaev\EloquentSpatial\Traits\HasSpatial;
  * @property float|null $avg_water_temp
  * @property float|null $total_length
  * @property float|null $longest_fish
+ * @property-read float $trophy_score
+ * @property-read array{key: string, label: string, badge_variant: string, icon: string, is_trophy: bool} $trophy_tier
  * @property-read \Fishinglog\Models\Angler|null $angler
  * @property-read \Fishinglog\Models\Lake|null $lake
  * @property-read \Fishinglog\Models\FishBreed|null $fishBreed
@@ -305,5 +307,23 @@ class Record extends Model
         }
 
         return null;
+    }
+
+    /**
+     * Get the species-normalized trophy score (percentage of Master Angler benchmark).
+     */
+    public function getTrophyScoreAttribute(): float
+    {
+        return app(\Fishinglog\Services\TrophyScoringService::class)->calculateScore($this);
+    }
+
+    /**
+     * Get trophy tier metadata for this catch.
+     *
+     * @return array{key: string, label: string, badge_variant: string, icon: string, is_trophy: bool}
+     */
+    public function getTrophyTierAttribute(): array
+    {
+        return app(\Fishinglog\Services\TrophyScoringService::class)->getTrophyTier($this->trophy_score);
     }
 }

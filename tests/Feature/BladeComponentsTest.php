@@ -171,6 +171,10 @@ class BladeComponentsTest extends TestCase
         // With custom subtitle override
         $customView = $this->blade('<x-specimenCard :rank="0" :record="$record" subtitle="Special Expedition Trophy" />', ['record' => $record]);
         $customView->assertSee('Special Expedition Trophy');
+
+        // With showScore enabled (e.g. 20.75 / 20 = 103.8 pts)
+        $scoreView = $this->blade('<x-specimenCard :rank="0" :record="$record" :showScore="true" />', ['record' => $record]);
+        $scoreView->assertSee('103.8 pts');
     }
 }
 

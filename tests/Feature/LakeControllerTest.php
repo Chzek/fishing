@@ -90,6 +90,7 @@ class LakeControllerTest extends TestCase
         $response->assertSee('Top 5 Lake Catches');
         $response->assertSee('29.5"', false);
         $response->assertSee('9.25 lbs');
+        $response->assertSee('105.4 pts');
         $response->assertSee('Samantha Reed');
         $response->assertSee('Walleye');
         $response->assertSee('Jul 2026');

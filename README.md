@@ -53,6 +53,39 @@ An offline-first wilderness fishing logbook and environmental telemetry system b
 ### ⚡ 10. Global Omnibox Command Palette (`Ctrl+K` or `/search`)
 - Fast keyboard-driven command palette for searching across 6 Eloquent models (**Anglers**, **Lakes**, **Fish Species**, **Lures**, **Expeditions**, **Catches**) and jumping straight to quick action routes.
 
+### 🏆 11. Species-Normalized Trophy Scoring Engine (`TrophyScoringService`)
+- **Inter-Species Fair Competition**: Eliminates apex predator bias (where ordinary 33" Pike unfairly outrank trophy 21" Smallmouth Bass or 30" Walleye) by normalizing each catch against official Ontario Master Angler benchmark sizes.
+- **Length-Normalized Core Formula**:
+  $$\text{Trophy Score} = \left(\frac{\text{Length}}{L_{bench}}\right) \times 100$$
+- **Master Angler Benchmark Standards ($L_{bench}$ / $W_{bench}$)**:
+  * **Muskellunge (Muskie)**: 48.0" / 30.00 lbs
+  * **Northern Pike**: 36.0" / 15.00 lbs
+  * **Lake Trout**: 32.0" / 15.00 lbs
+  * **Atlantic Salmon**: 30.0" / 10.00 lbs
+  * **Walleye (Yellow Pickerel)**: 28.0" / 8.00 lbs
+  * **Coho / Silver Salmon**: 28.0" / 10.00 lbs
+  * **Rainbow Trout (Steelhead)**: 26.0" / 8.00 lbs
+  * **Brown Trout**: 24.0" / 6.00 lbs
+  * **Splake**: 22.0" / 5.00 lbs
+  * **Smallmouth Bass**: 20.0" / 4.50 lbs
+  * **Largemouth Bass**: 20.0" / 5.00 lbs
+  * **Pink Salmon**: 20.0" / 3.50 lbs
+  * **Brook Trout (Speckled)**: 18.0" / 3.50 lbs
+  * **Black Crappie**: 13.0" / 1.50 lbs
+  * **Yellow Perch**: 12.0" / 1.25 lbs
+  * **Rock Bass**: 10.0" / 0.75 lbs
+  * **Bluegill / Sunfish**: 9.5" / 0.85 lbs
+- **Tier Classification**:
+  * **$\ge 100.0$ pts**: 🏆 **Master Angler / Trophy Class** (Meets or exceeds provincial qualification size).
+  * **$90.0 - 99.9$ pts**: 🥇 **Gold Class Specimen** (Exceptional quality adult catch).
+  * **$80.0 - 89.9$ pts**: 🥈 **Silver Class** (Quality adult gamefish).
+  * **$< 80.0$ pts**: Standard / Eater.
+- **Weight & Tie-Breakers**: Length drives 100% of the scoring for universal comparability across the entire logbook, with scale weight acting as the primary tie-breaker when two catches share identical scores.
+- **Where It Powers the App**:
+  * **Expedition Dossier (`/expedition/{id}`)**: "Expedition Best Catches" strip ranking trip MVP catches.
+  * **Lake Dossier (`/lake/{id}`)**: "Top 5 Lake Catches" strip ranking all-time best waterbody specimens.
+  * **Specimen Card (`<x-specimenCard :showScore="true" />`)**: Standardized badge displaying rank, length, scale weight, and trophy score pill.
+
 ---
 
 ## 🔒 Offline Ad-hoc Boat Wi-Fi & HTTPS Setup Guide

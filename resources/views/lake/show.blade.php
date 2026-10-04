@@ -170,7 +170,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                 @foreach($topCatches as $rank => $catch)
-                    <x-specimenCard :rank="$rank" :record="$catch" :showSpecies="true" />
+                    <x-specimenCard :rank="$rank" :record="$catch" :showSpecies="true" :showScore="true" />
                 @endforeach
             </div>
         </div>
