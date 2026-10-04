@@ -577,11 +577,12 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * Verified entire test suite (**340 passing tests, 1,537 assertions**) with **0 failures** and **0 PHPStan errors**.
 59. **Synology NAS MySQL & MariaDB Dump Configuration (P3.1)**:
     - **Configurable `mysqldump` Binary Path & Flags**:
-      * Added `dump` configuration array to `config/database.php` under the `mysql` connection supporting `DUMP_BINARY_PATH`, `DUMP_TIMEOUT`, and `DUMP_EXTRA_OPTIONS` (empty by default for full MariaDB `/usr/bin/mariadb-dump` and standard MySQL compatibility).
-      * Eliminates `mysqldump: unknown variable 'column-statistics=0'` failures on MariaDB/Synology NAS environments.
+      * Added `dump` configuration array with `array_filter` to `config/database.php` under the `mysql` connection supporting `DUMP_BINARY_PATH`, `DUMP_TIMEOUT`, and `DUMP_EXTRA_OPTIONS`.
+      * Automatically strips empty keys to prevent Spatie `DbDumperFactory` from invoking zero-argument dumper setter methods (`addExtraOption()`, `setDumpBinaryPath()`).
+      * Eliminates `mysqldump: unknown variable 'column-statistics=0'` and `ArgumentCountError` on MariaDB/Synology NAS environments.
     - **Automated Test Coverage**:
-      * Added `test_mysql_dump_configuration_is_defined` in [`tests/Feature/SpatieBackupTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/SpatieBackupTest.php).
-      * Verified all backup tests passing (15 tests, 64 assertions).
+      * Added `test_mysql_dump_configuration_is_defined` and dumper instantiation validation in [`tests/Feature/SpatieBackupTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/SpatieBackupTest.php).
+      * Verified all backup tests passing (16 tests, 65 assertions).
 
 
 

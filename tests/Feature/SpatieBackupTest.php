@@ -49,10 +49,12 @@ class SpatieBackupTest extends TestCase
         $dumpConfig = config('database.connections.mysql.dump');
 
         $this->assertIsArray($dumpConfig);
-        $this->assertArrayHasKey('dump_binary_path', $dumpConfig);
         $this->assertArrayHasKey('use_single_transaction', $dumpConfig);
         $this->assertTrue($dumpConfig['use_single_transaction']);
         $this->assertEquals(300, $dumpConfig['timeout']);
-        $this->assertEquals('', $dumpConfig['add_extra_option']);
+
+        // Verify DbDumperFactory creates dumper without ArgumentCountError
+        $dumper = \Spatie\Backup\Tasks\Backup\DbDumperFactory::createFromConnection('mysql');
+        $this->assertInstanceOf(\Spatie\DbDumper\Databases\MySql::class, $dumper);
     }
 }
