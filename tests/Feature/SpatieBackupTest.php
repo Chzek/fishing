@@ -53,6 +53,6 @@ class SpatieBackupTest extends TestCase
         $this->assertArrayHasKey('use_single_transaction', $dumpConfig);
         $this->assertTrue($dumpConfig['use_single_transaction']);
         $this->assertEquals(300, $dumpConfig['timeout']);
-        $this->assertEquals('--column-statistics=0', $dumpConfig['add_extra_option']);
+        $this->assertEquals('', $dumpConfig['add_extra_option']);
     }
 }
