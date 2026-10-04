@@ -52,6 +52,12 @@ return [
             'prefix' => '',
             'strict' => true,
             'engine' => null,
+            'dump' => [
+                'dump_binary_path' => env('DUMP_BINARY_PATH', ''),
+                'use_single_transaction' => true,
+                'timeout' => (int) env('DUMP_TIMEOUT', 300),
+                'add_extra_option' => env('DUMP_EXTRA_OPTIONS', '--column-statistics=0'),
+            ],
         ],
 
         'pgsql' => [

@@ -40,4 +40,19 @@ class SpatieBackupTest extends TestCase
         $this->assertArrayHasKey('backup:list', $allCommands);
         $this->assertArrayHasKey('backup:monitor', $allCommands);
     }
+
+    /**
+     * Test that MySQL database connection includes dump options for Spatie backup.
+     */
+    public function test_mysql_dump_configuration_is_defined(): void
+    {
+        $dumpConfig = config('database.connections.mysql.dump');
+
+        $this->assertIsArray($dumpConfig);
+        $this->assertArrayHasKey('dump_binary_path', $dumpConfig);
+        $this->assertArrayHasKey('use_single_transaction', $dumpConfig);
+        $this->assertTrue($dumpConfig['use_single_transaction']);
+        $this->assertEquals(300, $dumpConfig['timeout']);
+        $this->assertEquals('--column-statistics=0', $dumpConfig['add_extra_option']);
+    }
 }

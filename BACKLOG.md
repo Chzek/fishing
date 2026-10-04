@@ -575,6 +575,14 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * Created [`tests/Feature/NasSyncJournalTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncJournalTest.php) verifying two-way push/pull orchestration, pivot tagging, chunked media validation, and REST API endpoints.
       * Updated [`tests/Feature/NasSyncServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncServiceTest.php) model matrix test assertions.
       * Verified entire test suite (**340 passing tests, 1,537 assertions**) with **0 failures** and **0 PHPStan errors**.
+59. **Synology NAS MySQL Dump Configuration & Backup Compatibility (P3.1)**:
+    - **Configurable `mysqldump` Binary Path & Flags**:
+      * Added `dump` configuration array to `config/database.php` under the `mysql` connection supporting `DUMP_BINARY_PATH`, `DUMP_TIMEOUT`, and `DUMP_EXTRA_OPTIONS` (`--column-statistics=0` by default).
+      * Resolves `sh: mysqldump: not found` on containerized and remote NAS environments with non-standard binary locations.
+    - **Automated Test Coverage**:
+      * Added `test_mysql_dump_configuration_is_defined` in [`tests/Feature/SpatieBackupTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/SpatieBackupTest.php).
+      * Verified all backup tests passing (16 tests, 66 assertions).
+
 
 
 
