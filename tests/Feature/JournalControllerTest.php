@@ -113,32 +113,5 @@ class JournalControllerTest extends TestCase
         $response->assertSee('Catfish Creek');
         $response->assertSee($page->url);
     }
-
-    #[Test]
-    public function authenticated_user_can_accept_expedition_recommendation(): void
-    {
-        $this->be($this->user);
-
-        $entry = JournalEntry::factory()->create([
-            'expeditions_id' => null,
-            'entry_date' => '2007-06-29',
-        ]);
-
-        $payload = [
-            'suggested_title' => 'Canada Spring Expedition 2007',
-            'start_date' => '2007-06-29',
-            'finish_date' => '2007-06-29',
-            'entry_ids' => [$entry->id],
-        ];
-
-        $response = $this->post(route('journal.recommendation.accept'), $payload);
-        $response->assertRedirect();
-
-        $this->assertDatabaseHas('expeditions', [
-            'description' => 'Canada Spring Expedition 2007',
-        ]);
-
-        $entry->refresh();
-        $this->assertNotNull($entry->expeditions_id);
-    }
 }
+

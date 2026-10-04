@@ -197,7 +197,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::prefix('journal')->group(function () {
         Route::get('/', [JournalController::class, 'index'])->name('journal.index');
         Route::get('/{journalEntry}', [JournalController::class, 'show'])->name('journal.show');
-        Route::post('/recommendation/accept', [JournalController::class, 'acceptRecommendation'])->name('journal.recommendation.accept');
     });
 
     // Expedition routes

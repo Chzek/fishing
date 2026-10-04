@@ -35,72 +35,30 @@ class ExpeditionDiscoveryServiceTest extends TestCase
     }
 
     #[Test]
-    public function it_recommends_missing_expeditions_from_unlinked_journal_entries(): void
+    public function it_only_matches_exact_anglers_and_prevents_false_historical_associations(): void
     {
-        $angler = Angler::factory()->create(['firstName' => 'Nicholas', 'lastName' => 'Mroczek']);
+        $andy = Angler::factory()->create(['firstName' => 'Andy', 'lastName' => 'Brauer']);
+        $simon = Angler::factory()->create(['firstName' => 'Simon', 'lastName' => 'Brauer']);
         $lake = Lake::factory()->create(['name' => 'Catfish Creek']);
 
-        $entry1 = JournalEntry::factory()->create([
-            'expeditions_id' => null,
-            'entry_date' => '2007-06-28',
-            'start_date' => '2007-06-28',
-            'end_date' => '2007-06-29',
-        ]);
-        $entry1->anglers()->attach($angler->id);
-        $entry1->lakes()->attach($lake->id);
-
-        $entry2 = JournalEntry::factory()->create([
-            'expeditions_id' => null,
-            'entry_date' => '2007-06-30',
-            'start_date' => '2007-06-30',
-            'end_date' => '2007-07-01',
-        ]);
-
-        $service = app(ExpeditionDiscoveryService::class);
-        $recommendations = $service->getRecommendedExpeditions();
-
-        $this->assertNotEmpty($recommendations);
-        $firstRec = $recommendations->first();
-
-        $this->assertEquals('2007-06-28', $firstRec['start_date']);
-        $this->assertEquals('2007-06-30', $firstRec['finish_date']);
-        $this->assertEquals(2, $firstRec['entries_count']);
-        $this->assertTrue($firstRec['matched_anglers']->contains('id', $angler->id));
-        $this->assertTrue($firstRec['matched_lakes']->contains('id', $lake->id));
-    }
-
-    #[Test]
-    public function it_creates_expedition_and_links_crew_and_entries_from_recommendation(): void
-    {
-        $angler = Angler::factory()->create();
         $entry = JournalEntry::factory()->create([
-            'expeditions_id' => null,
+            'title' => 'Historical Test Entry',
             'entry_date' => '2007-06-29',
         ]);
 
-        $service = app(ExpeditionDiscoveryService::class);
+        $transcriptionService = app(JournalTranscriptionService::class);
 
-        $recPayload = [
-            'suggested_title' => 'Canada Spring Expedition 2007',
-            'start_date' => '2007-06-28',
-            'finish_date' => '2007-07-02',
-            'entry_ids' => [$entry->id],
-            'matched_anglers' => [$angler],
-        ];
-
-        $expedition = $service->createFromRecommendation($recPayload);
-
-        $this->assertDatabaseHas('expeditions', [
-            'id' => $expedition->id,
-            'description' => 'Canada Spring Expedition 2007',
-        ]);
-
-        $this->assertDatabaseHas('crews', [
-            'expeditions_id' => $expedition->id,
-            'anglers_id' => $angler->id,
-        ]);
+        // "Red Brauer" and "Andy Brauer" mentioned. Red Brauer is NOT Simon Brauer.
+        $transcriptionService->syncMentionedEntities(
+            $entry,
+            ['Red Brauer', 'Andy Brauer'],
+            ['Catfish Creek']
+        );
 
         $entry->refresh();
-        $this->assertEquals($expedition->id, $entry->expeditions_id);
+        $this->assertTrue($entry->anglers->contains('id', $andy->id));
+        $this->assertFalse($entry->anglers->contains('id', $simon->id));
+        $this->assertTrue($entry->lakes->contains('id', $lake->id));
     }
 }
+

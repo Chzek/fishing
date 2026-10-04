@@ -85,7 +85,7 @@ class JournalTranscriptionService
      */
     public function syncMentionedEntities(JournalEntry $entry, array $anglerNames, array $lakeNames): void
     {
-        // Match Anglers
+        // Match Anglers (Exact full-name match only to prevent false historical tagging)
         $anglerIds = [];
         $allAnglers = Angler::all();
 
@@ -96,9 +96,8 @@ class JournalTranscriptionService
             }
 
             $matched = $allAnglers->first(function (Angler $a) use ($nameStr) {
-                return Str::contains(mb_strtolower($a->full_name), mb_strtolower($nameStr))
-                    || Str::contains(mb_strtolower($nameStr), mb_strtolower($a->firstName ?? ''))
-                    || Str::contains(mb_strtolower($nameStr), mb_strtolower($a->lastName ?? ''));
+                $fullName = mb_strtolower(trim($a->firstName . ' ' . $a->lastName));
+                return $fullName === mb_strtolower($nameStr);
             });
 
             if ($matched) {
@@ -108,9 +107,11 @@ class JournalTranscriptionService
 
         if (!empty($anglerIds)) {
             $entry->anglers()->sync(array_unique($anglerIds));
+        } else {
+            $entry->anglers()->detach();
         }
 
-        // Match Lakes
+        // Match Lakes (Exact lake name match only)
         $lakeIds = [];
         $allLakes = Lake::all();
 
@@ -121,8 +122,7 @@ class JournalTranscriptionService
             }
 
             $matched = $allLakes->first(function (Lake $l) use ($lakeStr) {
-                return Str::contains(mb_strtolower($l->name), mb_strtolower($lakeStr))
-                    || Str::contains(mb_strtolower($lakeStr), mb_strtolower($l->name));
+                return mb_strtolower(trim($l->name)) === mb_strtolower($lakeStr);
             });
 
             if ($matched) {
@@ -132,6 +132,8 @@ class JournalTranscriptionService
 
         if (!empty($lakeIds)) {
             $entry->lakes()->sync(array_unique($lakeIds));
+        } else {
+            $entry->lakes()->detach();
         }
     }
 

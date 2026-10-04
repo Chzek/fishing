@@ -20,68 +20,6 @@
         </x-slot:actions>
     </x-pageHero>
 
-    <!-- Missing Expedition Recommendations Banner -->
-    @if(!empty($recommendedExpeditions) && $recommendedExpeditions->count() > 0)
-        <div class="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent bg-white dark:bg-slate-900 rounded-2xl p-5 border border-amber-200/80 dark:border-amber-800/80 shadow-sm space-y-3">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                        <x-lucide-sparkles class="w-5 h-5" />
-                    </div>
-                    <div>
-                        <h2 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                            <span>Discovered Missing Expeditions</span>
-                            <x-badge variant="amber" size="sm" fontMono>{{ $recommendedExpeditions->count() }} Suggested</x-badge>
-                        </h2>
-                        <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">The AI journal discovery engine detected unassigned logbook entries from historical trips.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-                @foreach($recommendedExpeditions as $rec)
-                    <div class="p-4 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-amber-200/60 dark:border-amber-700/60 shadow-xs flex flex-col justify-between space-y-3">
-                        <div class="space-y-1">
-                            <div class="flex items-center justify-between gap-2">
-                                <h3 class="font-bold text-slate-900 dark:text-white text-sm">{{ $rec['suggested_title'] }}</h3>
-                                <x-badge variant="amber" size="sm" fontMono>{{ $rec['days_count'] }} Days</x-badge>
-                            </div>
-                            <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-mono">
-                                <x-lucide-calendar class="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                <span>{{ $rec['start_date'] }} &rarr; {{ $rec['finish_date'] }}</span>
-                                <span>•</span>
-                                <span>{{ $rec['entries_count'] }} Journal Entries</span>
-                            </div>
-
-                            @if(!empty($rec['matched_anglers']) && count($rec['matched_anglers']) > 0)
-                                <div class="pt-2 flex flex-wrap items-center gap-1.5">
-                                    <span class="text-[10px] uppercase font-bold text-slate-400">Crew:</span>
-                                    @foreach($rec['matched_anglers'] as $angler)
-                                        <span class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">{{ $angler->full_name }}</span>
-                                    @endforeach
-                                </div>
-                            @endif
-                        </div>
-
-                        <form action="{{ route('journal.recommendation.accept') }}" method="POST" class="pt-2 border-t border-amber-100 dark:border-slate-700 flex justify-end">
-                            @csrf
-                            <input type="hidden" name="suggested_title" value="{{ $rec['suggested_title'] }}">
-                            <input type="hidden" name="start_date" value="{{ $rec['start_date'] }}">
-                            <input type="hidden" name="finish_date" value="{{ $rec['finish_date'] }}">
-                            @foreach($rec['entry_ids'] as $id)
-                                <input type="hidden" name="entry_ids[]" value="{{ $id }}">
-                            @endforeach
-                            <button type="submit" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer">
-                                <x-lucide-plus-circle class="w-3.5 h-3.5" />
-                                <span>Create Expedition Trip</span>
-                            </button>
-                        </form>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
     <!-- Search & Filter Controls -->
     <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
         <form action="{{ route('journal.index') }}" method="GET" class="w-full md:max-w-md relative">

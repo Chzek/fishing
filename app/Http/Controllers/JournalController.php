@@ -2,11 +2,8 @@
 
 namespace Fishinglog\Http\Controllers;
 
-use Fishinglog\Models\Expedition;
 use Fishinglog\Models\JournalEntry;
 use Fishinglog\Models\JournalPage;
-use Fishinglog\Services\ExpeditionDiscoveryService;
-use Fishinglog\Services\JournalTranscriptionService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -20,7 +17,7 @@ class JournalController extends Controller
     /**
      * Display a listing of digitized expedition journals.
      */
-    public function index(Request $request, ExpeditionDiscoveryService $discoveryService): View
+    public function index(Request $request): View
     {
         $query = JournalEntry::with(['expedition', 'pages', 'anglers', 'lakes'])
             ->orderBy('entry_date', 'desc');
@@ -40,7 +37,6 @@ class JournalController extends Controller
         }
 
         $entries = $query->paginate(12)->withQueryString();
-        $recommendedExpeditions = $discoveryService->getRecommendedExpeditions();
         $totalPagesCount = JournalPage::count();
         $totalEntriesCount = JournalEntry::count();
 
@@ -51,7 +47,6 @@ class JournalController extends Controller
 
         return view('journal.index', [
             'entries' => $entries,
-            'recommendedExpeditions' => $recommendedExpeditions,
             'totalPagesCount' => $totalPagesCount,
             'totalEntriesCount' => $totalEntriesCount,
             'availableYears' => $availableYears,
@@ -71,30 +66,5 @@ class JournalController extends Controller
             'entry' => $journalEntry,
         ]);
     }
-
-    /**
-     * Create an expedition from a discovery recommendation.
-     */
-    public function acceptRecommendation(Request $request, ExpeditionDiscoveryService $discoveryService)
-    {
-        $validated = $request->validate([
-            'suggested_title' => 'required|string',
-            'start_date' => 'required|date',
-            'finish_date' => 'required|date',
-            'entry_ids' => 'array',
-            'entry_ids.*' => 'string',
-        ]);
-
-        $recommendations = $discoveryService->getRecommendedExpeditions();
-        $target = $recommendations->first(function ($rec) use ($validated) {
-            return $rec['start_date'] === $validated['start_date'] && $rec['finish_date'] === $validated['finish_date'];
-        });
-
-        if ($target) {
-            $expedition = $discoveryService->createFromRecommendation($target);
-            return redirect('/expedition/' . $expedition->id)->with('status', "Expedition '{$expedition->title}' created successfully from journal recommendation.");
-        }
-
-        return redirect()->back()->with('error', 'Recommended expedition could not be found or has already been created.');
-    }
 }
+

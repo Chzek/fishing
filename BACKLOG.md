@@ -539,14 +539,15 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
         - `journal_pages`: Multi-page scan attachments (`journal_entry_id`, `page_number`, `sequence_order`, `filename`, `photo_path`, `raw_ocr_text`, `structured_metadata`).
         - `journal_entry_anglers` & `journal_entry_lakes`: Many-to-many pivot tables tagging crew members and visited waterways per entry.
       * Created Eloquent models [`JournalEntry`](file:///home/gmroczek/git/fishing/app/Models/JournalEntry.php) and [`JournalPage`](file:///home/gmroczek/git/fishing/app/Models/JournalPage.php) with full bi-directional relationships on [`Expedition`](file:///home/gmroczek/git/fishing/app/Models/Expedition.php), [`Angler`](file:///home/gmroczek/git/fishing/app/Models/Angler.php), and [`Lake`](file:///home/gmroczek/git/fishing/app/Models/Lake.php).
-    - **Expedition Discovery & Auto-Recommendation Engine**:
-      * Built [`app/Services/ExpeditionDiscoveryService.php`](file:///home/gmroczek/git/fishing/app/Services/ExpeditionDiscoveryService.php) to automatically cluster unassigned journal dates into expedition candidates and match them against existing trips.
-      * Created 1-click expedition creation endpoint (`POST /journal/recommendation/accept`) and CLI command (`php artisan journal:discover-expeditions`).
+    - **Historical Integrity & Entity Tagging Engine**:
+      * Implemented strict, exact full-name matching for anglers in [`app/Services/JournalTranscriptionService.php`](file:///home/gmroczek/git/fishing/app/Services/JournalTranscriptionService.php) to eliminate false historical tagging (e.g. historical nickname "Red Brauer" or relatives not mistakenly linking younger anglers like Simon Brauer).
+      * Preserved clean historical independence: journal entries link to verified existing expeditions covering dates via [`ExpeditionDiscoveryService`](file:///home/gmroczek/git/fishing/app/Services/ExpeditionDiscoveryService.php) without synthesizing unverified trips or auto-assigning crews.
     - **Split-Screen High-Res Scan Zoom Viewer & Transcriptions UI**:
-      * Created [`resources/views/journal/index.blade.php`](file:///home/gmroczek/git/fishing/resources/views/journal/index.blade.php) featuring live text search across titles, markdown bodies, highlights, and weather summaries, alongside year filters and unassigned expedition discovery banners.
+      * Created [`resources/views/journal/index.blade.php`](file:///home/gmroczek/git/fishing/resources/views/journal/index.blade.php) featuring live text search across titles, markdown bodies, highlights, and weather summaries, alongside year filters.
       * Created [`resources/views/journal/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/journal/show.blade.php) featuring a split-screen interactive high-resolution scan zoom viewer with multi-page thumbnail switching, verified markdown transcription, highlight callouts, weather telemetry, tagged crew members, and visited lakes.
       * Integrated **"Trip Journal & Cabin Logs"** card into the Expedition Dossier ([`resources/views/expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php)).
       * Added "Trip Journals" navigation links in desktop sidebar and mobile navigation drawer ([`resources/views/layouts/app.blade.php`](file:///home/gmroczek/git/fishing/resources/views/layouts/app.blade.php)).
     - **Comprehensive Test Suite & Quality Assurance**:
       * Created [`tests/Feature/JournalControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/JournalControllerTest.php) and [`tests/Feature/ExpeditionDiscoveryServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/ExpeditionDiscoveryServiceTest.php).
       * Verified entire test suite (**340 passing tests, 1,515 assertions**) with **0 failures** and **0 PHPStan errors (Level 5)**.
+
