@@ -57,6 +57,8 @@ return [
                 'use_single_transaction' => true,
                 'timeout' => (int) env('DUMP_TIMEOUT', 300),
                 'add_extra_option' => env('DUMP_EXTRA_OPTIONS'),
+                'set_skip_ssl' => (bool) env('DUMP_SKIP_SSL', true),
+                'set_ssl_flag' => env('DUMP_SSL_FLAG', 'skip-ssl'),
             ], fn ($value) => $value !== null && $value !== ''),
         ],
 
@@ -78,6 +80,8 @@ return [
                 'use_single_transaction' => true,
                 'timeout' => (int) env('DUMP_TIMEOUT', 300),
                 'add_extra_option' => env('DUMP_EXTRA_OPTIONS'),
+                'set_skip_ssl' => (bool) env('DUMP_SKIP_SSL', true),
+                'set_ssl_flag' => env('DUMP_SSL_FLAG', 'skip-ssl'),
             ], fn ($value) => $value !== null && $value !== ''),
         ],
 

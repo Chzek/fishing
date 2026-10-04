@@ -576,15 +576,16 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * Updated [`tests/Feature/NasSyncServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncServiceTest.php) model matrix test assertions.
       * Verified entire test suite (**340 passing tests, 1,537 assertions**) with **0 failures** and **0 PHPStan errors**.
 59. **Synology NAS MySQL & MariaDB Dump Configuration (P3.1)**:
-    - **Configurable `mysqldump` Binary Path & Flags**:
-      * Added `dump` configuration array with `array_filter` to `config/database.php` under both `mysql` and `mariadb` connections supporting `DUMP_BINARY_PATH`, `DUMP_TIMEOUT`, and `DUMP_EXTRA_OPTIONS`.
+    - **Configurable `mysqldump` / `mariadb-dump` Binary Path & Flags**:
+      * Added `dump` configuration array with `array_filter` to `config/database.php` under both `mysql` and `mariadb` connections supporting `DUMP_BINARY_PATH`, `DUMP_TIMEOUT`, `DUMP_EXTRA_OPTIONS`, `DUMP_SKIP_SSL`, and `DUMP_SSL_FLAG`.
       * Configured `config/backup.php` databases to follow `env('DB_CONNECTION', 'mysql')` dynamically.
       * Enables native `mariadb-dump` via `Spatie\DbDumper\Databases\MariaDb` when `DB_CONNECTION=mariadb`.
+      * Automatically enables `skip-ssl` credentials to resolve `TLS/SSL error: self-signed certificate in certificate chain` on containerized databases.
       * Automatically strips empty keys to prevent Spatie `DbDumperFactory` from invoking zero-argument dumper setter methods (`addExtraOption()`, `setDumpBinaryPath()`).
       * Eliminates `mysqldump: unknown variable 'column-statistics=0'`, deprecation exit failures, and `ArgumentCountError` on MariaDB/Synology NAS environments.
     - **Automated Test Coverage**:
       * Added `test_mysql_dump_configuration_is_defined` and `test_mariadb_dump_configuration_is_defined` validating both MySQL and MariaDB dumpers in [`tests/Feature/SpatieBackupTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/SpatieBackupTest.php).
-      * Verified all backup tests passing (17 tests, 70 assertions).
+      * Verified all backup tests passing (16 tests, 68 assertions).
 
 
 
