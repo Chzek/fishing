@@ -9,6 +9,8 @@ use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\FishFamily;
 use Fishinglog\Models\FishingRule;
 use Fishinglog\Models\FishingZone;
+use Fishinglog\Models\JournalEntry;
+use Fishinglog\Models\JournalPage;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Lure;
 use Fishinglog\Models\Photo;
@@ -41,6 +43,8 @@ class NasSyncService
         'fishing_zones' => FishingZone::class,
         'fishing_rules' => FishingRule::class,
         'photos' => Photo::class,
+        'journal_entries' => JournalEntry::class,
+        'journal_pages' => JournalPage::class,
     ];
 
     protected array $modelLabels = [
@@ -57,6 +61,8 @@ class NasSyncService
         'fishing_zones' => 'Zones',
         'fishing_rules' => 'Rules',
         'users' => 'Users',
+        'journal_entries' => 'Journal Entries',
+        'journal_pages' => 'Journal Pages',
     ];
 
     public function __construct(?string $nasUrl = null, ?string $apiToken = null, ?MediaSyncManager $mediaSyncManager = null)
@@ -266,8 +272,9 @@ class NasSyncService
         $speciesWithArtwork = FishBreed::where(function ($q) {
             $q->whereNotNull('avatar')->orWhereNotNull('image');
         })->count();
+        $journalPagesWithFile = JournalPage::whereNotNull('photo_path')->where('photo_path', '!=', '')->count();
 
-        $totalMediaAssets = $photosWithFile + $anglersWithAvatar + $speciesWithArtwork;
+        $totalMediaAssets = $photosWithFile + $anglersWithAvatar + $speciesWithArtwork + $journalPagesWithFile;
 
         return [
             'total_media_records' => $totalMediaAssets,
@@ -275,6 +282,7 @@ class NasSyncService
             'photos_with_file' => $photosWithFile,
             'anglers_avatars_count' => $anglersWithAvatar,
             'species_artwork_count' => $speciesWithArtwork,
+            'journal_pages_count' => $journalPagesWithFile,
             'chunk_size_bytes' => MediaSyncManager::DEFAULT_CHUNK_SIZE,
             'chunk_size_mb' => round(MediaSyncManager::DEFAULT_CHUNK_SIZE / 1048576, 1),
             'hashing_algorithm' => 'SHA-256',
@@ -324,6 +332,16 @@ class NasSyncService
                         if ($hash) {
                             $mediaToVerify[] = ['path' => $item->path, 'hash' => $hash];
                         }
+                    }
+                    if ($key === 'journal_pages' && !empty($item->photo_path) && Storage::disk('public')->exists($item->photo_path)) {
+                        $hash = $this->mediaSyncManager->computeHash($item->photo_path);
+                        if ($hash) {
+                            $mediaToVerify[] = ['path' => $item->photo_path, 'hash' => $hash];
+                        }
+                    }
+                    if ($key === 'journal_entries') {
+                        $data['angler_ids'] = $item->anglers()->pluck('anglers.id')->all();
+                        $data['lake_ids'] = $item->lakes()->pluck('lakes.id')->all();
                     }
                     if ($key === 'anglers' && !empty($item->avatar) && Storage::disk('public')->exists('avatars/' . $item->avatar)) {
                         $avatarPath = 'avatars/' . $item->avatar;
@@ -442,6 +460,14 @@ class NasSyncService
                     }
                 }
 
+                if ($key === 'journal_pages') {
+                    if (!empty($remoteItem['file_base64']) && !empty($remoteItem['photo_path'])) {
+                        Storage::disk('public')->put($remoteItem['photo_path'], base64_decode($remoteItem['file_base64']));
+                    } elseif (!empty($remoteItem['photo_path']) && !Storage::disk('public')->exists($remoteItem['photo_path'])) {
+                        $this->mediaSyncManager->downloadFile($this->nasUrl, $this->apiToken, $remoteItem['photo_path'], $remoteItem['photo_path']);
+                    }
+                }
+
                 $existing = in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive($modelClass))
                     ? $modelClass::withTrashed()->find($id)
                     : $modelClass::find($id);
@@ -517,6 +543,15 @@ class NasSyncService
                         ]);
                         $existing->saveQuietly();
                         $existing->timestamps = true;
+                    }
+                }
+
+                if ($key === 'journal_entries') {
+                    if (isset($remoteItem['angler_ids']) && is_array($remoteItem['angler_ids'])) {
+                        $entity->anglers()->sync($remoteItem['angler_ids']);
+                    }
+                    if (isset($remoteItem['lake_ids']) && is_array($remoteItem['lake_ids'])) {
+                        $entity->lakes()->sync($remoteItem['lake_ids']);
                     }
                 }
             }

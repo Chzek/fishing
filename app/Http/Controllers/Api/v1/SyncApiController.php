@@ -10,6 +10,8 @@ use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\FishFamily;
 use Fishinglog\Models\FishingRule;
 use Fishinglog\Models\FishingZone;
+use Fishinglog\Models\JournalEntry;
+use Fishinglog\Models\JournalPage;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Lure;
 use Fishinglog\Models\Photo;
@@ -39,6 +41,8 @@ class SyncApiController extends Controller
         'fishing_zones' => FishingZone::class,
         'fishing_rules' => FishingRule::class,
         'photos' => Photo::class,
+        'journal_entries' => JournalEntry::class,
+        'journal_pages' => JournalPage::class,
     ];
 
     /**
@@ -85,6 +89,9 @@ class SyncApiController extends Controller
                     // If receiving a photo or avatar with binary content, store to disk
                     if ($key === 'photos' && !empty($itemData['file_base64']) && !empty($itemData['path'])) {
                         \Illuminate\Support\Facades\Storage::disk('public')->put($itemData['path'], base64_decode($itemData['file_base64']));
+                    }
+                    if ($key === 'journal_pages' && !empty($itemData['file_base64']) && !empty($itemData['photo_path'])) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->put($itemData['photo_path'], base64_decode($itemData['file_base64']));
                     }
                     if ($key === 'anglers' && !empty($itemData['avatar_base64']) && !empty($itemData['avatar'])) {
                         \Illuminate\Support\Facades\Storage::disk('public')->put('avatars/' . $itemData['avatar'], base64_decode($itemData['avatar_base64']));
@@ -174,6 +181,15 @@ class SyncApiController extends Controller
                         $syncedUuids[] = $id;
                         $processedCount++;
                     }
+
+                    if ($key === 'journal_entries') {
+                        if (isset($itemData['angler_ids']) && is_array($itemData['angler_ids'])) {
+                            $entity->anglers()->sync($itemData['angler_ids']);
+                        }
+                        if (isset($itemData['lake_ids']) && is_array($itemData['lake_ids'])) {
+                            $entity->lakes()->sync($itemData['lake_ids']);
+                        }
+                    }
                 } catch (\Throwable $e) {
                     Log::error("Failed to process sync push item for model {$key} ID [{$id}]: " . $e->getMessage(), [
                         'exception' => $e,
@@ -236,6 +252,13 @@ class SyncApiController extends Controller
 
                 if ($key === 'photos' && !empty($item->path) && \Illuminate\Support\Facades\Storage::disk('public')->exists($item->path)) {
                     $data['file_base64'] = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($item->path));
+                }
+                if ($key === 'journal_pages' && !empty($item->photo_path) && \Illuminate\Support\Facades\Storage::disk('public')->exists($item->photo_path)) {
+                    $data['file_base64'] = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get($item->photo_path));
+                }
+                if ($key === 'journal_entries') {
+                    $data['angler_ids'] = $item->anglers()->pluck('anglers.id')->all();
+                    $data['lake_ids'] = $item->lakes()->pluck('lakes.id')->all();
                 }
                 if ($key === 'anglers' && !empty($item->avatar) && \Illuminate\Support\Facades\Storage::disk('public')->exists('avatars/' . $item->avatar)) {
                     $data['avatar_base64'] = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get('avatars/' . $item->avatar));

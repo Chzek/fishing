@@ -561,5 +561,20 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * Created full Spatie database backup prior to execution (`fishing_backup_*.zip`).
       * Ingestion script executed via Laravel Sail transaction (`database/ingest_cabin_journals.php`).
       * Verified 0 unassigned pages, 0 unlinked records, and 100% database invariant compliance.
+58. **Two-Way Synology NAS Synchronization for Cabin Journals & High-Res Scan Assets (P3.1)**:
+    - **15-Model Two-Way Sync Matrix Integration**:
+      * Added `JournalEntry` and `JournalPage` to the core model map and labels in [`NasSyncService.php`](file:///home/gmroczek/git/fishing/app/Services/NasSyncService.php) and [`SyncApiController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Api/v1/SyncApiController.php), expanding the two-way sync matrix to 15 total database models.
+      * Integrated many-to-many pivot synchronization for journal crew members (`journal_entry_anglers`) and visited lakes (`journal_entry_lakes`) across push and pull sync payloads.
+    - **Chunked Binary Media Streaming & SHA-256 Deduplication**:
+      * Integrated `journal_pages` raw scan images (`storage/app/public/journals/raw/XXXX.jpg`) into the chunked `MediaSyncManager` pipeline.
+      * Added automated SHA-256 hash calculation, batch verification (`/api/v1/sync/media/batch-verify`), chunked streaming upload/download (`/api/v1/sync/media/chunk`), and base64 payload fallback.
+      * Enhanced `getMediaDiagnosticStatus()` in `NasSyncService` to monitor `journal_pages_count` and total media asset synchronization.
+    - **Livewire Diagnostic Console**:
+      * Updated [`SyncDiagnosticConsole.php`](file:///home/gmroczek/git/fishing/app/Livewire/Admin/SyncDiagnosticConsole.php) to support full 15-model matrix telemetry and batch state resolution.
+    - **Automated Test Coverage**:
+      * Created [`tests/Feature/NasSyncJournalTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncJournalTest.php) verifying two-way push/pull orchestration, pivot tagging, chunked media validation, and REST API endpoints.
+      * Updated [`tests/Feature/NasSyncServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncServiceTest.php) model matrix test assertions.
+      * Verified entire test suite (**340 passing tests, 1,537 assertions**) with **0 failures** and **0 PHPStan errors**.
+
 
 

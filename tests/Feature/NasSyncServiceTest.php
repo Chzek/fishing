@@ -419,19 +419,21 @@ class NasSyncServiceTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_detailed_model_matrix_across_all_13_models()
+    public function it_returns_detailed_model_matrix_across_all_15_models()
     {
         Lake::create(['name' => 'Matrix Test Lake', 'latitude' => 45.0, 'longitude' => -78.0]);
 
         $service = new NasSyncService('https://nas.example.com', 'test-token');
         $matrix = $service->getDetailedModelMatrix();
 
-        $this->assertCount(13, $matrix);
+        $this->assertCount(15, $matrix);
         $this->assertArrayHasKey('lakes', $matrix);
         $this->assertArrayHasKey('records', $matrix);
         $this->assertArrayHasKey('photos', $matrix);
         $this->assertArrayHasKey('anglers', $matrix);
         $this->assertArrayHasKey('users', $matrix);
+        $this->assertArrayHasKey('journal_entries', $matrix);
+        $this->assertArrayHasKey('journal_pages', $matrix);
 
         $this->assertGreaterThanOrEqual(1, $matrix['lakes']['total']);
         $this->assertGreaterThanOrEqual(1, $matrix['lakes']['pending']);

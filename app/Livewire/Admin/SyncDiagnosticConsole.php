@@ -93,7 +93,7 @@ class SyncDiagnosticConsole extends Component
         try {
             $count = $syncService->markAllSynced();
             $this->modelMatrix = $syncService->getDetailedModelMatrix();
-            $this->statusMessage = "Successfully marked {$count} local record(s) across all 13 models as synced.";
+            $this->statusMessage = "Successfully marked {$count} local record(s) across all models as synced.";
             $this->statusType = 'success';
         } catch (\Throwable $e) {
             Log::error('Failed to mark records synced from diagnostic console: ' . $e->getMessage(), [
