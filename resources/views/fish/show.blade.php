@@ -235,22 +235,35 @@
                 <span class="text-xs font-bold text-slate-700 dark:text-slate-300 block uppercase tracking-wider">Top 5 All-Time Specimens</span>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                     @foreach($topTrophies as $rank => $trophy)
-                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 hover:border-amber-300 dark:hover:border-amber-500 transition-all space-y-2 relative group">
-                            <div class="flex items-center justify-between">
-                                <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black font-mono {{ $rank == 0 ? 'bg-amber-400 text-slate-900 shadow-2xs' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
-                                    #{{ $rank + 1 }}
-                                </span>
-                                <strong class="text-sm font-black text-amber-700 dark:text-amber-400 font-mono">{{ number_format($trophy->length, 1) }}"</strong>
-                            </div>
-
+                        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70 hover:border-amber-300 dark:hover:border-amber-500 transition-all flex flex-col justify-between relative group shadow-2xs">
                             <div>
-                                <span class="font-bold text-slate-900 dark:text-white text-xs block truncate">{{ $trophy->angler?->fullName ?? 'Unknown' }}</span>
-                                <span class="text-[11px] text-slate-500 dark:text-slate-400 block truncate">{{ $trophy->lake?->name ?? 'Waterbody' }}</span>
+                                <!-- Top Row: Rank badge on left, Length & Weight stack on right -->
+                                <div class="flex items-start justify-between gap-2 mb-2">
+                                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black font-mono shrink-0 {{ $rank == 0 ? 'bg-amber-400 text-slate-900 shadow-2xs ring-1 ring-amber-500/50' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' }}">
+                                        #{{ $rank + 1 }}
+                                    </span>
+                                    <div class="text-right font-mono shrink-0 leading-tight">
+                                        <strong class="text-base font-black text-amber-600 dark:text-amber-400 block">{{ number_format($trophy->length, 1) }}"</strong>
+                                        @if($trophy->weight && $trophy->weight > 0)
+                                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 block mt-0.5">{{ number_format($trophy->weight, 2) }} lbs</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Middle: Angler & Waterbody -->
+                                <div class="space-y-0.5 min-w-0">
+                                    <span class="font-bold text-slate-900 dark:text-white text-sm block truncate group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+                                        {{ $trophy->angler?->fullName ?? 'Unknown' }}
+                                    </span>
+                                    <span class="text-xs text-slate-500 dark:text-slate-400 block truncate">
+                                        {{ $trophy->lake?->name ?? 'Waterbody' }}
+                                    </span>
+                                </div>
                             </div>
 
-                            <div class="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 font-mono border-t border-slate-200/50 dark:border-slate-700/50 pt-1.5">
-                                <span>{{ $trophy->weight ? number_format($trophy->weight, 2) . ' lbs' : 'Length-only' }}</span>
-                                <span>{{ $trophy->caught ? \Illuminate\Support\Carbon::parse($trophy->caught)->format('M Y') : '—' }}</span>
+                            <!-- Bottom: Centered Catch Date -->
+                            <div class="text-center text-xs font-mono font-medium text-slate-400 dark:text-slate-500 border-t border-slate-200/60 dark:border-slate-700/60 pt-2 mt-3">
+                                <span>{{ $trophy->caught ? \Illuminate\Support\Carbon::parse($trophy->caught)->format('M Y') : 'Historical' }}</span>
                             </div>
                         </div>
                     @endforeach

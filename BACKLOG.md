@@ -8,21 +8,14 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ### 🏆 Priority 1 (P1): Navigation Ergonomics, UI Polish & Authentication
 
-#### 1. `/fish/{id}` Top 5 All-Time Specimens Weight Metric Prominence
-- **Agents**: `ui-ux-auditor`, `seasoned-angler-advisor`
-- **Impact**: **Medium** (Trophy Legibility & Visual Polish)
-- **Description**:
-  - In `resources/views/fish/show.blade.php`, the weight metric in the Top 5 All-Time Specimens strip is currently formatted in tiny 10px muted grey text (`text-[10px] text-slate-400`).
-  - Upgrade the specimen cards to display prominent, high-contrast badges for both length and weight side-by-side (e.g. amber length `24.5"` chip + emerald weight `5.40 lbs` chip) so trophy stats are immediately legible.
-
-#### 2. `/fish` Directory View Unification & Dual Pagination Pruning
+#### 1. `/fish` Directory View Unification & Dual Pagination Pruning
 - **Agents**: `livewire-architect`, `ui-ux-auditor`
 - **Impact**: **Medium** (UI Consistency & Bugfix)
 - **Description**:
   - Fix artifact in `resources/views/fish/index.blade.php` where switching to Table View renders the `GenericDataTable` component while leaving the legacy Blade pagination (`$fishes->links()`) and HTTP GET family filter pills rendered simultaneously.
   - Standardize `/fish` to use `GenericDataTable` as the primary directory view or encapsulate grid/table view modes cleanly within a reactive Livewire component with unified pagination and family filtering.
 
-#### 3. Self-Service Password Reset Flow & Admin User Password Management Tooling
+#### 2. Self-Service Password Reset Flow & Admin User Password Management Tooling
 - **Agents**: `laravel-architect`, `ui-ux-auditor`
 - **Impact**: **Medium-High** (User Account Administration & Support)
 - **Description**:
@@ -497,10 +490,11 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * **Expedition Dossier UI Clean Up** ([`expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php)): Streamlined trip header and Trip Crew Leaderboard to display a clean single metric (`X Anglers`) without splitting members into separate roster vs guest groups.
       * **GenericDataTable Expedition Column Type** ([`GenericDataTable.php`](file:///home/gmroczek/git/fishing/app/Livewire/Components/GenericDataTable.php) & [`generic-data-table.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/components/generic-data-table.blade.php)): Optimized SQL subquery union (`count(distinct angler_id)`) to calculate and sort by total unique trip anglers (`anglers_count`) with a single high-contrast pill badge.
     - Added comprehensive feature tests in [`ExpeditionAnalyticsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/ExpeditionAnalyticsTest.php) and [`GenericDataTableLivewireTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/GenericDataTableLivewireTest.php).
-50. **Desktop Sticky Sidebar Navigation & Independent Scroll Containment (P1.1)**:
-    - Restructured desktop `<aside>` in [`resources/views/layouts/app.blade.php`](file:///home/gmroczek/git/fishing/resources/views/layouts/app.blade.php) with sticky viewport containment (`lg:sticky lg:top-0 lg:h-screen lg:max-h-screen overflow-hidden z-30`):
-      * **Pinned Header & Actions**: Pinned brand header logo, Omnibox global search input, and Quick Catch primary action (`shrink-0`) to the top of the viewport.
-      * **Isolated Scrollable Navigation**: Wrapped navigation links in `<nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto min-h-0">` so links scroll independently without shifting top or bottom elements.
-      * **Pinned Telemetry & Profile Footer**: Locked sync status indicator, 3-way theme preference switcher, and user account / logout controls (`shrink-0`) to the bottom of the sidebar at all times, regardless of page scroll depth.
-    - Added layout regression test in [`ThemeEngineTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/ThemeEngineTest.php).
-    - Verified with all **323 tests passing (1,395 assertions)** and **0 PHPStan errors (Level 5)**.
+51. **`/fish/{id}` Top 5 All-Time Specimens Weight Metric Prominence & Layout Polish (P1.1)**:
+    - Redesigned the Top 5 All-Time Specimens strip in [`resources/views/fish/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/fish/show.blade.php):
+      * **Length & Weight Stacked on Right**: Rendered prominent amber monospace length badge (`38.0"`) with bold emerald scale weight (`14.50 lbs`) stacked directly underneath when weight telemetry is recorded, eliminating unnecessary placeholder text.
+      * **Angler & Waterbody Hierarchy**: Standardized high-contrast typography (`text-sm font-bold` for angler name, `text-xs` for lake waterbody) with subtle hover color transitions.
+      * **Centered Catch Date Footer**: Positioned larger `text-xs font-mono` catch date centered across a subtle top border line.
+    - Added feature test in [`FishBreedControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/FishBreedControllerTest.php).
+    - Verified with all **324 tests passing (1,402 assertions)** and **0 PHPStan errors (Level 5)**.
+

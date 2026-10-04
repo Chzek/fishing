@@ -237,4 +237,34 @@ class FishBreedControllerTest extends TestCase
         $response->assertSee('Top Species Angler', false);
         $response->assertSee('Bob Angler');
     }
+
+    #[Test]
+    public function top_specimens_strip_renders_stacked_length_and_weight_metrics_with_centered_date()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $breed = FishBreed::factory()->create(['name' => 'Muskellunge']);
+        $angler = \Fishinglog\Models\Angler::factory()->create(['firstName' => 'Eric', 'lastName' => 'Whitaker']);
+        $lake = \Fishinglog\Models\Lake::factory()->create(['name' => 'McCormick Lake']);
+
+        \Fishinglog\Models\Record::factory()->create([
+            'fish_breeds_id' => $breed->id,
+            'anglers_id' => $angler->id,
+            'lakes_id' => $lake->id,
+            'length' => 38.0,
+            'weight' => 14.50,
+            'caught' => '2026-08-15',
+        ]);
+
+        $response = $this->get('/fish/' . $breed->id);
+        $response->assertStatus(200);
+
+        $response->assertSee('Top 5 All-Time Specimens');
+        $response->assertSee('38.0"');
+        $response->assertSee('14.50 lbs');
+        $response->assertSee('Eric Whitaker');
+        $response->assertSee('McCormick Lake');
+        $response->assertSee('Aug 2026');
+    }
 }
