@@ -153,6 +153,17 @@
             </div>
         </div>
 
+        <!-- Top 5 All-Time Trophies -->
+        @if(!empty($topTrophies) && $topTrophies->count() > 0)
+            <x-card title="Top 5 All-Time Trophies" subtitle="Career-best catches ranked across species" icon="trophy" iconColor="amber" badge="{{ $topTrophies->count() }} Trophies" badgeVariant="amber">
+                <div class="space-y-2.5">
+                    @foreach($topTrophies as $rank => $trophy)
+                        <x-specimenCard :rank="$rank" :record="$trophy" layout="row" :showAngler="false" :showLake="true" :showScore="true" />
+                    @endforeach
+                </div>
+            </x-card>
+        @endif
+
         <!-- 🎣 ANGLER PRODUCTION & GEAR TELEMETRY GRID -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- 📏 Cumulative Length Landed -->

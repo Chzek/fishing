@@ -124,6 +124,11 @@ class ProfileController extends Controller
                 ->filter()
                 ->sortByDesc('length')
                 ->values();
+
+            $topTrophies = app(\Fishinglog\Services\TrophyScoringService::class)->getTopNormalizedCatches(
+                Record::where('anglers_id', $angler->id),
+                5
+            );
         } else {
             $records = [];
             $crews = 0;
@@ -140,6 +145,7 @@ class ProfileController extends Controller
             $topWaters = collect();
             $speciesDistribution = collect();
             $speciesPbs = collect();
+            $topTrophies = collect();
         }
 
         $unreadNotifications = Auth::user() ? Auth::user()->unreadNotifications : collect();
@@ -161,6 +167,7 @@ class ProfileController extends Controller
             'topWaters' => $topWaters,
             'speciesDistribution' => $speciesDistribution,
             'speciesPbs' => $speciesPbs,
+            'topTrophies' => $topTrophies,
             'unreadNotifications' => $unreadNotifications,
         ]);
 

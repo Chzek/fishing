@@ -53,5 +53,8 @@ class ProfileControllerTest extends TestCase
         $response->assertViewHas('releaseRate', 100);
         $response->assertViewHas('crews', 0);
         $response->assertViewHas('personalBest');
+        $response->assertViewHas('topTrophies');
+        $response->assertSee('Top 5 All-Time Trophies');
+        $response->assertDontSee('(Normalized Scoring)');
     }
 }

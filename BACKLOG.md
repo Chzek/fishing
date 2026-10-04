@@ -519,6 +519,17 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * **Left Story Column**: Prominent rank badge icon on top-left, angler name in middle, and Lake/Species & Date side-by-side on bottom row.
       * **Right Metrics Tower**: Dedicated right-hand vertical stack (Length $\to$ Weight $\to$ Normalized Score) keeping all numerical catch telemetry aligned.
     - Verified with all **332 tests passing (1,466 assertions)** and **0 PHPStan errors (Level 5)**.
+55. **`<x-specimenCard>` Row Layout & Angler Profile Top 5 Trophies Integration (P1.1, P3.2)**:
+    - Extended [`resources/views/components/specimenCard.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/specimenCard.blade.php) with flexible `layout="row"` (or `layout="list"`) support:
+      * **Horizontal Row Ergonomics**: Renders a compact, sleek flex row with rank badge (`#1`), primary title (Species Name when `showAngler="false"`, or Angler Name), subtitle (`Lake • Date`), and right-hand metrics tower (Length, Weight, and Trophy Score pill).
+      * **Dynamic Title Resolution**: Automatically swaps primary title to species name when `showAngler="false"`, avoiding redundant angler display on personal profiles.
+    - Added **"Top 5 All-Time Trophies"** card to:
+      * **Angler Profile** ([`resources/views/profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php) & [`app/Http/Controllers/ProfileController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/ProfileController.php)): Displays the authenticated user's career-best catches ranked across species by normalized trophy score.
+      * **Public Angler Profile** ([`resources/views/angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) & [`app/Http/Controllers/Angler/AnglerProfileController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Angler/AnglerProfileController.php)): Displays any registered angler's career-best catches ranked across species.
+      * Maintained clean card title `"Top 5 All-Time Trophies"` without cluttering the header with normalized scoring notation.
+    - Added unit and feature tests in [`BladeComponentsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/BladeComponentsTest.php), [`ProfileControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/ProfileControllerTest.php), and [`AnglerControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AnglerControllerTest.php).
+    - Verified entire test suite (**332 passing tests, 1,479 assertions**) with **0 failures** and **0 PHPStan errors (Level 5)**.
+
 
 
 

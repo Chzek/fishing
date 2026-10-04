@@ -203,6 +203,17 @@
             </div>
         </div>
 
+        <!-- Top 5 All-Time Trophies -->
+        @if(!empty($topTrophies) && $topTrophies->count() > 0)
+            <x-card title="Top 5 All-Time Trophies" subtitle="Your career-best catches ranked across species" icon="trophy" iconColor="amber" badge="{{ $topTrophies->count() }} Trophies" badgeVariant="amber">
+                <div class="space-y-2.5">
+                    @foreach($topTrophies as $rank => $trophy)
+                        <x-specimenCard :rank="$rank" :record="$trophy" layout="row" :showAngler="false" :showLake="true" :showScore="true" />
+                    @endforeach
+                </div>
+            </x-card>
+        @endif
+
         <!-- Species Personal Best Trophy Board -->
         @if(!empty($speciesPbs) && $speciesPbs->count() > 0)
             <x-card title="Species Personal Bests (PB)" subtitle="Your longest recorded catches per species" icon="award" iconColor="amber" badge="{{ $speciesPbs->count() }} Species PB(s)" badgeVariant="amber">

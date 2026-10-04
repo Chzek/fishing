@@ -175,6 +175,16 @@ class BladeComponentsTest extends TestCase
         // With showScore enabled (e.g. 20.75 / 20 = 103.8 pts)
         $scoreView = $this->blade('<x-specimenCard :rank="0" :record="$record" :showScore="true" />', ['record' => $record]);
         $scoreView->assertSee('103.8 pts');
+
+        // With layout="row" and showAngler="false" (e.g. on /profile or /angler/{id})
+        $rowView = $this->blade('<x-specimenCard :rank="0" :record="$record" layout="row" :showAngler="false" :showLake="true" :showScore="true" />', ['record' => $record]);
+        $rowView->assertSee('#1');
+        $rowView->assertSee('Smallmouth Bass');
+        $rowView->assertSee('Rainy Lake');
+        $rowView->assertSee('Jun 2026');
+        $rowView->assertSee('20.8"', false);
+        $rowView->assertSee('5.30 lbs');
+        $rowView->assertSee('103.8 pts');
     }
 }
 

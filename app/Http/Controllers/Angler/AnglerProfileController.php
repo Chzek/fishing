@@ -99,6 +99,11 @@ class AnglerProfileController extends Controller
             ->with('fishBreed')
             ->get();
 
+        $topTrophies = app(\Fishinglog\Services\TrophyScoringService::class)->getTopNormalizedCatches(
+            Record::where('anglers_id', $angler->id),
+            5
+        );
+
         return view('angler.profile', [
             'angler' => $angler,
             'records' => collect([]),
@@ -119,6 +124,7 @@ class AnglerProfileController extends Controller
             'peakMonthName' => $peakMonthName,
             'topWaters' => $topWaters,
             'speciesDistribution' => $speciesDistribution,
+            'topTrophies' => $topTrophies,
         ]);
     }
 

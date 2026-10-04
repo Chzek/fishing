@@ -87,11 +87,20 @@ class AnglerControllerTest extends TestCase
     {
         $this->be($this->user);
 
+        \Fishinglog\Models\Record::factory()->create([
+            'anglers_id' => $this->angler->id,
+            'length' => 22.0,
+            'weight' => 5.5,
+        ]);
+
         $response = $this->get('/angler/' . $this->angler->id . '/profile');
         $response->assertStatus(200);
         $response->assertSeeText($this->angler->firstName);
         $response->assertSeeText($this->angler->lastName);
         $response->assertSeeText('Angler Catches Logbook');
+        $response->assertViewHas('topTrophies');
+        $response->assertSee('Top 5 All-Time Trophies');
+        $response->assertDontSee('(Normalized Scoring)');
     }
 
     #[Test]
