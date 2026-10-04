@@ -513,6 +513,13 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - **Documentation**: Documented the full scoring methodology, formula, benchmarks, and tier standards in [`README.md`](file:///home/gmroczek/git/fishing/README.md).
     - **Comprehensive Test Suite**: Added `TrophyScoringServiceTest.php` and feature tests in `ExpeditionControllerTest.php`, `LakeControllerTest.php`, and `BladeComponentsTest.php`.
     - Verified entire test suite (**332 passing tests, 1,466 assertions**) with **0 failures** and **0 PHPStan errors (Level 5)**.
+54. **Specimen Card Ergonomic Redesign & Dedicated Metrics Tower (P1.1)**:
+    - Redesigned [`resources/views/components/specimenCard.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/specimenCard.blade.php) to match the approved multi-section layout:
+      * **Header Banner**: Full-width top tier/rank header banner across the card (e.g. `🏆 #1 Master Angler Specimen` with award badge icon).
+      * **Left Story Column**: Prominent rank badge icon on top-left, angler name in middle, and Lake/Species & Date side-by-side on bottom row.
+      * **Right Metrics Tower**: Dedicated right-hand vertical stack (Length $\to$ Weight $\to$ Normalized Score) keeping all numerical catch telemetry aligned.
+    - Verified with all **332 tests passing (1,466 assertions)** and **0 PHPStan errors (Level 5)**.
+
 
 
 
