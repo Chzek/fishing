@@ -81,9 +81,7 @@ class ExpeditionController extends Controller
         $hotLure = $analytics['hotLure'] ?? null;
         $dailyCadence = $analytics['dailyCadence'] ?? [];
         $speciesDistribution = $analytics['speciesDistribution'] ?? collect();
-        $rosterCrewCount = (int) ($analytics['rosterCrewCount'] ?? 0);
-        $activeAnglersCount = (int) ($analytics['activeAnglersCount'] ?? 0);
-        $totalUniqueAnglersCount = (int) ($analytics['totalUniqueAnglersCount'] ?? 0);
+        $totalAnglersCount = (int) ($analytics['totalAnglersCount'] ?? $analytics['totalUniqueAnglersCount'] ?? 0);
         $crewLeaderboard = $analytics['crewLeaderboard'] ?? collect();
 
         $recordsWithGps = Record::with(['angler', 'fishBreed'])
@@ -119,9 +117,7 @@ class ExpeditionController extends Controller
             'hotLure' => $hotLure,
             'dailyCadence' => $dailyCadence,
             'speciesDistribution' => $speciesDistribution,
-            'rosterCrewCount' => $rosterCrewCount,
-            'activeAnglersCount' => $activeAnglersCount,
-            'totalUniqueAnglersCount' => $totalUniqueAnglersCount,
+            'totalAnglersCount' => $totalAnglersCount,
             'crewLeaderboard' => $crewLeaderboard,
             'recordsWithGps' => $recordsWithGps,
             'visitedLakes' => $visitedLakes,

@@ -53,7 +53,7 @@ class ExpeditionAnalyticsTest extends TestCase
         $response->assertSeeText('Walleye');
     }
 
-    public function test_expedition_analytics_service_calculates_roster_and_active_anglers_correctly()
+    public function test_expedition_analytics_service_calculates_distinct_anglers_correctly()
     {
         $angler1 = Angler::factory()->create(['firstName' => 'John', 'lastName' => 'Doe']);
         $angler2 = Angler::factory()->create(['firstName' => 'Jane', 'lastName' => 'Smith']);
@@ -77,7 +77,7 @@ class ExpeditionAnalyticsTest extends TestCase
             'anglers_id' => $angler2->id,
         ]);
 
-        // Catches: Angler 1 (roster) and Angler 3 (guest)
+        // Catches: Angler 1 (roster) and Angler 3 (catching during dates)
         Record::create([
             'anglers_id' => $angler1->id,
             'lakes_id' => $lake->id,
@@ -96,40 +96,36 @@ class ExpeditionAnalyticsTest extends TestCase
         $service = app(\Fishinglog\Services\ExpeditionAnalyticsService::class);
         $analytics = $service->getAnalytics($expedition);
 
-        $this->assertEquals(2, $analytics['rosterCrewCount']);
-        $this->assertEquals(2, $analytics['activeAnglersCount']);
+        $this->assertEquals(3, $analytics['totalAnglersCount']);
         $this->assertEquals(3, $analytics['totalUniqueAnglersCount']);
 
         $leaderboard = $analytics['crewLeaderboard'];
         $this->assertCount(3, $leaderboard);
 
-        // Angler 1: Roster + Active
+        // Angler 1: In roster + Has Catches
         $entry1 = $leaderboard->firstWhere('anglers_id', $angler1->id);
         $this->assertNotNull($entry1);
-        $this->assertTrue($entry1->is_roster_crew);
-        $this->assertTrue($entry1->is_active_catcher);
         $this->assertEquals(1, $entry1->total_catches);
 
-        // Angler 3: Guest + Active
+        // Angler 3: Has Catches
         $entry3 = $leaderboard->firstWhere('anglers_id', $angler3->id);
         $this->assertNotNull($entry3);
-        $this->assertFalse($entry3->is_roster_crew);
-        $this->assertTrue($entry3->is_active_catcher);
         $this->assertEquals(1, $entry3->total_catches);
 
-        // Angler 2: Roster + Inactive (0 catches)
+        // Angler 2: In roster, 0 catches
         $entry2 = $leaderboard->firstWhere('anglers_id', $angler2->id);
         $this->assertNotNull($entry2);
-        $this->assertTrue($entry2->is_roster_crew);
-        $this->assertFalse($entry2->is_active_catcher);
         $this->assertEquals(0, $entry2->total_catches);
 
         // Model accessors
-        $this->assertEquals(2, $expedition->active_anglers_count);
-        $this->assertCount(2, $expedition->active_anglers);
+        $this->assertEquals(3, $expedition->anglers_count);
+        $this->assertCount(3, $expedition->anglers);
+        $this->assertTrue($expedition->angler_ids->contains($angler1->id));
+        $this->assertTrue($expedition->angler_ids->contains($angler2->id));
+        $this->assertTrue($expedition->angler_ids->contains($angler3->id));
     }
 
-    public function test_expedition_show_renders_roster_and_active_badges()
+    public function test_expedition_show_renders_distinct_anglers_count()
     {
         $user = User::factory()->create();
         $anglerRoster = Angler::factory()->create(['firstName' => 'Captain', 'lastName' => 'Morgan']);
@@ -158,9 +154,7 @@ class ExpeditionAnalyticsTest extends TestCase
 
         $response = $this->actingAs($user)->get("/expedition/{$expedition->id}");
         $response->assertStatus(200);
-        $response->assertSee('1 Roster');
-        $response->assertSee('1 Active');
-        $response->assertSee('Guest');
+        $response->assertSee('2 Anglers');
         $response->assertSee('Captain Morgan');
         $response->assertSee('Guest Angler');
     }

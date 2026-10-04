@@ -383,7 +383,7 @@ class GenericDataTableLivewireTest extends TestCase
     }
 
     #[Test]
-    public function generic_data_table_renders_expedition_crew_column_with_aligned_roster_and_active_badges()
+    public function generic_data_table_renders_expedition_crew_column_with_distinct_anglers_count()
     {
         $user = User::factory()->create();
         $this->be($user);
@@ -393,9 +393,9 @@ class GenericDataTableLivewireTest extends TestCase
         $lake = Lake::factory()->create();
         $breed = FishBreed::factory()->create();
 
-        // Expedition 1: Equal crew & active anglers (1 Roster, 1 Active)
+        // Expedition 1: 1 Roster, 1 Active (Same Angler -> 1 Distinct Angler)
         $exp1 = \Fishinglog\Models\Expedition::create([
-            'description' => 'Equal Crew Expedition',
+            'description' => 'Single Crew Expedition',
             'start' => '2026-05-01',
             'finish' => '2026-05-05',
         ]);
@@ -411,9 +411,9 @@ class GenericDataTableLivewireTest extends TestCase
             'caught' => '2026-05-02',
         ]);
 
-        // Expedition 2: Discrepant crew & active anglers (1 Roster, 2 Active - 1 guest)
+        // Expedition 2: 1 Roster (Angler 1) + 1 Catch Log only (Angler 2) -> 2 Distinct Anglers
         $exp2 = \Fishinglog\Models\Expedition::create([
-            'description' => 'Discrepant Crew Expedition',
+            'description' => 'Multi Crew Expedition',
             'start' => '2026-06-01',
             'finish' => '2026-06-05',
         ]);
@@ -440,15 +440,16 @@ class GenericDataTableLivewireTest extends TestCase
             'modelClass' => \Fishinglog\Models\Expedition::class,
             'columns' => [
                 ['key' => 'description', 'label' => 'Trip Description', 'sortable' => true],
-                ['key' => 'crews_count', 'label' => 'Angler Crew', 'type' => 'expedition_crew', 'sortable' => true],
+                ['key' => 'anglers_count', 'label' => 'Angler Crew', 'type' => 'expedition_crew', 'sortable' => true],
             ],
             'itemName' => 'expeditions',
         ])
         ->assertStatus(200)
-        ->assertSee('Equal Crew Expedition')
+        ->assertSee('Single Crew Expedition')
+        ->assertSee('1')
         ->assertSee('Angler')
-        ->assertSee('Discrepant Crew Expedition')
-        ->assertSee('1 Roster')
-        ->assertSee('2 Active');
+        ->assertSee('Multi Crew Expedition')
+        ->assertSee('2')
+        ->assertSee('Anglers');
     }
 }

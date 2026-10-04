@@ -89,42 +89,47 @@ class Expedition extends Model
     }
 
     /**
-     * Get distinct anglers who logged catches during this expedition's dates.
+     * Get all distinct angler IDs associated with this expedition (from registered crew + catch logs).
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Angler>
+     * @return \Illuminate\Support\Collection<int, int|string>
      */
-    public function getActiveAnglersAttribute(): \Illuminate\Database\Eloquent\Collection
+    public function getAnglerIdsAttribute(): \Illuminate\Support\Collection
     {
-        if (!$this->start || !$this->finish) {
-            return new \Illuminate\Database\Eloquent\Collection();
-        }
+        $rosterIds = $this->crews()->pluck('anglers_id')->filter();
+        $catchingIds = ($this->start && $this->finish)
+            ? Record::where('caught', '>=', $this->start)
+                ->where('caught', '<=', $this->finish)
+                ->whereNotNull('anglers_id')
+                ->pluck('anglers_id')
+            : collect();
 
-        $anglerIds = Record::where('caught', '>=', $this->start)
-            ->where('caught', '<=', $this->finish)
-            ->whereNotNull('anglers_id')
-            ->pluck('anglers_id')
-            ->unique();
-
-        return Angler::whereIn('id', $anglerIds)->get();
+        return $rosterIds->concat($catchingIds)->unique()->values();
     }
 
     /**
-     * Get count of distinct anglers who logged catches during this expedition's dates.
+     * Get all distinct anglers associated with this expedition (from registered crew + catch logs).
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Angler>
      */
-    public function getActiveAnglersCountAttribute(): int
+    public function getAnglersAttribute(): \Illuminate\Database\Eloquent\Collection
     {
-        if (array_key_exists('active_anglers_count', $this->attributes)) {
-            return (int) $this->attributes['active_anglers_count'];
+        $ids = $this->angler_ids;
+        if ($ids->isEmpty()) {
+            return new \Illuminate\Database\Eloquent\Collection();
         }
 
-        if (!$this->start || !$this->finish) {
-            return 0;
+        return Angler::whereIn('id', $ids)->get();
+    }
+
+    /**
+     * Get count of distinct anglers associated with this expedition.
+     */
+    public function getAnglersCountAttribute(): int
+    {
+        if (array_key_exists('anglers_count', $this->attributes)) {
+            return (int) $this->attributes['anglers_count'];
         }
 
-        return (int) Record::where('caught', '>=', $this->start)
-            ->where('caught', '<=', $this->finish)
-            ->whereNotNull('anglers_id')
-            ->distinct('anglers_id')
-            ->count('anglers_id');
+        return $this->angler_ids->count();
     }
 }

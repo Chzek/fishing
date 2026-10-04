@@ -612,27 +612,12 @@
                                     @endif
                                 @elseif($type === 'expedition_crew')
                                     @php
-                                        $crewsCount = (int) ($record->crews_count ?? 0);
-                                        $activeCount = (int) ($record->active_anglers_count ?? 0);
+                                        $anglersCount = (int) ($record->anglers_count ?? $record->crews_count ?? 0);
                                     @endphp
-                                    @if($crewsCount === $activeCount)
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700" title="{{ $crewsCount }} Registered Crew {{ \Illuminate\Support\Str::plural('Angler', $crewsCount) }}">
-                                            <x-lucide-users class="w-3.5 h-3.5 text-teal-500" />
-                                            <span class="font-mono font-bold">{{ $crewsCount }}</span> {{ \Illuminate\Support\Str::plural('Angler', $crewsCount) }}
-                                        </span>
-                                    @else
-                                        <div class="inline-flex items-center gap-1.5 text-xs font-medium">
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200/80 dark:border-teal-800/60 font-mono text-[11px]" title="{{ $crewsCount }} Official Roster Crew Members">
-                                                <x-lucide-users class="w-3 h-3 text-teal-600 dark:text-teal-400" />
-                                                <span>{{ $crewsCount }} Roster</span>
-                                            </span>
-                                            <span class="text-slate-300 dark:text-slate-600 font-bold">•</span>
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60 font-mono text-[11px]" title="{{ $activeCount }} Anglers with Logged Catches">
-                                                <x-lucide-zap class="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                                                <span>{{ $activeCount }} Active</span>
-                                            </span>
-                                        </div>
-                                    @endif
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700" title="{{ $anglersCount }} {{ \Illuminate\Support\Str::plural('Angler', $anglersCount) }}">
+                                        <x-lucide-users class="w-3.5 h-3.5 text-teal-500" />
+                                        <span class="font-mono font-bold">{{ $anglersCount }}</span> {{ \Illuminate\Support\Str::plural('Angler', $anglersCount) }}
+                                    </span>
                                 @elseif($type === 'count')
                                     <span class="font-mono font-bold text-slate-800 dark:text-slate-200">
                                         {{ number_format((int) ($val ?? 0)) }}

@@ -3,6 +3,7 @@
 namespace Fishinglog\Livewire\Components;
 
 use Fishinglog\Models\Angler;
+use Fishinglog\Models\Crew;
 use Fishinglog\Models\Expedition;
 use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\Lake;
@@ -429,15 +430,21 @@ class GenericDataTable extends Component
             ];
             $query->withCount(array_merge($this->withCount, $anglerCounts));
         } elseif ($this->modelClass === Expedition::class) {
-            $query->withCount(array_merge($this->withCount, ['posts', 'crews']))
+            $query->withCount(array_merge($this->withCount, ['posts']))
                   ->addSelect(['records_count' => Record::selectRaw('count(*)')
                       ->whereColumn('caught', '>=', 'expeditions.start')
                       ->whereColumn('caught', '<=', 'expeditions.finish')
                   ])
-                  ->addSelect(['active_anglers_count' => Record::selectRaw('count(distinct anglers_id)')
-                      ->whereColumn('caught', '>=', 'expeditions.start')
-                      ->whereColumn('caught', '<=', 'expeditions.finish')
-                      ->whereNotNull('anglers_id')
+                  ->addSelect(['anglers_count' => Crew::selectRaw('count(distinct angler_id)')
+                      ->fromSub(function ($sub) {
+                          $sub->select('anglers_id as angler_id')->from('crews')->whereColumn('crews.expeditions_id', 'expeditions.id')
+                              ->union(
+                                  Record::select('anglers_id as angler_id')
+                                      ->whereColumn('records.caught', '>=', 'expeditions.start')
+                                      ->whereColumn('records.caught', '<=', 'expeditions.finish')
+                                      ->whereNotNull('anglers_id')
+                              );
+                      }, 'trip_anglers')
                   ]);
         } elseif ($this->modelClass === FishBreed::class) {
             $query->with(['family'])
@@ -662,10 +669,8 @@ class GenericDataTable extends Component
                 $sortColKey = 'records_count';
             } elseif ($sortColKey === 'lakes') {
                 $sortColKey = 'lakes_count';
-            } elseif ($sortColKey === 'crew' || $sortColKey === 'expedition_crew') {
-                $sortColKey = 'crews_count';
-            } elseif ($sortColKey === 'active_crew' || $sortColKey === 'active_anglers') {
-                $sortColKey = 'active_anglers_count';
+            } elseif ($sortColKey === 'crew' || $sortColKey === 'expedition_crew' || $sortColKey === 'anglers' || $sortColKey === 'anglers_count' || $sortColKey === 'crews_count') {
+                $sortColKey = 'anglers_count';
             } elseif ($sortColKey === 'posts') {
                 $sortColKey = 'posts_count';
             } elseif ($sortColKey === 'family' || $sortColKey === 'family.name') {

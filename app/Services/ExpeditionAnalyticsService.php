@@ -95,19 +95,18 @@ class ExpeditionAnalyticsService
             ->with('fishBreed')
             ->get();
 
-        // 4. Crew Roster vs Catch Activity Alignment
-        $registeredCrewAnglerIds = $expedition->crews()->pluck('anglers_id')->filter()->unique();
-        $rosterCrewCount = $registeredCrewAnglerIds->count();
+        // 4. Distinct Angler Association (Union of Registered Crew + Catch Logs)
+        $registeredCrewAnglerIds = $expedition->crews()->pluck('anglers_id')->filter();
 
-        $catchingAnglerIds = Record::where('caught', '>=', $start)
-            ->where('caught', '<=', $finish)
-            ->whereNotNull('anglers_id')
-            ->pluck('anglers_id')
-            ->unique();
-        $activeAnglersCount = $catchingAnglerIds->count();
+        $catchingAnglerIds = ($start && $finish)
+            ? Record::where('caught', '>=', $start)
+                ->where('caught', '<=', $finish)
+                ->whereNotNull('anglers_id')
+                ->pluck('anglers_id')
+            : collect();
 
-        $allLeaderboardAnglerIds = $registeredCrewAnglerIds->concat($catchingAnglerIds)->unique();
-        $totalUniqueAnglersCount = $allLeaderboardAnglerIds->count();
+        $allAnglerIds = $registeredCrewAnglerIds->concat($catchingAnglerIds)->unique()->values();
+        $totalAnglersCount = $allAnglerIds->count();
 
         $tripRecordMetrics = Record::select(
                 'anglers_id',
@@ -117,22 +116,21 @@ class ExpeditionAnalyticsService
             )
             ->where('caught', '>=', $start)
             ->where('caught', '<=', $finish)
-            ->whereIn('anglers_id', $allLeaderboardAnglerIds)
+            ->whereIn('anglers_id', $allAnglerIds)
             ->groupBy('anglers_id')
             ->get()
             ->keyBy('anglers_id');
 
-        $anglers = Angler::whereIn('id', $allLeaderboardAnglerIds)->get()->keyBy('id');
+        $anglers = Angler::whereIn('id', $allAnglerIds)->get()->keyBy('id');
 
         /** @var Collection<int, object> $crewLeaderboard */
-        $crewLeaderboard = $allLeaderboardAnglerIds->map(function ($anglerId) use ($anglers, $tripRecordMetrics, $registeredCrewAnglerIds) {
+        $crewLeaderboard = $allAnglerIds->map(function ($anglerId) use ($anglers, $tripRecordMetrics, $registeredCrewAnglerIds) {
             $angler = $anglers->get($anglerId);
             if (!$angler) {
                 return null;
             }
 
             $metrics = $tripRecordMetrics->get($anglerId);
-            $isRoster = $registeredCrewAnglerIds->contains($anglerId);
             $catches = $metrics ? (int) $metrics->total_catches : 0;
 
             $obj = new \stdClass();
@@ -141,7 +139,7 @@ class ExpeditionAnalyticsService
             $obj->total_catches = $catches;
             $obj->total_length = $metrics ? (float) $metrics->total_length : 0.0;
             $obj->longest_fish = $metrics ? (float) $metrics->longest_fish : 0.0;
-            $obj->is_roster_crew = $isRoster;
+            $obj->is_roster_crew = $registeredCrewAnglerIds->contains($anglerId);
             $obj->is_active_catcher = ($catches > 0);
 
             return $obj;
@@ -168,9 +166,8 @@ class ExpeditionAnalyticsService
             'hotLure' => $hotLure,
             'dailyCadence' => $dailyCadence,
             'speciesDistribution' => $speciesDistribution,
-            'rosterCrewCount' => $rosterCrewCount,
-            'activeAnglersCount' => $activeAnglersCount,
-            'totalUniqueAnglersCount' => $totalUniqueAnglersCount,
+            'totalAnglersCount' => $totalAnglersCount,
+            'totalUniqueAnglersCount' => $totalAnglersCount,
             'crewLeaderboard' => $crewLeaderboard,
         ];
     }
