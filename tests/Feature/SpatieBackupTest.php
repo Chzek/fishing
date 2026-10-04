@@ -73,4 +73,15 @@ class SpatieBackupTest extends TestCase
         $dumper = \Spatie\Backup\Tasks\Backup\DbDumperFactory::createFromConnection('mariadb');
         $this->assertInstanceOf(\Spatie\DbDumper\Databases\MariaDb::class, $dumper);
     }
+
+    /**
+     * Test that DbDumperFactory can be extended to use MariaDb dumper for MySQL connection.
+     */
+    public function test_dump_driver_mariadb_extends_mysql_connection_dumper(): void
+    {
+        \Spatie\Backup\Tasks\Backup\DbDumperFactory::extend('mysql', fn () => new \Spatie\DbDumper\Databases\MariaDb());
+
+        $dumper = \Spatie\Backup\Tasks\Backup\DbDumperFactory::createFromConnection('mysql');
+        $this->assertInstanceOf(\Spatie\DbDumper\Databases\MariaDb::class, $dumper);
+    }
 }
