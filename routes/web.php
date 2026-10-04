@@ -20,6 +20,7 @@ use Fishinglog\Http\Controllers\PostController;
 use Fishinglog\Http\Controllers\ProfileController;
 use Fishinglog\Http\Controllers\RecordController;
 use Fishinglog\Http\Controllers\SearchController;
+use Fishinglog\Http\Controllers\JournalController;
 
 use Fishinglog\Http\Controllers\MapController;
 use Fishinglog\Http\Controllers\PhotoController;
@@ -190,6 +191,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/records/{record}', [RecordController::class, 'show']);
     Route::get('/records', function () {
         return redirect('/catches');
+    });
+
+    // Journal & Logbook Archive routes
+    Route::prefix('journal')->group(function () {
+        Route::get('/', [JournalController::class, 'index'])->name('journal.index');
+        Route::get('/{journalEntry}', [JournalController::class, 'show'])->name('journal.show');
+        Route::post('/recommendation/accept', [JournalController::class, 'acceptRecommendation'])->name('journal.recommendation.accept');
     });
 
     // Expedition routes

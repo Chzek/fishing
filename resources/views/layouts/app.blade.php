@@ -117,6 +117,10 @@
                         <x-lucide-ship class="w-4 h-4" />
                         <span>Expeditions</span>
                     </a>
+                    <a href="{{ url('/journal') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('journal*') ? 'bg-amber-500/15 text-amber-300 font-semibold border-l-2 border-amber-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
+                        <x-lucide-book-open class="w-4 h-4 text-amber-400" />
+                        <span>Trip Journals</span>
+                    </a>
                     <a href="{{ url('/record') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('record') && !Request::is('record/directory*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
                         <x-lucide-bar-chart-2 class="w-4 h-4 text-teal-400" />
                         <span>Catches Telemetry</span>
@@ -313,6 +317,9 @@
                 </a>
                 <a href="{{ url('/expedition') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
                     <x-lucide-ship class="w-4 h-4 text-teal-400" /> Expeditions
+                </a>
+                <a href="{{ url('/journal') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
+                    <x-lucide-book-open class="w-4 h-4 text-amber-400" /> Trip Journals
                 </a>
                 <a href="{{ url('/lake') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-200 hover:bg-slate-800">
                     <x-lucide-waves class="w-4 h-4 text-teal-400" /> Lakes

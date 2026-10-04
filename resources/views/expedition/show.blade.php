@@ -433,6 +433,68 @@
         @endif
     </x-card>
 
+    <!-- 📖 TRIP JOURNAL & HANDWRITTEN CABIN LOGS -->
+    @if($expedition->journalEntries && $expedition->journalEntries->count() > 0)
+        <x-card title="Trip Journal & Cabin Logs" icon="book-open" iconColor="amber" subtitle="Digitized handwritten logbooks, daily itineraries, and field transcripts" badge="{{ $expedition->journalEntries->count() }} Journal Logs" badgeVariant="amber">
+            <div class="space-y-4">
+                @foreach($expedition->journalEntries as $entry)
+                    <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 hover:border-amber-400 dark:hover:border-amber-600 transition-all space-y-3">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-200/60 dark:border-slate-700/60 pb-3">
+                            <div>
+                                <div class="text-[11px] font-mono font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                                    <x-lucide-calendar class="w-3.5 h-3.5" />
+                                    <span>{{ $entry->entry_date ? $entry->entry_date->format('l, F j, Y') : 'Historical Entry' }}</span>
+                                </div>
+                                <h3 class="text-base font-bold text-slate-900 dark:text-white mt-0.5">{{ $entry->title }}</h3>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                @if($entry->weather_summary)
+                                    <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/80 font-mono">
+                                        {{ $entry->weather_summary }}
+                                    </span>
+                                @endif
+                                <a href="{{ route('journal.show', $entry->id) }}" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl transition-colors flex items-center gap-1 shrink-0">
+                                    <span>Read Full Log & Scan</span>
+                                    <x-lucide-arrow-right class="w-3.5 h-3.5" />
+                                </a>
+                            </div>
+                        </div>
+
+                        @if($entry->highlights)
+                            <blockquote class="text-xs text-slate-700 dark:text-slate-300 italic border-l-2 border-amber-500 pl-3">
+                                "{{ $entry->highlights }}"
+                            </blockquote>
+                        @endif
+
+                        <!-- Photo Previews Strip & Mentioned Entities -->
+                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 pt-2">
+                            @if($entry->pages->count() > 0)
+                                <div class="flex items-center gap-2">
+                                    @foreach($entry->pages as $page)
+                                        <div class="w-14 h-18 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-950 shadow-2xs shrink-0 cursor-pointer" onclick="openPhotoLightbox('{{ $page->url }}', '{{ addslashes($entry->title) }}')">
+                                            <img src="{{ $page->url }}" alt="Page scan" class="w-full h-full object-cover hover:scale-105 transition-transform">
+                                        </div>
+                                    @endforeach
+                                    <span class="text-[11px] text-slate-400 font-mono pl-1">{{ $entry->pages->count() }} Scanned Page{{ $entry->pages->count() > 1 ? 's' : '' }}</span>
+                                </div>
+                            @endif
+
+                            <div class="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                                @if($entry->anglers->count() > 0)
+                                    <div class="flex items-center gap-1">
+                                        <x-lucide-users class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                        <span>{{ $entry->anglers->pluck('full_name')->implode(', ') }}</span>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </x-card>
+    @endif
+
     <!-- TRIP SCRAPBOOK & PHOTO GALLERY -->
     <x-card title="Trip Scrapbook & Photo Gallery" icon="lucide-camera" subtitle="Shared memories, scenic shots, and brag board captures">
         <x-slot:actions>

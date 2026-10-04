@@ -106,6 +106,11 @@ class Lake extends Model
         return $this->hasMany(LakeDailyWeather::class, 'lakes_id', 'id');
     }
 
+    public function journalEntries(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(JournalEntry::class, 'journal_entry_lakes', 'lake_id', 'journal_entry_id')->withTimestamps();
+    }
+
     public function getDailyWeatherForDate($date)
     {
         return $this->dailyWeather()->where('date', $date)->first();

@@ -2,6 +2,7 @@
 
 namespace Fishinglog\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -23,10 +24,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Expedition extends Model
 {
+    use HasFactory;
     use SoftDeletes;
     use \Fishinglog\Traits\HasUuidAndSyncTracking;
 
-    protected $fillable = ['id', 'sync_status', 'synced_at', 'description', 'title', 'start', 'finish'];
+    protected $fillable = ['id', 'sync_status', 'synced_at', 'description', 'start', 'finish'];
+
+    public function getTitleAttribute(): string
+    {
+        return $this->attributes['description'] ?? '';
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -50,6 +57,11 @@ class Expedition extends Model
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class, 'expeditions_id', 'id');
+    }
+
+    public function journalEntries(): HasMany
+    {
+        return $this->hasMany(JournalEntry::class, 'expeditions_id', 'id')->orderBy('entry_date');
     }
 
     public function records(): HasManyThrough

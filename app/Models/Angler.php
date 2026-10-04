@@ -89,6 +89,11 @@ class Angler extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    public function journalEntries(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(JournalEntry::class, 'journal_entry_anglers', 'angler_id', 'journal_entry_id')->withTimestamps();
+    }
+
     public function getFirstnameAttribute(): ?string
     {
         return $this->attributes['firstName'] ?? $this->attributes['firstname'] ?? null;
