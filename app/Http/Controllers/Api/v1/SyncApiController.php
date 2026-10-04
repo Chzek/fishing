@@ -18,6 +18,7 @@ use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SyncApiController extends Controller
 {
@@ -80,97 +81,105 @@ class SyncApiController extends Controller
                     continue;
                 }
 
-                // If receiving a photo or avatar with binary content, store to disk
-                if ($key === 'photos' && !empty($itemData['file_base64']) && !empty($itemData['path'])) {
-                    \Illuminate\Support\Facades\Storage::disk('public')->put($itemData['path'], base64_decode($itemData['file_base64']));
-                }
-                if ($key === 'anglers' && !empty($itemData['avatar_base64']) && !empty($itemData['avatar'])) {
-                    \Illuminate\Support\Facades\Storage::disk('public')->put('avatars/' . $itemData['avatar'], base64_decode($itemData['avatar_base64']));
-                }
-                if ($key === 'fish_breeds') {
-                    if (!empty($itemData['avatar_base64']) && !empty($itemData['avatar'])) {
-                        \Illuminate\Support\Facades\Storage::disk('public')->put('fish/avatars/' . $itemData['avatar'], base64_decode($itemData['avatar_base64']));
+                try {
+                    // If receiving a photo or avatar with binary content, store to disk
+                    if ($key === 'photos' && !empty($itemData['file_base64']) && !empty($itemData['path'])) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->put($itemData['path'], base64_decode($itemData['file_base64']));
                     }
-                    if (!empty($itemData['image_base64']) && !empty($itemData['image'])) {
-                        \Illuminate\Support\Facades\Storage::disk('public')->put('fish/' . $itemData['image'], base64_decode($itemData['image_base64']));
+                    if ($key === 'anglers' && !empty($itemData['avatar_base64']) && !empty($itemData['avatar'])) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->put('avatars/' . $itemData['avatar'], base64_decode($itemData['avatar_base64']));
                     }
-                }
-
-                $existing = in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive($modelClass))
-                    ? $modelClass::withTrashed()->find($id)
-                    : $modelClass::find($id);
-
-                $attributes = $itemData;
-                $attributes['id'] = $id;
-                unset($attributes['uuid']);
-                unset($attributes['file_base64']);
-                unset($attributes['avatar_base64']);
-                unset($attributes['image_base64']);
-
-                $attributes['sync_status'] = 'synced';
-                $attributes['synced_at'] = now();
-
-                if (!empty($attributes['created_at'])) {
-                    $attributes['created_at'] = Carbon::parse($attributes['created_at']);
-                }
-                if (!empty($attributes['updated_at'])) {
-                    $attributes['updated_at'] = Carbon::parse($attributes['updated_at']);
-                }
-                if (!empty($attributes['deleted_at'])) {
-                    $attributes['deleted_at'] = Carbon::parse($attributes['deleted_at']);
-                }
-                if (!empty($attributes['email_verified_at'])) {
-                    $attributes['email_verified_at'] = Carbon::parse($attributes['email_verified_at']);
-                }
-                if (!empty($attributes['caught'])) {
-                    $attributes['caught'] = Carbon::parse($attributes['caught']);
-                }
-
-                $entity = $existing ?? new $modelClass();
-                $columns = \Illuminate\Support\Facades\Schema::getColumnListing($entity->getTable());
-                $filtered = array_intersect_key($attributes, array_flip($columns));
-
-                // Strip raw array spatial location object to allow latitude/longitude to cleanly populate Spatial Point
-                if (isset($filtered['location']) && is_array($filtered['location'])) {
-                    unset($filtered['location']);
-                }
-
-                if ($key === 'users') {
-                    if (!$existing && empty($filtered['password'])) {
-                        $filtered['password'] = \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(32));
-                    } elseif ($existing && empty($filtered['password'])) {
-                        unset($filtered['password']);
+                    if ($key === 'fish_breeds') {
+                        if (!empty($itemData['avatar_base64']) && !empty($itemData['avatar'])) {
+                            \Illuminate\Support\Facades\Storage::disk('public')->put('fish/avatars/' . $itemData['avatar'], base64_decode($itemData['avatar_base64']));
+                        }
+                        if (!empty($itemData['image_base64']) && !empty($itemData['image'])) {
+                            \Illuminate\Support\Facades\Storage::disk('public')->put('fish/' . $itemData['image'], base64_decode($itemData['image_base64']));
+                        }
                     }
-                }
 
-                if (!$existing) {
-                    $entity->timestamps = false;
-                    $entity->forceFill($filtered);
-                    $entity->saveQuietly();
-                    $entity->timestamps = true;
-                    $syncedUuids[] = $id;
-                    $processedCount++;
-                } else {
-                    $incomingUpdated = isset($itemData['updated_at']) ? Carbon::parse($itemData['updated_at']) : null;
-                    $localUpdated = $existing->updated_at ? Carbon::parse($existing->updated_at) : null;
+                    $existing = in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive($modelClass))
+                        ? $modelClass::withTrashed()->find($id)
+                        : $modelClass::find($id);
 
-                    if (!$localUpdated || ($incomingUpdated && $incomingUpdated->greaterThanOrEqualTo($localUpdated))) {
-                        $existing->timestamps = false;
-                        $existing->forceFill($filtered);
-                        $existing->saveQuietly();
-                        $existing->timestamps = true;
+                    $attributes = $itemData;
+                    $attributes['id'] = $id;
+                    unset($attributes['uuid']);
+                    unset($attributes['file_base64']);
+                    unset($attributes['avatar_base64']);
+                    unset($attributes['image_base64']);
+
+                    $attributes['sync_status'] = 'synced';
+                    $attributes['synced_at'] = now();
+
+                    if (!empty($attributes['created_at'])) {
+                        $attributes['created_at'] = Carbon::parse($attributes['created_at']);
+                    }
+                    if (!empty($attributes['updated_at'])) {
+                        $attributes['updated_at'] = Carbon::parse($attributes['updated_at']);
+                    }
+                    if (!empty($attributes['deleted_at'])) {
+                        $attributes['deleted_at'] = Carbon::parse($attributes['deleted_at']);
+                    }
+                    if (!empty($attributes['email_verified_at'])) {
+                        $attributes['email_verified_at'] = Carbon::parse($attributes['email_verified_at']);
+                    }
+                    if (!empty($attributes['caught'])) {
+                        $attributes['caught'] = Carbon::parse($attributes['caught']);
+                    }
+
+                    $entity = $existing ?? new $modelClass();
+                    $columns = \Illuminate\Support\Facades\Schema::getColumnListing($entity->getTable());
+                    $filtered = array_intersect_key($attributes, array_flip($columns));
+
+                    // Strip raw array spatial location object to allow latitude/longitude to cleanly populate Spatial Point
+                    if (isset($filtered['location']) && is_array($filtered['location'])) {
+                        unset($filtered['location']);
+                    }
+
+                    if ($key === 'users') {
+                        if (!$existing && empty($filtered['password'])) {
+                            $filtered['password'] = \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(32));
+                        } elseif ($existing && empty($filtered['password'])) {
+                            unset($filtered['password']);
+                        }
+                    }
+
+                    if (!$existing) {
+                        $entity->timestamps = false;
+                        $entity->forceFill($filtered);
+                        $entity->saveQuietly();
+                        $entity->timestamps = true;
+                        $syncedUuids[] = $id;
+                        $processedCount++;
                     } else {
-                        $existing->timestamps = false;
-                        $existing->forceFill([
-                            'sync_status' => 'synced',
-                            'synced_at' => now(),
-                        ]);
-                        $existing->saveQuietly();
-                        $existing->timestamps = true;
-                    }
+                        $incomingUpdated = isset($itemData['updated_at']) ? Carbon::parse($itemData['updated_at']) : null;
+                        $localUpdated = $existing->updated_at ? Carbon::parse($existing->updated_at) : null;
 
-                    $syncedUuids[] = $id;
-                    $processedCount++;
+                        if (!$localUpdated || ($incomingUpdated && $incomingUpdated->greaterThanOrEqualTo($localUpdated))) {
+                            $entity->timestamps = false;
+                            $existing->forceFill($filtered);
+                            $existing->saveQuietly();
+                            $existing->timestamps = true;
+                        } else {
+                            $existing->timestamps = false;
+                            $existing->forceFill([
+                                'sync_status' => 'synced',
+                                'synced_at' => now(),
+                            ]);
+                            $existing->saveQuietly();
+                            $existing->timestamps = true;
+                        }
+
+                        $syncedUuids[] = $id;
+                        $processedCount++;
+                    }
+                } catch (\Throwable $e) {
+                    Log::error("Failed to process sync push item for model {$key} ID [{$id}]: " . $e->getMessage(), [
+                        'exception' => $e,
+                        'item_data' => $itemData,
+                    ]);
+                    report($e);
                 }
             }
         }

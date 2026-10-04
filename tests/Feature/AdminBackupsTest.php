@@ -159,4 +159,50 @@ class AdminBackupsTest extends TestCase
         $response->assertSessionHas('status', 'Backup archive [to_delete.zip] has been deleted.');
         $this->assertFalse(Storage::disk('backups')->exists('Fishing-Logbook/to_delete.zip'));
     }
+
+    #[Test]
+    public function backup_create_logs_error_when_artisan_call_fails(): void
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+
+        Artisan::shouldReceive('call')
+            ->once()
+            ->andThrow(new \RuntimeException('Disk space exhausted'));
+
+        \Illuminate\Support\Facades\Log::spy();
+
+        $response = $this->actingAs($admin)->post('/admin/backups/create', [
+            'only_db' => true,
+        ]);
+
+        $response->assertRedirect('/admin/backups');
+        $response->assertSessionHas('error', 'Backup execution failed: Disk space exhausted');
+
+        \Illuminate\Support\Facades\Log::shouldHaveReceived('error')
+            ->withArgs(function ($message) {
+                return str_contains($message, 'Backup execution failed in AdminBackupController');
+            });
+    }
+
+    #[Test]
+    public function backup_clean_logs_error_when_artisan_call_fails(): void
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+
+        Artisan::shouldReceive('call')
+            ->once()
+            ->andThrow(new \RuntimeException('Permission denied on backup directory'));
+
+        \Illuminate\Support\Facades\Log::spy();
+
+        $response = $this->actingAs($admin)->post('/admin/backups/clean');
+
+        $response->assertRedirect('/admin/backups');
+        $response->assertSessionHas('error', 'Backup cleanup failed: Permission denied on backup directory');
+
+        \Illuminate\Support\Facades\Log::shouldHaveReceived('error')
+            ->withArgs(function ($message) {
+                return str_contains($message, 'Backup cleanup failed in AdminBackupController');
+            });
+    }
 }

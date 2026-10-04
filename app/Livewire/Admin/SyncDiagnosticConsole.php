@@ -5,6 +5,7 @@ namespace Fishinglog\Livewire\Admin;
 use Fishinglog\Jobs\SyncNasJob;
 use Fishinglog\Services\NasSyncService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class SyncDiagnosticConsole extends Component
@@ -60,6 +61,11 @@ class SyncDiagnosticConsole extends Component
             $this->statusMessage = "Incremental {$this->targetName} synchronization job queued for background execution!";
             $this->statusType = 'success';
         } catch (\Throwable $e) {
+            Log::error('Failed to dispatch sync job from diagnostic console: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            report($e);
+
             $this->statusMessage = "Failed to dispatch sync job: {$e->getMessage()}";
             $this->statusType = 'error';
         }
@@ -72,6 +78,11 @@ class SyncDiagnosticConsole extends Component
             $this->statusMessage = "Full Baseline {$this->targetName} synchronization job queued for background execution!";
             $this->statusType = 'success';
         } catch (\Throwable $e) {
+            Log::error('Failed to dispatch baseline sync job from diagnostic console: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            report($e);
+
             $this->statusMessage = "Failed to dispatch baseline sync job: {$e->getMessage()}";
             $this->statusType = 'error';
         }
@@ -85,6 +96,11 @@ class SyncDiagnosticConsole extends Component
             $this->statusMessage = "Successfully marked {$count} local record(s) across all 13 models as synced.";
             $this->statusType = 'success';
         } catch (\Throwable $e) {
+            Log::error('Failed to mark records synced from diagnostic console: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            report($e);
+
             $this->statusMessage = "Failed to mark records synced: {$e->getMessage()}";
             $this->statusType = 'error';
         }

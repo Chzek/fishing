@@ -6,7 +6,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🎯 Active Priority Roadmap (Ranked by Impact & Value)
 
-### 🏆 Priority 1 (P1): Notifications, Logbook Leaderboards & Angler Intelligence
+### 🏆 Priority 1 (P1): Notifications, Logbook Leaderboards, Angler Intelligence & Critical Fixes
 
 #### 1. Admin Overview "Notifications" Hub & Personalized Angler Milestone Alerts
 - **Agents**: `laravel-architect`, `ui-ux-auditor`
@@ -21,9 +21,45 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 - **Impact**: **Medium-High** (All-Time Leaderboards & Trip Milestones)
 - **Description**: Extend `CheckTrophyMilestoneListener` and `TrophyCatchLogged` to detect and celebrate **Logbook-Wide All-Time Records** (e.g. all-time largest Walleye or Pike across the entire logbook or waterbody) alongside individual Angler Personal Bests.
 
+#### 3. Application Timezone Parity & Quick Catch Date Drift Fix (`America/Detroit`)
+- **Agents**: `laravel-architect`, `livewire-architect`
+- **Impact**: **High** (Data Integrity & Catch Logging Usability)
+- **Description**:
+  - Resolve bug where evening catches default to tomorrow's date due to Laravel's default UTC timezone configuration (`config('app.timezone') = 'UTC'`). In Southwestern Michigan and Ontario (Eastern Time), any catch logged after 8:00 PM EDT / 7:00 PM EST automatically rolls over to UTC next day.
+  - Set application timezone to `America/Detroit` (Eastern Time) in `config/app.php` and `.env.example`.
+  - Audit all `date('Y-m-d')`, `now()`, and Carbon helper defaults across `QuickCatchModal.php`, `quick.blade.php`, and `RecordController.php`.
+
+#### 4. Expedition Roster vs Catch Activity Calculation Alignment (`/expedition`)
+- **Agents**: `laravel-architect`, `seasoned-angler-advisor`
+- **Impact**: **Medium-High** (Trip Telemetry & Reporting Accuracy)
+- **Description**:
+  - Reconcile the discrepancy on `/expedition` where `Crew Anglers` relies on `crews_count` (the static `crews` table roster) while catches and top rod stats query records between `start` and `finish` dates.
+  - Update `GenericDataTable` and `ExpeditionAnalyticsService` to compute active crew participation dynamically: `max(crews_count, distinct_anglers_with_catches_during_dates)` or display a dual metric badge (`Roster: X | Active: Y`).
+
+#### 5. Desktop Sticky Sidebar Navigation & Independent Scroll Containment
+- **Agents**: `ui-ux-auditor`, `tailwindcss-development`
+- **Impact**: **Medium-High** (Navigation & UX Ergonomics)
+- **Description**:
+  - Fix desktop sidebar layout in `resources/views/layouts/app.blade.php` where long content pages (such as the Tacklebox workstation or catch directories) cause the entire sidebar to scroll off-screen, pushing the bottom links (Tacklebox, Profile, Theme Switcher) out of view.
+  - Restructure desktop `<aside>` to `sticky top-0 h-screen overflow-hidden flex flex-col` with pinned brand header, global search, and Quick Catch action, while wrapping navigation links in `<nav class="flex-1 overflow-y-auto">` with isolated scrolling.
+
+#### 6. `/fish/{id}` Top 5 All-Time Specimens Weight Metric Prominence
+- **Agents**: `ui-ux-auditor`, `seasoned-angler-advisor`
+- **Impact**: **Medium** (Trophy Legibility & Visual Polish)
+- **Description**:
+  - In `resources/views/fish/show.blade.php`, the weight metric in the Top 5 All-Time Specimens strip is currently formatted in tiny 10px muted grey text (`text-[10px] text-slate-400`).
+  - Upgrade the specimen cards to display prominent, high-contrast badges for both length and weight side-by-side (e.g. amber length `24.5"` chip + emerald weight `5.40 lbs` chip) so trophy stats are immediately legible.
+
+#### 7. `/fish` Directory View Unification & Dual Pagination Pruning
+- **Agents**: `livewire-architect`, `ui-ux-auditor`
+- **Impact**: **Medium** (UI Consistency & Bugfix)
+- **Description**:
+  - Fix artifact in `resources/views/fish/index.blade.php` where switching to Table View renders the `GenericDataTable` component while leaving the legacy Blade pagination (`$fishes->links()`) and HTTP GET family filter pills rendered simultaneously.
+  - Standardize `/fish` to use `GenericDataTable` as the primary directory view or encapsulate grid/table view modes cleanly within a reactive Livewire component with unified pagination and family filtering.
+
 ---
 
-### 🚀 Priority 2 (P2): Tactical Intelligence & Visual Visualizations
+### 🚀 Priority 2 (P2): Tactical Intelligence, UI/UX & Spatial Visualizations
 
 #### 1. FMZ Fishing Regulations Warning & Slot Limit Compliance Alerts
 - **Agents**: `seasoned-angler-advisor`, `laravel-architect`
@@ -35,11 +71,38 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 - **Impact**: **Medium-High** (Social Sharing & Marine Navigation Integration)
 - **Description**: Generate a downloadable high-resolution branded brag card (catch length/weight, lake, lure, solunar rating, photo) for social sharing, and implement 1-click GPX/CSV waypoint export formatted specifically for Garmin, Humminbird, and Lowrance chartplotters.
 
----
+#### 3. Map Explorer Context Menu: 1-Click "Create Lake" & "Quick Catch" Pinning
+- **Agents**: `ui-ux-auditor`, `livewire-architect`
+- **Impact**: **High** (Field Mapping & Catch Logging Speed)
+- **Description**:
+  - Add Leaflet `contextmenu` (right-click on desktop, long-press on mobile) event handling on the Map Explorer (`/map/explorer`).
+  - Display a sleek tactical context popover at the clicked `(lat, lng)` coordinates with two quick actions:
+    1. **"Add Lake Here"**: Opens lake creation pre-populated with clicked coordinates.
+    2. **"Log Catch Here"**: Dispatches `open-quick-catch` with GPS coordinates pre-filled.
 
-### ⚙️ Priority 2 (P2): Frontend Reactivity, Livewire DX & Visual Polish
+#### 4. Fullscreen Catch & Expedition Media Lightbox / Multi-Photo Carousel (`<x-media-lightbox />`)
+- **Agents**: `ui-ux-auditor`, `livewire-architect`
+- **Impact**: **Medium-High** (Photo Gallery UX & Boat Sharing)
+- **Description**:
+  - Build a global, responsive Alpine.js media lightbox component for viewing catch photos, expedition gallery snapshots, and journal scans in high resolution.
+  - Support multi-photo sets with previous/next carousel controls, thumbnail navigation strip, keyboard shortcuts (`←`/`→`/`Esc`), touch swipe gestures, and photo metadata telemetry overlay (Angler, Species, Length/Weight, Lake, Date).
 
-#### 1. Interactive JavaScript Telemetry Visualizations (Chart.js & Livewire/Alpine)
+#### 5. Lake & Expedition Dossier Spatial Map Rebalancing (2-Column Taller Aspect Layout)
+- **Agents**: `ui-ux-auditor`, `seasoned-angler-advisor`
+- **Impact**: **Medium** (Dossier Layout & Cartographic Usability)
+- **Description**:
+  - Restructure map presentation on `/lake/{id}` and `/expedition/{id}` from narrow, full-width strips (420px) to a responsive 2-column grid layout (e.g. 2/3 map canvas + 1/3 companion telemetry/trophy card stack).
+  - Increase map height to 520px–600px for expanded bathymetric and track visibility without excessive page scrolling.
+
+#### 6. Lake Directory Species Biodiversity Columns, Filtering & Map Popovers
+- **Agents**: `laravel-architect`, `ui-ux-auditor`
+- **Impact**: **Medium** (Fishery Intelligence & Search)
+- **Description**:
+  - Add a `Species Present` aggregate column to the Lake Directory (`/lake`) displaying species avatar chips for verified catches logged in each waterbody.
+  - Integrate a "Filter by Species" dropdown in `GenericDataTable` for lakes.
+  - Enhance Map Explorer push-pin popovers with species avatar badges to quickly identify target fisheries on the water.
+
+#### 7. Interactive JavaScript Telemetry Visualizations (Chart.js & Livewire/Alpine)
 - **Agents**: `ui-ux-auditor`, `livewire-architect`, `seasoned-angler-advisor`
 - **Impact**: **High** (Tactical Angling Analytics & Data Science)
 - **Description**: Replace static SVG/CSS charts with interactive, hardware-accelerated Chart.js canvases wrapped in reactive Alpine.js components:
@@ -49,7 +112,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **Water Temperature × Lure Category Matrix**: Strike zone heatmap identifying high-probability tackle per water temp band.
   * **Angler Multi-Skill Radar**: 5-axis crew comparison chart (Lunker Max, Volume, C&R %, Species Diversity, Active Waters).
 
-#### 2. Outdoor Boat Usability & Responsive Table-to-Card Stack
+#### 8. Outdoor Boat Usability & Responsive Table-to-Card Stack
 - **Agents**: `ui-ux-auditor`, `livewire-architect`, `seasoned-angler-advisor`
 - **Impact**: **Medium-High** (Mobile & Boat Cockpit Usability)
 - **Description**: Optimize user experience for open-water boat navigation under direct sunlight and high glare:
@@ -57,7 +120,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **44px Tap Target Enforcement**: Audit and expand touch boundaries on all mobile filter pills, table sorting chevrons, and pagination buttons.
   * **WCAG AAA Sunlight Contrast**: Elevate secondary text contrast ratios to $\ge 7:1$ to prevent washout on polarized mobile screens.
 
-#### 3. Fish Species Illustration Asset Pipeline: Alpha Transparency & WebP/PNG Conversion
+#### 9. Fish Species Illustration Asset Pipeline: Alpha Transparency & WebP/PNG Conversion
 - **Agents**: `ui-ux-auditor`, `laravel-architect`
 - **Impact**: **Medium** (Visual Polish & Dark Mode Aesthetic)
 - **Description**: Upgrade the fish species and lure asset library with true alpha transparency:
@@ -65,7 +128,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **Modern Alpha Format**: Convert assets to transparent `.webp` / `.png` with lossless compression, updated in `FishBreed` model fallback resolution.
   * **Subtle Dark Mode Glow / Drop Shadow**: Apply subtle ambient illumination filters so dark-scaled species (e.g., Largemouth Bass, Walleye) remain distinctly visible against dark slate backgrounds.
 
-#### 4. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
+#### 10. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
 - **Agents**: `seasoned-angler-advisor`, `laravel-architect`, `ui-ux-auditor`
 - **Impact**: **High** (Custom Fishery Intelligence & Depth Mapping)
 - **Description**: Build an ingestion pipeline for personal Humminbird Helix AutoChart Live sonar data (`acdata` folder / AutoChart Zero Line SD card, AutoChart PC exports, CSV/XYZ soundings, and GeoJSON contour vectors):
@@ -74,21 +137,68 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   * **Interactive Map Layer**: Render private, high-definition (1-foot / 3-foot) bathymetric contours on both the **Map Explorer** (`/map/explorer`) and **Lake Dossier** (`/lake/{id}`) with custom color ramping, depth labels in feet, and bottom hardness / weedline overlays.
   * **Offline Support**: Integrate custom lake contours into the Offline Region Downloader (`/map/offline`) for 100% offline navigation out on the water.
 
-#### 5. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
+#### 11. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (Database Query Optimization)
 - **Description**: Consolidate the 5 separate count and aggregation queries in `LakeController@show` (total catches, longest catch, heaviest catch, unique visits, unique anglers) into a consolidated single-pass aggregation query.
 
 ---
 
-### 🛠️ Priority 3 (P3): Architecture, Events, Synology NAS & DevOps
+### 🛠️ Priority 3 (P3): Gamification, AI Intelligence, Synology NAS & DevOps
 
-#### 1. Low-Bandwidth Chunked NAS Outbox Push & Scheduled Sync Health Webhook
+#### 1. Angler Achievement Badges & Gamification Engine (1980s/90s Boy Scout Merit Badge Style)
+- **Agents**: `ui-ux-auditor`, `seasoned-angler-advisor`, `laravel-architect`
+- **Impact**: **High** (Angler Engagement, Youth Appeal & Trip Heritage)
+- **Description**:
+  - Build an achievement badge and points gamification engine rendered on Angler Profiles (`/angler/{id}`).
+  - **Visual Aesthetic**: Inspired by 1980s/1990s Boy Scout Merit Badges with colored-pencil texture, circular embroidered borders, and progressive color saturation as point tiers increase.
+  - **Badge Metadata**: Each earned badge records `date_earned`, points awarded, and a direct link to the triggering catch or expedition record.
+  - **Badge Catalog**:
+    * **Quantity Milestones**: 1st, 5th, 10th, 25th, 50th, 100th, 150th catches (General volume + species-specific milestones with higher point weights).
+    * **Species Diversity (DEI / Variety)**: 3, 6, 9+ freshwater species caught.
+    * **Angler Cadence**: Distinct days logging catches.
+    * **Exploration**: Number of distinct lakes fished with verified catches.
+    * **Consecutive Seasons Streak**: Consecutive calendar years active in the logbook (including attendance on expeditions with zero personal catches).
+    * **High Seas**: Catching fish on Lake Superior / big open water.
+    * **Weathered**: Catches across varied weather extremes (rapid pressure drop, rain, fog, high wind).
+    * **Nomad / Traveler**: Catches spanning multiple geographic zones / FMZs.
+    * **Total Fish Yardage / Mileage**: Summing cumulative inches into real-world milestones (*"Around the Cabin"* = 100ft perimeter, *"Touchdown"* = 100 yards, *"Going the Mile"* = 1 mile).
+    * **New Water Pioneer**: Angler present on an expedition when a new lake was first discovered/mapped.
+    * **Maverick & Goose**: Rotating title for #1 and #2 on Crew Leaderboards, featuring a historical holder timeline.
+    * **Skunked**: Humorous kid-friendly badge (awarded after having an expedition with 0 catches following at least 2 successful catch trips).
+    * **Conservationist**: Catch-and-Release milestones (1, 5, 10, 25, 50, 100+ releases).
+  - **Architecture**: Domain event listener on `CatchLoggedEvent` processing rules via `BadgeEvaluatorService`, stored in `badges` and `angler_badges` pivot tables.
+
+#### 2. Species-Normalized Trophy Scoring Engine ("Expedition Best Catch")
+- **Agents**: `seasoned-angler-advisor`, `laravel-architect`
+- **Impact**: **Medium-High** (Inter-Species Fair Competition & Trip Accolades)
+- **Description**:
+  - Develop a normalized relative trophy scoring formula ($S \in [0, 100]$) to rank catches fairly across species with differing biological maximums (e.g. comparing a 24" Walleye against a 34" Northern Pike).
+  - Calculate normalized score as a weighted sum of length and weight relative to Ontario Master Angler benchmarks:
+    $$\text{Score} = w_L \left(\frac{\text{Length}}{\text{Benchmark}_L}\right) \times 100 + w_W \left(\frac{\text{Weight}}{\text{Benchmark}_W}\right) \times 100$$
+  - Provide an Admin configuration panel (`/admin/trophy-weights`) to adjust species multipliers and baseline benchmarks.
+
+#### 3. Handwritten Expedition Journal AI OCR & Structured Transcription Pipeline
+- **Agents**: `laravel-architect`, `ui-ux-auditor`
+- **Impact**: **Medium-High** (Historical Logbook Digitization & Trip Archive)
+- **Description**:
+  - Create a structured digitization pipeline for physical Canadian trip logbook journals.
+  - Support photographing journal pages and transcribing them via AI vision/OCR into structured `JournalEntry` records (or templated `Post` records) attached to `Expedition` models.
+  - Store original photo references (`photo_id`), transcription text, transcription dates, and structured metadata (weather observations, boat pairings, camp quotes, daily prompt questions).
+
+#### 4. Self-Service Password Reset Flow & Admin User Password Management Tooling
+- **Agents**: `laravel-architect`
+- **Impact**: **Medium** (User Account Administration & Support)
+- **Description**:
+  - Register standard authentication password reset routes (`password.request`, `password.email`, `password.reset`, `password.update`) in `routes/web.php` backed by `ForgotPasswordController` and `ResetPasswordController`.
+  - Add an Admin "Reset User Password" modal action on `/admin/users` allowing administrators to generate temporary passwords or send one-time reset links immediately for locked-out members.
+
+#### 5. Low-Bandwidth Chunked NAS Outbox Push & Scheduled Sync Health Webhook
 - **Agents**: `nas-sync-architect`
 - **Impact**: **Medium** (Remote Data Integrity)
 - **Description**: Add chunked outbox streaming (50 records per payload) for low-bandwidth cellular / boat satellite connections, and add a scheduled health monitor triggering notifications if NAS sync is unreachable or failing for >24 hours.
 
-#### 2. Automated Backup Verification & Restore Drill Command (`backup:verify`)
+#### 6. Automated Backup Verification & Restore Drill Command (`backup:verify`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Low-Medium** (Disaster Recovery Verification)
 - **Description**: Create an `artisan backup:verify` command that unzips recent Spatie backup archives in a temporary staging environment to verify SQL dump validity and image asset completeness.
@@ -380,3 +490,12 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * Standardized weight formatting to 2 decimal places (`number_format(..., 2)`) across all leaderboards and dossier cards ([`profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php), [`expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php), [`lake/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/show.blade.php), [`fish/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/fish/show.blade.php)).
       * Updated [`FishBreedControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/FishBreedControllerTest.php) assertions.
     - Verified entire test suite passing with **306 passing tests (1,310 assertions)** and **0 PHPStan errors (Level 5)**.
+48. **Exception Catching & Diagnostic Logging Audit & Enhancements**:
+    - Performed comprehensive audit of exception handling patterns across background jobs, event listeners, domain services, controllers, Livewire components, and REST API endpoints.
+    - Integrated structured exception logging (`Log::error()`, `Log::warning()`, and `report($e)`) across:
+      * [`AdminBackupController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Admin/AdminBackupController.php): `create()` and `clean()` actions to record `mysqldump` and retention prune errors in `laravel.log`.
+      * [`AdminController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Admin/AdminController.php): `index()`, `triggerSync()`, `triggerBaselineSync()`, `markAllSynced()`, and `triggerWeatherSync()` actions.
+      * [`SyncDiagnosticConsole.php`](file:///home/gmroczek/git/fishing/app/Livewire/Admin/SyncDiagnosticConsole.php): `triggerSync()`, `triggerBaselineSync()`, and `markAllSynced()` actions.
+      * [`SyncApiController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Api/v1/SyncApiController.php): wrapped per-entity outbox push processing in defensive `try/catch` blocks with model and entity UUID logging.
+    - Added dedicated error logging regression tests in [`AdminBackupsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AdminBackupsTest.php) and [`AdminWeatherSyncTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AdminWeatherSyncTest.php).
+    - Verified entire test suite passing cleanly with **309 passing tests (1,325 assertions)** and **0 failures**.

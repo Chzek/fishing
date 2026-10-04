@@ -14,6 +14,7 @@ use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -88,6 +89,9 @@ class AdminController extends Controller
             }
         } catch (\Throwable $e) {
             $backupHealthy = false;
+            Log::warning('Failed to evaluate backup status in admin dashboard: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
         }
 
         return view('admin.index', [
@@ -143,6 +147,11 @@ class AdminController extends Controller
             $targetName = $syncService->getTargetName();
             return redirect()->route('admin')->with('status', "{$targetName} Sync job queued for background execution! Synchronization will process photo payloads asynchronously.");
         } catch (\Throwable $e) {
+            Log::error('Failed to dispatch NAS sync job from admin panel: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            report($e);
+
             return redirect()->route('admin')->with('error', "Failed to dispatch sync job: {$e->getMessage()}");
         }
     }
@@ -154,6 +163,11 @@ class AdminController extends Controller
             $targetName = $syncService->getTargetName();
             return redirect()->route('admin')->with('status', "Full Baseline {$targetName} Sync job queued for background execution! Processing all models asynchronously.");
         } catch (\Throwable $e) {
+            Log::error('Failed to dispatch baseline NAS sync job from admin panel: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            report($e);
+
             return redirect()->route('admin')->with('error', "Failed to dispatch baseline sync job: {$e->getMessage()}");
         }
     }
@@ -164,6 +178,11 @@ class AdminController extends Controller
             $count = $syncService->markAllSynced();
             return redirect()->route('admin')->with('status', "Successfully marked {$count} local record(s) as synced.");
         } catch (\Throwable $e) {
+            Log::error('Failed to mark records synced from admin panel: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            report($e);
+
             return redirect()->route('admin')->with('error', "Failed to mark records synced: {$e->getMessage()}");
         }
     }
@@ -174,6 +193,11 @@ class AdminController extends Controller
             \Illuminate\Support\Facades\Artisan::call('weather:sync');
             return redirect()->route('admin')->with('status', 'Weather Telemetry Sync triggered successfully!');
         } catch (\Throwable $e) {
+            Log::error('Failed to trigger weather sync from admin panel: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            report($e);
+
             return redirect()->route('admin')->with('error', "Weather sync failed: {$e->getMessage()}");
         }
     }

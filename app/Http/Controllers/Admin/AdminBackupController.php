@@ -5,6 +5,7 @@ namespace Fishinglog\Http\Controllers\Admin;
 use Fishinglog\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Backup\Config\Config as SpatieBackupConfig;
 use Spatie\Backup\Tasks\Monitor\BackupDestinationStatusFactory;
@@ -117,6 +118,12 @@ class AdminBackupController extends Controller
 
             return redirect()->route('admin.backups')->with('status', $message);
         } catch (\Throwable $e) {
+            Log::error('Backup execution failed in AdminBackupController: ' . $e->getMessage(), [
+                'exception' => $e,
+                'only_db' => $onlyDb,
+            ]);
+            report($e);
+
             return redirect()->route('admin.backups')->with('error', "Backup execution failed: {$e->getMessage()}");
         }
     }
@@ -127,6 +134,11 @@ class AdminBackupController extends Controller
             Artisan::call('backup:clean', ['--disable-notifications' => true]);
             return redirect()->route('admin.backups')->with('status', 'Backup cleanup routine executed according to retention strategy!');
         } catch (\Throwable $e) {
+            Log::error('Backup cleanup failed in AdminBackupController: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            report($e);
+
             return redirect()->route('admin.backups')->with('error', "Backup cleanup failed: {$e->getMessage()}");
         }
     }

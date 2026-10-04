@@ -65,4 +65,26 @@ class AdminWeatherSyncTest extends TestCase
 
         $response->assertStatus(302);
     }
+
+    public function test_admin_weather_sync_logs_error_when_artisan_call_fails()
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+
+        Artisan::shouldReceive('call')
+            ->once()
+            ->with('weather:sync')
+            ->andThrow(new \RuntimeException('Open-Meteo connection timeout'));
+
+        \Illuminate\Support\Facades\Log::spy();
+
+        $response = $this->actingAs($admin)->post('/admin/weather/sync');
+
+        $response->assertRedirect('/admin');
+        $response->assertSessionHas('error', 'Weather sync failed: Open-Meteo connection timeout');
+
+        \Illuminate\Support\Facades\Log::shouldHaveReceived('error')
+            ->withArgs(function ($message) {
+                return str_contains($message, 'Failed to trigger weather sync from admin panel');
+            });
+    }
 }
