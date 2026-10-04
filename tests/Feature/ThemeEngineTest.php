@@ -80,4 +80,13 @@ class ThemeEngineTest extends TestCase
         $response->assertSee('Zero-FOUC Theme Engine Initializer');
         $response->assertSee('Theme Preference');
     }
+
+    #[Test]
+    public function desktop_sidebar_renders_with_sticky_containment_and_independent_scroll(): void
+    {
+        $response = $this->actingAs($this->user)->get('/profile');
+        $response->assertStatus(200);
+        $response->assertSee('lg:sticky lg:top-0 lg:h-screen lg:max-h-screen overflow-hidden');
+        $response->assertSee('flex-1 px-3 py-4 space-y-1 overflow-y-auto min-h-0');
+    }
 }

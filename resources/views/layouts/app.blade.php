@@ -61,9 +61,9 @@
     <div id="app" class="flex min-h-screen flex-col lg:flex-row bg-slate-100 dark:bg-slate-950">
         
         <!-- Desktop Sidebar (Option C Design) -->
-        <aside class="hidden lg:flex lg:flex-col lg:w-64 bg-slate-900 text-slate-300 min-h-screen border-r border-slate-800 shrink-0">
+        <aside class="hidden lg:flex lg:flex-col lg:w-64 bg-slate-900 text-slate-300 lg:sticky lg:top-0 lg:h-screen lg:max-h-screen overflow-hidden border-r border-slate-800 shrink-0 z-30">
             <!-- Brand Header -->
-            <div class="p-5 flex items-center justify-between border-b border-slate-800">
+            <div class="p-5 flex items-center justify-between border-b border-slate-800 shrink-0">
                 <a href="{{ url('/') }}" class="flex items-center gap-3 group">
                     <div class="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-400 flex items-center justify-center shadow-inner group-hover:bg-teal-500/20 transition-all duration-200">
                         <x-lucide-anchor class="w-5 h-5" />
@@ -77,7 +77,7 @@
 
             <!-- Global Omnibox Search Input -->
             @auth
-            <div class="px-4 pt-4 pb-1">
+            <div class="px-4 pt-4 pb-1 shrink-0">
                 <form action="{{ route('search') }}" method="GET" class="relative flex items-center">
                     <x-lucide-search class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none shrink-0" />
                     <input type="text" name="q" value="{{ request('q') }}" placeholder="Search & commands..."
@@ -87,7 +87,7 @@
             </div>
 
             <!-- Quick Catch Primary Action Button -->
-            <div class="px-4 pt-2 pb-2">
+            <div class="px-4 pt-2 pb-2 shrink-0">
                 <button type="button" @click="$dispatch('open-quick-catch')" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-semibold py-2.5 px-4 rounded-xl shadow-lg shadow-teal-900/30 hover:shadow-teal-800/40 transition-all duration-200 group cursor-pointer">
                     <x-lucide-zap class="w-4 h-4 text-teal-200 group-hover:scale-110 transition-transform" />
                     <span>Quick Catch</span>
@@ -96,7 +96,7 @@
             @endauth
 
             <!-- Navigation Links -->
-            <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+            <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto min-h-0">
                 @auth
                     <div class="px-3 pb-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Field Tools</div>
                     <a href="{{ url('/profile') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors {{ Request::is('profile*') ? 'bg-teal-500/15 text-teal-300 font-semibold border-l-2 border-teal-400' : 'hover:bg-slate-800/60 text-slate-300 hover:text-white' }}">
@@ -190,7 +190,7 @@
             </nav>
 
             <!-- Sidebar User Profile Footer -->
-            <div class="p-4 border-t border-slate-800 bg-slate-950/50">
+            <div class="p-4 border-t border-slate-800 bg-slate-950/50 shrink-0">
                 <!-- Offline Sync Indicator -->
                 <div class="mb-3 flex items-center justify-between">
                     <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sync Telemetry</span>
