@@ -59,8 +59,18 @@ class CatchLoggedEventPipelineTest extends TestCase
 
         $user = User::factory()->create();
         $angler = Angler::factory()->create(['user_id' => $user->id]);
+        $otherAngler = Angler::factory()->create();
         $breed = FishBreed::factory()->create(['name' => 'Walleye']);
         $lake = Lake::factory()->create(['name' => 'Wawa Lake']);
+
+        // Benchmark record by other angler (26.0 inches)
+        Record::create([
+            'anglers_id' => $otherAngler->id,
+            'fish_breeds_id' => $breed->id,
+            'lakes_id' => $lake->id,
+            'length' => 26.0,
+            'caught' => now()->subDays(10),
+        ]);
 
         // Prior PB: 18.0 inches
         Record::create([

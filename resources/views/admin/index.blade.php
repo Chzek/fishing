@@ -37,9 +37,13 @@
     <!-- Status Alerts -->
     <x-statusAlert />
 
-    <!-- Unread User Registration Notifications & Unlinked Accounts Banner -->
+    <!-- Unread Notifications & Activity Alerts Hub -->
     @if(!empty($unreadNotifications) && $unreadNotifications->count() > 0)
-        <div class="bg-amber-50/80 dark:bg-amber-950/40 rounded-2xl p-5 border border-amber-200/80 dark:border-amber-800/60 shadow-sm space-y-3">
+        @php
+            $trophyCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') === 'trophy_catch')->count();
+            $userCount = $unreadNotifications->filter(fn($n) => ($n->data['type'] ?? '') !== 'trophy_catch')->count();
+        @endphp
+        <div x-data="{ activeFilter: 'all' }" class="bg-amber-50/80 dark:bg-amber-950/40 rounded-2xl p-5 border border-amber-200/80 dark:border-amber-800/60 shadow-sm space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div class="flex items-center gap-3.5">
                     <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
@@ -47,44 +51,110 @@
                     </div>
                     <div>
                         <h2 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                            <span>New User Registration Alert</span>
+                            <span>Notifications &amp; Activity Alerts</span>
                             <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-200/70 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700 font-mono">{{ $unreadNotifications->count() }} New</span>
                         </h2>
                         <p class="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
-                            New user accounts have registered and are waiting to be paired with an Angler profile.
+                            System user registrations, all-time logbook records, and personal best angling milestones.
                         </p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-2 shrink-0">
-                    <a href="{{ route('admin.users') }}" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-1.5 cursor-pointer">
-                        <x-lucide-user-check class="w-3.5 h-3.5" />
-                        <span>Pair in User Accounts →</span>
-                    </a>
                     <form action="{{ route('admin.notifications.mark_read') }}" method="POST">
                         @csrf
-                        <button type="submit" class="px-3 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-xl border border-slate-200/80 dark:border-slate-700 shadow-sm transition-colors cursor-pointer">
-                            Dismiss All
+                        <button type="submit" class="px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-xl border border-slate-200/80 dark:border-slate-700 shadow-sm transition-colors cursor-pointer flex items-center gap-1.5">
+                            <x-lucide-check-check class="w-3.5 h-3.5" />
+                            <span>Dismiss All</span>
                         </button>
                     </form>
                 </div>
             </div>
 
+            <!-- Filter Buttons -->
+            @if($trophyCount > 0 && $userCount > 0)
+                <div class="flex items-center gap-1.5 pt-1 border-t border-amber-200/40 dark:border-amber-800/30">
+                    <button type="button" 
+                            @click="activeFilter = 'all'"
+                            :class="activeFilter === 'all' ? 'bg-amber-500 text-white dark:text-slate-950 font-bold shadow-xs' : 'bg-amber-100/60 dark:bg-amber-900/30 text-amber-900 dark:text-amber-200 hover:bg-amber-200/60 dark:hover:bg-amber-900/50'"
+                            class="px-2.5 py-1 text-[11px] rounded-lg transition-colors cursor-pointer">
+                        All ({{ $unreadNotifications->count() }})
+                    </button>
+                    <button type="button" 
+                            @click="activeFilter = 'trophy'"
+                            :class="activeFilter === 'trophy' ? 'bg-amber-500 text-white dark:text-slate-950 font-bold shadow-xs' : 'bg-amber-100/60 dark:bg-amber-900/30 text-amber-900 dark:text-amber-200 hover:bg-amber-200/60 dark:hover:bg-amber-900/50'"
+                            class="px-2.5 py-1 text-[11px] rounded-lg transition-colors cursor-pointer flex items-center gap-1">
+                        <x-lucide-trophy class="w-3 h-3 text-amber-500 dark:text-amber-300" />
+                        <span>Milestones ({{ $trophyCount }})</span>
+                    </button>
+                    <button type="button" 
+                            @click="activeFilter = 'registration'"
+                            :class="activeFilter === 'registration' ? 'bg-amber-500 text-white dark:text-slate-950 font-bold shadow-xs' : 'bg-amber-100/60 dark:bg-amber-900/30 text-amber-900 dark:text-amber-200 hover:bg-amber-200/60 dark:hover:bg-amber-900/50'"
+                            class="px-2.5 py-1 text-[11px] rounded-lg transition-colors cursor-pointer flex items-center gap-1">
+                        <x-lucide-user-plus class="w-3 h-3 text-teal-600 dark:text-teal-400" />
+                        <span>Registrations ({{ $userCount }})</span>
+                    </button>
+                </div>
+            @endif
+
             <!-- List of Unread Notifications -->
-            <div class="divide-y divide-amber-200/60 dark:divide-amber-800/40 border-t border-amber-200/60 dark:border-amber-800/40 pt-2 space-y-2">
+            <div class="divide-y divide-amber-200/60 dark:divide-amber-800/40 border-t border-amber-200/60 dark:border-amber-800/40 pt-1 space-y-2">
                 @foreach($unreadNotifications as $notification)
-                    <div class="flex items-center justify-between text-xs text-slate-700 dark:text-slate-300 pt-2">
-                        <div class="flex items-center gap-2">
-                            <x-lucide-user-plus class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" />
-                            <span class="font-medium text-slate-800 dark:text-slate-200">{{ $notification->data['message'] ?? 'New user registered.' }}</span>
-                            <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono">({{ $notification->created_at->diffForHumans() }})</span>
+                    @php
+                        $isTrophy = ($notification->data['type'] ?? '') === 'trophy_catch';
+                        $milestoneType = $notification->data['milestone_type'] ?? '';
+                    @endphp
+                    <div x-show="activeFilter === 'all' || (activeFilter === 'trophy' && {{ $isTrophy ? 'true' : 'false' }}) || (activeFilter === 'registration' && {{ !$isTrophy ? 'true' : 'false' }})"
+                         class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-700 dark:text-slate-300 pt-2.5">
+                        <div class="flex items-start sm:items-center gap-2.5 flex-1 min-w-0">
+                            @if($isTrophy)
+                                @if($milestoneType === 'all_time_record')
+                                    <div class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                                        <x-lucide-award class="w-3.5 h-3.5" />
+                                    </div>
+                                    <span class="px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider rounded bg-amber-500/20 text-amber-800 dark:text-amber-200 border border-amber-500/40 shrink-0">All-Time Record</span>
+                                @elseif($milestoneType === 'lake_record')
+                                    <div class="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                                        <x-lucide-crown class="w-3.5 h-3.5" />
+                                    </div>
+                                    <span class="px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider rounded bg-indigo-500/20 text-indigo-800 dark:text-indigo-200 border border-indigo-500/40 shrink-0">Lake Record</span>
+                                @else
+                                    <div class="w-6 h-6 rounded-lg bg-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                                        <x-lucide-trophy class="w-3.5 h-3.5" />
+                                    </div>
+                                    <span class="px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider rounded bg-teal-500/20 text-teal-800 dark:text-teal-200 border border-teal-500/40 shrink-0">Personal Best</span>
+                                @endif
+                            @else
+                                <div class="w-6 h-6 rounded-lg bg-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                                    <x-lucide-user-plus class="w-3.5 h-3.5" />
+                                </div>
+                                <span class="px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider rounded bg-teal-500/20 text-teal-800 dark:text-teal-200 border border-teal-500/40 shrink-0">Registration</span>
+                            @endif
+
+                            <span class="font-medium text-slate-800 dark:text-slate-200 truncate">{{ $notification->data['message'] ?? 'Notification received.' }}</span>
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono shrink-0">({{ $notification->created_at->diffForHumans() }})</span>
                         </div>
-                        <form action="{{ route('admin.notifications.mark_single_read', $notification->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="text-[11px] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:underline font-medium">
-                                Dismiss
-                            </button>
-                        </form>
+
+                        <div class="flex items-center gap-3 self-end sm:self-center shrink-0 pl-8 sm:pl-0">
+                            @if($isTrophy && !empty($notification->data['record_id']))
+                                <a href="{{ $notification->data['action_url'] ?? route('record.show', $notification->data['record_id']) }}" 
+                                   class="text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-200 font-bold hover:underline">
+                                    View Catch →
+                                </a>
+                            @elseif(!$isTrophy)
+                                <a href="{{ route('admin.users') }}" 
+                                   class="text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-200 font-bold hover:underline">
+                                    Pair Profile →
+                                </a>
+                            @endif
+
+                            <form action="{{ route('admin.notifications.mark_single_read', $notification->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="text-[11px] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:underline font-medium cursor-pointer">
+                                    Dismiss
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 @endforeach
             </div>

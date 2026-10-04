@@ -74,7 +74,7 @@ class QuickCatchModal extends Component
 
     public function mount(): void
     {
-        $this->caught = date('Y-m-d');
+        $this->caught = now()->format('Y-m-d');
         /** @var \Fishinglog\Models\User|null $user */
         $user = Auth::user();
         if ($user && $user->angler) {

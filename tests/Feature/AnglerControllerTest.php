@@ -28,8 +28,18 @@ class AnglerControllerTest extends TestCase
     {
         $this->be($this->user);
 
-        $this->post('/angler', $this->angler->toArray());
-        $this->assertDatabaseHas('anglers', $this->angler->toArray());
+        $payload = [
+            'firstName' => 'Arthur',
+            'middleName' => 'Pendelton',
+            'lastName' => 'Dent',
+        ];
+
+        $this->post('/angler', $payload);
+        $this->assertDatabaseHas('anglers', [
+            'firstName' => 'Arthur',
+            'middleName' => 'Pendelton',
+            'lastName' => 'Dent',
+        ]);
     }
 
     #[Test]

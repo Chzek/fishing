@@ -92,9 +92,9 @@ class AdminUserAnglerLinkTest extends TestCase
         $this->assertEquals(1, $admin->fresh()->unreadNotifications->count());
 
         // Admin views overview page and sees notification alert
-        $overviewResponse = $this->actingAs($admin)->get('/admin');
+        $overviewResponse = $this->actingAs($admin->fresh())->get('/admin');
         $overviewResponse->assertStatus(200);
-        $overviewResponse->assertSee('New User Registration Alert');
+        $overviewResponse->assertSee('Notifications & Activity Alerts');
         $overviewResponse->assertSee('Stanley');
 
         // Admin links angler to user

@@ -3,6 +3,7 @@
 namespace Fishinglog\Listeners;
 
 use Fishinglog\Events\CatchLoggedEvent;
+use Fishinglog\Models\User;
 use Fishinglog\Notifications\TrophyCatchLogged;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -22,10 +23,25 @@ class CheckTrophyMilestoneListener
             $milestone = $record->checkTrophyMilestone();
 
             if ($milestone) {
-                /** @var \Fishinglog\Models\User|null $recipient */
-                $recipient = Auth::user() ?? $record->angler?->user;
-                if ($recipient) {
-                    $recipient->notify(new TrophyCatchLogged($record, $milestone));
+                $recipients = collect();
+
+                /** @var \Fishinglog\Models\User|null $primaryRecipient */
+                $primaryRecipient = Auth::user() ?? $record->angler?->user;
+                if ($primaryRecipient) {
+                    $recipients->push($primaryRecipient);
+                }
+
+                // If this is an All-Time Record, Lake Record, or Personal Best, also notify Admin users for the Admin Notifications Hub
+                if (in_array($milestone['type'] ?? '', ['all_time_record', 'lake_record', 'species_pb'])) {
+                    $admins = User::where('type', User::ADMIN_TYPE)->get();
+                    foreach ($admins as $admin) {
+                        $recipients->push($admin);
+                    }
+                }
+
+                $uniqueRecipients = $recipients->unique('id');
+                foreach ($uniqueRecipients as $user) {
+                    $user->notify(new TrophyCatchLogged($record, $milestone));
                 }
 
                 if (function_exists('session') && session()->isStarted()) {

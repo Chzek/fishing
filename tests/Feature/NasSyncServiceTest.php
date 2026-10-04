@@ -13,6 +13,12 @@ class NasSyncServiceTest extends TestCase
 {
     use DatabaseTransactions;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        \Illuminate\Support\Facades\Cache::flush();
+    }
+
     #[Test]
     public function it_orchestrates_two_way_sync_with_mocked_nas()
     {
@@ -269,12 +275,14 @@ class NasSyncServiceTest extends TestCase
     public function it_preserves_synced_status_and_timestamps_when_pulling_existing_records()
     {
         $lake = Lake::create(['name' => 'Existing Lake', 'latitude' => 45.0, 'longitude' => -78.0]);
-        $lake->timestamps = false;
-        $lake->updated_at = \Illuminate\Support\Carbon::parse('2026-08-16T08:00:00Z');
-        $lake->markSynced();
+        Lake::where('id', $lake->id)->update([
+            'sync_status' => 'synced',
+            'synced_at' => '2026-08-16 08:00:00',
+            'updated_at' => '2026-08-16 08:00:00',
+        ]);
         $this->assertEquals('synced', $lake->fresh()->sync_status);
 
-        $remoteUpdatedAt = '2026-08-16T10:00:00Z';
+        $remoteUpdatedAt = '2026-08-16T16:00:00Z';
 
         Http::fake([
             'https://nas.example.com/api/v1/sync/push' => Http::response(['status' => 'success', 'synced_uuids' => []], 200),

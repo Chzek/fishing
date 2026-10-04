@@ -132,6 +132,8 @@ class AdminController extends Controller
     public function markNotificationRead($id)
     {
         $notification = auth()->user()->notifications()->findOrFail($id);
+        $notification->markAsRead();
+
         return back()->with('status', 'Notification dismissed.');
     }
 

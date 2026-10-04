@@ -6,58 +6,37 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🎯 Active Priority Roadmap (Ranked by Impact & Value)
 
-### 🏆 Priority 1 (P1): Notifications, Logbook Leaderboards, Angler Intelligence & Critical Fixes
+### 🏆 Priority 1 (P1): Expedition Roster Alignment, Navigation Ergonomics, UI Polish & Authentication
 
-#### 1. Admin Overview "Notifications" Hub & Personalized Angler Milestone Alerts
-- **Agents**: `laravel-architect`, `ui-ux-auditor`
-- **Impact**: **Medium** (Admin UX & Milestones)
-- **Description**:
-  - Rename the hardcoded "New User Registration Alert" section on `/admin` to **Notifications**.
-  - Personalize Personal Best notification copy to feature the angler's name: *"Danny Brauer recorded a new Personal Best Walleye (23") at Davies Lake (beat previous record of 21")!"*.
-  - Add contextual icons and filters distinguishing user account registrations from trophy angling milestones.
-
-#### 2. Logbook-Wide All-Time Lake & Fishery Record Milestones
-- **Agents**: `seasoned-angler-advisor`, `laravel-architect`
-- **Impact**: **Medium-High** (All-Time Leaderboards & Trip Milestones)
-- **Description**: Extend `CheckTrophyMilestoneListener` and `TrophyCatchLogged` to detect and celebrate **Logbook-Wide All-Time Records** (e.g. all-time largest Walleye or Pike across the entire logbook or waterbody) alongside individual Angler Personal Bests.
-
-#### 3. Application Timezone Parity & Quick Catch Date Drift Fix (`America/Detroit`)
-- **Agents**: `laravel-architect`, `livewire-architect`
-- **Impact**: **High** (Data Integrity & Catch Logging Usability)
-- **Description**:
-  - Resolve bug where evening catches default to tomorrow's date due to Laravel's default UTC timezone configuration (`config('app.timezone') = 'UTC'`). In Southwestern Michigan and Ontario (Eastern Time), any catch logged after 8:00 PM EDT / 7:00 PM EST automatically rolls over to UTC next day.
-  - Set application timezone to `America/Detroit` (Eastern Time) in `config/app.php` and `.env.example`.
-  - Audit all `date('Y-m-d')`, `now()`, and Carbon helper defaults across `QuickCatchModal.php`, `quick.blade.php`, and `RecordController.php`.
-
-#### 4. Expedition Roster vs Catch Activity Calculation Alignment (`/expedition`)
+#### 1. Expedition Roster vs Catch Activity Calculation Alignment (`/expedition`)
 - **Agents**: `laravel-architect`, `seasoned-angler-advisor`
 - **Impact**: **Medium-High** (Trip Telemetry & Reporting Accuracy)
 - **Description**:
   - Reconcile the discrepancy on `/expedition` where `Crew Anglers` relies on `crews_count` (the static `crews` table roster) while catches and top rod stats query records between `start` and `finish` dates.
   - Update `GenericDataTable` and `ExpeditionAnalyticsService` to compute active crew participation dynamically: `max(crews_count, distinct_anglers_with_catches_during_dates)` or display a dual metric badge (`Roster: X | Active: Y`).
 
-#### 5. Desktop Sticky Sidebar Navigation & Independent Scroll Containment
+#### 2. Desktop Sticky Sidebar Navigation & Independent Scroll Containment
 - **Agents**: `ui-ux-auditor`, `tailwindcss-development`
 - **Impact**: **Medium-High** (Navigation & UX Ergonomics)
 - **Description**:
   - Fix desktop sidebar layout in `resources/views/layouts/app.blade.php` where long content pages (such as the Tacklebox workstation or catch directories) cause the entire sidebar to scroll off-screen, pushing the bottom links (Tacklebox, Profile, Theme Switcher) out of view.
   - Restructure desktop `<aside>` to `sticky top-0 h-screen overflow-hidden flex flex-col` with pinned brand header, global search, and Quick Catch action, while wrapping navigation links in `<nav class="flex-1 overflow-y-auto">` with isolated scrolling.
 
-#### 6. `/fish/{id}` Top 5 All-Time Specimens Weight Metric Prominence
+#### 3. `/fish/{id}` Top 5 All-Time Specimens Weight Metric Prominence
 - **Agents**: `ui-ux-auditor`, `seasoned-angler-advisor`
 - **Impact**: **Medium** (Trophy Legibility & Visual Polish)
 - **Description**:
   - In `resources/views/fish/show.blade.php`, the weight metric in the Top 5 All-Time Specimens strip is currently formatted in tiny 10px muted grey text (`text-[10px] text-slate-400`).
   - Upgrade the specimen cards to display prominent, high-contrast badges for both length and weight side-by-side (e.g. amber length `24.5"` chip + emerald weight `5.40 lbs` chip) so trophy stats are immediately legible.
 
-#### 7. `/fish` Directory View Unification & Dual Pagination Pruning
+#### 4. `/fish` Directory View Unification & Dual Pagination Pruning
 - **Agents**: `livewire-architect`, `ui-ux-auditor`
 - **Impact**: **Medium** (UI Consistency & Bugfix)
 - **Description**:
   - Fix artifact in `resources/views/fish/index.blade.php` where switching to Table View renders the `GenericDataTable` component while leaving the legacy Blade pagination (`$fishes->links()`) and HTTP GET family filter pills rendered simultaneously.
   - Standardize `/fish` to use `GenericDataTable` as the primary directory view or encapsulate grid/table view modes cleanly within a reactive Livewire component with unified pagination and family filtering.
 
-#### 8. Self-Service Password Reset Flow & Admin User Password Management Tooling
+#### 5. Self-Service Password Reset Flow & Admin User Password Management Tooling
 - **Agents**: `laravel-architect`, `ui-ux-auditor`
 - **Impact**: **Medium-High** (User Account Administration & Support)
 - **Description**:
@@ -225,7 +204,29 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🏆 Completed Milestones (Merged into `master`)
 
-1. **Multi-Day Solunar Forecast & Astronomical Trip Planner (P1.1)**:
+1. **Admin Overview Notifications & Activity Alerts Hub (P1.1)**:
+   - Upgraded `/admin` notifications into a polymorphic, multi-source **Notifications & Activity Alerts Hub** displaying both user registration alerts and angling trophy milestones with live badge counters.
+   - Built client-side Alpine.js filtering tabs (`All`, `Milestones`, `Registrations`), contextual icons/badges (All-Time Record, Lake Record, Personal Best, User Registration), and direct deep-action links (`View Catch →`, `Pair Profile →`).
+   - Implemented individual single notification dismissal (`POST /admin/notifications/{id}/mark-read`) alongside bulk dismissal (`POST /admin/notifications/mark-all-read`).
+   - Verified with dedicated feature tests in [`AdminNotificationsHubTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AdminNotificationsHubTest.php).
+2. **Logbook-Wide All-Time & Lake Record Milestone Detection (P1.2)**:
+   - Upgraded [`Record::checkTrophyMilestone()`](file:///home/gmroczek/git/fishing/app/Models/Record.php) with a 4-tier milestone detection hierarchy:
+     1. `all_time_record`: All-Time Logbook Record across all anglers and waterbodies.
+     2. `lake_record`: Waterbody-specific record for that fish breed.
+     3. `species_pb`: Individual Angler Personal Best.
+     4. `first_species_catch`: First logged specimen of a species.
+   - Enhanced [`TrophyCatchLogged.php`](file:///home/gmroczek/git/fishing/app/Notifications/TrophyCatchLogged.php) to render tailored notification copy for catching anglers vs system administrators.
+   - Extended [`CheckTrophyMilestoneListener.php`](file:///home/gmroczek/git/fishing/app/Listeners/CheckTrophyMilestoneListener.php) to dispatch trophy milestone notifications to catching anglers and all active Admin users.
+   - Fully covered with feature tests in [`TrophyNotificationTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/TrophyNotificationTest.php).
+3. **Application Timezone Parity & Quick Catch Date Drift Fix (`America/Detroit`) (P1.3)**:
+   - Configured `config('app.timezone')` and `APP_TIMEZONE` in `.env` and `.env.example` to `America/Detroit` (Eastern Time).
+   - Eliminated late evening catch date drift where catches logged after 8:00 PM EDT in Michigan/Ontario rolled over into UTC tomorrow.
+   - Standardized `QuickCatchModal.php` default mount date to `now()->format('Y-m-d')`.
+   - Verified with unit tests in [`TimezoneTest.php`](file:///home/gmroczek/git/fishing/tests/Unit/TimezoneTest.php).
+4. **Full Codebase Exception Catching & Logging Audit**:
+   - Audited and hardened exception handling across `AdminBackupController`, `AdminInviteController`, `AdminQuickAddController`, `AdminController`, `LivewireConsoleComponent`, `NasSyncApiPushController`, `NasSyncApiPullController`, `NasSyncApiMediaVerifyController`, `NasSyncApiMediaDownloadController`, `NasSyncApiMediaChunkController`, and `OfflineCatchSyncApiController`.
+   - Added structured contextual logging (`Log::error()`, `Log::warning()`) and `report($e)` integration without breaking end-user response flows.
+5. **Multi-Day Solunar Forecast & Astronomical Trip Planner (P1.1 prior)**:
    - Extended [`SolunarService.php`](file:///home/gmroczek/git/fishing/app/Services/SolunarService.php) with multi-day predictive window engine (`getMultiDayForecast`) computing 1–5 star ratings, peak trip feeding days, moon illumination/phases, and major/minor windows for 1 to 14 days.
    - Upgraded `@livewire('widgets.solunar-forecast')` with a compact, single-line horizontal trip outlook strip and reactive day switching across Expedition Dossiers (`/expedition/{id}`) and Lake Dossiers (`/lake/{id}`).
    - Covered with dedicated unit & feature tests in [`SolunarMultiDayForecastTest.php`](file:///home/gmroczek/git/fishing/tests/Unit/SolunarMultiDayForecastTest.php) and [`ExpeditionSolunarPlannerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/ExpeditionSolunarPlannerTest.php).

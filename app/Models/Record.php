@@ -216,6 +216,13 @@ class Record extends Model
 
     /**
      * Determine if this catch record qualifies as a Personal Best or Trophy milestone.
+     * Hierarchy:
+     * 1. all_time_record: Longest ever across the entire logbook for this species
+     * 2. lake_record: Longest ever on this specific waterbody for this species
+     * 3. species_pb: Longest ever for this angler for this species
+     * 4. first_species_catch: First catch of this species logged by this angler
+     *
+     * @return array<string, mixed>|null
      */
     public function checkTrophyMilestone(): ?array
     {
@@ -223,31 +230,77 @@ class Record extends Model
             return null;
         }
 
-        $this->loadMissing(['fishBreed', 'lake']);
+        $this->loadMissing(['fishBreed', 'lake', 'angler']);
+        $speciesName = $this->fishBreed ? $this->fishBreed->name : 'Fish';
+        $lakeName = $this->lake ? $this->lake->name : 'Waterbody';
 
-        // Check previous catches by this angler for this species (excluding current record)
-        $previousCatches = self::where('anglers_id', $this->anglers_id)
-            ->where('fish_breeds_id', $this->fish_breeds_id)
+        // 1. Check Logbook-Wide All-Time Record for this species
+        $allTimeCatches = self::where('fish_breeds_id', $this->fish_breeds_id)
             ->where('id', '!=', $this->id);
+        $allTimeCount = (clone $allTimeCatches)->count();
+        $allTimeMax = (clone $allTimeCatches)->max('length');
 
-        $previousCount = (clone $previousCatches)->count();
-        if ($previousCount === 0) {
+        if ($allTimeCount > 0 && $this->length && $allTimeMax && (float) $this->length > (float) $allTimeMax) {
             return [
-                'type' => 'first_species_catch',
-                'title' => "🎉 First Logged " . ($this->fishBreed ? $this->fishBreed->name : 'Species') . "!",
-                'previous_length' => null,
+                'type' => 'all_time_record',
+                'title' => "🌟 All-Time Logbook Record {$speciesName}!",
+                'badge_label' => "🌟 All-Time Record",
+                'previous_length' => round((float) $allTimeMax, 2),
                 'previous_weight' => null,
+                'species_name' => $speciesName,
+                'lake_name' => $lakeName,
             ];
         }
 
-        $previousMax = (clone $previousCatches)->max('length');
+        // 2. Check Lake Record for this species
+        if ($this->lakes_id) {
+            $lakeCatches = self::where('lakes_id', $this->lakes_id)
+                ->where('fish_breeds_id', $this->fish_breeds_id)
+                ->where('id', '!=', $this->id);
+            $lakeCount = (clone $lakeCatches)->count();
+            $lakeMax = (clone $lakeCatches)->max('length');
 
-        if ($this->length && $previousMax && (float) $this->length > (float) $previousMax) {
+            if ($lakeCount > 0 && $this->length && $lakeMax && (float) $this->length > (float) $lakeMax) {
+                return [
+                    'type' => 'lake_record',
+                    'title' => "👑 New {$lakeName} Record {$speciesName}!",
+                    'badge_label' => "👑 {$lakeName} Record",
+                    'previous_length' => round((float) $lakeMax, 2),
+                    'previous_weight' => null,
+                    'species_name' => $speciesName,
+                    'lake_name' => $lakeName,
+                ];
+            }
+        }
+
+        // 3. Check Angler Personal Best for this species
+        $anglerCatches = self::where('anglers_id', $this->anglers_id)
+            ->where('fish_breeds_id', $this->fish_breeds_id)
+            ->where('id', '!=', $this->id);
+        $anglerCount = (clone $anglerCatches)->count();
+        $anglerMax = (clone $anglerCatches)->max('length');
+
+        if ($anglerCount === 0) {
+            return [
+                'type' => 'first_species_catch',
+                'title' => "🎉 First Logged {$speciesName}!",
+                'badge_label' => "🎉 First Catch",
+                'previous_length' => null,
+                'previous_weight' => null,
+                'species_name' => $speciesName,
+                'lake_name' => $lakeName,
+            ];
+        }
+
+        if ($this->length && $anglerMax && (float) $this->length > (float) $anglerMax) {
             return [
                 'type' => 'species_pb',
-                'title' => "🏆 New Personal Best " . ($this->fishBreed ? $this->fishBreed->name : 'Species') . "!",
-                'previous_length' => round((float) $previousMax, 2),
+                'title' => "🏆 New Personal Best {$speciesName}!",
+                'badge_label' => "🏆 Personal Best",
+                'previous_length' => round((float) $anglerMax, 2),
                 'previous_weight' => null,
+                'species_name' => $speciesName,
+                'lake_name' => $lakeName,
             ];
         }
 
