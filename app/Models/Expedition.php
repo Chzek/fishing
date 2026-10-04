@@ -87,4 +87,44 @@ class Expedition extends Model
         $photo = $this->photos()->where('is_cover', true)->first() ?? $this->photos()->first();
         return $photo;
     }
+
+    /**
+     * Get distinct anglers who logged catches during this expedition's dates.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Angler>
+     */
+    public function getActiveAnglersAttribute(): \Illuminate\Database\Eloquent\Collection
+    {
+        if (!$this->start || !$this->finish) {
+            return new \Illuminate\Database\Eloquent\Collection();
+        }
+
+        $anglerIds = Record::where('caught', '>=', $this->start)
+            ->where('caught', '<=', $this->finish)
+            ->whereNotNull('anglers_id')
+            ->pluck('anglers_id')
+            ->unique();
+
+        return Angler::whereIn('id', $anglerIds)->get();
+    }
+
+    /**
+     * Get count of distinct anglers who logged catches during this expedition's dates.
+     */
+    public function getActiveAnglersCountAttribute(): int
+    {
+        if (array_key_exists('active_anglers_count', $this->attributes)) {
+            return (int) $this->attributes['active_anglers_count'];
+        }
+
+        if (!$this->start || !$this->finish) {
+            return 0;
+        }
+
+        return (int) Record::where('caught', '>=', $this->start)
+            ->where('caught', '<=', $this->finish)
+            ->whereNotNull('anglers_id')
+            ->distinct('anglers_id')
+            ->count('anglers_id');
+    }
 }

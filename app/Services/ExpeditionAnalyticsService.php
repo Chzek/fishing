@@ -2,8 +2,11 @@
 
 namespace Fishinglog\Services;
 
+use Fishinglog\Models\Angler;
 use Fishinglog\Models\Expedition;
 use Fishinglog\Models\Record;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ExpeditionAnalyticsService
@@ -73,6 +76,17 @@ class ExpeditionAnalyticsService
             ->orderBy('caught', 'asc')
             ->get();
 
+        $daysFishedCount = $dailyCadence->count();
+
+        $totalTripDays = 1;
+        if ($start && $finish) {
+            $startDate = Carbon::parse($start)->startOfDay();
+            $finishDate = Carbon::parse($finish)->startOfDay();
+            $totalTripDays = max(1, $startDate->diffInDays($finishDate) + 1);
+        }
+
+        $dailyAvgCatches = $totalTripDays > 0 ? round($totalRecords / $totalTripDays, 1) : 0;
+
         $speciesDistribution = Record::select('fish_breeds_id', DB::raw('count(*) as count'))
             ->where('caught', '>=', $start)
             ->where('caught', '<=', $finish)
@@ -81,16 +95,84 @@ class ExpeditionAnalyticsService
             ->with('fishBreed')
             ->get();
 
+        // 4. Crew Roster vs Catch Activity Alignment
+        $registeredCrewAnglerIds = $expedition->crews()->pluck('anglers_id')->filter()->unique();
+        $rosterCrewCount = $registeredCrewAnglerIds->count();
+
+        $catchingAnglerIds = Record::where('caught', '>=', $start)
+            ->where('caught', '<=', $finish)
+            ->whereNotNull('anglers_id')
+            ->pluck('anglers_id')
+            ->unique();
+        $activeAnglersCount = $catchingAnglerIds->count();
+
+        $allLeaderboardAnglerIds = $registeredCrewAnglerIds->concat($catchingAnglerIds)->unique();
+        $totalUniqueAnglersCount = $allLeaderboardAnglerIds->count();
+
+        $tripRecordMetrics = Record::select(
+                'anglers_id',
+                DB::raw('count(*) as total_catches'),
+                DB::raw('round(sum(length), 2) as total_length'),
+                DB::raw('max(length) as longest_fish')
+            )
+            ->where('caught', '>=', $start)
+            ->where('caught', '<=', $finish)
+            ->whereIn('anglers_id', $allLeaderboardAnglerIds)
+            ->groupBy('anglers_id')
+            ->get()
+            ->keyBy('anglers_id');
+
+        $anglers = Angler::whereIn('id', $allLeaderboardAnglerIds)->get()->keyBy('id');
+
+        /** @var Collection<int, object> $crewLeaderboard */
+        $crewLeaderboard = $allLeaderboardAnglerIds->map(function ($anglerId) use ($anglers, $tripRecordMetrics, $registeredCrewAnglerIds) {
+            $angler = $anglers->get($anglerId);
+            if (!$angler) {
+                return null;
+            }
+
+            $metrics = $tripRecordMetrics->get($anglerId);
+            $isRoster = $registeredCrewAnglerIds->contains($anglerId);
+            $catches = $metrics ? (int) $metrics->total_catches : 0;
+
+            $obj = new \stdClass();
+            $obj->anglers_id = $anglerId;
+            $obj->angler = $angler;
+            $obj->total_catches = $catches;
+            $obj->total_length = $metrics ? (float) $metrics->total_length : 0.0;
+            $obj->longest_fish = $metrics ? (float) $metrics->longest_fish : 0.0;
+            $obj->is_roster_crew = $isRoster;
+            $obj->is_active_catcher = ($catches > 0);
+
+            return $obj;
+        })->filter()->sort(function ($a, $b) {
+            if ($a->total_catches !== $b->total_catches) {
+                return $b->total_catches <=> $a->total_catches;
+            }
+            if ($a->total_length !== $b->total_length) {
+                return $b->total_length <=> $a->total_length;
+            }
+            return strcmp($a->angler->fullName, $b->angler->fullName);
+        })->values();
+
         return [
             'totalRecords' => $totalRecords,
             'releasedCount' => $releasedCount,
             'releaseRate' => $releaseRate,
+            'daysFishedCount' => $daysFishedCount,
+            'totalTripDays' => $totalTripDays,
+            'dailyAvgCatches' => $dailyAvgCatches,
             'lunker' => $lunker,
             'heavyweight' => $heavyweight,
             'topRod' => $topRod,
             'hotLure' => $hotLure,
             'dailyCadence' => $dailyCadence,
             'speciesDistribution' => $speciesDistribution,
+            'rosterCrewCount' => $rosterCrewCount,
+            'activeAnglersCount' => $activeAnglersCount,
+            'totalUniqueAnglersCount' => $totalUniqueAnglersCount,
+            'crewLeaderboard' => $crewLeaderboard,
         ];
     }
 }
+

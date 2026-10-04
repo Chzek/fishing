@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Fishinglog\Livewire\Components\GenericDataTable;
 use Fishinglog\Models\Angler;
+use Fishinglog\Models\FishBreed;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
@@ -379,5 +380,75 @@ class GenericDataTableLivewireTest extends TestCase
         ->set('perPage', 25)
         ->assertSet('paginators.page', 1)
         ->assertSet('perPage', 25);
+    }
+
+    #[Test]
+    public function generic_data_table_renders_expedition_crew_column_with_aligned_roster_and_active_badges()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $angler1 = Angler::factory()->create();
+        $angler2 = Angler::factory()->create();
+        $lake = Lake::factory()->create();
+        $breed = FishBreed::factory()->create();
+
+        // Expedition 1: Equal crew & active anglers (1 Roster, 1 Active)
+        $exp1 = \Fishinglog\Models\Expedition::create([
+            'description' => 'Equal Crew Expedition',
+            'start' => '2026-05-01',
+            'finish' => '2026-05-05',
+        ]);
+        \Fishinglog\Models\Crew::create([
+            'expeditions_id' => $exp1->id,
+            'anglers_id' => $angler1->id,
+        ]);
+        Record::create([
+            'anglers_id' => $angler1->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $breed->id,
+            'length' => 15.0,
+            'caught' => '2026-05-02',
+        ]);
+
+        // Expedition 2: Discrepant crew & active anglers (1 Roster, 2 Active - 1 guest)
+        $exp2 = \Fishinglog\Models\Expedition::create([
+            'description' => 'Discrepant Crew Expedition',
+            'start' => '2026-06-01',
+            'finish' => '2026-06-05',
+        ]);
+        \Fishinglog\Models\Crew::create([
+            'expeditions_id' => $exp2->id,
+            'anglers_id' => $angler1->id,
+        ]);
+        Record::create([
+            'anglers_id' => $angler1->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $breed->id,
+            'length' => 17.0,
+            'caught' => '2026-06-02',
+        ]);
+        Record::create([
+            'anglers_id' => $angler2->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $breed->id,
+            'length' => 19.0,
+            'caught' => '2026-06-03',
+        ]);
+
+        Livewire::test(GenericDataTable::class, [
+            'modelClass' => \Fishinglog\Models\Expedition::class,
+            'columns' => [
+                ['key' => 'description', 'label' => 'Trip Description', 'sortable' => true],
+                ['key' => 'crews_count', 'label' => 'Angler Crew', 'type' => 'expedition_crew', 'sortable' => true],
+            ],
+            'itemName' => 'expeditions',
+        ])
+        ->assertStatus(200)
+        ->assertSee('Equal Crew Expedition')
+        ->assertSee('Angler')
+        ->assertSee('Discrepant Crew Expedition')
+        ->assertSee('1 Roster')
+        ->assertSee('2 Active');
     }
 }

@@ -433,6 +433,11 @@ class GenericDataTable extends Component
                   ->addSelect(['records_count' => Record::selectRaw('count(*)')
                       ->whereColumn('caught', '>=', 'expeditions.start')
                       ->whereColumn('caught', '<=', 'expeditions.finish')
+                  ])
+                  ->addSelect(['active_anglers_count' => Record::selectRaw('count(distinct anglers_id)')
+                      ->whereColumn('caught', '>=', 'expeditions.start')
+                      ->whereColumn('caught', '<=', 'expeditions.finish')
+                      ->whereNotNull('anglers_id')
                   ]);
         } elseif ($this->modelClass === FishBreed::class) {
             $query->with(['family'])
@@ -657,8 +662,10 @@ class GenericDataTable extends Component
                 $sortColKey = 'records_count';
             } elseif ($sortColKey === 'lakes') {
                 $sortColKey = 'lakes_count';
-            } elseif ($sortColKey === 'crew') {
+            } elseif ($sortColKey === 'crew' || $sortColKey === 'expedition_crew') {
                 $sortColKey = 'crews_count';
+            } elseif ($sortColKey === 'active_crew' || $sortColKey === 'active_anglers') {
+                $sortColKey = 'active_anglers_count';
             } elseif ($sortColKey === 'posts') {
                 $sortColKey = 'posts_count';
             } elseif ($sortColKey === 'family' || $sortColKey === 'family.name') {

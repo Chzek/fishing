@@ -52,4 +52,116 @@ class ExpeditionAnalyticsTest extends TestCase
         $response->assertSeeText('Trip Crew Leaderboard');
         $response->assertSeeText('Walleye');
     }
+
+    public function test_expedition_analytics_service_calculates_roster_and_active_anglers_correctly()
+    {
+        $angler1 = Angler::factory()->create(['firstName' => 'John', 'lastName' => 'Doe']);
+        $angler2 = Angler::factory()->create(['firstName' => 'Jane', 'lastName' => 'Smith']);
+        $angler3 = Angler::factory()->create(['firstName' => 'Guest', 'lastName' => 'Fisher']);
+        $lake = Lake::factory()->create();
+        $breed = FishBreed::factory()->create();
+
+        $expedition = Expedition::create([
+            'description' => 'Boundary Waters 2026',
+            'start' => '2026-06-01',
+            'finish' => '2026-06-05',
+        ]);
+
+        // Crew: Angler 1 and Angler 2
+        \Fishinglog\Models\Crew::create([
+            'expeditions_id' => $expedition->id,
+            'anglers_id' => $angler1->id,
+        ]);
+        \Fishinglog\Models\Crew::create([
+            'expeditions_id' => $expedition->id,
+            'anglers_id' => $angler2->id,
+        ]);
+
+        // Catches: Angler 1 (roster) and Angler 3 (guest)
+        Record::create([
+            'anglers_id' => $angler1->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $breed->id,
+            'length' => 20.0,
+            'caught' => '2026-06-02',
+        ]);
+        Record::create([
+            'anglers_id' => $angler3->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $breed->id,
+            'length' => 24.5,
+            'caught' => '2026-06-03',
+        ]);
+
+        $service = app(\Fishinglog\Services\ExpeditionAnalyticsService::class);
+        $analytics = $service->getAnalytics($expedition);
+
+        $this->assertEquals(2, $analytics['rosterCrewCount']);
+        $this->assertEquals(2, $analytics['activeAnglersCount']);
+        $this->assertEquals(3, $analytics['totalUniqueAnglersCount']);
+
+        $leaderboard = $analytics['crewLeaderboard'];
+        $this->assertCount(3, $leaderboard);
+
+        // Angler 1: Roster + Active
+        $entry1 = $leaderboard->firstWhere('anglers_id', $angler1->id);
+        $this->assertNotNull($entry1);
+        $this->assertTrue($entry1->is_roster_crew);
+        $this->assertTrue($entry1->is_active_catcher);
+        $this->assertEquals(1, $entry1->total_catches);
+
+        // Angler 3: Guest + Active
+        $entry3 = $leaderboard->firstWhere('anglers_id', $angler3->id);
+        $this->assertNotNull($entry3);
+        $this->assertFalse($entry3->is_roster_crew);
+        $this->assertTrue($entry3->is_active_catcher);
+        $this->assertEquals(1, $entry3->total_catches);
+
+        // Angler 2: Roster + Inactive (0 catches)
+        $entry2 = $leaderboard->firstWhere('anglers_id', $angler2->id);
+        $this->assertNotNull($entry2);
+        $this->assertTrue($entry2->is_roster_crew);
+        $this->assertFalse($entry2->is_active_catcher);
+        $this->assertEquals(0, $entry2->total_catches);
+
+        // Model accessors
+        $this->assertEquals(2, $expedition->active_anglers_count);
+        $this->assertCount(2, $expedition->active_anglers);
+    }
+
+    public function test_expedition_show_renders_roster_and_active_badges()
+    {
+        $user = User::factory()->create();
+        $anglerRoster = Angler::factory()->create(['firstName' => 'Captain', 'lastName' => 'Morgan']);
+        $anglerGuest = Angler::factory()->create(['firstName' => 'Guest', 'lastName' => 'Angler']);
+        $lake = Lake::factory()->create();
+        $breed = FishBreed::factory()->create();
+
+        $expedition = Expedition::create([
+            'description' => 'Lake Nipissing 2026',
+            'start' => '2026-07-10',
+            'finish' => '2026-07-12',
+        ]);
+
+        \Fishinglog\Models\Crew::create([
+            'expeditions_id' => $expedition->id,
+            'anglers_id' => $anglerRoster->id,
+        ]);
+
+        Record::create([
+            'anglers_id' => $anglerGuest->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $breed->id,
+            'length' => 18.0,
+            'caught' => '2026-07-11',
+        ]);
+
+        $response = $this->actingAs($user)->get("/expedition/{$expedition->id}");
+        $response->assertStatus(200);
+        $response->assertSee('1 Roster');
+        $response->assertSee('1 Active');
+        $response->assertSee('Guest');
+        $response->assertSee('Captain Morgan');
+        $response->assertSee('Guest Angler');
+    }
 }

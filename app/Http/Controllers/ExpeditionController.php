@@ -81,57 +81,10 @@ class ExpeditionController extends Controller
         $hotLure = $analytics['hotLure'] ?? null;
         $dailyCadence = $analytics['dailyCadence'] ?? [];
         $speciesDistribution = $analytics['speciesDistribution'] ?? collect();
-
-        $registeredCrewAnglerIds = $expedition->crews()->pluck('anglers_id')->filter()->unique();
-
-        $catchingAnglerIds = Record::where('caught', '>=', $expedition->start)
-            ->where('caught', '<=', $expedition->finish)
-            ->whereNotNull('anglers_id')
-            ->pluck('anglers_id')
-            ->unique();
-
-        $allLeaderboardAnglerIds = $registeredCrewAnglerIds->concat($catchingAnglerIds)->unique();
-
-        $tripRecordMetrics = Record::select(
-                'anglers_id',
-                DB::raw('count(*) as total_catches'),
-                DB::raw('round(sum(length), 2) as total_length'),
-                DB::raw('max(length) as longest_fish')
-            )
-            ->where('caught', '>=', $expedition->start)
-            ->where('caught', '<=', $expedition->finish)
-            ->whereIn('anglers_id', $allLeaderboardAnglerIds)
-            ->groupBy('anglers_id')
-            ->get()
-            ->keyBy('anglers_id');
-
-        $anglers = \Fishinglog\Models\Angler::whereIn('id', $allLeaderboardAnglerIds)->get()->keyBy('id');
-
-        $crewLeaderboard = $allLeaderboardAnglerIds->map(function ($anglerId) use ($anglers, $tripRecordMetrics) {
-            $angler = $anglers->get($anglerId);
-            if (!$angler) {
-                return null;
-            }
-
-            $metrics = $tripRecordMetrics->get($anglerId);
-
-            $obj = new \stdClass();
-            $obj->anglers_id = $anglerId;
-            $obj->angler = $angler;
-            $obj->total_catches = $metrics ? (int) $metrics->total_catches : 0;
-            $obj->total_length = $metrics ? (float) $metrics->total_length : 0.0;
-            $obj->longest_fish = $metrics ? (float) $metrics->longest_fish : 0.0;
-
-            return $obj;
-        })->filter()->sort(function ($a, $b) {
-            if ($a->total_catches !== $b->total_catches) {
-                return $b->total_catches <=> $a->total_catches;
-            }
-            if ($a->total_length !== $b->total_length) {
-                return $b->total_length <=> $a->total_length;
-            }
-            return strcmp($a->angler->fullName, $b->angler->fullName);
-        })->values();
+        $rosterCrewCount = (int) ($analytics['rosterCrewCount'] ?? 0);
+        $activeAnglersCount = (int) ($analytics['activeAnglersCount'] ?? 0);
+        $totalUniqueAnglersCount = (int) ($analytics['totalUniqueAnglersCount'] ?? 0);
+        $crewLeaderboard = $analytics['crewLeaderboard'] ?? collect();
 
         $recordsWithGps = Record::with(['angler', 'fishBreed'])
             ->where('caught', '>=', $expedition->start)
@@ -151,12 +104,6 @@ class ExpeditionController extends Controller
         ->whereNotNull('longitude')
         ->get();
 
-        $daysFishedCount = count($dailyCadence);
-        $startDate = strtotime((string) $expedition->start);
-        $finishDate = strtotime((string) $expedition->finish);
-        $totalTripDays = ($startDate && $finishDate && $finishDate >= $startDate) ? (int) max(1, round(($finishDate - $startDate) / 86400) + 1) : 1;
-        $dailyAvgCatches = $daysFishedCount > 0 ? round($totalRecords / $daysFishedCount, 1) : 0;
-
         return view('expedition.show', [
             'totalRecords' => $totalRecords,
             'releasedCount' => $releasedCount,
@@ -172,6 +119,9 @@ class ExpeditionController extends Controller
             'hotLure' => $hotLure,
             'dailyCadence' => $dailyCadence,
             'speciesDistribution' => $speciesDistribution,
+            'rosterCrewCount' => $rosterCrewCount,
+            'activeAnglersCount' => $activeAnglersCount,
+            'totalUniqueAnglersCount' => $totalUniqueAnglersCount,
             'crewLeaderboard' => $crewLeaderboard,
             'recordsWithGps' => $recordsWithGps,
             'visitedLakes' => $visitedLakes,

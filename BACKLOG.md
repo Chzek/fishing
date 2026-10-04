@@ -6,37 +6,30 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 
 ## 🎯 Active Priority Roadmap (Ranked by Impact & Value)
 
-### 🏆 Priority 1 (P1): Expedition Roster Alignment, Navigation Ergonomics, UI Polish & Authentication
+### 🏆 Priority 1 (P1): Navigation Ergonomics, UI Polish & Authentication
 
-#### 1. Expedition Roster vs Catch Activity Calculation Alignment (`/expedition`)
-- **Agents**: `laravel-architect`, `seasoned-angler-advisor`
-- **Impact**: **Medium-High** (Trip Telemetry & Reporting Accuracy)
-- **Description**:
-  - Reconcile the discrepancy on `/expedition` where `Crew Anglers` relies on `crews_count` (the static `crews` table roster) while catches and top rod stats query records between `start` and `finish` dates.
-  - Update `GenericDataTable` and `ExpeditionAnalyticsService` to compute active crew participation dynamically: `max(crews_count, distinct_anglers_with_catches_during_dates)` or display a dual metric badge (`Roster: X | Active: Y`).
-
-#### 2. Desktop Sticky Sidebar Navigation & Independent Scroll Containment
+#### 1. Desktop Sticky Sidebar Navigation & Independent Scroll Containment
 - **Agents**: `ui-ux-auditor`, `tailwindcss-development`
 - **Impact**: **Medium-High** (Navigation & UX Ergonomics)
 - **Description**:
   - Fix desktop sidebar layout in `resources/views/layouts/app.blade.php` where long content pages (such as the Tacklebox workstation or catch directories) cause the entire sidebar to scroll off-screen, pushing the bottom links (Tacklebox, Profile, Theme Switcher) out of view.
   - Restructure desktop `<aside>` to `sticky top-0 h-screen overflow-hidden flex flex-col` with pinned brand header, global search, and Quick Catch action, while wrapping navigation links in `<nav class="flex-1 overflow-y-auto">` with isolated scrolling.
 
-#### 3. `/fish/{id}` Top 5 All-Time Specimens Weight Metric Prominence
+#### 2. `/fish/{id}` Top 5 All-Time Specimens Weight Metric Prominence
 - **Agents**: `ui-ux-auditor`, `seasoned-angler-advisor`
 - **Impact**: **Medium** (Trophy Legibility & Visual Polish)
 - **Description**:
   - In `resources/views/fish/show.blade.php`, the weight metric in the Top 5 All-Time Specimens strip is currently formatted in tiny 10px muted grey text (`text-[10px] text-slate-400`).
   - Upgrade the specimen cards to display prominent, high-contrast badges for both length and weight side-by-side (e.g. amber length `24.5"` chip + emerald weight `5.40 lbs` chip) so trophy stats are immediately legible.
 
-#### 4. `/fish` Directory View Unification & Dual Pagination Pruning
+#### 3. `/fish` Directory View Unification & Dual Pagination Pruning
 - **Agents**: `livewire-architect`, `ui-ux-auditor`
 - **Impact**: **Medium** (UI Consistency & Bugfix)
 - **Description**:
   - Fix artifact in `resources/views/fish/index.blade.php` where switching to Table View renders the `GenericDataTable` component while leaving the legacy Blade pagination (`$fishes->links()`) and HTTP GET family filter pills rendered simultaneously.
   - Standardize `/fish` to use `GenericDataTable` as the primary directory view or encapsulate grid/table view modes cleanly within a reactive Livewire component with unified pagination and family filtering.
 
-#### 5. Self-Service Password Reset Flow & Admin User Password Management Tooling
+#### 4. Self-Service Password Reset Flow & Admin User Password Management Tooling
 - **Agents**: `laravel-architect`, `ui-ux-auditor`
 - **Impact**: **Medium-High** (User Account Administration & Support)
 - **Description**:
@@ -504,3 +497,12 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * [`SyncApiController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Api/v1/SyncApiController.php): wrapped per-entity outbox push processing in defensive `try/catch` blocks with model and entity UUID logging.
     - Added dedicated error logging regression tests in [`AdminBackupsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AdminBackupsTest.php) and [`AdminWeatherSyncTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AdminWeatherSyncTest.php).
     - Verified entire test suite passing cleanly with **309 passing tests (1,325 assertions)** and **0 failures**.
+49. **Expedition Roster vs Catch Activity Calculation Alignment (P1.1)**:
+    - Reconciled discrepancy between static crew rosters and active catch participation across expedition analytics and directory views:
+      * **Expedition Model Enhancements** ([`Expedition.php`](file:///home/gmroczek/git/fishing/app/Models/Expedition.php)): Added dynamic `$expedition->active_anglers` relation accessor and `$expedition->active_anglers_count` attribute to compute distinct anglers with catches recorded during expedition date windows.
+      * **ExpeditionAnalyticsService Architecture** ([`ExpeditionAnalyticsService.php`](file:///home/gmroczek/git/fishing/app/Services/ExpeditionAnalyticsService.php)): Updated service to return `rosterCrewCount`, `activeAnglersCount`, `totalUniqueAnglersCount`, `daysFishedCount`, `totalTripDays`, `dailyAvgCatches`, and a unified `crewLeaderboard` collection with `is_roster_crew` and `is_active_catcher` flags.
+      * **Expedition Dossier UI Alignment** ([`expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php)): Display dual badges (`X Roster / Y Active`) in trip header and leaderboard cards, with granular status tags (`Roster` for non-catching members, `Guest` for non-roster active catchers).
+      * **GenericDataTable Expedition Column Type** ([`GenericDataTable.php`](file:///home/gmroczek/git/fishing/app/Livewire/Components/GenericDataTable.php) & [`generic-data-table.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/components/generic-data-table.blade.php)): Added `expedition_crew` column type with subquery optimization (`addSelect(['active_anglers_count' => ...])`) rendering single unified badge when roster matches active, or dual teal/amber chip metrics (`X Roster • Y Active`) when discrepancies exist.
+    - Added comprehensive feature tests in [`ExpeditionAnalyticsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/ExpeditionAnalyticsTest.php) and [`GenericDataTableLivewireTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/GenericDataTableLivewireTest.php).
+    - Verified with all **322 tests passing (1,397 assertions)** and **0 PHPStan errors (Level 5)**.
+

@@ -8,13 +8,26 @@
         icon="lucide-ship"
     >
         <x-slot:subtitle>
-            <span class="text-xs text-teal-400 font-medium mt-1 flex items-center gap-2">
+            <span class="text-xs text-teal-400 font-medium mt-1 flex flex-wrap items-center gap-2">
                 <x-lucide-calendar class="w-3.5 h-3.5" />
                 <span>{{ $expedition->start ? \Illuminate\Support\Carbon::parse($expedition->start)->format('M j, Y') : '—' }} &mdash; {{ $expedition->finish ? \Illuminate\Support\Carbon::parse($expedition->finish)->format('M j, Y') : '—' }}</span>
                 <span>•</span>
                 <span class="font-bold text-white font-mono">{{ $totalRecords }} Total Catches</span>
                 <span>•</span>
                 <span class="text-emerald-400 font-semibold">{{ $releaseRate }}% Released</span>
+                <span>•</span>
+                @if($rosterCrewCount === $activeAnglersCount && $totalUniqueAnglersCount === $rosterCrewCount)
+                    <span class="text-slate-300 font-semibold flex items-center gap-1">
+                        <x-lucide-users class="w-3.5 h-3.5 text-teal-400" />
+                        <span>{{ $rosterCrewCount }} {{ \Illuminate\Support\Str::plural('Angler', $rosterCrewCount) }}</span>
+                    </span>
+                @else
+                    <span class="text-slate-300 font-semibold flex items-center gap-1.5 font-mono text-[11px]">
+                        <span class="text-teal-300">{{ $rosterCrewCount }} Roster</span>
+                        <span class="text-slate-500">/</span>
+                        <span class="text-amber-300">{{ $activeAnglersCount }} Active</span>
+                    </span>
+                @endif
             </span>
         </x-slot:subtitle>
 
@@ -303,13 +316,22 @@
 
         <!-- Col 3: Angler Crew Leaderboard -->
         <x-card title="Trip Crew Leaderboard" icon="lucide-award" iconColor="amber">
-            @if(view()->exists('expedition.crew.create'))
-                <x-slot:actions>
-                    <a href="/crew/create?expeditions_id={{ $expedition->id }}" class="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline">
-                        + Add Member
-                    </a>
-                </x-slot:actions>
-            @endif
+            <x-slot:actions>
+                <div class="flex items-center gap-2">
+                    <span class="text-[11px] font-mono text-slate-400 hidden sm:inline">
+                        @if($rosterCrewCount === $activeAnglersCount && $totalUniqueAnglersCount === $rosterCrewCount)
+                            {{ $totalUniqueAnglersCount }} {{ \Illuminate\Support\Str::plural('Angler', $totalUniqueAnglersCount) }}
+                        @else
+                            {{ $rosterCrewCount }} Roster • {{ $activeAnglersCount }} Active
+                        @endif
+                    </span>
+                    @if(view()->exists('expedition.crew.create'))
+                        <a href="/crew/create?expeditions_id={{ $expedition->id }}" class="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline">
+                            + Add Member
+                        </a>
+                    @endif
+                </div>
+            </x-slot:actions>
 
             <div class="divide-y divide-slate-100 dark:divide-slate-800">
                 @forelse($crewLeaderboard as $idx => $cl)
@@ -319,7 +341,14 @@
                             @if($cl->angler)
                                 <x-anglerAvatar :angler="$cl->angler" size="xs" />
                                 <div class="min-w-0">
-                                    <strong class="font-bold text-slate-900 dark:text-white block truncate leading-tight">{{ $cl->angler->fullName }}</strong>
+                                    <div class="flex items-center gap-1.5">
+                                        <strong class="font-bold text-slate-900 dark:text-white truncate leading-tight">{{ $cl->angler->fullName }}</strong>
+                                        @if($cl->is_roster_crew && !$cl->is_active_catcher)
+                                            <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">Roster</span>
+                                        @elseif(!$cl->is_roster_crew && $cl->is_active_catcher)
+                                            <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200/80 dark:border-amber-800/60">Guest</span>
+                                        @endif
+                                    </div>
                                     <span class="text-[10px] text-slate-400 font-mono">{{ $cl->longest_fish > 0 ? 'PB: ' . number_format($cl->longest_fish, 1) . ' in.' : 'No catches' }}</span>
                                 </div>
                             @endif
@@ -331,7 +360,7 @@
                     </div>
                 @empty
                     <div class="text-center py-8 text-slate-400 dark:text-slate-500 text-xs italic">
-                        No angler catches recorded yet.
+                        No angler crew or catches recorded yet.
                     </div>
                 @endforelse
             </div>
