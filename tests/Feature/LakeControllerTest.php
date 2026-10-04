@@ -69,6 +69,33 @@ class LakeControllerTest extends TestCase
     }
 
     #[Test]
+    public function authenticated_user_can_view_lake_with_top_catches_strip()
+    {
+        $this->actingAs($this->user);
+
+        $species = \Fishinglog\Models\FishBreed::factory()->create(['name' => 'Walleye']);
+        $angler = \Fishinglog\Models\Angler::factory()->create(['firstName' => 'Samantha', 'middleName' => '', 'lastName' => 'Reed']);
+
+        \Fishinglog\Models\Record::factory()->create([
+            'lakes_id' => $this->lake->id,
+            'fish_breeds_id' => $species->id,
+            'anglers_id' => $angler->id,
+            'length' => 29.5,
+            'weight' => 9.25,
+            'caught' => '2026-07-20',
+        ]);
+
+        $response = $this->get('/lake/' . $this->lake->id);
+        $response->assertStatus(200);
+        $response->assertSee('Top 5 Lake Catches');
+        $response->assertSee('29.5"', false);
+        $response->assertSee('9.25 lbs');
+        $response->assertSee('Samantha Reed');
+        $response->assertSee('Walleye');
+        $response->assertSee('Jul 2026');
+    }
+
+    #[Test]
     public function authenticated_user_can_update_a_lake()
     {
         $this->actingAs($this->user);

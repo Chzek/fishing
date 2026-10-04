@@ -97,6 +97,12 @@ class LakeController extends Controller
             ->distinct('anglers_id')
             ->count('anglers_id');
 
+        $topCatches = Record::with(['angler', 'fishBreed', 'lake'])
+            ->where('lakes_id', $lake->id)
+            ->orderBy('length', 'desc')
+            ->limit(5)
+            ->get();
+
         $nearbyLakes = Lake::nearby($lake->latitude, $lake->longitude, 2.0, $lake->id);
 
         return view('lake.show', [
@@ -106,6 +112,7 @@ class LakeController extends Controller
             'fattest' => $fattest,
             'visits' => $visits,
             'anglers' => $anglers,
+            'topCatches' => $topCatches,
             'stats' => $this->stats($lake),
             'nearbyLakes' => $nearbyLakes,
         ]);

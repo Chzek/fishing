@@ -261,7 +261,7 @@ class FishBreedControllerTest extends TestCase
         $response->assertStatus(200);
 
         $response->assertSee('Top 5 All-Time Specimens');
-        $response->assertSee('38.0"');
+        $response->assertSee('38.0"', false);
         $response->assertSee('14.50 lbs');
         $response->assertSee('Eric Whitaker');
         $response->assertSee('McCormick Lake');

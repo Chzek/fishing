@@ -497,4 +497,15 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * **Centered Catch Date Footer**: Positioned larger `text-xs font-mono` catch date centered across a subtle top border line.
     - Added feature test in [`FishBreedControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/FishBreedControllerTest.php).
     - Verified with all **324 tests passing (1,402 assertions)** and **0 PHPStan errors (Level 5)**.
+52. **Reusable `<x-specimenCard>` Blade Component & `/lake/{id}` Top 5 Catches Integration (P1.1)**:
+    - Built reusable Blade component [`resources/views/components/specimenCard.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/specimenCard.blade.php) featuring:
+      * Standardized layout: #1 gold ring rank badge on top-left, length (`38.0"`) & scale weight (`14.50 lbs`) stacked on top-right, angler name and adaptive subtitle in center, and centered catch date in footer.
+      * Context-adaptive subtitle logic: supports `:showLake="true"` (renders lake name on species view), `:showSpecies="true"` (renders fish breed on lake view), `:showLake="true" :showSpecies="true"` (renders `Species • Lake` for future `/expedition/{id}` trips), and custom `subtitle` overrides.
+    - Refactored [`resources/views/fish/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/fish/show.blade.php) to use `<x-specimenCard :rank="$rank" :record="$trophy" :showLake="true" />`.
+    - Modernized [`resources/views/lake/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/lake/show.blade.php) and [`app/Http/Controllers/LakeController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/LakeController.php):
+      * Replaced the old "Species Statistics" section with a "Top 5 Lake Catches" strip using `<x-specimenCard :rank="$rank" :record="$catch" :showSpecies="true" />`.
+      * Backed by eager-loaded `$topCatches` query (`Record::with(['angler', 'fishBreed', 'lake'])->where('lakes_id', $lake->id)->orderBy('length', 'desc')->limit(5)->get()`).
+    - Added comprehensive unit and feature test coverage in [`BladeComponentsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/BladeComponentsTest.php), [`LakeControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/LakeControllerTest.php), and [`FishBreedControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/FishBreedControllerTest.php).
+    - Verified entire test suite (**326 passing tests, 1,420 assertions**) with **0 failures** and **0 PHPStan errors (Level 5)**.
+
 

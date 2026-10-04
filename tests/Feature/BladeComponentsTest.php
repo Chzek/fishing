@@ -132,6 +132,46 @@ class BladeComponentsTest extends TestCase
         $lure->assertSee('<svg', false);
         $lure->assertSee('viewBox="0 0 400 180"', false);
     }
+
+    #[Test]
+    public function specimen_card_component_renders_correctly()
+    {
+        $angler = Angler::factory()->create(['firstName' => 'Lucas', 'middleName' => '', 'lastName' => 'Hale']);
+        $lake = Lake::factory()->create(['name' => 'Rainy Lake']);
+        $breed = FishBreed::factory()->create(['name' => 'Smallmouth Bass']);
+
+        $record = Record::factory()->create([
+            'anglers_id' => $angler->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $breed->id,
+            'length' => 20.75,
+            'weight' => 5.30,
+            'caught' => '2026-06-25',
+        ]);
+
+        // Default with showLake (e.g. on /fish/{id})
+        $fishView = $this->blade('<x-specimenCard :rank="0" :record="$record" :showLake="true" />', ['record' => $record]);
+        $fishView->assertSee('#1');
+        $fishView->assertSee('20.8"', false);
+        $fishView->assertSee('5.30 lbs');
+        $fishView->assertSee('Lucas Hale');
+        $fishView->assertSee('Rainy Lake');
+        $fishView->assertSee('Jun 2026');
+
+        // With showSpecies (e.g. on /lake/{id})
+        $lakeView = $this->blade('<x-specimenCard :rank="1" :record="$record" :showSpecies="true" />', ['record' => $record]);
+        $lakeView->assertSee('#2');
+        $lakeView->assertSee('Smallmouth Bass');
+
+        // With both showLake and showSpecies (e.g. on /expedition/{id})
+        $expeditionView = $this->blade('<x-specimenCard :rank="2" :record="$record" :showLake="true" :showSpecies="true" />', ['record' => $record]);
+        $expeditionView->assertSee('#3');
+        $expeditionView->assertSee('Smallmouth Bass • Rainy Lake');
+
+        // With custom subtitle override
+        $customView = $this->blade('<x-specimenCard :rank="0" :record="$record" subtitle="Special Expedition Trophy" />', ['record' => $record]);
+        $customView->assertSee('Special Expedition Trophy');
+    }
 }
 
 

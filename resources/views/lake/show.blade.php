@@ -154,34 +154,23 @@
         </x-card>
     @endif
 
-    <!-- Species Statistics Grid -->
-    @if(isset($stats) && count($stats) > 0)
-        <div class="space-y-4">
-            <h2 class="text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-                <x-lucide-fish class="w-4.5 h-4.5 text-teal-600 dark:text-teal-400" />
-                <span>Species Statistics</span>
-            </h2>
+    <!-- Top 5 Lake Catches Strip -->
+    @if(isset($topCatches) && $topCatches->count() > 0)
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <h2 class="text-base font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                    <x-lucide-trophy class="w-5 h-5 text-amber-500" />
+                    <span>Top 5 Lake Catches</span>
+                </h2>
+                <a href="{{ url('/record/directory') }}?lake={{ $lake->id }}" class="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline flex items-center gap-1">
+                    <span>View All</span>
+                    <x-lucide-arrow-up-right class="w-3.5 h-3.5" />
+                </a>
+            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                @foreach($stats as $stat)
-                    <x-card :title="$stat->fishBreed->name" icon="lucide-dna" iconColor="emerald" :badge="$stat->cnt . ' Total'" badgeVariant="teal">
-                        <div class="grid grid-cols-2 gap-3 text-center text-xs">
-                            <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-800">
-                                <span class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block">Avg. Length</span>
-                                <span class="text-base font-black text-slate-900 dark:text-white font-mono block mt-0.5">{{ $stat->avg_length }} in.</span>
-                                <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono">{{ $stat->min_length }}/{{ $stat->max_length }} (Min/Max)</span>
-                            </div>
-                            <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-800">
-                                <span class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block">Avg. Weight</span>
-                                @if(!is_null($stat->avg_weight))
-                                    <span class="text-base font-black text-slate-900 dark:text-white font-mono block mt-0.5">{{ $stat->avg_weight }} lbs.</span>
-                                    <span class="text-[10px] text-slate-500 dark:text-slate-400 font-mono">{{ $stat->min_weight }}/{{ $stat->max_weight }} (Min/Max)</span>
-                                @else
-                                    <span class="text-xs text-slate-400 dark:text-slate-500 block py-1.5">—</span>
-                                @endif
-                            </div>
-                        </div>
-                    </x-card>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                @foreach($topCatches as $rank => $catch)
+                    <x-specimenCard :rank="$rank" :record="$catch" :showSpecies="true" />
                 @endforeach
             </div>
         </div>
