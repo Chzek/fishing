@@ -18,5 +18,6 @@ class DatabaseSeeder extends Seeder
         $this->call(LakesTableSeeder::class);
         $this->call(LuresTableSeeder::class);
         $this->call(RecordsTableSeeder::class);
+        $this->call(\Database\Seeders\BadgeCatalogSeeder::class);
     }
 }

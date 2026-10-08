@@ -28,6 +28,19 @@
                     @if($angler->bio)
                         <p class="text-xs text-slate-300 mt-2 max-w-xl italic">"{{ $angler->bio }}"</p>
                     @endif
+
+                    <!-- Merit Badge Ribbon / Rack -->
+                    @if($angler->earnedBadges && $angler->earnedBadges->isNotEmpty())
+                        <div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-slate-800/90">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-teal-400/90 flex items-center gap-1 shrink-0 mr-1">
+                                <x-lucide-award class="w-3.5 h-3.5 text-teal-400" />
+                                <span>Merit Badges:</span>
+                            </span>
+                            @foreach($angler->earnedBadges as $badgePivot)
+                                <x-meritBadge :badgePivot="$badgePivot" />
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
 

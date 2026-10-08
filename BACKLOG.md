@@ -586,6 +586,24 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - **Automated Test Coverage**:
       * Added `test_mysql_dump_configuration_is_defined`, `test_mariadb_dump_configuration_is_defined`, and `test_dump_driver_mariadb_extends_mysql_connection_dumper` in [`tests/Feature/SpatieBackupTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/SpatieBackupTest.php).
       * Verified all backup tests passing (17 tests, 69 assertions).
+60. **Angler Achievement Badges & Gamification Engine (P3.1)**:
+    - **1980s/90s Boy Scout Merit Badge System & Catalog Architecture**:
+      * Built authentic embroidered patch artwork pipeline in [`public/images/badges/`](file:///home/gmroczek/git/fishing/public/images/badges/) and high-fidelity twill/stitch CSS/SVG fallback.
+      * Generated 14 authentic Boy Scout merit badge patches (1024x1024 master PNGs and 256x256 antialiased WebP assets): First Cast, Century Club, Around the Cabin, High Seas, Biologist, The Skunk, Walleye Stalker, Pike Hunter, Bronzeback Boss, First Release, Weathered Iron, Iron Logbook, Maverick, and Touchdown.
+      * Created database migrations and models [`Badge`](file:///home/gmroczek/git/fishing/app/Models/Badge.php) and [`AnglerBadge`](file:///home/gmroczek/git/fishing/app/Models/AnglerBadge.php) adhering to `HasUuidAndSyncTracking` and foreign key cascade rules.
+      * Seeded complete master badge catalog via [`BadgeCatalogSeeder`](file:///home/gmroczek/git/fishing/database/seeders/BadgeCatalogSeeder.php) with WebP image references.
+    - **Gamification Engine & Historical Recalculation**:
+      * Implemented [`BadgeEvaluatorService`](file:///home/gmroczek/git/fishing/app/Services/BadgeEvaluatorService.php) evaluating 16 rule types with transactional safety and context trigger generation.
+      * Integrated [`EvaluateAnglerBadgesListener`](file:///home/gmroczek/git/fishing/app/Listeners/EvaluateAnglerBadgesListener.php) on `CatchLoggedEvent` for real-time unlock detection and session notifications.
+      * Created `php artisan badges:recalculate` command ([`RecalculateBadgesCommand`](file:///home/gmroczek/git/fishing/app/Console/Commands/RecalculateBadgesCommand.php)) backfilling historical catch logs across 41 anglers with 296 awarded badges.
+    - **Interactive Popover UI & Hero Header Integration**:
+      * Built [`meritBadge.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/meritBadge.blade.php) Blade component featuring Alpine.js mouseover/tap popover displaying patch art, points pill, tier styling, award date, and deep links to triggering catch records.
+      * Embedded the merit badge rack into the hero profile header on both [`profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php) and [`angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php).
+    - **Automated Test Coverage & Static Analysis**:
+      * Created [`tests/Feature/AnglerMeritBadgeTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AnglerMeritBadgeTest.php) verifying catalog seeding, threshold awards, deduplication, event dispatching, artisan recalculation, and Blade rendering.
+      * Passed Larastan static analysis level 5 with zero errors (`[OK] No errors`).
+      * Verified entire test suite (**350 passing tests, 1,589 assertions**) with **0 failures**.
+
 
 
 

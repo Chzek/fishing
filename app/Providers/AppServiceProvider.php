@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Allow Spatie backup to use native mariadb-dump while keeping DB_CONNECTION=mysql
-        if (class_exists(\Spatie\Backup\Tasks\Backup\DbDumperFactory::class) && (env('DUMP_DRIVER') === 'mariadb' || env('DUMP_USE_MARIADB', false))) {
+        if (class_exists(\Spatie\Backup\Tasks\Backup\DbDumperFactory::class) && (config('database.connections.mysql.dump_driver') === 'mariadb' || config('database.connections.mysql.dump_use_mariadb', false))) {
             \Spatie\Backup\Tasks\Backup\DbDumperFactory::extend('mysql', fn () => new \Spatie\DbDumper\Databases\MariaDb());
         }
     }
