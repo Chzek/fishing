@@ -31,7 +31,9 @@ class ProfileController extends Controller
      */
     public function show()
     {
-        $angler = Angler::where('user_id', Auth::id())->first();
+        $angler = Angler::where('user_id', Auth::id())
+            ->with(['earnedBadges.badge'])
+            ->first();
 
         if (isset($angler->id)) {
             $records = Record::where('anglers_id', $angler->id)

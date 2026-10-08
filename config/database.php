@@ -57,9 +57,11 @@ return [
                 'use_single_transaction' => true,
                 'timeout' => (int) env('DUMP_TIMEOUT', 300),
                 'add_extra_option' => env('DUMP_EXTRA_OPTIONS'),
-                'set_skip_ssl' => (bool) env('DUMP_SKIP_SSL', true),
-                'set_ssl_flag' => env('DUMP_SSL_FLAG', 'skip-ssl'),
+                ...(env('DUMP_SKIP_SSL', false) ? ['set_skip_ssl' => true] : []),
+                ...(env('DUMP_SSL_FLAG') ? ['set_ssl_flag' => env('DUMP_SSL_FLAG')] : []),
             ], fn ($value) => $value !== null && $value !== ''),
+            'dump_driver' => env('DUMP_DRIVER'),
+            'dump_use_mariadb' => env('DUMP_USE_MARIADB', false),
         ],
 
         'mariadb' => [
@@ -80,8 +82,8 @@ return [
                 'use_single_transaction' => true,
                 'timeout' => (int) env('DUMP_TIMEOUT', 300),
                 'add_extra_option' => env('DUMP_EXTRA_OPTIONS'),
-                'set_skip_ssl' => (bool) env('DUMP_SKIP_SSL', true),
-                'set_ssl_flag' => env('DUMP_SSL_FLAG', 'skip-ssl'),
+                ...(env('DUMP_SKIP_SSL', true) ? ['set_skip_ssl' => true] : []),
+                ...(env('DUMP_SSL_FLAG', 'skip-ssl') ? ['set_ssl_flag' => env('DUMP_SSL_FLAG', 'skip-ssl')] : []),
             ], fn ($value) => $value !== null && $value !== ''),
         ],
 

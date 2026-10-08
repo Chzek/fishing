@@ -22,6 +22,7 @@ class EventServiceProvider extends ServiceProvider
             \Fishinglog\Listeners\CheckTrophyMilestoneListener::class,
             \Fishinglog\Listeners\InvalidateTelemetryCacheListener::class,
             \Fishinglog\Listeners\FetchCatchWeatherListener::class,
+            \Fishinglog\Listeners\EvaluateAnglerBadgesListener::class,
         ],
     ];
 

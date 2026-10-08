@@ -12,6 +12,8 @@ class AnglerProfileController extends Controller
 {
     public function show(Angler $angler, \Illuminate\Pipeline\Pipeline $pipeline, \Illuminate\Http\Request $request)
     {
+        $angler->load('earnedBadges.badge');
+
         $longest = Record::where('anglers_id', $angler->id)
             ->whereNotNull('length')
             ->orderBy('length', 'desc')

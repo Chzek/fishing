@@ -5,6 +5,7 @@ namespace Fishinglog\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -33,6 +34,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Record> $records
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Crew> $crews
  * @property-read \Fishinglog\Models\User|null $user
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\Badge> $badges
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Fishinglog\Models\AnglerBadge> $earnedBadges
  */
 class Angler extends Model
 {
@@ -92,6 +95,20 @@ class Angler extends Model
     public function journalEntries(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(JournalEntry::class, 'journal_entry_anglers', 'angler_id', 'journal_entry_id')->withTimestamps();
+    }
+
+    public function badges(): BelongsToMany
+    {
+        return $this->belongsToMany(Badge::class, 'angler_badges', 'anglers_id', 'badge_id')
+            ->withPivot(['id', 'record_id', 'expedition_id', 'awarded_at', 'points', 'trigger_summary', 'sync_status', 'synced_at'])
+            ->withTimestamps();
+    }
+
+    public function earnedBadges(): HasMany
+    {
+        return $this->hasMany(AnglerBadge::class, 'anglers_id')
+            ->with(['badge', 'record.lake', 'record.fishBreed', 'expedition'])
+            ->orderByDesc('awarded_at');
     }
 
     public function getFirstnameAttribute(): ?string
