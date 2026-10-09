@@ -589,7 +589,7 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 60. **Angler Achievement Badges & Gamification Engine (P3.1)**:
     - **1980s/90s Boy Scout Merit Badge System & Catalog Architecture**:
       * Built authentic embroidered patch artwork pipeline in [`public/images/badges/`](file:///home/gmroczek/git/fishing/public/images/badges/) and high-fidelity twill/stitch CSS/SVG fallback.
-      * Generated 14 authentic Boy Scout merit badge patches (1024x1024 master PNGs and 256x256 antialiased WebP assets): First Cast, Century Club, Around the Cabin, High Seas, Biologist, The Skunk, Walleye Stalker, Pike Hunter, Bronzeback Boss, First Release, Weathered Iron, Iron Logbook, Maverick, and Touchdown.
+      * Generated 17 authentic Boy Scout merit badge patches (1024x1024 master PNGs and 256x256 antialiased WebP assets): First Cast, Century Club, Around the Cabin, High Seas, Biologist, The Skunk, Walleye Stalker, Pike Hunter, Bronzeback Boss, First Release, Weathered Iron, Iron Logbook, Maverick, Touchdown, Goose, Pressure Drop, and New Water Pioneer.
       * Created database migrations and models [`Badge`](file:///home/gmroczek/git/fishing/app/Models/Badge.php) and [`AnglerBadge`](file:///home/gmroczek/git/fishing/app/Models/AnglerBadge.php) adhering to `HasUuidAndSyncTracking` and foreign key cascade rules.
       * Seeded complete master badge catalog via [`BadgeCatalogSeeder`](file:///home/gmroczek/git/fishing/database/seeders/BadgeCatalogSeeder.php) with WebP image references.
     - **Gamification Engine & Historical Recalculation**:
