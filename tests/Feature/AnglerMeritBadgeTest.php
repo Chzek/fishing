@@ -279,4 +279,40 @@ class AnglerMeritBadgeTest extends TestCase
         $view->assertSee('Career catch #100: 28.5', false);
         $view->assertSee('/record/' . $record->id);
     }
+
+    #[Test]
+    public function merit_badge_sash_blade_component_renders_telemetry_and_categories(): void
+    {
+        $angler = Angler::factory()->create();
+        $badgeVolume = Badge::where('slug', 'vol_100')->first();
+        if (!$badgeVolume) {
+            $badgeVolume = Badge::factory()->create([
+                'slug' => 'vol_100',
+                'name' => 'Century Club',
+                'tier' => 'gold',
+                'category' => 'volume',
+                'points' => 100,
+            ]);
+        }
+
+        $pivot = AnglerBadge::factory()->create([
+            'anglers_id' => $angler->id,
+            'badge_id' => $badgeVolume->id,
+            'awarded_at' => '2026-06-15 15:30:00',
+            'points' => 100,
+        ]);
+
+        $angler->load('earnedBadges.badge');
+
+        $view = $this->blade('<x-meritBadgeSash :angler="$angler" />', ['angler' => $angler]);
+
+        $view->assertSee('Angler Merit Badge Sash');
+        $view->assertSee('1 of 42 Earned');
+        $view->assertSee('Total Points:');
+        $view->assertSee('100');
+        $view->assertSee('Century Club');
+        $view->assertSee('All Badges');
+        $view->assertSee('Volume');
+    }
 }
+

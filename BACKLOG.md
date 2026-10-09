@@ -596,13 +596,15 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * Implemented [`BadgeEvaluatorService`](file:///home/gmroczek/git/fishing/app/Services/BadgeEvaluatorService.php) evaluating 17 rule types with transactional safety and context trigger generation.
       * Integrated [`EvaluateAnglerBadgesListener`](file:///home/gmroczek/git/fishing/app/Listeners/EvaluateAnglerBadgesListener.php) on `CatchLoggedEvent` for real-time unlock detection and session notifications.
       * Created `php artisan badges:recalculate` command ([`RecalculateBadgesCommand`](file:///home/gmroczek/git/fishing/app/Console/Commands/RecalculateBadgesCommand.php)) backfilling historical catch logs across 41 anglers with 301 awarded badges.
-    - **Interactive Popover UI & Hero Header Integration**:
-      * Built [`meritBadge.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/meritBadge.blade.php) Blade component featuring Alpine.js mouseover/tap popover displaying patch art, points pill, tier styling, award date, and deep links to triggering catch records.
-      * Embedded the merit badge rack into the hero profile header on both [`profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php) and [`angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php).
+    - **Interactive Popover UI & Dedicated Merit Badge Sash Showcase (Option 1)**:
+      * Enhanced [`meritBadge.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/meritBadge.blade.php) Blade component with a `size` prop (`'sm'`, `'md'`, `'lg'`, `'xl'`) dynamically adjusting twill borders, dimensions, icon scaling, and tier status pips.
+      * Built dedicated [`meritBadgeSash.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/meritBadgeSash.blade.php) showcase component featuring `#merit-badge-sash` anchor, completion tally (X of 42 Earned), career points badge, tier trophy chips (Platinum, Gold, Silver, Bronze), reactive Alpine.js category filter bar (`activeCategory`), and a responsive grid (`grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6`) with `<x-meritBadge size="lg" />`, badge metadata, and award timestamps.
+      * Modernized hero profile headers on both [`profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php) and [`angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) replacing the cluttered full rack with Option 1: a compact single-row "Honor Roll" preview (`X Badges · Y Pts` summary chip + top 5 highest-tier badges + `+N more →` toggle button).
+      * Integrated bidirectional Alpine.js toggle behavior (`showSash`): clicking either the summary badge pill or the `+N more` button smoothly toggles the Sash showcase open/closed with rotating indicator chevrons, dynamic label changes (`Hide Sash ↑`), smooth scrolling (`$nextTick`), and a dedicated "Hide Sash" collapse button inside the showcase header.
     - **Automated Test Coverage & Static Analysis**:
-      * Created [`tests/Feature/AnglerMeritBadgeTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AnglerMeritBadgeTest.php) verifying catalog seeding, threshold awards, deduplication, event dispatching, artisan recalculation, and Blade rendering.
-      * Passed Larastan static analysis level 5 with zero errors (`[OK] No errors`).
-      * Verified entire test suite (**350 passing tests, 1,589 assertions**) with **0 failures**.
+      * Updated [`tests/Feature/AnglerMeritBadgeTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AnglerMeritBadgeTest.php) adding test coverage for `<x-meritBadgeSash>` rendering, telemetry calculations, category pills, and tier badges.
+      * Passed Larastan static analysis level 5 with zero errors (`[OK] No errors` across 153 files).
+      * Verified entire test suite (**352 passing tests, 1,600 assertions**) with **0 failures**.
 
 
 

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-6">
+<div x-data="{ showSash: window.location.hash === '#merit-badge-sash' }" class="space-y-6">
     <x-statusAlert />
 
     @if (isset($angler))
@@ -29,16 +29,61 @@
                         <p class="text-xs text-slate-300 mt-2 max-w-xl italic">"{{ $angler->bio }}"</p>
                     @endif
 
-                    <!-- Merit Badge Ribbon / Rack -->
+                    <!-- Merit Badge Honor Roll Preview -->
                     @if($angler->earnedBadges && $angler->earnedBadges->isNotEmpty())
-                        <div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-slate-800/90">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-teal-400/90 flex items-center gap-1 shrink-0 mr-1">
-                                <x-lucide-award class="w-3.5 h-3.5 text-teal-400" />
-                                <span>Merit Badges:</span>
-                            </span>
-                            @foreach($angler->earnedBadges as $badgePivot)
-                                <x-meritBadge :badgePivot="$badgePivot" />
-                            @endforeach
+                        @php
+                            $badgeCount = $angler->earnedBadges->count();
+                            $totalPoints = $angler->earnedBadges->sum(fn ($b) => $b->badge->points ?? 0);
+                            $topBadges = $angler->earnedBadges->sortByDesc(function ($p) {
+                                return match(strtolower($p->badge->tier ?? 'bronze')) {
+                                    'platinum' => 4,
+                                    'gold' => 3,
+                                    'silver' => 2,
+                                    default => 1,
+                                };
+                            })->take(5);
+                            $remainingCount = $badgeCount - $topBadges->count();
+                        @endphp
+                        <div class="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-slate-800/90">
+                            <!-- Summary Badge Pill Toggling Full Sash -->
+                            <button 
+                                type="button"
+                                @click="showSash = !showSash; if (showSash) { $nextTick(() => document.getElementById('merit-badge-sash')?.scrollIntoView({ behavior: 'smooth' })) }"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-950/80 hover:bg-teal-900 border text-xs font-semibold shadow-sm transition-all group shrink-0 cursor-pointer"
+                                :class="showSash ? 'border-teal-400 text-teal-200 bg-teal-900 ring-2 ring-teal-500/30' : 'border-teal-500/30 text-teal-300 hover:text-teal-200'"
+                                :aria-expanded="showSash"
+                                aria-controls="merit-badge-sash"
+                                title="Toggle Merit Badge Sash"
+                            >
+                                <x-lucide-award class="w-3.5 h-3.5 text-teal-400 group-hover:scale-110 transition-transform" />
+                                <span>{{ $badgeCount }} Badges</span>
+                                <span class="text-teal-600">·</span>
+                                <span class="font-mono text-amber-300 font-bold">{{ number_format($totalPoints) }} Pts</span>
+                                <span class="inline-flex transition-transform duration-200" :class="{ 'rotate-180': showSash }">
+                                    <x-lucide-chevron-down class="w-3.5 h-3.5 text-teal-400" />
+                                </span>
+                            </button>
+
+                            <!-- Top 5 Highlight Patches -->
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                @foreach($topBadges as $badgePivot)
+                                    <x-meritBadge :badgePivot="$badgePivot" size="sm" />
+                                @endforeach
+
+                                @if($remainingCount > 0)
+                                    <button 
+                                        type="button"
+                                        @click="showSash = !showSash; if (showSash) { $nextTick(() => document.getElementById('merit-badge-sash')?.scrollIntoView({ behavior: 'smooth' })) }"
+                                        class="inline-flex items-center justify-center h-8 px-2.5 rounded-full text-[11px] font-bold border transition-colors cursor-pointer"
+                                        :class="showSash ? 'bg-teal-900 text-teal-100 border-teal-500 shadow-sm' : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700'"
+                                        :aria-expanded="showSash"
+                                        aria-controls="merit-badge-sash"
+                                        title="Toggle all {{ $badgeCount }} merit badges in sash"
+                                    >
+                                        <span x-text="showSash ? 'Hide Sash ↑' : '+{{ $remainingCount }} more →'">+{{ $remainingCount }} more →</span>
+                                    </button>
+                                @endif
+                            </div>
                         </div>
                     @endif
                 </div>
@@ -58,6 +103,9 @@
             <x-kpiMetric label="Fish Caught" :value="$record_count" icon="fish" color="emerald" subtext="Logbook Catches" subtextIcon="trending-up" />
             <x-kpiMetric label="Expeditions" :value="$crews" icon="ship" color="sky" subtext="Crew Trips" subtextIcon="navigation" />
         </div>
+
+        <!-- Dedicated Merit Badge Sash Showcase -->
+        <x-meritBadgeSash :angler="$angler" />
 
         <!-- In-App Notifications Feed (For All Anglers/Users) -->
         @if(!empty($unreadNotifications) && $unreadNotifications->count() > 0)

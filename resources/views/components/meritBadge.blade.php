@@ -1,6 +1,7 @@
 @props([
     'badgePivot' => null,
     'badge' => null,
+    'size' => 'md',
 ])
 
 @php
@@ -18,6 +19,25 @@
     $awardedDate = $pivot?->awarded_at ? $pivot->awarded_at->format('M j, Y') : null;
     $triggerSummary = $pivot?->trigger_summary;
     $recordId = $pivot?->record_id;
+
+    $dimClass = match($size) {
+        'sm' => 'w-8 h-8',
+        'lg' => 'w-14 h-14 md:w-16 md:h-16',
+        'xl' => 'w-20 h-20 md:w-24 md:h-24',
+        default => 'w-10 h-10 md:w-11 md:h-11',
+    };
+    $iconDimClass = match($size) {
+        'sm' => 'w-4 h-4',
+        'lg' => 'w-7 h-7',
+        'xl' => 'w-10 h-10',
+        default => 'w-5 h-5',
+    };
+    $pipDimClass = match($size) {
+        'sm' => 'w-2.5 h-2.5',
+        'lg' => 'w-3.5 h-3.5',
+        'xl' => 'w-4 h-4',
+        default => 'w-3 h-3',
+    };
 @endphp
 
 <div x-data="{ open: false }" class="relative inline-block" @keydown.escape.window="open = false">
@@ -36,17 +56,17 @@
             <img 
                 src="{{ asset($badgeModel->image_path) }}" 
                 alt="{{ $badgeModel->name }}" 
-                class="w-10 h-10 md:w-11 md:h-11 rounded-full object-cover shadow-lg border-2 {{ $tierBorderClass }} ring-2 ring-black/50 group-hover:brightness-110 transition-all duration-200" 
+                class="{{ $dimClass }} rounded-full object-cover shadow-lg border-2 {{ $tierBorderClass }} ring-2 ring-black/50 group-hover:brightness-110 transition-all duration-200" 
             />
         @else
             <!-- Stitched Cloth / Twill Fallback with Merrowed Embroidered Edge -->
-            <div class="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center border-2 border-dashed {{ $tierBorderClass }} bg-gradient-to-br from-slate-800 to-slate-900 shadow-lg ring-2 ring-black/50 group-hover:brightness-110 transition-all duration-200">
-                <x-dynamic-component :component="'lucide-' . ($badgeModel->icon ?: 'award')" class="w-5 h-5 text-amber-300 drop-shadow" />
+            <div class="{{ $dimClass }} rounded-full flex items-center justify-center border-2 border-dashed {{ $tierBorderClass }} bg-gradient-to-br from-slate-800 to-slate-900 shadow-lg ring-2 ring-black/50 group-hover:brightness-110 transition-all duration-200">
+                <x-dynamic-component :component="'lucide-' . ($badgeModel->icon ?: 'award')" class="{{ $iconDimClass }} text-amber-300 drop-shadow" />
             </div>
         @endif
 
         <!-- Micro Tier Indicator Pip -->
-        <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border border-black/80 {{ match(strtolower($badgeModel->tier)) {
+        <span class="absolute -bottom-0.5 -right-0.5 {{ $pipDimClass }} rounded-full border border-black/80 {{ match(strtolower($badgeModel->tier)) {
             'platinum' => 'bg-cyan-400',
             'gold' => 'bg-amber-400',
             'silver' => 'bg-slate-300',
