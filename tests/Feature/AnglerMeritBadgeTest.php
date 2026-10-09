@@ -8,6 +8,7 @@ use Fishinglog\Models\Angler;
 use Fishinglog\Models\AnglerBadge;
 use Fishinglog\Models\Badge;
 use Fishinglog\Models\FishBreed;
+use Fishinglog\Models\FishFamily;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
 use Fishinglog\Services\BadgeEvaluatorService;
@@ -141,6 +142,38 @@ class AnglerMeritBadgeTest extends TestCase
         $this->assertSame($thirdCatch->id, $samplerBadge->record_id);
         $this->assertSame('2026-07-03', $samplerBadge->awarded_at->toDateString());
         $this->assertStringContainsString('Diversity milestone reached (3 distinct species)', $samplerBadge->trigger_summary);
+    }
+
+    #[Test]
+    public function evaluator_awards_dei_specialist_badge_for_four_distinct_fish_families(): void
+    {
+        $angler = Angler::factory()->create();
+        $lake = Lake::factory()->create();
+
+        $fam1 = FishFamily::factory()->create(['name' => 'Percidae']);
+        $fam2 = FishFamily::factory()->create(['name' => 'Esocidae']);
+        $fam3 = FishFamily::factory()->create(['name' => 'Centrarchidae']);
+        $fam4 = FishFamily::factory()->create(['name' => 'Salmonidae']);
+
+        $breed1 = FishBreed::factory()->create(['name' => 'Walleye', 'fish_families_id' => $fam1->id]);
+        $breed2 = FishBreed::factory()->create(['name' => 'Northern Pike', 'fish_families_id' => $fam2->id]);
+        $breed3 = FishBreed::factory()->create(['name' => 'Smallmouth Bass', 'fish_families_id' => $fam3->id]);
+        $breed4 = FishBreed::factory()->create(['name' => 'Lake Trout', 'fish_families_id' => $fam4->id]);
+
+        Record::factory()->create(['anglers_id' => $angler->id, 'lakes_id' => $lake->id, 'fish_breeds_id' => $breed1->id, 'caught' => '2026-08-01']);
+        Record::factory()->create(['anglers_id' => $angler->id, 'lakes_id' => $lake->id, 'fish_breeds_id' => $breed2->id, 'caught' => '2026-08-02']);
+        Record::factory()->create(['anglers_id' => $angler->id, 'lakes_id' => $lake->id, 'fish_breeds_id' => $breed3->id, 'caught' => '2026-08-03']);
+        $fourthCatch = Record::factory()->create(['anglers_id' => $angler->id, 'lakes_id' => $lake->id, 'fish_breeds_id' => $breed4->id, 'caught' => '2026-08-04']);
+
+        $service = app(BadgeEvaluatorService::class);
+        $awarded = $service->evaluateAngler($angler);
+
+        $deiBadge = $awarded->first(fn (AnglerBadge $ab) => $ab->badge->slug === 'div_dei_specialist');
+
+        $this->assertNotNull($deiBadge);
+        $this->assertSame($fourthCatch->id, $deiBadge->record_id);
+        $this->assertSame('2026-08-04', $deiBadge->awarded_at->toDateString());
+        $this->assertStringContainsString('DEI Specialist unlocked (4 distinct fish families)', $deiBadge->trigger_summary);
     }
 
     #[Test]

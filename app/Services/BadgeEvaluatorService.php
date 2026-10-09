@@ -38,7 +38,7 @@ class BadgeEvaluatorService
         // Preload angler records chronologically with related models
         /** @var EloquentCollection<int, Record> $records */
         $records = Record::where('anglers_id', $angler->id)
-            ->with(['lake.fishingZone', 'fishBreed', 'expedition'])
+            ->with(['lake.fishingZone', 'fishBreed.family', 'expedition'])
             ->orderBy('caught', 'asc')
             ->get();
 
@@ -111,6 +111,7 @@ class BadgeEvaluatorService
             'volume_total' => $this->evaluateVolume($badge, $records, (int) $threshold),
             'species_count' => $this->evaluateSpeciesCount($badge, $records, (int) $threshold),
             'diversity_distinct' => $this->evaluateDiversity($badge, $records, (int) $threshold),
+            'diversity_families' => $this->evaluateDiversityFamilies($badge, $records, (int) $threshold),
             'cadence_distinct_days' => $this->evaluateCadence($badge, $records, (int) $threshold),
             'streak_years' => $this->evaluateStreak($badge, $records, (int) $threshold),
             'lakes_distinct' => $this->evaluateDistinctLakes($badge, $records, (int) $threshold),
@@ -208,6 +209,38 @@ class BadgeEvaluatorService
                 'expedition' => $qualifyingRecord->expedition,
                 'awarded_at' => $qualifyingRecord->caught ?? now(),
                 'summary' => "Diversity milestone reached ({$threshold} distinct species): " . $this->formatRecordSummary($qualifyingRecord),
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param EloquentCollection<int, Record> $records
+     * @return array{record: Record|null, expedition: Expedition|null, awarded_at: Carbon, summary: string}|null
+     */
+    protected function evaluateDiversityFamilies(Badge $badge, EloquentCollection $records, int $threshold): ?array
+    {
+        $seenFamilies = [];
+        $qualifyingRecord = null;
+
+        foreach ($records as $record) {
+            $familyId = $record->fishBreed?->fish_families_id;
+            if ($familyId && !in_array($familyId, $seenFamilies, true)) {
+                $seenFamilies[] = $familyId;
+                if (count($seenFamilies) === $threshold) {
+                    $qualifyingRecord = $record;
+                    break;
+                }
+            }
+        }
+
+        if ($qualifyingRecord !== null) {
+            return [
+                'record' => $qualifyingRecord,
+                'expedition' => $qualifyingRecord->expedition,
+                'awarded_at' => $qualifyingRecord->caught ?? now(),
+                'summary' => "DEI Specialist unlocked ({$threshold} distinct fish families): " . $this->formatRecordSummary($qualifyingRecord),
             ];
         }
 

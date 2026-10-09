@@ -228,6 +228,20 @@ class BadgeCatalogSeeder extends Seeder
                 'accent_color' => 'amber',
                 'sort_order' => 230,
             ],
+            [
+                'slug' => 'div_dei_specialist',
+                'name' => 'DEI Specialist',
+                'description' => 'Catches logged across 4 distinct freshwater fish families',
+                'category' => 'diversity',
+                'tier' => 'gold',
+                'points' => 100,
+                'icon' => 'sparkles',
+                'image_path' => null,
+                'rule_type' => 'diversity_families',
+                'rule_threshold' => 4,
+                'accent_color' => 'purple',
+                'sort_order' => 240,
+            ],
 
             // 4. Angler Cadence (Days on Water)
             [
