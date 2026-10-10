@@ -46,7 +46,7 @@
     <div 
         id="merit-badge-sash" 
         x-data="{ activeCategory: 'all' }" 
-        x-show="typeof showSash !== 'undefined' ? showSash : true"
+        x-show="Boolean($data.showSash)" 
         x-cloak
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 -translate-y-2 scale-[0.99]"
@@ -104,7 +104,7 @@
 
                 <button 
                     type="button" 
-                    x-show="typeof showSash !== 'undefined'"
+                    x-show="'showSash' in $data"
                     @click="showSash = false" 
                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-semibold transition-colors cursor-pointer"
                     title="Collapse Merit Badge Sash"

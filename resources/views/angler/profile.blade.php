@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div x-data="{ showSash: window.location.hash === '#merit-badge-sash' }" class="space-y-6">
+<div x-data="{ showSash: false }" class="space-y-6">
     <x-statusAlert />
 
     @if (isset($angler))
