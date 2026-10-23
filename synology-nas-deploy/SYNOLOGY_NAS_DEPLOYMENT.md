@@ -33,8 +33,8 @@ This guide documents the complete end-to-end production deployment process for h
 
 The `synology-nas-deploy/` directory contains all required production configuration files:
 
-- **`docker-compose.yml`**: Configures `app` (PHP 8.2-FPM), `webserver` (Nginx port 8085), and `mysql` (MySQL 8.0).
-- **`Dockerfile.nas`**: Custom Alpine PHP 8.2-FPM container with Composer, GD, PDO, ZIP, and BCMath.
+- **`docker-compose.yml`**: Configures `app` (PHP 8.2.35-FPM), `webserver` (Nginx port 8085), and `mysql` (MySQL 8.0).
+- **`Dockerfile.nas`**: Custom Alpine PHP 8.2.35-FPM container with Composer, GD, PDO, ZIP, and BCMath.
 - **`nginx.conf`**: Nginx webserver config passing FastCGI and `X-Forwarded-Proto` HTTPS headers.
 - **`.env.nas`**: Production environment configuration template.
 

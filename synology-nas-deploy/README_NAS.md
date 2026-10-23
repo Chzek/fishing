@@ -9,7 +9,7 @@ This folder contains all production configuration files needed to host or rebuil
 | File | Description |
 |---|---|
 | `docker-compose.yml` | Synology Container Manager Docker Compose configuration |
-| `Dockerfile.nas` | Custom PHP 8.2-FPM Alpine container with GD, PDO, ZIP, and Composer |
+| `Dockerfile.nas` | Custom PHP 8.2.35-FPM Alpine container with GD, PDO, ZIP, and Composer |
 | `Dockerfile` | Copy of `Dockerfile.nas` for compatibility |
 | `nginx.conf` | Web server configuration with HTTPS header forwarding |
 | `.env.nas` | Production environment configuration template |

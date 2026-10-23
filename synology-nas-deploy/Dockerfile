@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine
+FROM php:8.2.35-fpm-alpine
 
 # Install Composer binary inside container
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

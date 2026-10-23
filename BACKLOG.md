@@ -606,6 +606,17 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
       * Passed Larastan static analysis level 5 with zero errors (`[OK] No errors` across 153 files).
       * Verified entire test suite (**352 passing tests, 1,600 assertions**) with **0 failures**.
 
+61. **Runtime & Infrastructure Upgrades (PHP 8.2.35 Security Release)**:
+    - **Local Sail Environment**:
+      * Upgraded PHP packages inside the Sail development container to **PHP 8.2.35** (`8.2.35-1+ubuntu24.04.1+deb.sury.org+1`).
+      * Verified CLI runtime: `PHP 8.2.35 (cli) (built: Oct 21 2026 14:30:30) (NTS)` with OPcache and Xdebug `v3.5.0`.
+    - **Synology NAS Production Environment**:
+      * Pinned base image to `php:8.2.35-fpm-alpine` in both [`synology-nas-deploy/Dockerfile.nas`](file:///home/gmroczek/git/fishing/synology-nas-deploy/Dockerfile.nas) and [`synology-nas-deploy/Dockerfile`](file:///home/gmroczek/git/fishing/synology-nas-deploy/Dockerfile).
+      * Updated deployment configuration documentation in [`README_NAS.md`](file:///home/gmroczek/git/fishing/synology-nas-deploy/README_NAS.md) and [`SYNOLOGY_NAS_DEPLOYMENT.md`](file:///home/gmroczek/git/fishing/synology-nas-deploy/SYNOLOGY_NAS_DEPLOYMENT.md).
+    - **Automated Test Coverage & Static Analysis**:
+      * Passed full PHPUnit test suite on PHP 8.2.35 (**352 passing tests, 1,600 assertions**) with **0 failures**.
+      * Passed Larastan static analysis level 5 with zero errors (`[OK] No errors` across 153 files).
+
 
 
 
