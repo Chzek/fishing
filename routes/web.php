@@ -45,6 +45,12 @@ Route::get('login', [Fishinglog\Http\Controllers\Auth\LoginController::class, 's
 Route::post('login', [Fishinglog\Http\Controllers\Auth\LoginController::class, 'login']);
 Route::post('logout', [Fishinglog\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
+// Password Reset Routes
+Route::get('password/reset', [Fishinglog\Http\Controllers\Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [Fishinglog\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('password/reset/{token}', [Fishinglog\Http\Controllers\Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [Fishinglog\Http\Controllers\Auth\ResetPasswordController::class, 'reset'])->name('password.update');
+
 // Fallback direct storage delivery for uploaded media (ensures photos display across all platforms)
 Route::get('/storage/{path}', function ($path) {
     if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
@@ -78,6 +84,7 @@ Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
     Route::post('/users/link', [AdminController::class, 'linkAngler'])->name('admin.users.link');
     Route::post('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
     Route::post('/users/{user}/verify', [AdminController::class, 'verifyUser'])->name('admin.users.verify');
+    Route::post('/users/{user}/reset-password', [AdminController::class, 'resetUserPassword'])->name('admin.users.reset-password');
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
     Route::get('/trash', [AdminController::class, 'trash'])->name('admin.trash');
     Route::post('/trash/restore', [AdminController::class, 'restore'])->name('admin.trash.restore');

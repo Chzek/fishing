@@ -12,9 +12,13 @@ use Fishinglog\Models\Lure;
 use Fishinglog\Models\Post;
 use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -280,6 +284,60 @@ class AdminController extends Controller
         }
 
         return redirect()->route('admin.users')->with('status', "User {$user->name} is already verified.");
+    }
+
+    /**
+     * Generate temporary password or reset links for an existing user account.
+     */
+    public function resetUserPassword(Request $request, User $user): RedirectResponse
+    {
+        $request->validate([
+            'action' => 'required|in:reset_link,temporary_password,email_link',
+        ]);
+
+        if ($request->action === 'temporary_password') {
+            $tempPassword = Str::password(12, true, true, false);
+            $user->forceFill([
+                'password' => Hash::make($tempPassword),
+                'remember_token' => Str::random(60),
+            ])->save();
+
+            return redirect()->route('admin.users')->with([
+                'status' => "Temporary password generated for user {$user->name}.",
+                'temp_user_name' => $user->name,
+                'temp_user_email' => $user->email,
+                'temp_password' => $tempPassword,
+            ]);
+        }
+
+        if ($request->action === 'email_link') {
+            $status = Password::sendResetLink(['email' => $user->email]);
+
+            return redirect()->route('admin.users')->with(
+                'status',
+                $status === Password::RESET_LINK_SENT
+                    ? "Password reset link emailed to {$user->email}."
+                    : 'Failed to send reset link: ' . __($status)
+            );
+        }
+
+        // Instant reset link (ready to copy)
+        $token = Password::broker()->createToken($user);
+        $relativeResetPath = route('password.reset', ['token' => $token, 'email' => $user->email], false);
+        $localResetUrl = url($relativeResetPath);
+        $nasUrlConfig = (string) config('services.nas.url', '');
+        $nasBaseUrl = !empty($nasUrlConfig) ? rtrim($nasUrlConfig, '/') : rtrim((string) config('app.url', ''), '/');
+        $nasResetUrl = $nasBaseUrl . $relativeResetPath;
+        $preferredResetUrl = (!empty($nasUrlConfig) && $nasUrlConfig !== url('/')) ? $nasResetUrl : $localResetUrl;
+
+        return redirect()->route('admin.users')->with([
+            'status' => "Instant password reset link generated for user {$user->name}.",
+            'reset_user_name' => $user->name,
+            'reset_user_email' => $user->email,
+            'reset_url_local' => $localResetUrl,
+            'reset_url_nas' => $nasResetUrl,
+            'reset_url' => $preferredResetUrl,
+        ]);
     }
 
     public function trash()

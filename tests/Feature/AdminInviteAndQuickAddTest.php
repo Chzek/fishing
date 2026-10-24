@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Fishinglog\Models\Angler;
 use Fishinglog\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -122,5 +123,55 @@ class AdminInviteAndQuickAddTest extends TestCase
         $this->assertNotNull($angler);
         $this->assertEquals('Canada', $angler->firstName);
         $this->assertEquals('pending_upstream', $angler->sync_status);
+    }
+
+    #[Test]
+    public function admin_can_generate_temporary_password_for_user()
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+        $targetUser = User::factory()->create([
+            'password' => Hash::make('prior-password'),
+        ]);
+
+        $response = $this->actingAs($admin)->post(route('admin.users.reset-password', $targetUser), [
+            'action' => 'temporary_password',
+        ]);
+
+        $response->assertRedirect(route('admin.users'));
+        $response->assertSessionHas('temp_password');
+        $tempPassword = session('temp_password');
+        $this->assertNotEmpty($tempPassword);
+
+        $this->assertTrue(Hash::check($tempPassword, $targetUser->fresh()->password));
+    }
+
+    #[Test]
+    public function admin_can_generate_instant_reset_link_for_user()
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+        $targetUser = User::factory()->create();
+
+        $response = $this->actingAs($admin)->post(route('admin.users.reset-password', $targetUser), [
+            'action' => 'reset_link',
+        ]);
+
+        $response->assertRedirect(route('admin.users'));
+        $response->assertSessionHas('reset_url');
+        $resetUrl = session('reset_url');
+        $this->assertNotEmpty($resetUrl);
+        $this->assertStringContainsString('password/reset/', $resetUrl);
+    }
+
+    #[Test]
+    public function non_admin_cannot_reset_passwords()
+    {
+        $user = User::factory()->create(['type' => User::DEFAULT_TYPE]);
+        $targetUser = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('admin.users.reset-password', $targetUser), [
+            'action' => 'temporary_password',
+        ]);
+
+        $response->assertRedirect('/home');
     }
 }

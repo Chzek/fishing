@@ -90,6 +90,93 @@
         </div>
     @endif
 
+    <!-- Generated Password Reset / Temporary Password Display Box -->
+    @if (session('temp_password') || session('reset_url'))
+        <div class="bg-slate-900 border border-amber-500/40 rounded-2xl p-5 text-white space-y-4 shadow-xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                    <x-lucide-key-round class="w-4 h-4 text-amber-400" />
+                    <span>Password Reset Credentials for {{ session('reset_user_name') ?? session('temp_user_name') }} ({{ session('reset_user_email') ?? session('temp_user_email') }})</span>
+                </div>
+                <span class="text-[11px] font-mono bg-amber-500/10 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full">
+                    Active
+                </span>
+            </div>
+
+            @if (session('temp_password'))
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-slate-300 flex items-center gap-1.5">
+                            <x-lucide-lock class="w-3.5 h-3.5 text-amber-400" /> Temporary Password:
+                        </span>
+                        <span class="text-[10px] text-amber-400/90 font-medium">User can immediately sign in with this temporary password</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="admin-temp-password" readonly value="{{ session('temp_password') }}" class="w-full h-10 px-3.5 rounded-xl bg-slate-800/90 border border-slate-700 text-sm font-mono text-amber-300 focus:outline-none select-all font-bold tracking-wider">
+                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('admin-temp-password').value); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy Password', 2000)" class="h-10 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow transition-colors shrink-0 cursor-pointer flex items-center gap-1.5">
+                            <x-lucide-copy class="w-3.5 h-3.5" />
+                            <span>Copy Password</span>
+                        </button>
+                    </div>
+                </div>
+            @endif
+
+            @if (session('reset_url_nas') || session('reset_url_local'))
+                @if (session('reset_url_nas'))
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-slate-300 flex items-center gap-1.5">
+                                <x-lucide-server class="w-3.5 h-3.5 text-teal-400" /> Network / NAS Reset Link:
+                            </span>
+                            <span class="text-[10px] text-teal-400/90 font-medium">Recommended for anglers on WiFi / Home Network</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="reset-url-nas" readonly value="{{ session('reset_url_nas') }}" class="w-full h-10 px-3.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs font-mono text-teal-300 focus:outline-none select-all">
+                            <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('reset-url-nas').value); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy NAS Link', 2000)" class="h-10 px-4 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow transition-colors shrink-0 cursor-pointer flex items-center gap-1.5">
+                                <x-lucide-copy class="w-3.5 h-3.5" />
+                                <span>Copy NAS Link</span>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
+                @if (session('reset_url_local') && session('reset_url_local') !== session('reset_url_nas'))
+                    <div class="space-y-1.5 pt-1">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-slate-300 flex items-center gap-1.5">
+                                <x-lucide-laptop class="w-3.5 h-3.5 text-slate-400" /> Localhost Reset Link:
+                            </span>
+                            <span class="text-[10px] text-slate-400">For field laptop direct testing</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="reset-url-local" readonly value="{{ session('reset_url_local') }}" class="w-full h-9 px-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-xs font-mono text-slate-300 focus:outline-none select-all">
+                            <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('reset-url-local').value); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy Local Link', 2000)" class="h-9 px-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition-colors shrink-0 cursor-pointer flex items-center gap-1.5">
+                                <x-lucide-copy class="w-3.5 h-3.5" />
+                                <span>Copy Local Link</span>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+            @elseif (session('reset_url'))
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-slate-300 flex items-center gap-1.5">
+                            <x-lucide-link class="w-3.5 h-3.5 text-teal-400" /> Instant Reset Link:
+                        </span>
+                        <span class="text-[10px] text-teal-400 font-medium">User can paste this link in browser to set their new password</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="admin-reset-url" readonly value="{{ session('reset_url') }}" class="w-full h-10 px-3.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs font-mono text-teal-300 focus:outline-none select-all">
+                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('admin-reset-url').value); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy Reset Link', 2000)" class="h-10 px-4 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow transition-colors shrink-0 cursor-pointer flex items-center gap-1.5">
+                            <x-lucide-copy class="w-3.5 h-3.5" />
+                            <span>Copy Reset Link</span>
+                        </button>
+                    </div>
+                </div>
+            @endif
+        </div>
+    @endif
+
     <x-statusAlert />
 
     <!-- Unlinked Accounts / Notifications Alert Banner -->

@@ -15,20 +15,6 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   - Fix artifact in `resources/views/fish/index.blade.php` where switching to Table View renders the `GenericDataTable` component while leaving the legacy Blade pagination (`$fishes->links()`) and HTTP GET family filter pills rendered simultaneously.
   - Standardize `/fish` to use `GenericDataTable` as the primary directory view or encapsulate grid/table view modes cleanly within a reactive Livewire component with unified pagination and family filtering.
 
-#### 2. Self-Service Password Reset Flow & Admin User Password Management Tooling
-- **Agents**: `laravel-architect`, `ui-ux-auditor`
-- **Impact**: **Medium-High** (User Account Administration & Support)
-- **Description**:
-  - Register standard authentication password reset routes (`password.request`, `password.email`, `password.reset`, `password.update`) in `routes/web.php` backed by `ForgotPasswordController` and `ResetPasswordController`.
-  - Add an Admin "Reset User Password" modal action on `/admin/users` allowing administrators to generate temporary passwords or send one-time reset links immediately for locked-out members.
-
-#### 3. Security Maintenance & Dependency Hygiene (npm audit & Composer Patch Updates)
-- **Agents**: `laravel-architect`, `phpunit-test-architect`
-- **Impact**: **High** (Security & Dependabot Vulnerability Elimination)
-- **Description**:
-  - Resolve 5 high-severity vulnerabilities flagged by GitHub Dependabot and `npm audit` across `axios` (SSRF/prototype pollution), `vite` (Windows launch-editor execution), `follow-redirects`, `nanoid`, and `source-map-js`.
-  - Update direct minor/patch Composer dependencies to latest releases: `larastan/larastan` (^3.13.2), `laravel/boost` (^2.10.3), `laravel/framework` (^12.70.1), `mallardduck/blade-lucide-icons` (^2.0.33), and `doctrine/dbal` (^4.5.0).
-
 ---
 
 ### 🚀 Priority 2 (P2): Tactical Intelligence, UI/UX & Spatial Visualizations
@@ -623,9 +609,34 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
     - **Synology NAS Production Environment**:
       * Pinned base image to `php:8.2.35-fpm-alpine` in both [`synology-nas-deploy/Dockerfile.nas`](file:///home/gmroczek/git/fishing/synology-nas-deploy/Dockerfile.nas) and [`synology-nas-deploy/Dockerfile`](file:///home/gmroczek/git/fishing/synology-nas-deploy/Dockerfile).
       * Updated deployment configuration documentation in [`README_NAS.md`](file:///home/gmroczek/git/fishing/synology-nas-deploy/README_NAS.md) and [`SYNOLOGY_NAS_DEPLOYMENT.md`](file:///home/gmroczek/git/fishing/synology-nas-deploy/SYNOLOGY_NAS_DEPLOYMENT.md).
+62. **Security Maintenance & Dependency Hygiene (P1.3)**:
+    - **NPM Vulnerability Remediation**:
+      * Ran `npm audit fix` resolving 5 vulnerabilities across `axios`, `vite`, `follow-redirects`, `nanoid`, and `source-map-js`.
+      * Verified `npm audit` returns 0 vulnerabilities.
+      * Recompiled production assets via `npm run build` using Vite v6.4.5.
+    - **Composer Dependency Upgrades**:
+      * Updated direct dependencies: `laravel/framework` to 12.70.1, `larastan/larastan` to 3.13.2, `doctrine/dbal` to 4.5.0, `laravel/boost` to 2.10.3, and `mallardduck/blade-lucide-icons` to 2.0.33.
+      * Upgraded `livewire/livewire` to 4.4.8 resolving security advisory PKSA-xhv3-nr94-h8db.
+      * Audited PHP packages via `composer audit`: 0 security vulnerability advisories found.
+    - **Container Security & PHP Runtime**:
+      * Confirmed Sail container runs **PHP 8.2.35**, immune to the recent CVSS 9.2 "PHP2Shell" RCE vulnerabilities (CVE-2026-109618, CVE-2026-109619).
+      * Updated all remaining container PHP packages (`php8.2-xdebug`, `php8.2-swoole`, `php8.2-mongodb`) to latest builds.
+
+63. **Self-Service Password Reset Flow & Admin User Password Management (P1.2)**:
+    - **Self-Service Authentication Routes & Views**:
+      * Registered guest password reset routes in [`routes/web.php`](file:///home/gmroczek/git/fishing/routes/web.php): `password.request`, `password.email`, `password.reset`, and `password.update` backed by [`ForgotPasswordController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Auth/ForgotPasswordController.php) and [`ResetPasswordController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Auth/ResetPasswordController.php).
+      * Activated "Forgot Password?" entrypoint on [`login.blade.php`](file:///home/gmroczek/git/fishing/resources/views/auth/login.blade.php).
+      * Styled [`email.blade.php`](file:///home/gmroczek/git/fishing/resources/views/auth/passwords/email.blade.php) and [`reset.blade.php`](file:///home/gmroczek/git/fishing/resources/views/auth/passwords/reset.blade.php) with modern Tailwind tokens and Lucide iconography.
+    - **Admin Password Management Tooling (`/admin/users`)**:
+      * Added `resetUserPassword()` action to [`AdminController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Admin/AdminController.php) and route `admin.users.reset-password`.
+      * Supported 3 administrative actions: `reset_link` (instant cryptographic reset URL), `temporary_password` (generates and hashes a 12-character secure temporary password), and `email_link` (dispatches reset notification to user's inbox).
+      * Added an Alpine.js Reset dropdown to each user row in [`generic-data-table.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/components/generic-data-table.blade.php).
+      * Added an interactive credentials banner with 1-click clipboard copy to [`resources/views/admin/users/index.blade.php`](file:///home/gmroczek/git/fishing/resources/views/admin/users/index.blade.php) supporting both NAS network URLs and localhost URLs.
     - **Automated Test Coverage & Static Analysis**:
-      * Passed full PHPUnit test suite on PHP 8.2.35 (**352 passing tests, 1,600 assertions**) with **0 failures**.
+      * Created [`tests/Feature/Auth/PasswordResetTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/Auth/PasswordResetTest.php) verifying form rendering, reset link dispatch, token validation, password update, and invalid token rejection.
+      * Updated [`tests/Feature/AdminInviteAndQuickAddTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/AdminInviteAndQuickAddTest.php) with tests for temporary password generation, instant reset links, and non-admin authorization rejection.
       * Passed Larastan static analysis level 5 with zero errors (`[OK] No errors` across 153 files).
+      * Verified full test suite (**360 passed tests, 1,626 assertions**) with **0 failures**.
 
 
 
