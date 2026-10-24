@@ -22,6 +22,13 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
   - Register standard authentication password reset routes (`password.request`, `password.email`, `password.reset`, `password.update`) in `routes/web.php` backed by `ForgotPasswordController` and `ResetPasswordController`.
   - Add an Admin "Reset User Password" modal action on `/admin/users` allowing administrators to generate temporary passwords or send one-time reset links immediately for locked-out members.
 
+#### 3. Security Maintenance & Dependency Hygiene (npm audit & Composer Patch Updates)
+- **Agents**: `laravel-architect`, `phpunit-test-architect`
+- **Impact**: **High** (Security & Dependabot Vulnerability Elimination)
+- **Description**:
+  - Resolve 5 high-severity vulnerabilities flagged by GitHub Dependabot and `npm audit` across `axios` (SSRF/prototype pollution), `vite` (Windows launch-editor execution), `follow-redirects`, `nanoid`, and `source-map-js`.
+  - Update direct minor/patch Composer dependencies to latest releases: `larastan/larastan` (^3.13.2), `laravel/boost` (^2.10.3), `laravel/framework` (^12.70.1), `mallardduck/blade-lucide-icons` (^2.0.33), and `doctrine/dbal` (^4.5.0).
+
 ---
 
 ### 🚀 Priority 2 (P2): Tactical Intelligence, UI/UX & Spatial Visualizations
@@ -97,32 +104,35 @@ This backlog tracks technical debt resolution, architecture refactoring, and fea
 - **Impact**: **Medium** (Database Query Optimization)
 - **Description**: Consolidate the 5 separate count and aggregation queries in `LakeController@show` (total catches, longest catch, heaviest catch, unique visits, unique anglers) into a consolidated single-pass aggregation query.
 
+#### 10. Extract Angler Telemetry & Profile Service (`AnglerTelemetryService`)
+- **Agents**: `laravel-architect`, `query-profiler-optimizer`
+- **Impact**: **Medium-High** (Code Deduplication & Telemetry Consistency)
+- **Description**:
+  - Consolidate ~80 lines of duplicate personal best calculations (`$longest`, `$fattest`), species breakdowns (`COUNT(*)`, `AVG(length)`, `AVG(weight)`), and career accolades between `AnglerProfileController@show` and `ProfileController@show`.
+  - Unify into a dedicated `AnglerTelemetryService` mirroring the domain architecture of `ExpeditionAnalyticsService` and `CatchTelemetryService`.
+
+#### 11. Standardize Action Classes for Catch Updates & Lake Management (`UpdateCatchRecordAction`, `LakeActions`)
+- **Agents**: `laravel-architect`
+- **Impact**: **Medium** (Architecture Standardization & Single-Responsibility)
+- **Description**:
+  - Create `UpdateCatchRecordAction` to mirror `CreateCatchRecordAction`, eliminating manual 12-property assignments and duplicate photo handling in `RecordController@update`.
+  - Create `CreateLakeAction` and `UpdateLakeAction` to centralize coordinates sanitization, spatial validation, and automated GIS fishing zone detection (`GeoZoneDetector::detectZone()`), refactoring `LakeController@store` and `LakeController@update`.
+
+#### 12. Extract Dedicated Merit Badge Honor Roll Blade Component (`<x-meritBadgeHonorRoll />`)
+- **Agents**: `ui-ux-auditor`, `livewire-architect`
+- **Impact**: **Medium** (UI Component Reuse & Consistency)
+- **Description**:
+  - Extract the duplicated top-5 highest-tier badges preview, Alpine toggle logic (`showSash`), summary count chip (`X Badges · Y Pts`), and `+N more →` toggle button from `resources/views/angler/profile.blade.php` and `resources/views/profile/show.blade.php` into a unified `<x-meritBadgeHonorRoll :angler="$angler" />` Blade component.
+
 ---
 
 ### 🛠️ Priority 3 (P3): Gamification, AI Intelligence, Synology NAS & DevOps
 
-#### 1. Angler Achievement Badges & Gamification Engine (1980s/90s Boy Scout Merit Badge Style)
-- **Agents**: `ui-ux-auditor`, `seasoned-angler-advisor`, `laravel-architect`
-- **Impact**: **High** (Angler Engagement, Youth Appeal & Trip Heritage)
+#### 1. PHP Runtime Upgrade Evaluation (PHP 8.3 / 8.4 on Laravel Sail & NAS Container)
+- **Agents**: `laravel-architect`
+- **Impact**: **Low-Medium** (Performance & LTS Support)
 - **Description**:
-  - Build an achievement badge and points gamification engine rendered on Angler Profiles (`/angler/{id}`).
-  - **Visual Aesthetic**: Inspired by 1980s/1990s Boy Scout Merit Badges with colored-pencil texture, circular embroidered borders, and progressive color saturation as point tiers increase.
-  - **Badge Metadata**: Each earned badge records `date_earned`, points awarded, and a direct link to the triggering catch or expedition record.
-  - **Badge Catalog**:
-    * **Quantity Milestones**: 1st, 5th, 10th, 25th, 50th, 100th, 150th catches (General volume + species-specific milestones with higher point weights).
-    * **Species Diversity (DEI / Variety)**: 3, 6, 9+ freshwater species caught.
-    * **Angler Cadence**: Distinct days logging catches.
-    * **Exploration**: Number of distinct lakes fished with verified catches.
-    * **Consecutive Seasons Streak**: Consecutive calendar years active in the logbook (including attendance on expeditions with zero personal catches).
-    * **High Seas**: Catching fish on Lake Superior / big open water.
-    * **Weathered**: Catches across varied weather extremes (rapid pressure drop, rain, fog, high wind).
-    * **Nomad / Traveler**: Catches spanning multiple geographic zones / FMZs.
-    * **Total Fish Yardage / Mileage**: Summing cumulative inches into real-world milestones (*"Around the Cabin"* = 100ft perimeter, *"Touchdown"* = 100 yards, *"Going the Mile"* = 1 mile).
-    * **New Water Pioneer**: Angler present on an expedition when a new lake was first discovered/mapped.
-    * **Maverick & Goose**: Rotating title for #1 and #2 on Crew Leaderboards, featuring a historical holder timeline.
-    * **Skunked**: Humorous kid-friendly badge (awarded after having an expedition with 0 catches following at least 2 successful catch trips).
-    * **Conservationist**: Catch-and-Release milestones (1, 5, 10, 25, 50, 100+ releases).
-  - **Architecture**: Domain event listener on `CatchLoggedEvent` processing rules via `BadgeEvaluatorService`, stored in `badges` and `angler_badges` pivot tables.
+  - Evaluate upgrading the Docker runtime container from PHP 8.2 (security-fix phase) to PHP 8.3 or 8.4 across Laravel Sail and Synology NAS Alpine images, unlocking improved JIT compilation and opcache performance for Laravel 12.
 
 #### 2. Handwritten Expedition Journal AI OCR & Structured Transcription Pipeline
 - **Agents**: `laravel-architect`, `ui-ux-auditor`
