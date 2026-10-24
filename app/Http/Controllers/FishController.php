@@ -18,49 +18,18 @@ class FishController extends Controller
      */
     public function index(Request $request)
     {
-        $selectedFamilyId = $request->query('family');
-        $search = $request->query('search');
-
-        $families = FishFamily::withCount('breeds')
-            ->orderBy('name', 'asc')
-            ->get();
-
-        $query = FishBreed::with(['family'])
-            ->withCount('records')
-            ->withMax('records as longest_record', 'length')
-            ->withMax('records as heaviest_record', 'weight');
-
-        if (!empty($selectedFamilyId)) {
-            $query->where('fish_families_id', $selectedFamilyId);
-        }
-
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhereHas('family', function ($fq) use ($search) {
-                      $fq->where('name', 'like', "%{$search}%");
-                  });
-            });
-        }
-
         $totalBreedsCount = FishBreed::count();
         $totalFamiliesCount = FishFamily::count();
         $totalCatchesCount = Record::count();
         $topSpecies = FishBreed::withCount('records')->orderBy('records_count', 'desc')->first();
 
-        $fishes = $query->orderBy('name', 'asc')
-            ->paginate(12)
-            ->withQueryString();
-
         return view('fish.index', [
-            'fishes' => $fishes,
-            'families' => $families,
-            'selectedFamilyId' => $selectedFamilyId,
-            'search' => $search,
             'totalBreedsCount' => $totalBreedsCount,
             'totalFamiliesCount' => $totalFamiliesCount,
             'totalCatchesCount' => $totalCatchesCount,
             'topSpecies' => $topSpecies,
+            'selectedFamilyId' => $request->query('family'),
+            'search' => $request->query('search'),
         ]);
     }
 
