@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div x-data="{ showSash: false }" class="space-y-6">
+<div x-data="{ showSash: false }" @toggle-merit-sash.window="showSash = !showSash; if (showSash) { $nextTick(() => document.getElementById('merit-badge-sash')?.scrollIntoView({ behavior: 'smooth' })) }" class="space-y-6">
     <x-statusAlert />
 
     @if (isset($angler))
@@ -106,6 +106,9 @@
             <x-kpiMetric label="Fish Caught" :value="$record_count" icon="fish" color="emerald" subtext="Logbook Catches" subtextIcon="trending-up" />
             <x-kpiMetric label="Expeditions" :value="$crews" icon="ship" color="sky" subtext="Crew Trips" subtextIcon="navigation" />
         </div>
+
+        <!-- Interactive Merit Badge Carousel Ribbon -->
+        <livewire:components.merit-badge-carousel :angler="$angler" title="Angler Merit Badges" />
 
         <!-- Dedicated Merit Badge Sash Showcase -->
         <x-meritBadgeSash :angler="$angler" />

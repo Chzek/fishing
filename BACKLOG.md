@@ -660,8 +660,29 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
     - **Angler Multi-Skill Radar**:
       * Extended [`AnglerStatsController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Angler/AnglerStatsController.php) to calculate normalized 5-axis crew comparison metrics (Volume, Lunker Max, C&R Rate, Species Diversity, Active Waters) rendered as an interactive radar chart in [`angler/stats.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/stats.blade.php).
     - **Automated Verification**:
-      * Added Blade component tests in [`tests/Feature/BladeComponentsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/BladeComponentsTest.php) verifying canvas rendering, `wire:ignore`, Alpine binding, and unescaped dataset attributes.
-      * Full test suite passing cleanly (**369 passing tests, 1,668 assertions**) with zero regressions.
+66. **Interactive Overlapping Merit Badge Carousel (`@livewire('components.merit-badge-carousel')`)**:
+    - **Livewire 3 Component Architecture (`MeritBadgeCarousel.php`)**:
+      * Created [`app/Livewire/Components/MeritBadgeCarousel.php`](file:///home/gmroczek/git/fishing/app/Livewire/Components/MeritBadgeCarousel.php) supporting dynamic data ingestion via `$badges` collection/array, `$angler` model/ID, or `$expedition` model/ID.
+      * Built lightweight computed DTO normalization (`#[Computed]`) avoiding heavy Eloquent model serialization over the wire.
+      * Handled tier styling, points tallying, awarded dates, trigger summaries, and overflow slice calculations (`$maxVisible`).
+    - **Blade & Alpine.js View Layer (`merit-badge-carousel.blade.php`)**:
+      * Engineered [`resources/views/livewire/components/merit-badge-carousel.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/components/merit-badge-carousel.blade.php) with `wire:ignore.self` and immutable `wire:key` item bindings for DOM morphing resilience.
+      * Solved hit-box jitter and mouse hysteresis loops via a two-tier DOM architecture: stationary hit-box layout anchors with decoupled, GPU-accelerated inner visual presenters (`transform-gpu will-change-transform pointer-events-none`).
+      * Implemented smooth "curtain expansion effect": items to the left shift left (`-30px`), items to the right shift right (`+30px`), and active item scales up (`1.28x`), lifts vertically (`-8px`), and elevates to `z-50`.
+      * Full accessibility and keyboard navigation (`ArrowLeft`, `ArrowRight`, `Escape`) with focus-trap protection.
+      * Interactive floating popover card rendering badge name, tier pill, points, description, awarded timestamp, trigger context, and catch record link.
+      * Tier radiance glows (Platinum cyan, Gold amber, Silver slate, Bronze amber-800) and embroidered patch artwork with stitched twill fallback.
+      * Interactive overflow capsule (`+X More`) and "View All" header action dispatching `@toggle-merit-sash`.
+    - **Target View Integrations**:
+      * **Angler Profile (`/angler/{id}`)**: Embedded carousel ribbon in [`resources/views/angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) with `@toggle-merit-sash` integration to smoothly expand `<x-meritBadgeSash>`.
+      * **Expedition Detail (`/expedition/{id}`)**: Embedded trip merit badges carousel in [`resources/views/expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php) alongside Trip Brag Board and Accolades.
+      * **User Profile (`/profile`)**: Embedded career badges carousel in [`resources/views/profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php).
+    - **Automated Verification**:
+      * Created [`tests/Feature/Livewire/MeritBadgeCarouselTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/Livewire/MeritBadgeCarouselTest.php) with 8 feature tests (28 assertions) covering empty states, collection props, angler/expedition binding, overflow capsules, and route rendering on `/angler/{id}`, `/expedition/{id}`, and `/profile`.
+      * Verified with `./vendor/bin/sail test --filter=MeritBadgeCarouselTest` (100% pass rate).
+      * Verified Vite production bundle compilation via `./vendor/bin/sail npm run build`.
+      * Verified complete application test suite passing cleanly (**377 passing tests, 1,696 assertions**) with zero regressions.
+
 
 
 
