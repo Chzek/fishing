@@ -30,6 +30,10 @@ class MeritBadgeCarousel extends Component
 
     public bool $showSashLink = true;
 
+    public bool $boxed = true;
+
+    public bool $showHeader = true;
+
     /**
      * Stored lightweight DTO array when badges are passed directly as a collection.
      *
@@ -53,7 +57,9 @@ class MeritBadgeCarousel extends Component
         ?string $title = null,
         bool $showCount = true,
         bool $showPoints = true,
-        bool $showSashLink = true
+        bool $showSashLink = true,
+        bool $boxed = true,
+        bool $showHeader = true
     ): void {
         if ($angler instanceof Angler) {
             $this->anglerId = $angler->id;
@@ -73,6 +79,8 @@ class MeritBadgeCarousel extends Component
         $this->showCount = $showCount;
         $this->showPoints = $showPoints;
         $this->showSashLink = $showSashLink;
+        $this->boxed = $boxed;
+        $this->showHeader = $showHeader;
 
         if ($badges !== null) {
             $this->directBadges = $this->transformBadgeCollection($badges);
@@ -158,6 +166,8 @@ class MeritBadgeCarousel extends Component
             'totalCount' => $this->totalBadgesCount,
             'totalPoints' => $this->totalPoints,
             'overflowCount' => $this->overflowCount,
+            'boxed' => $this->boxed,
+            'showHeader' => $this->showHeader,
         ]);
     }
 

@@ -126,7 +126,24 @@ class MeritBadgeCarouselTest extends TestCase
     }
 
     #[Test]
-    public function test_angler_profile_route_renders_merit_badge_carousel(): void
+    public function test_merit_badge_carousel_renders_in_unboxed_mode_without_header(): void
+    {
+        $badge = Badge::first();
+
+        Livewire::test(MeritBadgeCarousel::class, [
+            'badges' => collect([$badge]),
+            'boxed' => false,
+            'showHeader' => false,
+            'size' => 'lg',
+        ])
+            ->assertStatus(200)
+            ->assertDontSee('View All')
+            ->assertSee($badge->name)
+            ->assertSee('+' . $badge->points . ' pts');
+    }
+
+    #[Test]
+    public function test_angler_profile_route_renders_merit_badge_carousel_in_hero(): void
     {
         $user = User::factory()->create();
         $angler = Angler::factory()->create([
@@ -136,11 +153,11 @@ class MeritBadgeCarouselTest extends TestCase
         $response = $this->actingAs($user)->get('/angler/' . $angler->id);
 
         $response->assertStatus(200);
-        $response->assertSee('Angler Merit Badges');
+        $response->assertSeeLivewire(MeritBadgeCarousel::class);
     }
 
     #[Test]
-    public function test_expedition_show_route_renders_merit_badge_carousel(): void
+    public function test_expedition_show_route_does_not_render_merit_badge_carousel(): void
     {
         $user = User::factory()->create();
         $expedition = Expedition::create([
@@ -152,11 +169,11 @@ class MeritBadgeCarouselTest extends TestCase
         $response = $this->actingAs($user)->get('/expedition/' . $expedition->id);
 
         $response->assertStatus(200);
-        $response->assertSee('Expedition Merit Badges');
+        $response->assertDontSeeLivewire(MeritBadgeCarousel::class);
     }
 
     #[Test]
-    public function test_user_profile_route_renders_merit_badge_carousel(): void
+    public function test_user_profile_route_renders_merit_badge_carousel_in_hero(): void
     {
         $user = User::factory()->create();
         Angler::factory()->create([
@@ -166,6 +183,6 @@ class MeritBadgeCarouselTest extends TestCase
         $response = $this->actingAs($user)->get('/profile');
 
         $response->assertStatus(200);
-        $response->assertSee('Career Merit Badges');
+        $response->assertSeeLivewire(MeritBadgeCarousel::class);
     }
 }

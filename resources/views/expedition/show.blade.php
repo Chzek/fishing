@@ -166,9 +166,6 @@
         </div>
     </div>
 
-    <!-- Expedition Merit Badges Carousel -->
-    <livewire:components.merit-badge-carousel :expedition="$expedition" title="Expedition Merit Badges" :showSashLink="false" />
-
     <!-- 🏆 Expedition Best Catches (Trophy Normalized Strip) -->
     @if(isset($topCatches) && $topCatches->count() > 0)
         <div class="space-y-3">
