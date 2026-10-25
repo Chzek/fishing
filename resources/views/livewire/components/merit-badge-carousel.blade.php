@@ -32,168 +32,174 @@
     $totalBadges = count($badges);
 @endphp
 
-<script type="application/json" id="badge-data-{{ $carouselId }}">
-    {!! json_encode($badges, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!}
+<script>
+if (!window.meritBadgeCarousel) {
+    window.meritBadgeCarousel = function(badges, total, shift, scale, lift) {
+        return {
+            badges: Array.isArray(badges) ? badges : [],
+            total: total,
+            shift: shift,
+            scale: scale,
+            lift: lift,
+            hoveredIndex: null,
+            focusedIndex: null,
+            autoScrollRaf: null,
+            scrollSpeed: 0,
+            isDragging: false,
+            dragStartX: 0,
+            dragScrollLeft: 0,
+
+            get activeIndex() {
+                return this.hoveredIndex !== null ? this.hoveredIndex : this.focusedIndex;
+            },
+
+            get activeBadge() {
+                const idx = this.activeIndex;
+                if (idx !== null && this.badges && this.badges[idx]) {
+                    return this.badges[idx];
+                }
+                return (this.badges && this.badges[0]) ? this.badges[0] : null;
+            },
+
+            setHover(idx) {
+                this.hoveredIndex = idx;
+            },
+
+            clearHover() {
+                this.hoveredIndex = null;
+                this.focusedIndex = null;
+                this.stopAutoScroll();
+            },
+
+            handleWheel(e) {
+                if (this.$refs.scrollTrack) {
+                    this.$refs.scrollTrack.scrollLeft += e.deltaY * 0.9;
+                }
+            },
+
+            handleMouseMove(e) {
+                const track = this.$refs.scrollTrack;
+                if (!track || this.isDragging) return;
+                const rect = track.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const width = rect.width;
+                const edgeZone = Math.min(130, width * 0.22);
+
+                if (mouseX >= 0 && mouseX < edgeZone) {
+                    const intensity = (edgeZone - mouseX) / edgeZone;
+                    this.startAutoScroll(-intensity * 16);
+                } else if (mouseX <= width && mouseX > width - edgeZone) {
+                    const intensity = (mouseX - (width - edgeZone)) / edgeZone;
+                    this.startAutoScroll(intensity * 16);
+                } else {
+                    this.stopAutoScroll();
+                }
+            },
+
+            startAutoScroll(speed) {
+                this.scrollSpeed = speed;
+                if (!this.autoScrollRaf) {
+                    const step = () => {
+                        if (this.$refs.scrollTrack && this.scrollSpeed !== 0) {
+                            this.$refs.scrollTrack.scrollLeft += this.scrollSpeed;
+                            this.autoScrollRaf = requestAnimationFrame(step);
+                        } else {
+                            this.autoScrollRaf = null;
+                        }
+                    };
+                    this.autoScrollRaf = requestAnimationFrame(step);
+                }
+            },
+
+            stopAutoScroll() {
+                this.scrollSpeed = 0;
+                if (this.autoScrollRaf) {
+                    cancelAnimationFrame(this.autoScrollRaf);
+                    this.autoScrollRaf = null;
+                }
+            },
+
+            startDrag(e) {
+                this.isDragging = true;
+                this.stopAutoScroll();
+                this.dragStartX = e.pageX - (this.$refs.scrollTrack?.offsetLeft || 0);
+                this.dragScrollLeft = this.$refs.scrollTrack?.scrollLeft || 0;
+            },
+
+            doDrag(e) {
+                if (!this.isDragging || !this.$refs.scrollTrack) return;
+                e.preventDefault();
+                const x = e.pageX - this.$refs.scrollTrack.offsetLeft;
+                const walk = (x - this.dragStartX) * 1.5;
+                this.$refs.scrollTrack.scrollLeft = this.dragScrollLeft - walk;
+            },
+
+            stopDrag() {
+                this.isDragging = false;
+            },
+
+            focusPrevious() {
+                if (this.total === 0) return;
+                if (this.focusedIndex === null) {
+                    this.focusedIndex = this.total - 1;
+                } else {
+                    this.focusedIndex = (this.focusedIndex - 1 + this.total) % this.total;
+                }
+                this.scrollToActive();
+            },
+
+            focusNext() {
+                if (this.total === 0) return;
+                if (this.focusedIndex === null) {
+                    this.focusedIndex = 0;
+                } else {
+                    this.focusedIndex = (this.focusedIndex + 1) % this.total;
+                }
+                this.scrollToActive();
+            },
+
+            scrollToActive() {
+                if (this.focusedIndex === null || !this.$refs.scrollTrack) return;
+                const item = this.$refs.scrollTrack.querySelector(`[data-index="${this.focusedIndex}"]`);
+                if (item) {
+                    item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            },
+
+            getItemStyle(idx) {
+                const active = this.activeIndex;
+                if (active === null) {
+                    return {
+                        transform: 'translate(0px, 0px) scale(1)',
+                        zIndex: 10 + idx
+                    };
+                }
+                if (idx < active) {
+                    return {
+                        transform: `translate(-${this.shift}px, 0px) scale(1)`,
+                        zIndex: 10 + idx
+                    };
+                }
+                if (idx === active) {
+                    return {
+                        transform: `translate(0px, -${this.lift}px) scale(${this.scale})`,
+                        zIndex: 50
+                    };
+                }
+                return {
+                    transform: `translate(${this.shift}px, 0px) scale(1)`,
+                    zIndex: 10 + (this.total - idx)
+                };
+            }
+        };
+    };
+}
 </script>
 
 <div 
     wire:ignore.self 
     class="isolate w-full relative overflow-visible {{ ($boxed ?? true) ? 'bg-slate-900/90 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-md' : 'p-0' }}"
-    x-data="{
-        badges: JSON.parse(document.getElementById('badge-data-{{ $carouselId }}')?.textContent || '[]'),
-        total: {{ $totalBadges }},
-        shift: {{ $shiftPx }},
-        scale: {{ $scaleVal }},
-        lift: {{ $liftPx }},
-        hoveredIndex: null,
-        focusedIndex: null,
-        autoScrollRaf: null,
-        scrollSpeed: 0,
-        isDragging: false,
-        dragStartX: 0,
-        dragScrollLeft: 0,
-
-        get activeIndex() {
-            return this.hoveredIndex !== null ? this.hoveredIndex : this.focusedIndex;
-        },
-
-        get activeBadge() {
-            if (this.total === 0) return null;
-            const idx = this.activeIndex;
-            return (idx !== null && this.badges[idx]) ? this.badges[idx] : this.badges[0];
-        },
-
-        setHover(idx) {
-            this.hoveredIndex = idx;
-        },
-
-        clearHover() {
-            this.hoveredIndex = null;
-            this.focusedIndex = null;
-            this.stopAutoScroll();
-        },
-
-        handleWheel(e) {
-            if (this.$refs.scrollTrack) {
-                this.$refs.scrollTrack.scrollLeft += e.deltaY * 0.9;
-            }
-        },
-
-        handleMouseMove(e) {
-            const track = this.$refs.scrollTrack;
-            if (!track || this.isDragging) return;
-            const rect = track.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const width = rect.width;
-            const edgeZone = Math.min(130, width * 0.22);
-
-            if (mouseX >= 0 && mouseX < edgeZone) {
-                const intensity = (edgeZone - mouseX) / edgeZone;
-                this.startAutoScroll(-intensity * 16);
-            } else if (mouseX <= width && mouseX > width - edgeZone) {
-                const intensity = (mouseX - (width - edgeZone)) / edgeZone;
-                this.startAutoScroll(intensity * 16);
-            } else {
-                this.stopAutoScroll();
-            }
-        },
-
-        startAutoScroll(speed) {
-            this.scrollSpeed = speed;
-            if (!this.autoScrollRaf) {
-                const step = () => {
-                    if (this.$refs.scrollTrack && this.scrollSpeed !== 0) {
-                        this.$refs.scrollTrack.scrollLeft += this.scrollSpeed;
-                        this.autoScrollRaf = requestAnimationFrame(step);
-                    } else {
-                        this.autoScrollRaf = null;
-                    }
-                };
-                this.autoScrollRaf = requestAnimationFrame(step);
-            }
-        },
-
-        stopAutoScroll() {
-            this.scrollSpeed = 0;
-            if (this.autoScrollRaf) {
-                cancelAnimationFrame(this.autoScrollRaf);
-                this.autoScrollRaf = null;
-            }
-        },
-
-        startDrag(e) {
-            this.isDragging = true;
-            this.stopAutoScroll();
-            this.dragStartX = e.pageX - (this.$refs.scrollTrack?.offsetLeft || 0);
-            this.dragScrollLeft = this.$refs.scrollTrack?.scrollLeft || 0;
-        },
-
-        doDrag(e) {
-            if (!this.isDragging || !this.$refs.scrollTrack) return;
-            e.preventDefault();
-            const x = e.pageX - this.$refs.scrollTrack.offsetLeft;
-            const walk = (x - this.dragStartX) * 1.5;
-            this.$refs.scrollTrack.scrollLeft = this.dragScrollLeft - walk;
-        },
-
-        stopDrag() {
-            this.isDragging = false;
-        },
-
-        focusPrevious() {
-            if (this.total === 0) return;
-            if (this.focusedIndex === null) {
-                this.focusedIndex = this.total - 1;
-            } else {
-                this.focusedIndex = (this.focusedIndex - 1 + this.total) % this.total;
-            }
-            this.scrollToActive();
-        },
-
-        focusNext() {
-            if (this.total === 0) return;
-            if (this.focusedIndex === null) {
-                this.focusedIndex = 0;
-            } else {
-                this.focusedIndex = (this.focusedIndex + 1) % this.total;
-            }
-            this.scrollToActive();
-        },
-
-        scrollToActive() {
-            if (this.focusedIndex === null || !this.$refs.scrollTrack) return;
-            const item = this.$refs.scrollTrack.querySelector(`[data-index="${this.focusedIndex}"]`);
-            if (item) {
-                item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            }
-        },
-
-        getItemStyle(idx) {
-            const active = this.activeIndex;
-            if (active === null) {
-                return {
-                    transform: 'translate(0px, 0px) scale(1)',
-                    zIndex: 10 + idx
-                };
-            }
-            if (idx < active) {
-                return {
-                    transform: `translate(-${this.shift}px, 0px) scale(1)`,
-                    zIndex: 10 + idx
-                };
-            }
-            if (idx === active) {
-                return {
-                    transform: `translate(0px, -${this.lift}px) scale(${this.scale})`,
-                    zIndex: 50
-                };
-            }
-            return {
-                transform: `translate(${this.shift}px, 0px) scale(1)`,
-                zIndex: 10 + (this.total - idx)
-            };
-        }
-    }"
+    x-data="meritBadgeCarousel({{ json_encode($badges, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) }}, {{ $totalBadges }}, {{ $shiftPx }}, {{ $scaleVal }}, {{ $liftPx }})"
     @mouseleave="clearHover()"
     @keydown.escape.window="clearHover()"
     @keydown.arrow-left.prevent="focusPrevious()"
@@ -274,8 +280,8 @@
             @mousemove="handleMouseMove($event)"
             @mouseleave="stopAutoScroll()"
             @mousedown="startDrag($event)"
-            @mousemove.window="doDrag($event)"
-            @mouseup.window="stopDrag()"
+            @mousemove.window="if (isDragging) doDrag($event)"
+            @mouseup.window="if (isDragging) stopDrag()"
         >
             <div 
                 class="flex items-center min-w-max"
@@ -346,7 +352,7 @@
                 class="mt-2.5 bg-slate-950/70 border rounded-xl p-3.5 backdrop-blur-md transition-all duration-200"
                 :class="hoveredIndex !== null ? 'border-teal-500/50 bg-slate-950/90 shadow-lg shadow-teal-950/30 ring-1 ring-teal-500/30' : 'border-slate-800/80'"
             >
-                <div x-show="activeBadge" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <!-- Left: Badge Identity, Tier & Criteria Description -->
                     <div class="space-y-1 min-w-0 flex-1">
                         <div class="flex items-center gap-2 flex-wrap">

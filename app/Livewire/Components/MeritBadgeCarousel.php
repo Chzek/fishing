@@ -183,6 +183,9 @@ class MeritBadgeCarousel extends Component
             'showInspector' => $this->showInspector,
             'size' => $this->size,
             'carouselId' => $this->getId(),
+            'showCount' => $this->showCount,
+            'showPoints' => $this->showPoints,
+            'showSashLink' => $this->showSashLink,
         ]);
     }
 
