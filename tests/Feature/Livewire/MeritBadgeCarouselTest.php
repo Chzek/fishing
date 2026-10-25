@@ -153,8 +153,7 @@ class MeritBadgeCarouselTest extends TestCase
         ])
             ->assertStatus(200)
             ->assertSee($badge->name)
-            ->assertSee($badge->description)
-            ->assertSee('Latest Milestone');
+            ->assertSee('+' . $badge->points . ' pts');
     }
 
     #[Test]
