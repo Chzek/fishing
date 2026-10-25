@@ -186,6 +186,49 @@ class BladeComponentsTest extends TestCase
         $rowView->assertSee('5.30 lbs');
         $rowView->assertSee('103.8 pts');
     }
+
+    #[Test]
+    public function chart_component_renders_canvas_and_alpine_binding(): void
+    {
+        $view = $this->blade('<x-chart type="doughnut" id="test-doughnut" height="h-36" />');
+        $view->assertSee('wire:ignore', false);
+        $view->assertSee('x-data="telemetryChart(', false);
+        $view->assertSee('<canvas', false);
+        $view->assertSee('id="test-doughnut"', false);
+        $view->assertSee('h-36', false);
+    }
+
+    #[Test]
+    public function chart_component_renders_with_datasets_and_center_text(): void
+    {
+        $chartData = [
+            'labels' => ['Walleye', 'Smallmouth Bass', 'Northern Pike'],
+            'datasets' => [
+                [
+                    'data' => [45, 30, 25],
+                    'backgroundColor' => ['#0d9488', '#0284c7', '#f59e0b'],
+                ],
+            ],
+        ];
+
+        $centerText = [
+            'label' => 'Species',
+            'value' => 3,
+            'subtext' => '100 fish',
+        ];
+
+        $view = $this->blade('<x-chart type="doughnut" :data="$data" :centerText="$centerText" />', [
+            'data' => $chartData,
+            'centerText' => $centerText,
+        ]);
+
+        $view->assertSee('wire:ignore', false);
+        $view->assertSee('Walleye');
+        $view->assertSee('Smallmouth Bass');
+        $view->assertSee('#0d9488');
+        $view->assertSee('Species');
+        $view->assertSee('100 fish');
+    }
 }
 
 

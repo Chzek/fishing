@@ -135,6 +135,58 @@ class AnglerStatsController extends Controller
                 return $angler;
             })->sortByDesc('records_count')->values();
 
+            // 5-axis Angler Multi-Skill Radar for Top Crew Members
+            $anglerDiversityAndMax = DB::table('records')
+                ->whereNull('deleted_at')
+                ->select(
+                    'anglers_id',
+                    DB::raw('COUNT(DISTINCT fish_breeds_id) as diversity_count'),
+                    DB::raw('MAX(length) as max_length')
+                )
+                ->groupBy('anglers_id')
+                ->get()
+                ->keyBy('anglers_id');
+
+            $maxVolume = max($anglersList->max('records_count') ?: 1, 1);
+            $maxLunkerOverall = max($anglerDiversityAndMax->max('max_length') ?: 1, 1);
+            $maxDiversityOverall = max($anglerDiversityAndMax->max('diversity_count') ?: 1, 1);
+            $maxWatersOverall = max($anglersList->max('unique_lakes_count') ?: 1, 1);
+
+            $radarColors = [
+                ['border' => '#14b8a6', 'bg' => 'rgba(20, 184, 166, 0.2)'], // Teal
+                ['border' => '#38bdf8', 'bg' => 'rgba(56, 189, 248, 0.2)'], // Sky
+                ['border' => '#fbbf24', 'bg' => 'rgba(251, 191, 36, 0.2)'], // Amber
+                ['border' => '#a78bfa', 'bg' => 'rgba(167, 139, 250, 0.2)'], // Purple
+            ];
+
+            $radarDatasets = [];
+            $topAnglersForRadar = $anglersList->filter(fn($a) => $a->records_count > 0)->take(3);
+
+            foreach ($topAnglersForRadar as $idx => $a) {
+                $divData = $anglerDiversityAndMax->get($a->id);
+                $volScore = min(100, round(($a->records_count / $maxVolume) * 100));
+                $lunkerScore = min(100, round((($divData?->max_length ?? 0) / $maxLunkerOverall) * 100));
+                $releaseScore = min(100, round($a->release_rate));
+                $diversityScore = min(100, round((($divData?->diversity_count ?? 0) / $maxDiversityOverall) * 100));
+                $watersScore = min(100, round((($a->unique_lakes_count ?? 0) / $maxWatersOverall) * 100));
+
+                $color = $radarColors[$idx % count($radarColors)];
+                $radarDatasets[] = [
+                    'label' => $a->full_name,
+                    'data' => [$volScore, $lunkerScore, $releaseScore, $diversityScore, $watersScore],
+                    'borderColor' => $color['border'],
+                    'backgroundColor' => $color['bg'],
+                    'pointBackgroundColor' => $color['border'],
+                    'pointHoverBorderColor' => '#ffffff',
+                    'borderWidth' => 2,
+                ];
+            }
+
+            $crewRadarChart = [
+                'labels' => ['Volume', 'Lunker Max', 'C&R Rate', 'Species Diversity', 'Active Waters'],
+                'datasets' => $radarDatasets,
+            ];
+
             return [
                 'totalAnglers' => $totalAnglers,
                 'totalRecords' => $totalRecords,
@@ -149,6 +201,7 @@ class AnglerStatsController extends Controller
                 'maxMonthlyCount' => $maxMonthlyCount,
                 'activityTiers' => $activityTiers,
                 'anglersList' => $anglersList,
+                'crewRadarChart' => $crewRadarChart,
             ];
         });
 

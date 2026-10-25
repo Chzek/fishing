@@ -74,79 +74,67 @@
                     <span class="text-[11px] font-mono text-slate-400">Total: {{ number_format($totalRecords) }} catches</span>
                 </div>
 
-                <div class="h-36 flex items-end gap-2 pt-6 px-3 bg-slate-50/70 dark:bg-slate-800/50 rounded-xl border border-slate-200/60 dark:border-slate-700/60 pb-2">
-                    @foreach($monthlyDistribution as $m)
-                        @php
-                            $heightPct = $maxMonthlyCount > 0 ? round(($m['count'] / $maxMonthlyCount) * 100) : 0;
-                        @endphp
-                        <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group relative">
-                            <!-- Count Label -->
-                            <span class="text-[10px] font-mono font-bold {{ $m['count'] > 0 ? 'text-teal-700 dark:text-teal-300' : 'text-slate-300 dark:text-slate-600' }} transition-colors">
-                                {{ $m['count'] }}
-                            </span>
-                            
-                            <div class="w-full max-w-[28px] bg-slate-200/60 dark:bg-slate-700/60 rounded-t-md overflow-hidden flex flex-col justify-end" style="height: 75%;">
-                                <div class="w-full {{ $m['count'] > 0 ? 'bg-gradient-to-t from-teal-600 to-teal-400 group-hover:from-teal-500 group-hover:to-teal-300 shadow-sm' : 'bg-slate-300/30 dark:bg-slate-600/30' }} rounded-t-md transition-all duration-300" style="height: {{ max($heightPct, $m['count'] > 0 ? 8 : 0) }}%;"></div>
-                            </div>
-                            <span class="text-[10px] font-mono font-semibold {{ $m['count'] > 0 ? 'text-slate-700 dark:text-slate-300' : 'text-slate-400 dark:text-slate-500' }}">{{ $m['name'] }}</span>
-                        </div>
-                    @endforeach
+                @php
+                    $mLabels = [];
+                    $mValues = [];
+                    $mColors = [];
+                    foreach ($monthlyDistribution as $m) {
+                        $mLabels[] = $m['name'];
+                        $mValues[] = (int) $m['count'];
+                        $mColors[] = ($m['count'] > 0 && $m['count'] === $maxMonthlyCount) ? '#0d9488' : ($m['count'] > 0 ? '#14b8a6' : 'rgba(148, 163, 184, 0.25)');
+                    }
+                    $monthlyChartData = [
+                        'labels' => $mLabels,
+                        'datasets' => [
+                            [
+                                'label' => 'Catches',
+                                'data' => $mValues,
+                                'backgroundColor' => $mColors,
+                                'borderRadius' => 6,
+                                'borderSkipped' => false,
+                            ],
+                        ],
+                    ];
+                @endphp
+
+                <div class="pt-1">
+                    <x-chart 
+                        type="bar" 
+                        :data="$monthlyChartData" 
+                        height="h-44" 
+                        id="angler-monthly-volume-bar"
+                    />
                 </div>
             </div>
         </x-card>
 
-        <!-- Angler Activity Tiering Breakdown (1 Col) -->
-        <x-card class="flex flex-col justify-between" title="Angler Activity Tiering" icon="pie-chart" iconColor="teal" badge="{{ $totalAnglers }} Anglers" badgeVariant="slate">
+        <!-- Angler Crew Multi-Skill Radar (1 Col) -->
+        <x-card class="flex flex-col justify-between" title="Crew Multi-Skill Radar" icon="activity" iconColor="purple" badge="Top Anglers" badgeVariant="purple">
             <div>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Distribution of crew members grouped by total logbook catch volume.</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400">5-axis crew comparison across volume, trophy size, conservation, diversity, and active waters.</p>
 
-                <div class="space-y-3 pt-3">
-                    <!-- Light Tier -->
-                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 space-y-1.5">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
-                                Light Anglers (1–10 catches)
-                            </span>
-                            <span class="font-mono font-bold text-slate-900 dark:text-white">{{ $activityTiers['light'] }}</span>
-                        </div>
-                        <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-sky-400 h-full rounded-full" style="width: {{ $totalAnglers > 0 ? round(($activityTiers['light'] / $totalAnglers) * 100) : 0 }}%;"></div>
-                        </div>
+                @if(isset($crewRadarChart) && count($crewRadarChart['datasets']) > 0)
+                    <div class="relative w-full h-56 pt-2">
+                        <x-chart 
+                            type="radar" 
+                            :data="$crewRadarChart" 
+                            height="h-56" 
+                            id="crew-radar-chart" 
+                        />
                     </div>
-
-                    <!-- Moderate Tier -->
-                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 space-y-1.5">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-teal-500"></span>
-                                Moderate Anglers (11–50 catches)
-                            </span>
-                            <span class="font-mono font-bold text-slate-900 dark:text-white">{{ $activityTiers['moderate'] }}</span>
-                        </div>
-                        <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-teal-500 h-full rounded-full" style="width: {{ $totalAnglers > 0 ? round(($activityTiers['moderate'] / $totalAnglers) * 100) : 0 }}%;"></div>
-                        </div>
+                @else
+                    <div class="py-12 text-center text-xs text-slate-400 italic">
+                        Insufficient logbook telemetry for crew comparison radar.
                     </div>
-
-                    <!-- Avid Tier -->
-                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 space-y-1.5">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                                Avid Anglers (51+ catches)
-                            </span>
-                            <span class="font-mono font-bold text-slate-900 dark:text-white">{{ $activityTiers['avid'] }}</span>
-                        </div>
-                        <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-emerald-500 h-full rounded-full" style="width: {{ $totalAnglers > 0 ? round(($activityTiers['avid'] / $totalAnglers) * 100) : 0 }}%;"></div>
-                        </div>
-                    </div>
-                </div>
+                @endif
             </div>
 
             <x-slot:footer>
-                Logbook engagement average: <strong class="font-mono text-slate-800 dark:text-slate-200">{{ $avgCatchesPerAngler }} catches</strong> per crew member.
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-500 dark:text-slate-400">Avid: <strong class="font-mono text-slate-800 dark:text-slate-200">{{ $activityTiers['avid'] }}</strong></span>
+                    <span class="text-slate-500 dark:text-slate-400">Moderate: <strong class="font-mono text-slate-800 dark:text-slate-200">{{ $activityTiers['moderate'] }}</strong></span>
+                    <span class="text-slate-500 dark:text-slate-400">Light: <strong class="font-mono text-slate-800 dark:text-slate-200">{{ $activityTiers['light'] }}</strong></span>
+                </div>
             </x-slot:footer>
         </x-card>
     </div>

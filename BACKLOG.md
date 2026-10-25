@@ -45,15 +45,16 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
   - Integrate a "Filter by Species" dropdown in `GenericDataTable` for lakes.
   - Enhance Map Explorer push-pin popovers with species avatar badges to quickly identify target fisheries on the water.
 
-#### 5. Interactive JavaScript Telemetry Visualizations (Chart.js & Livewire/Alpine)
+#### 5. Interactive JavaScript Telemetry Visualizations (Chart.js & Livewire/Alpine) *(Completed)*
 - **Agents**: `ui-ux-auditor`, `livewire-architect`, `seasoned-angler-advisor`
 - **Impact**: **High** (Tactical Angling Analytics & Data Science)
-- **Description**: Replace static SVG/CSS charts with interactive, hardware-accelerated Chart.js canvases wrapped in reactive Alpine.js components:
-  * **Species Ratio Interactive Donut**: Hover slice details, species percentage breakdown, and animated transitions.
-  * **Daily / Monthly Catch Cadence Bars**: Animated multi-series bar charts with trip pace metrics.
-  * **Barometric Pressure vs Catch Velocity**: 24-hour dual Y-axis spline/bar chart correlating pressure drops with strike frequency.
-  * **Water Temperature × Lure Category Matrix**: Strike zone heatmap identifying high-probability tackle per water temp band.
-  * **Angler Multi-Skill Radar**: 5-axis crew comparison chart (Lunker Max, Volume, C&R %, Species Diversity, Active Waters).
+- **Status**: **Completed (Merged via feature/p2-5-chartjs-telemetry)**
+- **Description**: Replaced static CSS conic-gradients and manual HTML div bars with a modular, hardware-accelerated Chart.js + Alpine.js architecture wrapped in reusable `<x-chart />` Blade components:
+  * **Species Ratio Interactive Donut**: Replaced duplicate conic-gradient implementations in `expedition/show.blade.php`, `profile/show.blade.php`, and `angler/profile.blade.php` with interactive doughnut charts, center cutout metrics (`X Species · Y Fish`), and synchronized hover/legend states.
+  * **Daily / Monthly Catch Cadence Bars**: Animated multi-series bar charts with trip pace metrics in `expedition/show.blade.php`, `angler/stats.blade.php`, and `fish/show.blade.php`.
+  * **Barometric Pressure vs Catch Velocity**: 24-hour dual Y-axis spline & bar chart in `record/index.blade.php` correlating barometric strike windows with mean catch lengths.
+  * **Angler Multi-Skill Radar**: 5-axis crew comparison chart (Volume, Lunker Max, C&R %, Species Diversity, Active Waters) in `angler/stats.blade.php`.
+  * **Modular Alpine Architecture**: `x-data="telemetryChart(...)"` with canvas lifecycle management, `chart.destroy()` cleanup on unmount, `wire:ignore` Livewire 3 DOM morphing protection, and automatic dark/light theme switching.
 
 #### 6. Outdoor Boat Usability & Responsive Table-to-Card Stack
 - **Agents**: `ui-ux-auditor`, `livewire-architect`, `seasoned-angler-advisor`
@@ -158,7 +159,7 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
 | [`larastan/larastan`](https://github.com/larastan/larastan) *(dev)* | Static Analysis | Strict level typing, Eloquent relationship validation, and null safety checks across all 13 models & services. | **Completed** |
 | [`matanyadaev/laravel-eloquent-spatial`](https://github.com/matanyadaev/laravel-eloquent-spatial) | GIS / Mapping | Native MySQL 8 spatial geometry (`Point`, `Polygon`) with spherical distance scopes (`whereDistanceSphere`) for sub-millisecond waypoint & nearby radius lookups. | **Completed** |
 | [`livewire/volt`](https://github.com/livewire/volt) | Livewire DX | Single-file reactive components for lightweight boat widgets (Theme Switcher, Solunar date controls). | **P2 (Active)** |
-| [`chart.js`](https://www.chartjs.org/) | Frontend / Charts | Hardware-accelerated, lightweight HTML5 canvas telemetry charts (Barometer vs Strike, Species Donuts, Radar). | **P2 (Active)** |
+| [`chart.js`](https://www.chartjs.org/) | Frontend / Charts | Hardware-accelerated, lightweight HTML5 canvas telemetry charts (Barometer vs Strike, Species Donuts, Radar). | **Completed** |
 | [`laravel/boost`](https://github.com/laravel/boost) *(dev)* | AI Tooling / MCP | Embedded MCP server and AI guidelines/skills for Antigravity-assisted development. | **Completed** |
 
 ---
@@ -644,6 +645,23 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
       * Verified all existing controller tests in [`tests/Feature/FishBreedControllerTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/FishBreedControllerTest.php) and [`tests/Feature/GenericDataTableLivewireTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/GenericDataTableLivewireTest.php) pass cleanly.
       * Passed Larastan static analysis level 5 with zero errors (`[OK] No errors` across 154 files).
       * Verified full test suite (**367 passing tests, 1,657 assertions**) with **0 failures**.
+65. **Interactive JavaScript Telemetry Visualizations (Chart.js & Livewire/Alpine) (P2.5)**:
+    - **Modular Alpine.js + Blade Component Architecture**:
+      * Engineered dedicated `<x-chart :type="$type" :data="$data" :options="$options" :centerText="$centerText" :height="$height" />` Blade wrapper in [`resources/views/components/chart.blade.php`](file:///home/gmroczek/git/fishing/resources/views/components/chart.blade.php) equipped with `wire:ignore` for Livewire 3 DOM morphing resilience.
+      * Built Alpine component `telemetryChart` in [`resources/js/charts/telemetry-chart.js`](file:///home/gmroczek/git/fishing/resources/js/charts/telemetry-chart.js) managing Chart.js lifecycle, canvas garbage collection on unmount, and dynamic theme switching via MutationObserver on `<html class="dark">`.
+      * Designed Telemetry v2 design tokens and color resolvers in [`resources/js/charts/theme.js`](file:///home/gmroczek/git/fishing/resources/js/charts/theme.js), including custom `centerText` doughnut plugin in [`resources/js/charts/plugins/center-text.js`](file:///home/gmroczek/git/fishing/resources/js/charts/plugins/center-text.js).
+    - **Species Ratio Interactive Doughnut Modernization**:
+      * Replaced static CSS `conic-gradient` elements in [`expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php), [`profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php), and [`angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) with interactive, hardware-accelerated doughnut charts featuring slice hover expansion and center cutout metrics (`X Species · Y Catches`).
+    - **Cadence & Monthly Volume Bar Charts**:
+      * Replaced manual flexbox percentage divs in [`expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php) (Daily Catch Cadence with peak day highlights), [`angler/stats.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/stats.blade.php) (12-Month Logbook Distribution), and [`fish/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/fish/show.blade.php) (Species Seasonal Activity Curve) with animated Chart.js bar charts.
+    - **Tactical Barometric Pressure vs Catch Velocity Dual Y-Axis Spline/Bar Chart**:
+      * Extended [`CatchTelemetryService.php`](file:///home/gmroczek/git/fishing/app/Services/CatchTelemetryService.php) to aggregate catches and mean length across 5 atmospheric pressure bands.
+      * Integrated dual Y-axis Chart.js bar/spline visualization on [`record/index.blade.php`](file:///home/gmroczek/git/fishing/resources/views/record/index.blade.php) correlating pressure drops with bite velocity.
+    - **Angler Multi-Skill Radar**:
+      * Extended [`AnglerStatsController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Angler/AnglerStatsController.php) to calculate normalized 5-axis crew comparison metrics (Volume, Lunker Max, C&R Rate, Species Diversity, Active Waters) rendered as an interactive radar chart in [`angler/stats.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/stats.blade.php).
+    - **Automated Verification**:
+      * Added Blade component tests in [`tests/Feature/BladeComponentsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/BladeComponentsTest.php) verifying canvas rendering, `wire:ignore`, Alpine binding, and unescaped dataset attributes.
+      * Full test suite passing cleanly (**264 passing tests, 1,095 assertions**) with zero regressions.
 
 
 

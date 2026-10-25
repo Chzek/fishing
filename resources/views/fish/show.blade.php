@@ -429,23 +429,35 @@
             <!-- Monthly Activity Distribution Graph -->
             <div class="space-y-2">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">Monthly Logbook Volume Curve</span>
-                <div class="grid grid-cols-8 gap-1.5 items-end h-24 pt-1">
-                    @foreach($monthlyStats as $ms)
-                        <div class="flex flex-col items-center gap-1 h-full justify-end">
-                            <span class="text-[10px] font-bold font-mono {{ $ms['count'] > 0 ? 'text-teal-700 dark:text-teal-400' : 'text-slate-300 dark:text-slate-600' }}">
-                                {{ $ms['count'] }}
-                            </span>
-                            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-t-md flex items-end h-14">
-                                <div 
-                                    class="w-full rounded-t-md transition-all {{ $ms['count'] > 0 ? 'bg-teal-500' : 'bg-slate-200 dark:bg-slate-700' }}" 
-                                    style="height: {{ max($ms['percentage'], 6) }}%"
-                                ></div>
-                            </div>
-                            <span class="text-[9px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-tighter">
-                                {{ $ms['month'] }}
-                            </span>
-                        </div>
-                    @endforeach
+                @php
+                    $fLabels = [];
+                    $fValues = [];
+                    $fColors = [];
+                    foreach($monthlyStats as $ms) {
+                        $fLabels[] = $ms['month'];
+                        $fValues[] = (int) $ms['count'];
+                        $fColors[] = $ms['count'] > 0 ? '#14b8a6' : 'rgba(148, 163, 184, 0.25)';
+                    }
+                    $fishMonthlyChartData = [
+                        'labels' => $fLabels,
+                        'datasets' => [
+                            [
+                                'label' => 'Catches',
+                                'data' => $fValues,
+                                'backgroundColor' => $fColors,
+                                'borderRadius' => 4,
+                                'borderSkipped' => false,
+                            ],
+                        ],
+                    ];
+                @endphp
+                <div class="pt-1">
+                    <x-chart 
+                        type="bar" 
+                        :data="$fishMonthlyChartData" 
+                        height="h-28" 
+                        id="fish-monthly-curve-{{ $fish->id }}"
+                    />
                 </div>
             </div>
 

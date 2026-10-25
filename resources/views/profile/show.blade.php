@@ -428,26 +428,40 @@
                         @php
                             $hexColors = ['#0d9488', '#0284c7', '#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
                             $bgColors = ['bg-teal-500', 'bg-sky-500', 'bg-indigo-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500', 'bg-pink-500'];
-                            $gradientParts = [];
-                            $currentPct = 0;
+                            $chartLabels = [];
+                            $chartValues = [];
+                            $chartColors = [];
                             foreach($speciesDistribution as $idx => $sp) {
-                                $pct = ($sp->count / $record_count) * 100;
-                                $nextPct = $currentPct + $pct;
-                                $hex = $hexColors[$idx % count($hexColors)];
-                                $gradientParts[] = "{$hex} {$currentPct}% {$nextPct}%";
-                                $currentPct = $nextPct;
+                                $chartLabels[] = $sp->fishBreed->name ?? 'Unknown';
+                                $chartValues[] = (int) $sp->count;
+                                $chartColors[] = $hexColors[$idx % count($hexColors)];
                             }
-                            $conicStyle = count($gradientParts) > 0 ? implode(', ', $gradientParts) : '#cbd5e1 0% 100%';
+                            $donutData = [
+                                'labels' => $chartLabels,
+                                'datasets' => [
+                                    [
+                                        'data' => $chartValues,
+                                        'backgroundColor' => $chartColors,
+                                    ],
+                                ],
+                            ];
+                            $centerText = [
+                                'label' => 'Species',
+                                'value' => count($speciesDistribution),
+                                'subtext' => $record_count . ' fish',
+                            ];
                         @endphp
 
                         <div class="flex flex-col sm:flex-row items-center gap-5 pt-2">
-                            <!-- Donut Pie Chart -->
-                            <div class="relative w-32 h-32 rounded-full shadow-md border-4 border-white dark:border-slate-800 shrink-0" style="background: conic-gradient({{ $conicStyle }});">
-                                <div class="absolute inset-3 rounded-full bg-white dark:bg-slate-900 flex flex-col items-center justify-center border border-slate-100 dark:border-slate-800 shadow-inner">
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase">Species</span>
-                                    <span class="text-lg font-black text-slate-900 dark:text-white font-mono leading-none my-0.5">{{ count($speciesDistribution) }}</span>
-                                    <span class="text-[10px] text-teal-600 dark:text-teal-400 font-bold font-mono">{{ $record_count }} fish</span>
-                                </div>
+                            <!-- Interactive Chart.js Donut -->
+                            <div class="relative w-36 h-36 shrink-0">
+                                <x-chart 
+                                    type="doughnut" 
+                                    :data="$donutData" 
+                                    :centerText="$centerText" 
+                                    height="h-36" 
+                                    id="profile-species-donut"
+                                />
                             </div>
 
                             <!-- Legend Breakdown -->

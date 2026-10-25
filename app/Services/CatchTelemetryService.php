@@ -260,6 +260,98 @@ class CatchTelemetryService
             ->take(5)
             ->values();
 
+        // Barometric Pressure vs Catch Velocity & Mean Length Dual Y-Axis Dataset
+        $pressureQuery = (clone $weatherJoinedRecords)
+            ->whereNotNull('lake_daily_weather.barometric_pressure')
+            ->selectRaw('
+                CASE
+                    WHEN lake_daily_weather.barometric_pressure < 1008 THEN "Low (<1008 hPa)"
+                    WHEN lake_daily_weather.barometric_pressure BETWEEN 1008 AND 1013.99 THEN "Falling (1008-1013)"
+                    WHEN lake_daily_weather.barometric_pressure BETWEEN 1014 AND 1018.99 THEN "Normal (1014-1018)"
+                    WHEN lake_daily_weather.barometric_pressure BETWEEN 1019 AND 1024.99 THEN "High (1019-1024)"
+                    ELSE "Very High (>1024 hPa)"
+                END as pressure_band,
+                COUNT(records.id) as catches_count,
+                AVG(records.length) as avg_length
+            ')
+            ->groupBy('pressure_band')
+            ->get()
+            ->keyBy('pressure_band');
+
+        $standardBands = [
+            'Low (<1008 hPa)',
+            'Falling (1008-1013)',
+            'Normal (1014-1018)',
+            'High (1019-1024)',
+            'Very High (>1024 hPa)',
+        ];
+
+        $pLabels = [];
+        $pCounts = [];
+        $pLengths = [];
+        foreach ($standardBands as $band) {
+            $item = $pressureQuery->get($band);
+            $pLabels[] = $band;
+            $pCounts[] = (int) ($item->catches_count ?? 0);
+            $pLengths[] = round((float) ($item->avg_length ?? 0), 1);
+        }
+
+        $pressureVelocityChart = [
+            'labels' => $pLabels,
+            'datasets' => [
+                [
+                    'type' => 'bar',
+                    'label' => 'Catches Logged',
+                    'data' => $pCounts,
+                    'backgroundColor' => 'rgba(20, 184, 166, 0.7)',
+                    'borderRadius' => 6,
+                    'yAxisID' => 'y',
+                    'order' => 2,
+                ],
+                [
+                    'type' => 'line',
+                    'label' => 'Mean Length (in.)',
+                    'data' => $pLengths,
+                    'borderColor' => '#fbbf24',
+                    'backgroundColor' => 'rgba(251, 191, 36, 0.2)',
+                    'pointBackgroundColor' => '#fbbf24',
+                    'borderWidth' => 2.5,
+                    'tension' => 0.35,
+                    'yAxisID' => 'y1',
+                    'order' => 1,
+                ],
+            ],
+            'options' => [
+                'scales' => [
+                    'y' => [
+                        'type' => 'linear',
+                        'display' => true,
+                        'position' => 'left',
+                        'title' => [
+                            'display' => true,
+                            'text' => 'Catches',
+                            'color' => '#14b8a6',
+                            'font' => ['size' => 10, 'weight' => 'bold'],
+                        ],
+                    ],
+                    'y1' => [
+                        'type' => 'linear',
+                        'display' => true,
+                        'position' => 'right',
+                        'grid' => [
+                            'drawOnChartArea' => false,
+                        ],
+                        'title' => [
+                            'display' => true,
+                            'text' => 'Avg Length (in.)',
+                            'color' => '#fbbf24',
+                            'font' => ['size' => 10, 'weight' => 'bold'],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
         return [
             'totalCatches' => $totalCatches,
             'totalInches' => $totalInches,
@@ -280,6 +372,7 @@ class CatchTelemetryService
             'avgWindSpeed' => $avgWindSpeed,
             'weatherDistribution' => $weatherDistribution,
             'lakeWeatherMatrix' => $lakeWeatherMatrix,
+            'pressureVelocityChart' => $pressureVelocityChart,
             'latestYear' => $latestYear,
             'prevYear' => $prevYear,
         ];

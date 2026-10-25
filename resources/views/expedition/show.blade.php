@@ -196,9 +196,30 @@
             <div>
                 @if(count($dailyCadence) > 0)
                     @php
-                        $maxCount = max($dailyCadence->pluck('count')->toArray());
-                        $maxCount = $maxCount > 0 ? $maxCount : 1;
+                        $cadenceLabels = [];
+                        $cadenceValues = [];
+                        $cadenceColors = [];
                         $peakDay = $dailyCadence->sortByDesc('count')->first();
+                        $peakCount = $peakDay?->count ?? 0;
+
+                        foreach ($dailyCadence as $day) {
+                            $cadenceLabels[] = date('M j', strtotime($day->caught));
+                            $cadenceValues[] = (int) $day->count;
+                            $cadenceColors[] = ($day->count === $peakCount && $peakCount > 0) ? '#0d9488' : '#14b8a6';
+                        }
+
+                        $cadenceData = [
+                            'labels' => $cadenceLabels,
+                            'datasets' => [
+                                [
+                                    'label' => 'Catches',
+                                    'data' => $cadenceValues,
+                                    'backgroundColor' => $cadenceColors,
+                                    'borderRadius' => 6,
+                                    'borderSkipped' => false,
+                                ],
+                            ],
+                        ];
                     @endphp
 
                     @if($peakDay)
@@ -211,23 +232,13 @@
                         </div>
                     @endif
 
-                    <div class="pt-1 space-y-2">
-                        <div class="h-60 flex items-end justify-between gap-2 px-1 pb-2 border-b border-slate-100 dark:border-slate-800">
-                            @foreach($dailyCadence as $day)
-                                @php
-                                    $heightPct = round(($day->count / $maxCount) * 100);
-                                    $heightPct = max($heightPct, 15);
-                                @endphp
-                                <div class="flex-1 h-full flex flex-col justify-end items-center gap-1.5 group relative">
-                                    <div class="w-full bg-slate-100 dark:bg-slate-800 hover:bg-teal-50 dark:hover:bg-teal-950/40 rounded-t-xl transition-all flex items-end justify-center overflow-hidden" style="height: 100%;">
-                                        <div class="w-full bg-gradient-to-t from-teal-600 to-teal-400 rounded-t-lg transition-all group-hover:from-teal-500 group-hover:to-teal-300 flex items-center justify-center text-[10px] font-mono font-bold text-white pb-1 shadow-sm" style="height: {{ $heightPct }}%;">
-                                            {{ $day->count }}
-                                        </div>
-                                    </div>
-                                    <span class="text-[9px] font-mono text-slate-600 dark:text-slate-400 font-bold truncate w-full text-center">{{ date('M j', strtotime($day->caught)) }}</span>
-                                </div>
-                            @endforeach
-                        </div>
+                    <div class="pt-1">
+                        <x-chart 
+                            type="bar" 
+                            :data="$cadenceData" 
+                            height="h-60" 
+                            id="expedition-cadence-bar"
+                        />
                     </div>
                 @else
                     <div class="text-center py-10 text-slate-400 dark:text-slate-500 text-xs italic">
@@ -259,26 +270,40 @@
                 @php
                     $hexColors = ['#0d9488', '#0284c7', '#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
                     $bgColors = ['bg-teal-500', 'bg-sky-500', 'bg-indigo-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500', 'bg-pink-500'];
-                    $gradientParts = [];
-                    $currentPct = 0;
+                    $chartLabels = [];
+                    $chartValues = [];
+                    $chartColors = [];
                     foreach($speciesDistribution as $idx => $sp) {
-                        $pct = ($sp->count / $totalRecords) * 100;
-                        $nextPct = $currentPct + $pct;
-                        $hex = $hexColors[$idx % count($hexColors)];
-                        $gradientParts[] = "{$hex} {$currentPct}% {$nextPct}%";
-                        $currentPct = $nextPct;
+                        $chartLabels[] = $sp->fishBreed->name ?? 'Unknown Species';
+                        $chartValues[] = (int) $sp->count;
+                        $chartColors[] = $hexColors[$idx % count($hexColors)];
                     }
-                    $conicStyle = count($gradientParts) > 0 ? implode(', ', $gradientParts) : '#cbd5e1 0% 100%';
+                    $donutData = [
+                        'labels' => $chartLabels,
+                        'datasets' => [
+                            [
+                                'data' => $chartValues,
+                                'backgroundColor' => $chartColors,
+                            ],
+                        ],
+                    ];
+                    $centerText = [
+                        'label' => 'Species',
+                        'value' => count($speciesDistribution),
+                        'subtext' => $totalRecords . ' fish',
+                    ];
                 @endphp
 
                 <div class="flex flex-col items-center gap-4 py-1">
-                    <!-- Donut Pie Chart -->
-                    <div class="relative w-36 h-36 rounded-full shadow-md border-4 border-white dark:border-slate-800 shrink-0 transition-transform hover:scale-105" style="background: conic-gradient({{ $conicStyle }});">
-                        <div class="absolute inset-4 rounded-full bg-white dark:bg-slate-900 flex flex-col items-center justify-center border border-slate-100 dark:border-slate-800 shadow-inner">
-                            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Species</span>
-                            <span class="text-xl font-black text-slate-900 dark:text-white font-mono leading-none my-0.5">{{ count($speciesDistribution) }}</span>
-                            <span class="text-[10px] text-teal-600 dark:text-teal-400 font-bold font-mono">{{ $totalRecords }} fish</span>
-                        </div>
+                    <!-- Interactive Chart.js Donut -->
+                    <div class="relative w-40 h-40 shrink-0">
+                        <x-chart 
+                            type="doughnut" 
+                            :data="$donutData" 
+                            :centerText="$centerText" 
+                            height="h-40" 
+                            id="expedition-species-donut"
+                        />
                     </div>
 
                     <!-- Legend Breakdown -->

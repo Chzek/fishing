@@ -244,7 +244,43 @@
         </x-card>
     </div>
 
-    <!-- 4. Weather Condition Distribution & Best Lake Analytics Section -->
+    <!-- 4. Tactical Barometric Pressure vs Strike Velocity & Specimen Size -->
+    @if(isset($pressureVelocityChart) && count($pressureVelocityChart['labels']) > 0)
+        <x-card 
+            title="Barometric Pressure vs Catch Velocity & Specimen Length" 
+            subtitle="Dual-axis atmospheric strike correlation: catch frequency paired with mean specimen length across pressure bands" 
+            icon="gauge" 
+            iconColor="teal" 
+            badge="Atmospheric Strike Matrix" 
+            badgeVariant="teal">
+            <div class="h-64 w-full pt-2">
+                <x-chart 
+                    type="bar" 
+                    :data="$pressureVelocityChart" 
+                    :options="$pressureVelocityChart['options'] ?? []" 
+                    height="h-64" 
+                    id="record-pressure-velocity-chart" 
+                />
+            </div>
+            <x-slot:footer>
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <div class="flex items-center gap-4">
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-3 h-3 rounded bg-teal-500/80"></span>
+                            <span class="font-medium text-slate-700 dark:text-slate-300">Catches Landed</span>
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-3 h-0.5 bg-amber-400"></span>
+                            <span class="font-medium text-slate-700 dark:text-slate-300">Mean Specimen Length (in.)</span>
+                        </span>
+                    </div>
+                    <span class="text-[11px] font-mono text-slate-400">Tactical Solunar & Atmospheric Telemetry</span>
+                </div>
+            </x-slot:footer>
+        </x-card>
+    @endif
+
+    <!-- 5. Weather Condition Distribution & Best Lake Analytics Section -->
     <x-card 
         title="Weather Condition Distribution & Top Producing Lakes" 
         subtitle="Atmospheric field telemetry breakdown and top performing waterbody for each weather condition" 
