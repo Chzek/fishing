@@ -5,9 +5,9 @@
     <x-statusAlert />
 
     @if (isset($angler))
-        <!-- Hero Angler Profile Header -->
-        <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="flex flex-col md:flex-row items-center gap-5 text-center md:text-left">
+        <!-- Hero Angler Profile Header with Integrated Merit Badge Carousel -->
+        <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col xl:flex-row items-center justify-between gap-6">
+            <div class="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left shrink-0">
                 <div class="relative">
                     <x-anglerAvatar :angler="$angler" size="xl" />
                     <div class="absolute -bottom-1 -right-1 bg-teal-500 text-white rounded-full p-1 shadow">
@@ -15,80 +15,39 @@
                     </div>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-extrabold text-white tracking-tight flex items-center justify-center md:justify-start gap-2">
+                    <h1 class="text-2xl font-extrabold text-white tracking-tight flex items-center justify-center sm:justify-start gap-2">
                         <span>{{ $angler->firstName }} {{ $angler->lastName }}</span>
                         <a href="/angler/{{ $angler->id }}/edit" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors" title="Edit Angler Profile">
                             <x-lucide-edit-3 class="w-4 h-4 text-teal-400" />
                         </a>
                     </h1>
-                    <p class="text-xs font-medium text-teal-400 mt-1 flex items-center justify-center md:justify-start gap-1.5">
+                    <p class="text-xs font-medium text-teal-400 mt-1 flex items-center justify-center sm:justify-start gap-1.5">
                         <x-lucide-anchor class="w-3.5 h-3.5 text-teal-400" />
                         <span>Registered Angler Logbook & Telemetry</span>
                     </p>
-                    @if($angler->bio)
-                        <p class="text-xs text-slate-300 mt-2 max-w-xl italic">"{{ $angler->bio }}"</p>
-                    @endif
-
-                    <!-- Merit Badge Honor Roll Preview -->
                     @if($angler->earnedBadges && $angler->earnedBadges->isNotEmpty())
                         @php
-                            $badgeCount = $angler->earnedBadges->count();
                             $totalPoints = $angler->earnedBadges->sum(fn ($b) => $b->badge->points ?? 0);
-                            $topBadges = $angler->earnedBadges->sortByDesc(function ($p) {
-                                return match(strtolower($p->badge->tier ?? 'bronze')) {
-                                    'platinum' => 4,
-                                    'gold' => 3,
-                                    'silver' => 2,
-                                    default => 1,
-                                };
-                            })->take(5);
-                            $remainingCount = $badgeCount - $topBadges->count();
                         @endphp
-                        <div class="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-slate-800/90">
-                            <!-- Summary Badge Pill Toggling Full Sash -->
-                            <button 
-                                type="button"
-                                @click="showSash = !showSash; if (showSash) { $nextTick(() => document.getElementById('merit-badge-sash')?.scrollIntoView({ behavior: 'smooth' })) }"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-950/80 hover:bg-teal-900 border text-xs font-semibold shadow-sm transition-all group shrink-0 cursor-pointer"
-                                :class="showSash ? 'border-teal-400 text-teal-200 bg-teal-900 ring-2 ring-teal-500/30' : 'border-teal-500/30 text-teal-300 hover:text-teal-200'"
-                                :aria-expanded="showSash"
-                                aria-controls="merit-badge-sash"
-                                title="Toggle Merit Badge Sash"
-                            >
-                                <x-lucide-award class="w-3.5 h-3.5 text-teal-400 group-hover:scale-110 transition-transform" />
-                                <span>{{ $badgeCount }} Badges</span>
-                                <span class="text-teal-600">·</span>
-                                <span class="font-mono text-amber-300 font-bold">{{ number_format($totalPoints) }} Pts</span>
-                                <span class="inline-flex transition-transform duration-200" :class="{ 'rotate-180': showSash }">
-                                    <x-lucide-chevron-down class="w-3.5 h-3.5 text-teal-400" />
-                                </span>
-                            </button>
-
-                            <!-- Top 5 Highlight Patches -->
-                            <div class="flex items-center gap-1.5 shrink-0">
-                                @foreach($topBadges as $badgePivot)
-                                    <x-meritBadge :badgePivot="$badgePivot" size="sm" />
-                                @endforeach
-
-                                @if($remainingCount > 0)
-                                    <button 
-                                        type="button"
-                                        @click="showSash = !showSash; if (showSash) { $nextTick(() => document.getElementById('merit-badge-sash')?.scrollIntoView({ behavior: 'smooth' })) }"
-                                        class="inline-flex items-center justify-center h-8 px-2.5 rounded-full text-[11px] font-bold border transition-colors cursor-pointer"
-                                        :class="showSash ? 'bg-teal-900 text-teal-100 border-teal-500 shadow-sm' : 'bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700'"
-                                        :aria-expanded="showSash"
-                                        aria-controls="merit-badge-sash"
-                                        title="Toggle all {{ $badgeCount }} merit badges in sash"
-                                    >
-                                        <span x-text="showSash ? 'Hide Sash ↑' : '+{{ $remainingCount }} more →'">+{{ $remainingCount }} more →</span>
-                                    </button>
-                                @endif
-                            </div>
+                        <div class="mt-2.5 flex items-center justify-center sm:justify-start">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-slate-950/80 border border-slate-800 text-slate-300 text-[11px]">
+                                <span class="text-slate-400 uppercase tracking-wider font-semibold text-[10px]">Points:</span>
+                                <span class="font-mono font-bold text-amber-300">{{ number_format($totalPoints) }}</span>
+                            </span>
                         </div>
+                    @endif
+                    @if($angler->bio)
+                        <p class="text-xs text-slate-300 mt-2 max-w-sm italic">"{{ $angler->bio }}"</p>
                     @endif
                 </div>
             </div>
 
+            <!-- Overlapping Merit Badge Carousel in Hero Center -->
+            <div class="flex-1 min-w-0 w-full overflow-hidden flex items-center justify-center">
+                <livewire:components.merit-badge-carousel :angler="$angler" size="lg" :boxed="false" :showHeader="false" :maxVisible="12" />
+            </div>
+
+            <!-- Action Buttons -->
             <div class="flex items-center gap-3 shrink-0">
                 <a href="{{ url('/record/quick') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white text-xs font-semibold py-2.5 px-4 rounded-xl shadow-lg shadow-teal-950/40 transition-all">
                     <x-lucide-zap class="w-4 h-4 text-teal-200" />
@@ -103,9 +62,6 @@
             <x-kpiMetric label="Fish Caught" :value="$record_count" icon="fish" color="emerald" subtext="Logbook Catches" subtextIcon="trending-up" />
             <x-kpiMetric label="Expeditions" :value="$crews" icon="ship" color="sky" subtext="Crew Trips" subtextIcon="navigation" />
         </div>
-
-        <!-- Interactive Merit Badge Carousel Ribbon -->
-        <livewire:components.merit-badge-carousel :angler="$angler" title="Career Merit Badges" />
 
         <!-- Dedicated Merit Badge Sash Showcase -->
         <x-meritBadgeSash :angler="$angler" />

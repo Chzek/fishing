@@ -1,37 +1,37 @@
 @php
     $dimClass = match($size) {
         'sm' => 'w-10 h-10',
-        'lg' => 'w-16 h-16 md:w-18 md:h-18',
+        'lg' => 'w-16 h-16 md:w-20 md:h-20 lg:w-[82px] lg:h-[82px]',
         default => 'w-12 h-12 md:w-14 md:h-14',
     };
     $marginClass = match($size) {
         'sm' => '-ml-3',
-        'lg' => '-ml-6 md:-ml-7',
+        'lg' => '-ml-5 md:-ml-7 lg:-ml-8',
         default => '-ml-4 md:-ml-5',
     };
     $iconDimClass = match($size) {
         'sm' => 'w-5 h-5',
-        'lg' => 'w-8 h-8',
+        'lg' => 'w-8 h-8 md:w-10 md:h-10',
         default => 'w-6 h-6',
     };
     $pipDimClass = match($size) {
         'sm' => 'w-2.5 h-2.5',
-        'lg' => 'w-3.5 h-3.5',
+        'lg' => 'w-3.5 h-3.5 md:w-4 md:h-4',
         default => 'w-3 h-3',
     };
     $shiftPx = match($size) {
         'sm' => 22,
-        'lg' => 38,
+        'lg' => 44,
         default => 30,
     };
     $liftPx = match($size) {
         'sm' => 6,
-        'lg' => 10,
+        'lg' => 12,
         default => 8,
     };
     $scaleVal = match($size) {
         'sm' => 1.22,
-        'lg' => 1.3,
+        'lg' => 1.26,
         default => 1.28,
     };
     $totalBadges = count($badges);
@@ -39,7 +39,7 @@
 
 <div 
     wire:ignore.self 
-    class="isolate w-full bg-slate-900/90 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-md relative overflow-visible"
+    class="isolate w-full relative overflow-visible {{ ($boxed ?? true) ? 'bg-slate-900/90 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-md' : 'p-0' }}"
     x-data="{
         total: {{ $totalBadges }},
         shift: {{ $shiftPx }},
@@ -111,55 +111,59 @@
     @keydown.arrow-left.prevent="focusPrevious()"
     @keydown.arrow-right.prevent="focusNext()"
 >
-    <!-- Header: Title, Total Points, Count & Sash Toggle Link -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80 mb-3">
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
-                <x-lucide-award class="w-4 h-4" />
-            </div>
-            <div>
-                <h3 class="text-sm font-bold text-white tracking-tight flex items-center gap-2">
-                    <span>{{ $title ?? 'Merit Badge Carousel' }}</span>
-                    @if($showCount && $totalCount > 0)
-                        <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300">
-                            {{ $totalCount }} {{ \Illuminate\Support\Str::plural('Earned', $totalCount) }}
-                        </span>
-                    @endif
-                </h3>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-2 text-xs">
-            @if($showPoints && $totalPoints > 0)
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 text-[11px]">
-                    <span class="text-slate-400 uppercase tracking-wider font-semibold text-[10px]">Points:</span>
-                    <span class="font-mono font-bold text-amber-300">{{ number_format($totalPoints) }}</span>
+    @if($showHeader ?? true)
+        <!-- Header: Title, Total Points, Count & Sash Toggle Link -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80 mb-3">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+                    <x-lucide-award class="w-4 h-4" />
                 </div>
-            @endif
+                <div>
+                    <h3 class="text-sm font-bold text-white tracking-tight flex items-center gap-2">
+                        <span>{{ $title ?? 'Merit Badge Carousel' }}</span>
+                        @if($showCount && $totalCount > 0)
+                            <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300">
+                                {{ $totalCount }} {{ \Illuminate\Support\Str::plural('Earned', $totalCount) }}
+                            </span>
+                        @endif
+                    </h3>
+                </div>
+            </div>
 
-            @if($showSashLink)
-                <button 
-                    type="button"
-                    @click="$dispatch('toggle-merit-sash')"
-                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700 text-xs font-semibold transition-colors cursor-pointer"
-                    title="Toggle Full Merit Badge Sash"
-                >
-                    <x-lucide-layout-grid class="w-3.5 h-3.5 text-teal-400" />
-                    <span>View All</span>
-                </button>
-            @endif
+            <div class="flex items-center gap-2 text-xs">
+                @if($showPoints && $totalPoints > 0)
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-300 text-[11px]">
+                        <span class="text-slate-400 uppercase tracking-wider font-semibold text-[10px]">Points:</span>
+                        <span class="font-mono font-bold text-amber-300">{{ number_format($totalPoints) }}</span>
+                    </div>
+                @endif
+
+                @if($showSashLink)
+                    <button 
+                        type="button"
+                        @click="$dispatch('toggle-merit-sash')"
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                        title="Toggle Full Merit Badge Sash"
+                    >
+                        <x-lucide-layout-grid class="w-3.5 h-3.5 text-teal-400" />
+                        <span>View All</span>
+                    </button>
+                @endif
+            </div>
         </div>
-    </div>
+    @endif
 
     @if($totalBadges === 0)
-        <!-- Empty State Ribbon -->
-        <div class="py-6 px-4 rounded-xl border border-dashed border-slate-800 bg-slate-950/40 text-center flex flex-col items-center justify-center space-y-1.5">
-            <x-lucide-shield-alert class="w-7 h-7 text-slate-600 mb-1" />
-            <p class="text-xs font-semibold text-slate-400">No merit badges earned yet</p>
-            <p class="text-[11px] text-slate-500 max-w-sm">
-                Log expedition catches to unlock career scouting patches, lunker milestones, and conservation trophies.
-            </p>
-        </div>
+        @if($boxed ?? true)
+            <!-- Empty State Ribbon -->
+            <div class="py-6 px-4 rounded-xl border border-dashed border-slate-800 bg-slate-950/40 text-center flex flex-col items-center justify-center space-y-1.5">
+                <x-lucide-shield-alert class="w-7 h-7 text-slate-600 mb-1" />
+                <p class="text-xs font-semibold text-slate-400">No merit badges earned yet</p>
+                <p class="text-[11px] text-slate-500 max-w-sm">
+                    Log catches to unlock career scouting patches, lunker milestones, and conservation trophies.
+                </p>
+            </div>
+        @endif
     @else
         <!-- Overlapping Merit Badge Track -->
         <div class="relative py-4 px-2 overflow-x-auto overflow-y-visible no-scrollbar">

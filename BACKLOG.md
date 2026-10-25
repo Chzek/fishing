@@ -662,26 +662,27 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
     - **Automated Verification**:
 66. **Interactive Overlapping Merit Badge Carousel (`@livewire('components.merit-badge-carousel')`)**:
     - **Livewire 3 Component Architecture (`MeritBadgeCarousel.php`)**:
-      * Created [`app/Livewire/Components/MeritBadgeCarousel.php`](file:///home/gmroczek/git/fishing/app/Livewire/Components/MeritBadgeCarousel.php) supporting dynamic data ingestion via `$badges` collection/array, `$angler` model/ID, or `$expedition` model/ID.
+      * Created [`app/Livewire/Components/MeritBadgeCarousel.php`](file:///home/gmroczek/git/fishing/app/Livewire/Components/MeritBadgeCarousel.php) supporting dynamic data ingestion via `$badges` collection/array or `$angler` model/ID.
       * Built lightweight computed DTO normalization (`#[Computed]`) avoiding heavy Eloquent model serialization over the wire.
+      * Added flexible layout support via `:boxed="false"` (for seamless integration inside hero banners) and `:showHeader="false"` (to suppress nested titles/action bars).
       * Handled tier styling, points tallying, awarded dates, trigger summaries, and overflow slice calculations (`$maxVisible`).
     - **Blade & Alpine.js View Layer (`merit-badge-carousel.blade.php`)**:
       * Engineered [`resources/views/livewire/components/merit-badge-carousel.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/components/merit-badge-carousel.blade.php) with `wire:ignore.self` and immutable `wire:key` item bindings for DOM morphing resilience.
       * Solved hit-box jitter and mouse hysteresis loops via a two-tier DOM architecture: stationary hit-box layout anchors with decoupled, GPU-accelerated inner visual presenters (`transform-gpu will-change-transform pointer-events-none`).
-      * Implemented smooth "curtain expansion effect": items to the left shift left (`-30px`), items to the right shift right (`+30px`), and active item scales up (`1.28x`), lifts vertically (`-8px`), and elevates to `z-50`.
+      * Enhanced `size="lg"` dimensions to large, crisp circular badges (`w-16 h-16 md:w-20 md:h-20 lg:w-[82px] lg:h-[82px]`) with calibrated overlap (`-ml-5 md:-ml-7 lg:-ml-8`) and wide curtain shifts (`+44px`).
+      * Implemented smooth "curtain expansion effect": items to the left shift left, items to the right shift right, and active item scales up (`1.26x`), lifts vertically (`-12px`), and elevates to `z-50`.
       * Full accessibility and keyboard navigation (`ArrowLeft`, `ArrowRight`, `Escape`) with focus-trap protection.
       * Interactive floating popover card rendering badge name, tier pill, points, description, awarded timestamp, trigger context, and catch record link.
       * Tier radiance glows (Platinum cyan, Gold amber, Silver slate, Bronze amber-800) and embroidered patch artwork with stitched twill fallback.
       * Interactive overflow capsule (`+X More`) and "View All" header action dispatching `@toggle-merit-sash`.
-    - **Target View Integrations**:
-      * **Angler Profile (`/angler/{id}`)**: Embedded carousel ribbon in [`resources/views/angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) with `@toggle-merit-sash` integration to smoothly expand `<x-meritBadgeSash>`.
-      * **Expedition Detail (`/expedition/{id}`)**: Embedded trip merit badges carousel in [`resources/views/expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php) alongside Trip Brag Board and Accolades.
-      * **User Profile (`/profile`)**: Embedded career badges carousel in [`resources/views/profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php).
+    - **Target View Integrations & Hero Header Modernization**:
+      * **Angler Profile (`/angler/{id}`)**: Refactored the hero header card in [`resources/views/angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) to embed the expanded `size="lg"` carousel directly into the center horizontal span, alongside avatar, name, telemetry subtitle, and points badge. Eliminated the redundant 5-badge preview and removed the lower standalone carousel card.
+      * **User Profile (`/profile`)**: Mirrored the hero banner modernization in [`resources/views/profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php).
+      * **Expedition Cleanliness**: Confirmed merit badges belong to anglers rather than trips; removed carousel from [`resources/views/expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php).
     - **Automated Verification**:
-      * Created [`tests/Feature/Livewire/MeritBadgeCarouselTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/Livewire/MeritBadgeCarouselTest.php) with 8 feature tests (28 assertions) covering empty states, collection props, angler/expedition binding, overflow capsules, and route rendering on `/angler/{id}`, `/expedition/{id}`, and `/profile`.
-      * Verified with `./vendor/bin/sail test --filter=MeritBadgeCarouselTest` (100% pass rate).
+      * Updated [`tests/Feature/Livewire/MeritBadgeCarouselTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/Livewire/MeritBadgeCarouselTest.php) with 9 feature tests (32 assertions) covering empty states, collection props, angler binding, unboxed hero header mode, overflow capsules, and route assertions for `/angler/{id}`, `/expedition/{id}`, and `/profile`.
+      * Verified all tests pass via `./vendor/bin/sail test --filter=MeritBadgeCarouselTest`.
       * Verified Vite production bundle compilation via `./vendor/bin/sail npm run build`.
-      * Verified complete application test suite passing cleanly (**377 passing tests, 1,696 assertions**) with zero regressions.
 
 
 
