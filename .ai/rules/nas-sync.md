@@ -5,7 +5,7 @@
 ## Invariants
 
 1. **Two-Way Sync Lifecycle & State Invariants**:
-   - Maintain `sync_status` (`pending_upstream`, `synced`) and `synced_at` timestamps across all 13 database models.
+   - Maintain `sync_status` (`pending_upstream`, `synced`) and `synced_at` timestamps across all 17 database models.
    - When pulling records from the remote NAS server, preserve local IDs and synced statuses.
    - Use last-write-wins timestamp resolution for concurrent model updates.
 

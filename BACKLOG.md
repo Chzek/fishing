@@ -651,6 +651,7 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
     - **Angler Multi-Skill Radar**:
       * Extended [`AnglerStatsController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Angler/AnglerStatsController.php) to calculate normalized 5-axis crew comparison metrics (Volume, Lunker Max, C&R Rate, Species Diversity, Active Waters) rendered as an interactive radar chart in [`angler/stats.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/stats.blade.php).
     - **Automated Verification**:
+      * Added unit and feature tests in [`CatchTelemetryServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Unit/CatchTelemetryServiceTest.php) and verified controller chart view responses.
 66. **Interactive Overlapping Merit Badge Carousel (`@livewire('components.merit-badge-carousel')`)**:
     - **Livewire 3 Component Architecture (`MeritBadgeCarousel.php`)**:
       * Created [`app/Livewire/Components/MeritBadgeCarousel.php`](file:///home/gmroczek/git/fishing/app/Livewire/Components/MeritBadgeCarousel.php) supporting dynamic data ingestion via `$badges` collection/array or `$angler` model/ID.
@@ -693,6 +694,23 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
       * Updated [`tests/Feature/Livewire/MeritBadgeCarouselTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/Livewire/MeritBadgeCarouselTest.php) with 12 feature tests (53 assertions) covering empty states, collection props, angler binding, unboxed hero header mode, telemetry inspector strips, modal window teleportation markup, and catch photo / telemetry extraction.
       * Verified related controller regression suites pass cleanly (21 passed, 67 assertions across `AnglerControllerTest`, `ProfileControllerTest`, and `ExpeditionControllerTest`).
       * Verified Vite production bundle compilation via `./vendor/bin/sail npm run build` (built cleanly in 2.25s).
+
+67. **Two-Way Synology NAS Synchronization for Merit Badges & Awarded Angler Badges (P3.1)**:
+    - **17-Model Two-Way Sync Matrix Integration**:
+      * Expanded the synchronization engine from 15 models to all 17 database models by adding `Badge` (`badges`) and `AnglerBadge` (`angler_badges`) into [`NasSyncService.php`](file:///home/gmroczek/git/fishing/app/Services/NasSyncService.php) and [`SyncApiController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Api/v1/SyncApiController.php).
+      * Resolved the root cause of merit badges missing on the Synology NAS instance: 42 catalog badges and 301 awarded badges were queued locally with `pending_upstream` but were omitted from the sync serialization maps.
+      * Enforced dependency ordering in `$modelMap` ensuring `badges` and prerequisite models (`anglers`, `records`, `expeditions`) sync before dependent `angler_badges` pivot records.
+    - **Cross-Instance Resilience & Integrity Protection**:
+      * Added `awarded_at` datetime parsing across push and pull ingestion pipelines.
+      * Implemented fallback slug-based resolution (`$itemData['slug']`) for `badges` and composite key resolution (`['anglers_id', 'badge_id']`) for `angler_badges` to prevent duplicate key constraint violations when databases are seeded independently with different UUIDs.
+      * Attached `badge_slug` metadata in `angler_badges` sync payloads, allowing target instances to automatically resolve matching local badge primary keys.
+      * Protected existing records during sync by unsetting incoming `id` from update attributes to ensure existing primary keys remain immutable.
+    - **Automated Test Coverage**:
+      * Updated detailed model matrix assertions in [`tests/Feature/NasSyncServiceTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncServiceTest.php) for all 17 models and added `it_syncs_badges_and_awarded_angler_badges_two_ways`.
+      * Added `admin_can_push_and_pull_badges_and_angler_badges` in [`tests/Feature/NasSyncApiTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncApiTest.php).
+      * Updated `nas-sync-architect` skill and `.ai/rules/nas-sync.md` to reflect 17 synchronized database models.
+      * Verified entire test suite passing: **383 passed (1,743 assertions)** with 0 failures and 0 errors.
+
 
 
 

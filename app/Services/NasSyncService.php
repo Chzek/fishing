@@ -3,6 +3,8 @@
 namespace Fishinglog\Services;
 
 use Fishinglog\Models\Angler;
+use Fishinglog\Models\AnglerBadge;
+use Fishinglog\Models\Badge;
 use Fishinglog\Models\Crew;
 use Fishinglog\Models\Expedition;
 use Fishinglog\Models\FishBreed;
@@ -45,6 +47,8 @@ class NasSyncService
         'photos' => Photo::class,
         'journal_entries' => JournalEntry::class,
         'journal_pages' => JournalPage::class,
+        'badges' => Badge::class,
+        'angler_badges' => AnglerBadge::class,
     ];
 
     protected array $modelLabels = [
@@ -63,6 +67,8 @@ class NasSyncService
         'users' => 'Users',
         'journal_entries' => 'Journal Entries',
         'journal_pages' => 'Journal Pages',
+        'badges' => 'Merit Badges',
+        'angler_badges' => 'Awarded Badges',
     ];
 
     public function __construct(?string $nasUrl = null, ?string $apiToken = null, ?MediaSyncManager $mediaSyncManager = null)
@@ -231,7 +237,7 @@ class NasSyncService
     }
 
     /**
-     * Get detailed synchronization matrix and outbox status across all 13 models.
+     * Get detailed synchronization matrix and outbox status across all 17 models.
      */
     public function getDetailedModelMatrix(): array
     {
@@ -342,6 +348,9 @@ class NasSyncService
                     if ($key === 'journal_entries') {
                         $data['angler_ids'] = $item->anglers()->pluck('anglers.id')->all();
                         $data['lake_ids'] = $item->lakes()->pluck('lakes.id')->all();
+                    }
+                    if ($key === 'angler_badges') {
+                        $data['badge_slug'] = $item->badge?->slug;
                     }
                     if ($key === 'anglers' && !empty($item->avatar) && Storage::disk('public')->exists('avatars/' . $item->avatar)) {
                         $avatarPath = 'avatars/' . $item->avatar;
@@ -472,6 +481,16 @@ class NasSyncService
                     ? $modelClass::withTrashed()->find($id)
                     : $modelClass::find($id);
 
+                if ($key === 'badges' && !$existing && !empty($remoteItem['slug'])) {
+                    $existing = Badge::where('slug', $remoteItem['slug'])->first();
+                }
+
+                if ($key === 'angler_badges' && !$existing && !empty($remoteItem['anglers_id']) && !empty($remoteItem['badge_id'])) {
+                    $existing = AnglerBadge::where('anglers_id', $remoteItem['anglers_id'])
+                        ->where('badge_id', $remoteItem['badge_id'])
+                        ->first();
+                }
+
                 $attributes = $remoteItem;
                 $attributes['id'] = $id;
                 unset($attributes['uuid']);
@@ -497,6 +516,9 @@ class NasSyncService
                 if (!empty($attributes['caught'])) {
                     $attributes['caught'] = Carbon::parse($attributes['caught']);
                 }
+                if (!empty($attributes['awarded_at'])) {
+                    $attributes['awarded_at'] = Carbon::parse($attributes['awarded_at']);
+                }
 
                 $entity = $existing ?? new $modelClass();
                 $columns = \Illuminate\Support\Facades\Schema::getColumnListing($entity->getTable());
@@ -505,6 +527,19 @@ class NasSyncService
                 // Strip raw array spatial location object to allow latitude/longitude to cleanly populate Spatial Point
                 if (isset($filtered['location']) && is_array($filtered['location'])) {
                     unset($filtered['location']);
+                }
+
+                if ($key === 'angler_badges') {
+                    if (!empty($filtered['badge_id']) && !Badge::where('id', $filtered['badge_id'])->exists() && !empty($remoteItem['badge_slug'])) {
+                        $matchedBadge = Badge::where('slug', $remoteItem['badge_slug'])->first();
+                        if ($matchedBadge) {
+                            $filtered['badge_id'] = $matchedBadge->id;
+                        }
+                    }
+                }
+
+                if ($existing) {
+                    unset($filtered['id']);
                 }
 
                 if ($key === 'users') {
