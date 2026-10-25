@@ -14,6 +14,8 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
 
 ### 🚀 Priority 2 (P2): Tactical Intelligence, UI/UX & Spatial Visualizations
 
+_Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations (Chart.js & Livewire/Alpine) — See Completed Milestone #65 below._
+
 #### 1. Map Explorer Context Menu: 1-Click "Create Lake" & "Quick Catch" Pinning
 - **Agents**: `ui-ux-auditor`, `livewire-architect`
 - **Impact**: **High** (Field Mapping & Catch Logging Speed)
@@ -45,18 +47,7 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
   - Integrate a "Filter by Species" dropdown in `GenericDataTable` for lakes.
   - Enhance Map Explorer push-pin popovers with species avatar badges to quickly identify target fisheries on the water.
 
-#### 5. Interactive JavaScript Telemetry Visualizations (Chart.js & Livewire/Alpine) *(Completed)*
-- **Agents**: `ui-ux-auditor`, `livewire-architect`, `seasoned-angler-advisor`
-- **Impact**: **High** (Tactical Angling Analytics & Data Science)
-- **Status**: **Completed (Merged via feature/p2-5-chartjs-telemetry)**
-- **Description**: Replaced static CSS conic-gradients and manual HTML div bars with a modular, hardware-accelerated Chart.js + Alpine.js architecture wrapped in reusable `<x-chart />` Blade components:
-  * **Species Ratio Interactive Donut**: Replaced duplicate conic-gradient implementations in `expedition/show.blade.php`, `profile/show.blade.php`, and `angler/profile.blade.php` with interactive doughnut charts, center cutout metrics (`X Species · Y Fish`), and synchronized hover/legend states.
-  * **Daily / Monthly Catch Cadence Bars**: Animated multi-series bar charts with trip pace metrics in `expedition/show.blade.php`, `angler/stats.blade.php`, and `fish/show.blade.php`.
-  * **Barometric Pressure vs Catch Velocity**: 24-hour dual Y-axis spline & bar chart in `record/index.blade.php` correlating barometric strike windows with mean catch lengths.
-  * **Angler Multi-Skill Radar**: 5-axis crew comparison chart (Volume, Lunker Max, C&R %, Species Diversity, Active Waters) in `angler/stats.blade.php`.
-  * **Modular Alpine Architecture**: `x-data="telemetryChart(...)"` with canvas lifecycle management, `chart.destroy()` cleanup on unmount, `wire:ignore` Livewire 3 DOM morphing protection, and automatic dark/light theme switching.
-
-#### 6. Outdoor Boat Usability & Responsive Table-to-Card Stack
+#### 5. Outdoor Boat Usability & Responsive Table-to-Card Stack
 - **Agents**: `ui-ux-auditor`, `livewire-architect`, `seasoned-angler-advisor`
 - **Impact**: **Medium-High** (Mobile & Boat Cockpit Usability)
 - **Description**: Optimize user experience for open-water boat navigation under direct sunlight and high glare:
@@ -64,7 +55,7 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
   * **44px Tap Target Enforcement**: Audit and expand touch boundaries on all mobile filter pills, table sorting chevrons, and pagination buttons.
   * **WCAG AAA Sunlight Contrast**: Elevate secondary text contrast ratios to $\ge 7:1$ to prevent washout on polarized mobile screens.
 
-#### 7. Fish Species Illustration Asset Pipeline: Alpha Transparency & WebP/PNG Conversion
+#### 6. Fish Species Illustration Asset Pipeline: Alpha Transparency & WebP/PNG Conversion
 - **Agents**: `ui-ux-auditor`, `laravel-architect`
 - **Impact**: **Medium** (Visual Polish & Dark Mode Aesthetic)
 - **Description**: Upgrade the fish species and lure asset library with true alpha transparency:
@@ -72,7 +63,7 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
   * **Modern Alpha Format**: Convert assets to transparent `.webp` / `.png` with lossless compression, updated in `FishBreed` model fallback resolution.
   * **Subtle Dark Mode Glow / Drop Shadow**: Apply subtle ambient illumination filters so dark-scaled species (e.g., Largemouth Bass, Walleye) remain distinctly visible against dark slate backgrounds.
 
-#### 8. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
+#### 7. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
 - **Agents**: `seasoned-angler-advisor`, `laravel-architect`, `ui-ux-auditor`
 - **Impact**: **High** (Custom Fishery Intelligence & Depth Mapping)
 - **Description**: Build an ingestion pipeline for personal Humminbird Helix AutoChart Live sonar data (`acdata` folder / AutoChart Zero Line SD card, AutoChart PC exports, CSV/XYZ soundings, and GeoJSON contour vectors):
@@ -81,26 +72,26 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
   * **Interactive Map Layer**: Render private, high-definition (1-foot / 3-foot) bathymetric contours on both the **Map Explorer** (`/map/explorer`) and **Lake Dossier** (`/lake/{id}`) with custom color ramping, depth labels in feet, and bottom hardness / weedline overlays.
   * **Offline Support**: Integrate custom lake contours into the Offline Region Downloader (`/map/offline`) for 100% offline navigation out on the water.
 
-#### 9. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
+#### 8. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
 - **Agents**: `query-profiler-optimizer`, `laravel-architect`
 - **Impact**: **Medium** (Database Query Optimization)
 - **Description**: Consolidate the 5 separate count and aggregation queries in `LakeController@show` (total catches, longest catch, heaviest catch, unique visits, unique anglers) into a consolidated single-pass aggregation query.
 
-#### 10. Extract Angler Telemetry & Profile Service (`AnglerTelemetryService`)
+#### 9. Extract Angler Telemetry & Profile Service (`AnglerTelemetryService`)
 - **Agents**: `laravel-architect`, `query-profiler-optimizer`
 - **Impact**: **Medium-High** (Code Deduplication & Telemetry Consistency)
 - **Description**:
   - Consolidate ~80 lines of duplicate personal best calculations (`$longest`, `$fattest`), species breakdowns (`COUNT(*)`, `AVG(length)`, `AVG(weight)`), and career accolades between `AnglerProfileController@show` and `ProfileController@show`.
   - Unify into a dedicated `AnglerTelemetryService` mirroring the domain architecture of `ExpeditionAnalyticsService` and `CatchTelemetryService`.
 
-#### 11. Standardize Action Classes for Catch Updates & Lake Management (`UpdateCatchRecordAction`, `LakeActions`)
+#### 10. Standardize Action Classes for Catch Updates & Lake Management (`UpdateCatchRecordAction`, `LakeActions`)
 - **Agents**: `laravel-architect`
 - **Impact**: **Medium** (Architecture Standardization & Single-Responsibility)
 - **Description**:
   - Create `UpdateCatchRecordAction` to mirror `CreateCatchRecordAction`, eliminating manual 12-property assignments and duplicate photo handling in `RecordController@update`.
   - Create `CreateLakeAction` and `UpdateLakeAction` to centralize coordinates sanitization, spatial validation, and automated GIS fishing zone detection (`GeoZoneDetector::detectZone()`), refactoring `LakeController@store` and `LakeController@update`.
 
-#### 12. Extract Dedicated Merit Badge Honor Roll Blade Component (`<x-meritBadgeHonorRoll />`)
+#### 11. Extract Dedicated Merit Badge Honor Roll Blade Component (`<x-meritBadgeHonorRoll />`)
 - **Agents**: `ui-ux-auditor`, `livewire-architect`
 - **Impact**: **Medium** (UI Component Reuse & Consistency)
 - **Description**:
