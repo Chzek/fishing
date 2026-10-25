@@ -677,10 +677,13 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
         - Added mouse wheel horizontal scrolling translation (`@wheel.prevent="handleWheel($event)"`).
         - Implemented intuitive grab-and-drag panning across the track (`mousedown`, `mousemove`, `mouseup`).
         - Displays the full earned badge collection continuously without arbitrary truncation or forcing users into separate cards.
+        - Fully eliminated native browser scrollbars cross-browser using `.no-scrollbar` in `resources/css/app.css`, scoped `.merit-scroll-track` CSS rules, and inline styling.
       * **Dynamic Merit Badge Telemetry Inspector Strip**:
         - Positioned a dedicated telemetry strip directly underneath the carousel track.
-        - Provides a resting/idle state showcasing the angler's "Latest Milestone".
-        - Instantly reacts to mouse hover and keyboard navigation displaying badge name, tier pill, points pill (`+X pts`), category, milestone description, awarded date timestamp, real catch trigger context, and direct link to catch records (`/record/{id}`).
+        - Isolated JSON dataset into a secure `<script type="application/json">` container with hex-encoded entity flags (`JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT`), resolving JavaScript syntax crashes on single-quote apostrophes in catch trigger summaries (e.g., `Scott's Dam`).
+        - Replaced fragile nested `<template x-if>` blocks with direct DOM `<div x-show>` elements pre-rendered on the server, guaranteeing immediate visibility and zero hydration flickering.
+        - Provides a resting/idle state showcasing the angler's "Latest Milestone", instantly updating on hover or keyboard navigation to display badge name, tier pill, points pill (`+X pts`), category, milestone description, awarded date timestamp, real catch trigger context, and direct link to catch records (`/record/{id}`).
+        - Removed `overflow-hidden` on hero center column wrappers in [`resources/views/angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) and [`resources/views/profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php) to prevent clipping.
       * Full accessibility and keyboard navigation (`ArrowLeft`, `ArrowRight`, `Escape`) with focus-trap protection.
     - **Target View Integrations & Hero Header Modernization**:
       * **Angler Profile (`/angler/{id}`)**: Refactored the hero header card in [`resources/views/angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) to embed the expanded `size="lg"` continuous carousel directly into the center horizontal span, alongside avatar, name, telemetry subtitle, and points badge. Eliminated the redundant 5-badge preview and removed the lower standalone carousel card.
@@ -689,7 +692,7 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
     - **Automated Verification**:
       * Updated [`tests/Feature/Livewire/MeritBadgeCarouselTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/Livewire/MeritBadgeCarouselTest.php) with 10 feature tests (36 assertions) covering empty states, collection props, angler binding, unboxed hero header mode, telemetry inspector strips, and route assertions for `/angler/{id}`, `/expedition/{id}`, and `/profile`.
       * Verified related controller regression suites pass cleanly (21 passed, 67 assertions across `AnglerControllerTest`, `ProfileControllerTest`, and `ExpeditionControllerTest`).
-      * Verified Vite production bundle compilation via `./vendor/bin/sail npm run build` (built cleanly in 5.76s).
+      * Verified Vite production bundle compilation via `./vendor/bin/sail npm run build` (built cleanly in 5.00s).
 
 
 

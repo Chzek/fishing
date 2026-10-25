@@ -43,7 +43,7 @@
             </div>
 
             <!-- Overlapping Merit Badge Carousel in Hero Center with Continuous Scroll & Inspector -->
-            <div class="flex-1 min-w-0 w-full overflow-hidden flex flex-col justify-center">
+            <div class="flex-1 min-w-0 w-full flex flex-col justify-center">
                 <livewire:components.merit-badge-carousel :angler="$angler" size="lg" :boxed="false" :showHeader="false" />
             </div>
 

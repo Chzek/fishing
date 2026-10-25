@@ -32,11 +32,15 @@
     $totalBadges = count($badges);
 @endphp
 
+<script type="application/json" id="badge-data-{{ $carouselId }}">
+    {!! json_encode($badges, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) !!}
+</script>
+
 <div 
     wire:ignore.self 
     class="isolate w-full relative overflow-visible {{ ($boxed ?? true) ? 'bg-slate-900/90 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-md' : 'p-0' }}"
     x-data="{
-        badges: @js($badges),
+        badges: JSON.parse(document.getElementById('badge-data-{{ $carouselId }}')?.textContent || '[]'),
         total: {{ $totalBadges }},
         shift: {{ $shiftPx }},
         scale: {{ $scaleVal }},
@@ -249,10 +253,23 @@
             </div>
         @endif
     @else
+        <style>
+            .merit-scroll-track::-webkit-scrollbar {
+                display: none !important;
+                width: 0 !important;
+                height: 0 !important;
+            }
+            .merit-scroll-track {
+                -ms-overflow-style: none !important;
+                scrollbar-width: none !important;
+            }
+        </style>
+
         <!-- Overlapping Merit Badge Track with Continuous Wheel/Edge Scrolling -->
         <div 
             x-ref="scrollTrack"
-            class="relative py-4 px-2 overflow-x-auto overflow-y-visible no-scrollbar cursor-grab active:cursor-grabbing select-none scroll-smooth"
+            class="merit-scroll-track relative py-4 px-2 overflow-x-auto overflow-y-visible no-scrollbar cursor-grab active:cursor-grabbing select-none scroll-smooth"
+            style="scrollbar-width: none; -ms-overflow-style: none;"
             @wheel.prevent="handleWheel($event)"
             @mousemove="handleMouseMove($event)"
             @mouseleave="stopAutoScroll()"
@@ -325,72 +342,69 @@
 
         @if($showInspector && $totalBadges > 0)
             <!-- Dynamic Merit Badge Telemetry Inspector Strip -->
-            <div class="mt-2.5 bg-slate-950/70 border border-slate-800/80 rounded-xl p-3.5 backdrop-blur-md transition-all duration-200">
-                <template x-if="activeBadge">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <!-- Left: Badge Identity, Tier & Criteria Description -->
-                        <div class="space-y-1 min-w-0 flex-1">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <span class="text-xs font-black text-white tracking-tight truncate" x-text="activeBadge.name"></span>
+            <div 
+                class="mt-2.5 bg-slate-950/70 border rounded-xl p-3.5 backdrop-blur-md transition-all duration-200"
+                :class="hoveredIndex !== null ? 'border-teal-500/50 bg-slate-950/90 shadow-lg shadow-teal-950/30 ring-1 ring-teal-500/30' : 'border-slate-800/80'"
+            >
+                <div x-show="activeBadge" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <!-- Left: Badge Identity, Tier & Criteria Description -->
+                    <div class="space-y-1 min-w-0 flex-1">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs font-black text-white tracking-tight truncate" x-text="activeBadge?.name">{{ $badges[0]['name'] ?? '' }}</span>
 
-                                <!-- Tier Pill -->
-                                <span 
-                                    class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border"
-                                    :class="activeBadge.tier_badge"
-                                    x-text="activeBadge.tier"
-                                ></span>
+                            <!-- Tier Pill -->
+                            <span 
+                                class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border"
+                                :class="activeBadge?.tier_badge"
+                                x-text="activeBadge?.tier"
+                            >{{ $badges[0]['tier'] ?? '' }}</span>
 
-                                <!-- Points Pill -->
-                                <span 
-                                    class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border border-teal-700/50 bg-teal-950/80 text-teal-300"
-                                    x-text="'+' + activeBadge.points + ' pts'"
-                                >+{{ $badges[0]['points'] ?? 0 }} pts</span>
+                            <!-- Points Pill -->
+                            <span 
+                                class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border border-teal-700/50 bg-teal-950/80 text-teal-300"
+                                x-text="'+' + (activeBadge?.points || 0) + ' pts'"
+                            >+{{ $badges[0]['points'] ?? 0 }} pts</span>
 
-                                <!-- Category -->
-                                <span 
-                                    class="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-800 text-slate-400"
-                                    x-text="activeBadge.category"
-                                ></span>
+                            <!-- Category -->
+                            <span 
+                                class="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-800 text-slate-400"
+                                x-text="activeBadge?.category"
+                            >{{ $badges[0]['category'] ?? '' }}</span>
 
-                                <!-- Idle State Indicator -->
-                                <span 
-                                    x-show="activeIndex === null"
-                                    class="text-[9px] font-mono font-medium text-amber-400/80 bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-800/30"
-                                >
-                                    Latest Milestone
-                                </span>
-                            </div>
-
-                            <!-- Short Description -->
-                            <p class="text-[11.5px] text-slate-300 leading-snug line-clamp-2" x-text="activeBadge.description"></p>
+                            <!-- Idle State Indicator -->
+                            <span 
+                                x-show="activeIndex === null"
+                                class="text-[9px] font-mono font-medium text-amber-400/80 bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-800/30"
+                            >
+                                Latest Milestone
+                            </span>
                         </div>
 
-                        <!-- Right: Telemetry (Awarded Date, Trigger Context & Catch Record Link) -->
-                        <div class="flex sm:flex-col items-start sm:items-end justify-between sm:justify-center gap-1 shrink-0 text-[10.5px] text-slate-400 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-slate-800/60">
-                            <template x-if="activeBadge.awarded_at">
-                                <div class="flex items-center gap-1 font-mono text-slate-400">
-                                    <x-lucide-calendar class="w-3 h-3 text-slate-500" />
-                                    <span x-text="'Awarded ' + activeBadge.awarded_at"></span>
-                                </div>
-                            </template>
-                            <template x-if="activeBadge.trigger_summary">
-                                <div class="text-[10px] text-teal-300/90 max-w-xs text-left sm:text-right truncate" :title="activeBadge.trigger_summary">
-                                    <span class="text-slate-500">Trigger:</span>
-                                    <span x-text="activeBadge.trigger_summary"></span>
-                                </div>
-                            </template>
-                            <template x-if="activeBadge.record_id">
-                                <a 
-                                    :href="'/record/' + activeBadge.record_id" 
-                                    class="inline-flex items-center gap-1 text-teal-400 hover:text-teal-300 font-semibold text-[10.5px] transition-colors"
-                                >
-                                    <span>View Catch Record</span>
-                                    <x-lucide-arrow-right class="w-3 h-3" />
-                                </a>
-                            </template>
+                        <!-- Short Description -->
+                        <p class="text-[11.5px] text-slate-300 leading-snug line-clamp-2" x-text="activeBadge?.description">{{ $badges[0]['description'] ?? '' }}</p>
+                    </div>
+
+                    <!-- Right: Telemetry (Awarded Date, Trigger Context & Catch Record Link) -->
+                    <div class="flex sm:flex-col items-start sm:items-end justify-between sm:justify-center gap-1 shrink-0 text-[10.5px] text-slate-400 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-slate-800/60">
+                        <div x-show="activeBadge?.awarded_at" class="flex items-center gap-1 font-mono text-slate-400">
+                            <x-lucide-calendar class="w-3 h-3 text-slate-500" />
+                            <span x-text="'Awarded ' + (activeBadge?.awarded_at || '')">@if(!empty($badges[0]['awarded_at'])) Awarded {{ $badges[0]['awarded_at'] }} @endif</span>
+                        </div>
+                        <div x-show="activeBadge?.trigger_summary" class="text-[10px] text-teal-300/90 max-w-xs text-left sm:text-right truncate" :title="activeBadge?.trigger_summary">
+                            <span class="text-slate-500">Trigger:</span>
+                            <span x-text="activeBadge?.trigger_summary">{{ $badges[0]['trigger_summary'] ?? '' }}</span>
+                        </div>
+                        <div x-show="activeBadge?.record_id">
+                            <a 
+                                :href="'/record/' + (activeBadge?.record_id || '')" 
+                                class="inline-flex items-center gap-1 text-teal-400 hover:text-teal-300 font-semibold text-[10.5px] transition-colors"
+                            >
+                                <span>View Catch Record</span>
+                                <x-lucide-arrow-right class="w-3 h-3" />
+                            </a>
                         </div>
                     </div>
-                </template>
+                </div>
             </div>
         @endif
     @endif
