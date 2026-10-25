@@ -669,12 +669,12 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
     - **Blade & Alpine.js View Layer (`merit-badge-carousel.blade.php`)**:
       * Engineered [`resources/views/livewire/components/merit-badge-carousel.blade.php`](file:///home/gmroczek/git/fishing/resources/views/livewire/components/merit-badge-carousel.blade.php) with `wire:ignore.self` and immutable `wire:key` item bindings for DOM morphing resilience.
       * Solved hit-box jitter and mouse hysteresis loops via a two-tier DOM architecture: stationary hit-box layout anchors with decoupled, GPU-accelerated inner visual presenters (`transform-gpu will-change-transform pointer-events-none`).
-      * Enhanced `size="lg"` dimensions to large, crisp circular badges (`w-16 h-16 md:w-20 md:h-20 lg:w-[82px] lg:h-[82px]`) with calibrated overlap (`-ml-5 md:-ml-7 lg:-ml-8`) and wide curtain shifts (`+44px`).
-      * Implemented smooth "curtain expansion effect": items to the left shift left, items to the right shift right, and active item scales up (`1.26x`), lifts vertically (`-12px`), and elevates to `z-50`.
+      * Enhanced `size="lg"` dimensions to large, crisp circular badges (`w-16 h-16 md:w-20 md:h-20 lg:w-[86px] lg:h-[86px]`) with calibrated overlap (`-ml-5 md:-ml-7 lg:-ml-8`) and wide curtain shifts (`+48px`).
+      * Removed synthetic CSS circle borders, black rings, and corner tier pip dots, allowing badge graphics to fill the circular area 100% with unobstructed embroidered patch artwork.
+      * Implemented smooth "curtain expansion effect": items to the left shift left, items to the right shift right, and active item scales up (`1.25x`), lifts vertically (`-12px`), and elevates to `z-50` with high-dimensional drop shadows.
       * Full accessibility and keyboard navigation (`ArrowLeft`, `ArrowRight`, `Escape`) with focus-trap protection.
       * Interactive floating popover card rendering badge name, tier pill, points, description, awarded timestamp, trigger context, and catch record link.
-      * Tier radiance glows (Platinum cyan, Gold amber, Silver slate, Bronze amber-800) and embroidered patch artwork with stitched twill fallback.
-      * Interactive overflow capsule (`+X More`) and "View All" header action dispatching `@toggle-merit-sash`.
+      * Interactive overflow capsule (`+X More`) with prominent font size, dashed teal border, and "View All" header action dispatching `@toggle-merit-sash`.
     - **Target View Integrations & Hero Header Modernization**:
       * **Angler Profile (`/angler/{id}`)**: Refactored the hero header card in [`resources/views/angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) to embed the expanded `size="lg"` carousel directly into the center horizontal span, alongside avatar, name, telemetry subtitle, and points badge. Eliminated the redundant 5-badge preview and removed the lower standalone carousel card.
       * **User Profile (`/profile`)**: Mirrored the hero banner modernization in [`resources/views/profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php).

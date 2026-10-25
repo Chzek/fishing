@@ -1,7 +1,7 @@
 @php
     $dimClass = match($size) {
         'sm' => 'w-10 h-10',
-        'lg' => 'w-16 h-16 md:w-20 md:h-20 lg:w-[82px] lg:h-[82px]',
+        'lg' => 'w-16 h-16 md:w-20 md:h-20 lg:w-[86px] lg:h-[86px]',
         default => 'w-12 h-12 md:w-14 md:h-14',
     };
     $marginClass = match($size) {
@@ -11,17 +11,17 @@
     };
     $iconDimClass = match($size) {
         'sm' => 'w-5 h-5',
-        'lg' => 'w-8 h-8 md:w-10 md:h-10',
+        'lg' => 'w-9 h-9 md:w-11 md:h-11',
         default => 'w-6 h-6',
     };
     $pipDimClass = match($size) {
         'sm' => 'w-2.5 h-2.5',
-        'lg' => 'w-3.5 h-3.5 md:w-4 md:h-4',
+        'lg' => 'w-4 h-4',
         default => 'w-3 h-3',
     };
     $shiftPx = match($size) {
         'sm' => 22,
-        'lg' => 44,
+        'lg' => 48,
         default => 30,
     };
     $liftPx = match($size) {
@@ -31,7 +31,7 @@
     };
     $scaleVal = match($size) {
         'sm' => 1.22,
-        'lg' => 1.26,
+        'lg' => 1.25,
         default => 1.28,
     };
     $totalBadges = count($badges);
@@ -189,27 +189,21 @@
                         <div 
                             class="w-full h-full rounded-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] transform-gpu will-change-transform flex items-center justify-center pointer-events-none relative"
                             :style="getItemStyle({{ $idx }})"
-                            :class="activeIndex === {{ $idx }} ? 'shadow-xl {{ $badge['tier_glow'] }}' : 'shadow-md'"
+                            :class="activeIndex === {{ $idx }} ? 'drop-shadow-2xl brightness-110 filter' : 'drop-shadow-md'"
                         >
                             @if(!empty($badge['image_url']))
                                 <img 
                                     src="{{ $badge['image_url'] }}" 
                                     alt="{{ $badge['name'] }}" 
-                                    class="w-full h-full rounded-full object-cover border-2 {{ $badge['tier_border'] }} ring-2 ring-black/60"
+                                    class="w-full h-full rounded-full object-cover"
                                     loading="lazy"
                                 />
                             @else
                                 <!-- Merrowed Edge Twill Fallback Patch -->
-                                <div class="w-full h-full rounded-full flex items-center justify-center border-2 border-dashed {{ $badge['tier_border'] }} bg-gradient-to-br from-slate-800 to-slate-950 ring-2 ring-black/60">
+                                <div class="w-full h-full rounded-full flex items-center justify-center border-2 border-dashed border-slate-700 bg-gradient-to-br from-slate-800 to-slate-950">
                                     <x-dynamic-component :component="'lucide-' . ($badge['icon'] ?: 'award')" class="{{ $iconDimClass }} text-amber-300 drop-shadow" />
                                 </div>
                             @endif
-
-                            <!-- Micro Tier Indicator Pip -->
-                            <span 
-                                class="absolute -bottom-0.5 -right-0.5 {{ $pipDimClass }} rounded-full border border-black/80 {{ $badge['tier_pip'] }}" 
-                                title="{{ ucfirst($badge['tier']) }} Tier"
-                            ></span>
                         </div>
 
                         <!-- Interactive Floating Popover Card on Active Hover/Focus -->
@@ -298,11 +292,11 @@
                         <button 
                             type="button" 
                             @click="$dispatch('toggle-merit-sash')"
-                            class="w-full h-full rounded-full bg-slate-800/90 hover:bg-slate-700 border-2 border-dashed border-teal-500/50 hover:border-teal-400 text-teal-300 font-mono text-[11px] font-bold flex flex-col items-center justify-center transition-all duration-200 shadow-md ring-2 ring-black/50 cursor-pointer"
+                            class="w-full h-full rounded-full bg-slate-950/80 hover:bg-slate-900 border-2 border-dashed border-teal-500/60 hover:border-teal-400 text-teal-300 font-mono text-xs md:text-sm font-bold flex flex-col items-center justify-center transition-all duration-200 shadow-lg cursor-pointer"
                             title="View all {{ $totalCount }} badges in sash"
                         >
-                            <span>+{{ $overflowCount }}</span>
-                            <span class="text-[8px] uppercase tracking-tighter text-slate-400">More</span>
+                            <span class="leading-none text-teal-300 font-extrabold">+{{ $overflowCount }}</span>
+                            <span class="text-[9px] md:text-[10px] uppercase tracking-wider text-slate-400 font-semibold mt-0.5">More</span>
                         </button>
                     </div>
                 @endif
