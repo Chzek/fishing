@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use Fishinglog\Models\Angler;
+use Fishinglog\Models\AnglerBadge;
+use Fishinglog\Models\Badge;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
@@ -212,5 +214,77 @@ class NasSyncApiTest extends TestCase
         $this->assertNotNull($pushedUser);
         $this->assertEquals('pushuser@example.com', $pushedUser->email);
         $this->assertNotEmpty($pushedUser->password);
+    }
+
+    #[Test]
+    public function admin_can_push_and_pull_badges_and_angler_badges()
+    {
+        $admin = User::factory()->create(['type' => User::ADMIN_TYPE]);
+        $angler = Angler::factory()->create();
+
+        $badgeUuid = '33333333-4444-5555-6666-777777777777';
+        $anglerBadgeUuid = '44444444-5555-6666-7777-888888888888';
+
+        $pushPayload = [
+            'badges' => [
+                [
+                    'id' => $badgeUuid,
+                    'slug' => 'pushed_milestone_badge',
+                    'name' => 'Pushed Milestone',
+                    'description' => 'Test pushed badge description',
+                    'category' => 'volume',
+                    'tier' => 'silver',
+                    'points' => 30,
+                    'icon' => 'star',
+                    'rule_type' => 'volume_total',
+                    'rule_threshold' => 5,
+                    'accent_color' => 'slate',
+                    'sort_order' => 2,
+                    'updated_at' => '2026-08-16T12:00:00Z',
+                ]
+            ],
+            'angler_badges' => [
+                [
+                    'id' => $anglerBadgeUuid,
+                    'anglers_id' => $angler->id,
+                    'badge_id' => $badgeUuid,
+                    'badge_slug' => 'pushed_milestone_badge',
+                    'awarded_at' => '2026-08-16T12:05:00Z',
+                    'points' => 30,
+                    'trigger_summary' => 'Earned 5 catches',
+                    'updated_at' => '2026-08-16T12:05:00Z',
+                ]
+            ]
+        ];
+
+        // 1. Push badges and angler badges
+        $pushResponse = $this->actingAs($admin)->postJson('/api/v1/sync/push', $pushPayload);
+        $pushResponse->assertStatus(200);
+        $pushResponse->assertJsonPath('status', 'success');
+
+        $this->assertDatabaseHas('badges', [
+            'id' => $badgeUuid,
+            'slug' => 'pushed_milestone_badge',
+            'sync_status' => 'synced',
+        ]);
+        $this->assertDatabaseHas('angler_badges', [
+            'id' => $anglerBadgeUuid,
+            'anglers_id' => $angler->id,
+            'badge_id' => $badgeUuid,
+            'sync_status' => 'synced',
+        ]);
+
+        // 2. Pull badges and angler badges
+        $pullResponse = $this->actingAs($admin)->getJson('/api/v1/sync/pull?since=2026-01-01T00:00:00Z');
+        $pullResponse->assertStatus(200);
+        $pullResponse->assertJsonStructure(['badges', 'angler_badges', 'server_timestamp']);
+
+        $pulledBadges = collect($pullResponse->json('badges'));
+        $this->assertTrue($pulledBadges->contains('id', $badgeUuid));
+
+        $pulledAnglerBadges = collect($pullResponse->json('angler_badges'));
+        $this->assertTrue($pulledAnglerBadges->contains('id', $anglerBadgeUuid));
+        $pulledRecord = $pulledAnglerBadges->firstWhere('id', $anglerBadgeUuid);
+        $this->assertEquals('pushed_milestone_badge', $pulledRecord['badge_slug']);
     }
 }

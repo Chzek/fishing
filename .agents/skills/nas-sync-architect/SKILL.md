@@ -1,6 +1,6 @@
 ---
 name: nas-sync-architect
-description: Specialized Remote Synchronization Agent for managing two-way NAS push/pull payloads, base64 media asset synchronization, queueable background jobs (SyncNasJob), and sync state invariants across all 13 database models in the Fishing Logbook application.
+description: Specialized Remote Synchronization Agent for managing two-way NAS push/pull payloads, base64 media asset synchronization, queueable background jobs (SyncNasJob), and sync state invariants across all 17 database models in the Fishing Logbook application.
 ---
 
 # NAS Sync Architect Skill
@@ -12,7 +12,7 @@ This skill governs two-way remote synchronization between the local Fishing Logb
 ## Core Sync Invariants
 
 1. **`HasUuidAndSyncTracking` Trait Enforcement**:
-   - All 13 synced models (`User`, `Angler`, `Lake`, `FishFamily`, `FishBreed`, `Lure`, `Record`, `Expedition`, `Crew`, `Post`, `FishingZone`, `FishingRule`, `Photo`) MUST use `HasUuidAndSyncTracking`.
+   - All 17 synced models (`User`, `Angler`, `Lake`, `FishFamily`, `FishBreed`, `Lure`, `Record`, `Expedition`, `Crew`, `Post`, `FishingZone`, `FishingRule`, `Photo`, `JournalEntry`, `JournalPage`, `Badge`, `AnglerBadge`) MUST use `HasUuidAndSyncTracking`.
    - Modifying a model sets `sync_status = 'pending'`, triggering sync inclusion on next run.
 2. **Payload Contracts (`/api/v1/sync/push` & `/api/v1/sync/pull`)**:
    - Binary media files (`photos`, `anglers` avatars, `fish_breeds` images) are transmitted as `file_base64`, `avatar_base64`, or `image_base64`.

@@ -4,6 +4,8 @@ namespace Fishinglog\Http\Controllers\Api\v1;
 
 use Fishinglog\Http\Controllers\Controller;
 use Fishinglog\Models\Angler;
+use Fishinglog\Models\AnglerBadge;
+use Fishinglog\Models\Badge;
 use Fishinglog\Models\Crew;
 use Fishinglog\Models\Expedition;
 use Fishinglog\Models\FishBreed;
@@ -43,6 +45,8 @@ class SyncApiController extends Controller
         'photos' => Photo::class,
         'journal_entries' => JournalEntry::class,
         'journal_pages' => JournalPage::class,
+        'badges' => Badge::class,
+        'angler_badges' => AnglerBadge::class,
     ];
 
     /**
@@ -109,6 +113,16 @@ class SyncApiController extends Controller
                         ? $modelClass::withTrashed()->find($id)
                         : $modelClass::find($id);
 
+                    if ($key === 'badges' && !$existing && !empty($itemData['slug'])) {
+                        $existing = Badge::where('slug', $itemData['slug'])->first();
+                    }
+
+                    if ($key === 'angler_badges' && !$existing && !empty($itemData['anglers_id']) && !empty($itemData['badge_id'])) {
+                        $existing = AnglerBadge::where('anglers_id', $itemData['anglers_id'])
+                            ->where('badge_id', $itemData['badge_id'])
+                            ->first();
+                    }
+
                     $attributes = $itemData;
                     $attributes['id'] = $id;
                     unset($attributes['uuid']);
@@ -134,6 +148,9 @@ class SyncApiController extends Controller
                     if (!empty($attributes['caught'])) {
                         $attributes['caught'] = Carbon::parse($attributes['caught']);
                     }
+                    if (!empty($attributes['awarded_at'])) {
+                        $attributes['awarded_at'] = Carbon::parse($attributes['awarded_at']);
+                    }
 
                     $entity = $existing ?? new $modelClass();
                     $columns = \Illuminate\Support\Facades\Schema::getColumnListing($entity->getTable());
@@ -142,6 +159,19 @@ class SyncApiController extends Controller
                     // Strip raw array spatial location object to allow latitude/longitude to cleanly populate Spatial Point
                     if (isset($filtered['location']) && is_array($filtered['location'])) {
                         unset($filtered['location']);
+                    }
+
+                    if ($key === 'angler_badges') {
+                        if (!empty($filtered['badge_id']) && !Badge::where('id', $filtered['badge_id'])->exists() && !empty($itemData['badge_slug'])) {
+                            $matchedBadge = Badge::where('slug', $itemData['badge_slug'])->first();
+                            if ($matchedBadge) {
+                                $filtered['badge_id'] = $matchedBadge->id;
+                            }
+                        }
+                    }
+
+                    if ($existing) {
+                        unset($filtered['id']);
                     }
 
                     if ($key === 'users') {
@@ -259,6 +289,9 @@ class SyncApiController extends Controller
                 if ($key === 'journal_entries') {
                     $data['angler_ids'] = $item->anglers()->pluck('anglers.id')->all();
                     $data['lake_ids'] = $item->lakes()->pluck('lakes.id')->all();
+                }
+                if ($key === 'angler_badges') {
+                    $data['badge_slug'] = $item->badge?->slug;
                 }
                 if ($key === 'anglers' && !empty($item->avatar) && \Illuminate\Support\Facades\Storage::disk('public')->exists('avatars/' . $item->avatar)) {
                     $data['avatar_base64'] = base64_encode(\Illuminate\Support\Facades\Storage::disk('public')->get('avatars/' . $item->avatar));

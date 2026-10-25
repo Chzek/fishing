@@ -419,14 +419,14 @@ class NasSyncServiceTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_detailed_model_matrix_across_all_15_models()
+    public function it_returns_detailed_model_matrix_across_all_17_models()
     {
         Lake::create(['name' => 'Matrix Test Lake', 'latitude' => 45.0, 'longitude' => -78.0]);
 
         $service = new NasSyncService('https://nas.example.com', 'test-token');
         $matrix = $service->getDetailedModelMatrix();
 
-        $this->assertCount(15, $matrix);
+        $this->assertCount(17, $matrix);
         $this->assertArrayHasKey('lakes', $matrix);
         $this->assertArrayHasKey('records', $matrix);
         $this->assertArrayHasKey('photos', $matrix);
@@ -434,9 +434,118 @@ class NasSyncServiceTest extends TestCase
         $this->assertArrayHasKey('users', $matrix);
         $this->assertArrayHasKey('journal_entries', $matrix);
         $this->assertArrayHasKey('journal_pages', $matrix);
+        $this->assertArrayHasKey('badges', $matrix);
+        $this->assertArrayHasKey('angler_badges', $matrix);
 
         $this->assertGreaterThanOrEqual(1, $matrix['lakes']['total']);
         $this->assertGreaterThanOrEqual(1, $matrix['lakes']['pending']);
+    }
+
+    #[Test]
+    public function it_syncs_badges_and_awarded_angler_badges_two_ways()
+    {
+        $angler = \Fishinglog\Models\Angler::factory()->create([
+            'firstName' => 'Badge',
+            'lastName' => 'Tester',
+        ]);
+
+        $localBadge = \Fishinglog\Models\Badge::create([
+            'slug' => 'test_local_slug',
+            'name' => 'Local Badge',
+            'description' => 'Test description',
+            'category' => 'volume',
+            'tier' => 'bronze',
+            'points' => 15,
+            'icon' => 'award',
+            'rule_type' => 'volume_total',
+            'rule_threshold' => 1,
+            'accent_color' => 'amber',
+            'sort_order' => 1,
+        ]);
+
+        $localAnglerBadge = \Fishinglog\Models\AnglerBadge::create([
+            'anglers_id' => $angler->id,
+            'badge_id' => $localBadge->id,
+            'awarded_at' => now()->subDay(),
+            'points' => 15,
+            'trigger_summary' => 'Local test trigger',
+        ]);
+
+        $remoteBadgeUuid = 'bbbbbbbb-1111-2222-3333-444444444444';
+        $remoteAnglerBadgeUuid = 'aaaaaaaa-1111-2222-3333-444444444444';
+
+        Http::fake([
+            'https://nas.example.com/api/v1/sync/push' => function (\Illuminate\Http\Client\Request $request) use ($localBadge, $localAnglerBadge) {
+                $data = $request->data();
+                $syncedUuids = [];
+                if (isset($data['badges'])) {
+                    $syncedUuids[] = $localBadge->id;
+                }
+                if (isset($data['angler_badges'])) {
+                    $syncedUuids[] = $localAnglerBadge->id;
+                    $this->assertEquals('test_local_slug', $data['angler_badges'][0]['badge_slug']);
+                }
+                return Http::response([
+                    'status' => 'success',
+                    'synced_uuids' => $syncedUuids,
+                    'processed_count' => count($syncedUuids),
+                ], 200);
+            },
+            'https://nas.example.com/api/v1/sync/pull*' => Http::response([
+                'badges' => [
+                    [
+                        'id' => $remoteBadgeUuid,
+                        'slug' => 'nas_remote_badge',
+                        'name' => 'Remote NAS Badge',
+                        'description' => 'Awarded on remote NAS',
+                        'category' => 'milestone',
+                        'tier' => 'gold',
+                        'points' => 50,
+                        'icon' => 'shield',
+                        'rule_type' => 'volume_total',
+                        'rule_threshold' => 10,
+                        'accent_color' => 'gold',
+                        'sort_order' => 5,
+                        'updated_at' => '2026-08-10T12:00:00Z',
+                    ]
+                ],
+                'angler_badges' => [
+                    [
+                        'id' => $remoteAnglerBadgeUuid,
+                        'anglers_id' => $angler->id,
+                        'badge_id' => $remoteBadgeUuid,
+                        'awarded_at' => '2026-08-10T12:30:00Z',
+                        'points' => 50,
+                        'trigger_summary' => 'Remote NAS trigger',
+                        'updated_at' => '2026-08-10T12:30:00Z',
+                    ]
+                ],
+                'server_timestamp' => '2026-08-10T15:00:00Z',
+            ], 200),
+        ]);
+
+        $service = new NasSyncService('https://nas.example.com', 'test-admin-token');
+        $result = $service->sync();
+
+        $this->assertGreaterThanOrEqual(2, $result['pushed']);
+        $this->assertGreaterThanOrEqual(2, $result['pulled']);
+
+        // Verify local badge & angler_badge marked synced
+        $this->assertEquals('synced', $localBadge->fresh()->sync_status);
+        $this->assertEquals('synced', $localAnglerBadge->fresh()->sync_status);
+
+        // Verify remote badge & angler_badge pulled
+        $this->assertDatabaseHas('badges', [
+            'id' => $remoteBadgeUuid,
+            'slug' => 'nas_remote_badge',
+            'sync_status' => 'synced',
+        ]);
+        $this->assertDatabaseHas('angler_badges', [
+            'id' => $remoteAnglerBadgeUuid,
+            'anglers_id' => $angler->id,
+            'badge_id' => $remoteBadgeUuid,
+            'sync_status' => 'synced',
+        ]);
     }
 
     #[Test]
