@@ -661,7 +661,7 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
       * Extended [`AnglerStatsController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Angler/AnglerStatsController.php) to calculate normalized 5-axis crew comparison metrics (Volume, Lunker Max, C&R Rate, Species Diversity, Active Waters) rendered as an interactive radar chart in [`angler/stats.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/stats.blade.php).
     - **Automated Verification**:
       * Added Blade component tests in [`tests/Feature/BladeComponentsTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/BladeComponentsTest.php) verifying canvas rendering, `wire:ignore`, Alpine binding, and unescaped dataset attributes.
-      * Full test suite passing cleanly (**264 passing tests, 1,095 assertions**) with zero regressions.
+      * Full test suite passing cleanly (**369 passing tests, 1,668 assertions**) with zero regressions.
 
 
 
