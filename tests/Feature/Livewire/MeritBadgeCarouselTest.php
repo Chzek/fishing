@@ -8,6 +8,10 @@ use Fishinglog\Models\Angler;
 use Fishinglog\Models\AnglerBadge;
 use Fishinglog\Models\Badge;
 use Fishinglog\Models\Expedition;
+use Fishinglog\Models\FishBreed;
+use Fishinglog\Models\Lake;
+use Fishinglog\Models\Photo;
+use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Livewire\Livewire;
@@ -198,5 +202,80 @@ class MeritBadgeCarouselTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSeeLivewire(MeritBadgeCarousel::class);
+    }
+
+    #[Test]
+    public function test_merit_badge_carousel_renders_modal_dialog_markup_and_teleport_container(): void
+    {
+        $badge = Badge::first();
+
+        Livewire::test(MeritBadgeCarousel::class, [
+            'badges' => collect([$badge]),
+        ])
+            ->assertStatus(200)
+            ->assertSee('x-teleport="body"', false)
+            ->assertSee('x-show="modalOpen"', false)
+            ->assertSee('openModal', false)
+            ->assertSee('closeModal', false)
+            ->assertSee('prevModalBadge', false)
+            ->assertSee('nextModalBadge', false)
+            ->assertSee('Milestone Criteria / Trigger');
+    }
+
+    #[Test]
+    public function test_merit_badge_carousel_extracts_catch_photo_and_telemetry_for_linked_record(): void
+    {
+        $user = User::factory()->create();
+        $angler = Angler::factory()->create(['user_id' => $user->id]);
+        $badge = Badge::first();
+        $lake = Lake::factory()->create(['name' => 'Wabigoon Lake']);
+        $fishBreed = FishBreed::factory()->create(['name' => 'Smallmouth Bass']);
+
+        $record = Record::factory()->create([
+            'anglers_id' => $angler->id,
+            'lakes_id' => $lake->id,
+            'fish_breeds_id' => $fishBreed->id,
+            'length' => 21.5,
+            'weight' => 5.2,
+            'caught' => now()->subDays(5),
+        ]);
+
+        $photo = Photo::create([
+            'photoable_type' => Record::class,
+            'photoable_id' => $record->id,
+            'path' => 'photos/test-catch-pb.jpg',
+            'caption' => 'Trophy Smallmouth Bass',
+            'is_cover' => true,
+        ]);
+
+        AnglerBadge::create([
+            'anglers_id' => $angler->id,
+            'badge_id' => $badge->id,
+            'record_id' => $record->id,
+            'trigger_summary' => 'Caught 21.5" Smallmouth Bass at Wabigoon Lake',
+            'awarded_at' => now()->subDays(5),
+        ]);
+
+        $test = Livewire::test(MeritBadgeCarousel::class, [
+            'angler' => $angler,
+        ]);
+
+        $test->assertStatus(200);
+
+        /** @var list<array<string, mixed>> $badges */
+        $badges = $test->get('visibleBadges');
+        $this->assertNotEmpty($badges);
+        $firstDto = $badges[0];
+
+        $this->assertEquals((string) $record->id, $firstDto['record_id']);
+        $this->assertEquals('Smallmouth Bass', $firstDto['catch_species']);
+        $this->assertEquals(21.5, $firstDto['catch_length']);
+        $this->assertEquals('Wabigoon Lake', $firstDto['catch_lake']);
+        $this->assertNotNull($firstDto['catch_photo_url']);
+
+        // Assert rendered view contains the catch photo display logic and record link
+        $test->assertSee('Qualifying Catch Photo')
+            ->assertSee('View Associated Catch Record')
+            ->assertSee('selectedModalBadge.record_id', false);
     }
 }

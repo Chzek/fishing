@@ -104,15 +104,28 @@ class MeritBadgeCarousel extends Component
         }
 
         if ($this->anglerId) {
-            $angler = Angler::with(['earnedBadges.badge', 'earnedBadges.record'])->find($this->anglerId);
+            $angler = Angler::with([
+                'earnedBadges.badge',
+                'earnedBadges.record.photos',
+                'earnedBadges.record.fishBreed',
+                'earnedBadges.record.lake',
+            ])->find($this->anglerId);
+
             if ($angler && $angler->earnedBadges) {
-                return $this->transformBadgeCollection($angler->earnedBadges);
+                $anglerName = $angler->name ?? trim(($angler->firstName ?? '') . ' ' . ($angler->lastName ?? ''));
+                return $this->transformBadgeCollection($angler->earnedBadges, $anglerName ?: null);
             }
         }
 
         if ($this->expeditionId) {
             $earned = AnglerBadge::where('expedition_id', $this->expeditionId)
-                ->with(['badge', 'record', 'angler'])
+                ->with([
+                    'badge',
+                    'record.photos',
+                    'record.fishBreed',
+                    'record.lake',
+                    'angler',
+                ])
                 ->orderBy('awarded_at', 'desc')
                 ->get();
 
@@ -193,9 +206,10 @@ class MeritBadgeCarousel extends Component
      * Transform a heterogeneous badge collection into uniform presentation DTOs.
      *
      * @param  mixed  $items
+     * @param  string|null  $defaultAnglerName
      * @return list<array<string, mixed>>
      */
-    protected function transformBadgeCollection(mixed $items): array
+    protected function transformBadgeCollection(mixed $items, ?string $defaultAnglerName = null): array
     {
         if ($items instanceof EloquentCollection || $items instanceof Collection) {
             $items = $items->all();
@@ -208,7 +222,7 @@ class MeritBadgeCarousel extends Component
         $transformed = [];
 
         foreach ($items as $item) {
-            $dto = $this->extractBadgeDto($item);
+            $dto = $this->extractBadgeDto($item, $defaultAnglerName);
             if ($dto !== null) {
                 $transformed[] = $dto;
             }
@@ -221,9 +235,10 @@ class MeritBadgeCarousel extends Component
      * Extract uniform DTO attributes from an AnglerBadge or Badge record.
      *
      * @param  mixed  $item
+     * @param  string|null  $defaultAnglerName
      * @return array<string, mixed>|null
      */
-    protected function extractBadgeDto(mixed $item): ?array
+    protected function extractBadgeDto(mixed $item, ?string $defaultAnglerName = null): ?array
     {
         $badge = null;
         $pivot = null;
@@ -246,6 +261,19 @@ class MeritBadgeCarousel extends Component
         $imagePath = $badge->image_path;
         $hasImage = $imagePath && file_exists(public_path($imagePath));
 
+        $record = $pivot?->record;
+        $catchPhoto = $record?->primaryPhoto();
+        $catchPhotoUrl = $catchPhoto?->url;
+        $catchSpecies = $record?->fishBreed?->name;
+        $catchLength = $record?->length !== null ? (float) $record->length : null;
+        $catchWeight = $record?->weight !== null ? (float) $record->weight : null;
+        $catchLake = $record?->lake?->name;
+        $catchDate = $record?->caught ? $record->caught->format('M j, Y') : null;
+
+        $anglerName = $pivot?->angler?->name
+            ?? ($pivot?->angler ? trim(($pivot->angler->firstName ?? '') . ' ' . ($pivot->angler->lastName ?? '')) : null)
+            ?? $defaultAnglerName;
+
         return [
             'id' => (string) $badge->id,
             'slug' => (string) ($badge->slug ?? ''),
@@ -260,7 +288,13 @@ class MeritBadgeCarousel extends Component
             'awarded_at' => $pivot?->awarded_at ? $pivot->awarded_at->format('M j, Y') : null,
             'trigger_summary' => $pivot?->trigger_summary ?? null,
             'record_id' => $pivot?->record_id ?? null,
-            'angler_name' => $pivot?->angler?->name ?? null,
+            'catch_photo_url' => $catchPhotoUrl,
+            'catch_species' => $catchSpecies,
+            'catch_length' => $catchLength,
+            'catch_weight' => $catchWeight,
+            'catch_lake' => $catchLake,
+            'catch_date' => $catchDate,
+            'angler_name' => $anglerName,
             'tier_border' => $badge->getTierBorderColor(),
             'tier_badge' => $badge->getTierBadgeClass(),
             'tier_glow' => match ($tier) {

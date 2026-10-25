@@ -684,15 +684,24 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
         - Isolated JSON dataset and methods into a dedicated `window.meritBadgeCarousel` controller function encoded with `JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT`.
         - Direct DOM elements pre-rendered on the server, guaranteeing immediate visibility and instantaneous reactivity on hover.
         - Removed `overflow-hidden` on hero center column wrappers in [`resources/views/angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) and [`resources/views/profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php) to prevent clipping.
+      * **Interactive Full Badge & Catch Photo Modal Window**:
+        - Implemented an accessible modal window teleported to `body` (`<template x-teleport="body">`), triggered by selecting any carousel badge (click or `Enter`/`Space`) or clicking the inspector strip.
+        - Displays a large, full-size merit badge patch (112px on desktop) enveloped in an ambient radial glow matched to the badge's tier (Platinum, Gold, Silver, Bronze).
+        - Rich badge metadata: Name, category chip, tier pill, points pill (`+X pts`), index counter (`#X of Y`), and complete description lore.
+        - Scouting criteria & trigger context: Displays the exact qualification criteria (`trigger_summary`), award date (`Awarded M j, Y`), and angler attribution.
+        - **Qualifying Catch Photo & Telemetry Showcase**: If the earned badge is linked to a catch record with an uploaded photo, displays the full catch photograph with dark-glass telemetry overlay (species, length in inches, and waterbody).
+        - Direct action button to navigate to the associated catch record (`/record/{id}`).
+        - Modal navigation: Includes Previous / Next buttons for cycling through earned badges within the modal, keyboard navigation (`ArrowLeft`, `ArrowRight`, `Escape`), and backdrop click-to-close with smooth enter/leave transitions.
+        - Drag-distance guard (>6px) ensuring panning/scrubbing gestures do not trigger accidental modal openings.
       * Full accessibility and keyboard navigation (`ArrowLeft`, `ArrowRight`, `Escape`) with focus-trap protection.
     - **Target View Integrations & Hero Header Modernization**:
       * **Angler Profile (`/angler/{id}`)**: Refactored the hero header card in [`resources/views/angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) to embed the expanded `size="lg"` continuous carousel directly into the center horizontal span, alongside avatar, name, telemetry subtitle, and points badge. Eliminated the redundant 5-badge preview and removed the lower standalone carousel card.
       * **User Profile (`/profile`)**: Mirrored the hero banner modernization in [`resources/views/profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php).
       * **Expedition Cleanliness**: Confirmed merit badges belong to anglers rather than trips; removed carousel from [`resources/views/expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php).
     - **Automated Verification**:
-      * Updated [`tests/Feature/Livewire/MeritBadgeCarouselTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/Livewire/MeritBadgeCarouselTest.php) with 10 feature tests (35 assertions) covering empty states, collection props, angler binding, unboxed hero header mode, telemetry inspector strips, and route assertions for `/angler/{id}`, `/expedition/{id}`, and `/profile`.
+      * Updated [`tests/Feature/Livewire/MeritBadgeCarouselTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/Livewire/MeritBadgeCarouselTest.php) with 12 feature tests (53 assertions) covering empty states, collection props, angler binding, unboxed hero header mode, telemetry inspector strips, modal window teleportation markup, and catch photo / telemetry extraction.
       * Verified related controller regression suites pass cleanly (21 passed, 67 assertions across `AnglerControllerTest`, `ProfileControllerTest`, and `ExpeditionControllerTest`).
-      * Verified Vite production bundle compilation via `./vendor/bin/sail npm run build` (built cleanly in 5.25s).
+      * Verified Vite production bundle compilation via `./vendor/bin/sail npm run build` (built cleanly in 2.25s).
 
 
 
