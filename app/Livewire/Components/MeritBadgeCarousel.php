@@ -18,7 +18,7 @@ class MeritBadgeCarousel extends Component
 
     public ?string $expeditionId = null;
 
-    public int $maxVisible = 14;
+    public ?int $maxVisible = null;
 
     public string $size = 'md'; // sm, md, lg
 
@@ -33,6 +33,8 @@ class MeritBadgeCarousel extends Component
     public bool $boxed = true;
 
     public bool $showHeader = true;
+
+    public bool $showInspector = true;
 
     /**
      * Stored lightweight DTO array when badges are passed directly as a collection.
@@ -52,14 +54,15 @@ class MeritBadgeCarousel extends Component
         mixed $badges = null,
         mixed $angler = null,
         mixed $expedition = null,
-        int $maxVisible = 14,
+        ?int $maxVisible = null,
         string $size = 'md',
         ?string $title = null,
         bool $showCount = true,
         bool $showPoints = true,
         bool $showSashLink = true,
         bool $boxed = true,
-        bool $showHeader = true
+        bool $showHeader = true,
+        bool $showInspector = true
     ): void {
         if ($angler instanceof Angler) {
             $this->anglerId = $angler->id;
@@ -73,7 +76,7 @@ class MeritBadgeCarousel extends Component
             $this->expeditionId = $expedition;
         }
 
-        $this->maxVisible = max(3, $maxVisible);
+        $this->maxVisible = ($maxVisible !== null && $maxVisible > 0) ? $maxVisible : null;
         $this->size = in_array($size, ['sm', 'md', 'lg'], true) ? $size : 'md';
         $this->title = $title;
         $this->showCount = $showCount;
@@ -81,6 +84,7 @@ class MeritBadgeCarousel extends Component
         $this->showSashLink = $showSashLink;
         $this->boxed = $boxed;
         $this->showHeader = $showHeader;
+        $this->showInspector = $showInspector;
 
         if ($badges !== null) {
             $this->directBadges = $this->transformBadgeCollection($badges);
@@ -144,6 +148,10 @@ class MeritBadgeCarousel extends Component
     #[Computed]
     public function visibleBadges(): array
     {
+        if ($this->maxVisible === null || $this->maxVisible <= 0) {
+            return $this->badgeList;
+        }
+
         return array_slice($this->badgeList, 0, $this->maxVisible);
     }
 
@@ -153,6 +161,10 @@ class MeritBadgeCarousel extends Component
     #[Computed]
     public function overflowCount(): int
     {
+        if ($this->maxVisible === null || $this->maxVisible <= 0) {
+            return 0;
+        }
+
         return max(0, count($this->badgeList) - $this->maxVisible);
     }
 
@@ -168,6 +180,7 @@ class MeritBadgeCarousel extends Component
             'overflowCount' => $this->overflowCount,
             'boxed' => $this->boxed,
             'showHeader' => $this->showHeader,
+            'showInspector' => $this->showInspector,
         ]);
     }
 

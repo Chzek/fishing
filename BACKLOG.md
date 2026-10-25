@@ -672,17 +672,24 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
       * Enhanced `size="lg"` dimensions to large, crisp circular badges (`w-16 h-16 md:w-20 md:h-20 lg:w-[86px] lg:h-[86px]`) with calibrated overlap (`-ml-5 md:-ml-7 lg:-ml-8`) and wide curtain shifts (`+48px`).
       * Removed synthetic CSS circle borders, black rings, and corner tier pip dots, allowing badge graphics to fill the circular area 100% with unobstructed embroidered patch artwork.
       * Implemented smooth "curtain expansion effect": items to the left shift left, items to the right shift right, and active item scales up (`1.25x`), lifts vertically (`-12px`), and elevates to `z-50` with high-dimensional drop shadows.
+      * **Continuous Mouse Scrolling & Scrubbing**:
+        - Integrated bidirectional edge auto-scroll scrubbing driven by mouse position zones and smooth `requestAnimationFrame`.
+        - Added mouse wheel horizontal scrolling translation (`@wheel.prevent="handleWheel($event)"`).
+        - Implemented intuitive grab-and-drag panning across the track (`mousedown`, `mousemove`, `mouseup`).
+        - Displays the full earned badge collection continuously without arbitrary truncation or forcing users into separate cards.
+      * **Dynamic Merit Badge Telemetry Inspector Strip**:
+        - Positioned a dedicated telemetry strip directly underneath the carousel track.
+        - Provides a resting/idle state showcasing the angler's "Latest Milestone".
+        - Instantly reacts to mouse hover and keyboard navigation displaying badge name, tier pill, points pill (`+X pts`), category, milestone description, awarded date timestamp, real catch trigger context, and direct link to catch records (`/record/{id}`).
       * Full accessibility and keyboard navigation (`ArrowLeft`, `ArrowRight`, `Escape`) with focus-trap protection.
-      * Interactive floating popover card rendering badge name, tier pill, points, description, awarded timestamp, trigger context, and catch record link.
-      * Interactive overflow capsule (`+X More`) with prominent font size, dashed teal border, and "View All" header action dispatching `@toggle-merit-sash`.
     - **Target View Integrations & Hero Header Modernization**:
-      * **Angler Profile (`/angler/{id}`)**: Refactored the hero header card in [`resources/views/angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) to embed the expanded `size="lg"` carousel directly into the center horizontal span, alongside avatar, name, telemetry subtitle, and points badge. Eliminated the redundant 5-badge preview and removed the lower standalone carousel card.
+      * **Angler Profile (`/angler/{id}`)**: Refactored the hero header card in [`resources/views/angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) to embed the expanded `size="lg"` continuous carousel directly into the center horizontal span, alongside avatar, name, telemetry subtitle, and points badge. Eliminated the redundant 5-badge preview and removed the lower standalone carousel card.
       * **User Profile (`/profile`)**: Mirrored the hero banner modernization in [`resources/views/profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php).
       * **Expedition Cleanliness**: Confirmed merit badges belong to anglers rather than trips; removed carousel from [`resources/views/expedition/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/expedition/show.blade.php).
     - **Automated Verification**:
-      * Updated [`tests/Feature/Livewire/MeritBadgeCarouselTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/Livewire/MeritBadgeCarouselTest.php) with 9 feature tests (32 assertions) covering empty states, collection props, angler binding, unboxed hero header mode, overflow capsules, and route assertions for `/angler/{id}`, `/expedition/{id}`, and `/profile`.
-      * Verified all tests pass via `./vendor/bin/sail test --filter=MeritBadgeCarouselTest`.
-      * Verified Vite production bundle compilation via `./vendor/bin/sail npm run build`.
+      * Updated [`tests/Feature/Livewire/MeritBadgeCarouselTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/Livewire/MeritBadgeCarouselTest.php) with 10 feature tests (36 assertions) covering empty states, collection props, angler binding, unboxed hero header mode, telemetry inspector strips, and route assertions for `/angler/{id}`, `/expedition/{id}`, and `/profile`.
+      * Verified related controller regression suites pass cleanly (21 passed, 67 assertions across `AnglerControllerTest`, `ProfileControllerTest`, and `ExpeditionControllerTest`).
+      * Verified Vite production bundle compilation via `./vendor/bin/sail npm run build` (built cleanly in 5.76s).
 
 
 

@@ -143,6 +143,21 @@ class MeritBadgeCarouselTest extends TestCase
     }
 
     #[Test]
+    public function test_merit_badge_carousel_renders_telemetry_inspector_strip(): void
+    {
+        $badge = Badge::first();
+
+        Livewire::test(MeritBadgeCarousel::class, [
+            'badges' => collect([$badge]),
+            'showInspector' => true,
+        ])
+            ->assertStatus(200)
+            ->assertSee($badge->name)
+            ->assertSee($badge->description)
+            ->assertSee('Latest Milestone');
+    }
+
+    #[Test]
     public function test_angler_profile_route_renders_merit_badge_carousel_in_hero(): void
     {
         $user = User::factory()->create();

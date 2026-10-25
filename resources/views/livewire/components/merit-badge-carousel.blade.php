@@ -14,11 +14,6 @@
         'lg' => 'w-9 h-9 md:w-11 md:h-11',
         default => 'w-6 h-6',
     };
-    $pipDimClass = match($size) {
-        'sm' => 'w-2.5 h-2.5',
-        'lg' => 'w-4 h-4',
-        default => 'w-3 h-3',
-    };
     $shiftPx = match($size) {
         'sm' => 22,
         'lg' => 48,
@@ -41,15 +36,27 @@
     wire:ignore.self 
     class="isolate w-full relative overflow-visible {{ ($boxed ?? true) ? 'bg-slate-900/90 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-md' : 'p-0' }}"
     x-data="{
+        badges: @js($badges),
         total: {{ $totalBadges }},
         shift: {{ $shiftPx }},
         scale: {{ $scaleVal }},
         lift: {{ $liftPx }},
         hoveredIndex: null,
         focusedIndex: null,
+        autoScrollRaf: null,
+        scrollSpeed: 0,
+        isDragging: false,
+        dragStartX: 0,
+        dragScrollLeft: 0,
 
         get activeIndex() {
             return this.hoveredIndex !== null ? this.hoveredIndex : this.focusedIndex;
+        },
+
+        get activeBadge() {
+            if (this.total === 0) return null;
+            const idx = this.activeIndex;
+            return (idx !== null && this.badges[idx]) ? this.badges[idx] : this.badges[0];
         },
 
         setHover(idx) {
@@ -59,6 +66,74 @@
         clearHover() {
             this.hoveredIndex = null;
             this.focusedIndex = null;
+            this.stopAutoScroll();
+        },
+
+        handleWheel(e) {
+            if (this.$refs.scrollTrack) {
+                this.$refs.scrollTrack.scrollLeft += e.deltaY * 0.9;
+            }
+        },
+
+        handleMouseMove(e) {
+            const track = this.$refs.scrollTrack;
+            if (!track || this.isDragging) return;
+            const rect = track.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const width = rect.width;
+            const edgeZone = Math.min(130, width * 0.22);
+
+            if (mouseX >= 0 && mouseX < edgeZone) {
+                const intensity = (edgeZone - mouseX) / edgeZone;
+                this.startAutoScroll(-intensity * 16);
+            } else if (mouseX <= width && mouseX > width - edgeZone) {
+                const intensity = (mouseX - (width - edgeZone)) / edgeZone;
+                this.startAutoScroll(intensity * 16);
+            } else {
+                this.stopAutoScroll();
+            }
+        },
+
+        startAutoScroll(speed) {
+            this.scrollSpeed = speed;
+            if (!this.autoScrollRaf) {
+                const step = () => {
+                    if (this.$refs.scrollTrack && this.scrollSpeed !== 0) {
+                        this.$refs.scrollTrack.scrollLeft += this.scrollSpeed;
+                        this.autoScrollRaf = requestAnimationFrame(step);
+                    } else {
+                        this.autoScrollRaf = null;
+                    }
+                };
+                this.autoScrollRaf = requestAnimationFrame(step);
+            }
+        },
+
+        stopAutoScroll() {
+            this.scrollSpeed = 0;
+            if (this.autoScrollRaf) {
+                cancelAnimationFrame(this.autoScrollRaf);
+                this.autoScrollRaf = null;
+            }
+        },
+
+        startDrag(e) {
+            this.isDragging = true;
+            this.stopAutoScroll();
+            this.dragStartX = e.pageX - (this.$refs.scrollTrack?.offsetLeft || 0);
+            this.dragScrollLeft = this.$refs.scrollTrack?.scrollLeft || 0;
+        },
+
+        doDrag(e) {
+            if (!this.isDragging || !this.$refs.scrollTrack) return;
+            e.preventDefault();
+            const x = e.pageX - this.$refs.scrollTrack.offsetLeft;
+            const walk = (x - this.dragStartX) * 1.5;
+            this.$refs.scrollTrack.scrollLeft = this.dragScrollLeft - walk;
+        },
+
+        stopDrag() {
+            this.isDragging = false;
         },
 
         focusPrevious() {
@@ -68,6 +143,7 @@
             } else {
                 this.focusedIndex = (this.focusedIndex - 1 + this.total) % this.total;
             }
+            this.scrollToActive();
         },
 
         focusNext() {
@@ -76,6 +152,15 @@
                 this.focusedIndex = 0;
             } else {
                 this.focusedIndex = (this.focusedIndex + 1) % this.total;
+            }
+            this.scrollToActive();
+        },
+
+        scrollToActive() {
+            if (this.focusedIndex === null || !this.$refs.scrollTrack) return;
+            const item = this.$refs.scrollTrack.querySelector(`[data-index="${this.focusedIndex}"]`);
+            if (item) {
+                item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
         },
 
@@ -99,7 +184,6 @@
                     zIndex: 50
                 };
             }
-            // idx > active
             return {
                 transform: `translate(${this.shift}px, 0px) scale(1)`,
                 zIndex: 10 + (this.total - idx)
@@ -165,10 +249,19 @@
             </div>
         @endif
     @else
-        <!-- Overlapping Merit Badge Track -->
-        <div class="relative py-4 px-2 overflow-x-auto overflow-y-visible no-scrollbar">
+        <!-- Overlapping Merit Badge Track with Continuous Wheel/Edge Scrolling -->
+        <div 
+            x-ref="scrollTrack"
+            class="relative py-4 px-2 overflow-x-auto overflow-y-visible no-scrollbar cursor-grab active:cursor-grabbing select-none scroll-smooth"
+            @wheel.prevent="handleWheel($event)"
+            @mousemove="handleMouseMove($event)"
+            @mouseleave="stopAutoScroll()"
+            @mousedown="startDrag($event)"
+            @mousemove.window="doDrag($event)"
+            @mouseup.window="stopDrag()"
+        >
             <div 
-                class="flex items-center"
+                class="flex items-center min-w-max"
                 role="region" 
                 aria-label="Merit Badge Carousel"
             >
@@ -176,10 +269,12 @@
                     <!-- Hit-Box Anchor Slot (Fixed Screen Slot - Prevents Hysteresis Loop) -->
                     <div 
                         wire:key="badge-carousel-{{ $badge['id'] }}"
+                        data-index="{{ $idx }}"
                         class="relative flex-shrink-0 {{ $dimClass }} {{ $idx > 0 ? $marginClass : '' }} focus:outline-none"
                         tabindex="0"
                         role="button"
                         aria-label="{{ $badge['name'] }} Merit Badge - {{ ucfirst($badge['tier']) }} Tier"
+                        title="{{ $badge['name'] }} (+{{ $badge['points'] }} pts) - {{ ucfirst($badge['tier']) }}"
                         @mouseenter="setHover({{ $idx }})"
                         @mouseleave="if (hoveredIndex === {{ $idx }}) hoveredIndex = null"
                         @focus="focusedIndex = {{ $idx }}"
@@ -205,85 +300,10 @@
                                 </div>
                             @endif
                         </div>
-
-                        <!-- Interactive Floating Popover Card on Active Hover/Focus -->
-                        <div 
-                            x-show="activeIndex === {{ $idx }}" 
-                            x-cloak
-                            x-transition:enter="transition ease-out duration-200"
-                            x-transition:enter-start="opacity-0 translate-y-2 scale-95"
-                            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                            x-transition:leave="transition ease-in duration-150"
-                            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                            x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-                            class="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-3.5 w-72 bg-slate-950/95 backdrop-blur-md text-white rounded-xl p-3.5 shadow-2xl border border-slate-700/80 pointer-events-auto text-left"
-                        >
-                            <!-- Header: Title & Points Pill -->
-                            <div class="flex items-start justify-between gap-2 pb-2 border-b border-slate-800">
-                                <div class="min-w-0">
-                                    <h4 class="text-xs font-extrabold text-white tracking-tight flex items-center gap-1.5 truncate">
-                                        <span>{{ $badge['name'] }}</span>
-                                    </h4>
-                                    <div class="flex items-center gap-1.5 mt-1">
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border {{ $badge['tier_badge'] }}">
-                                            {{ $badge['tier'] }}
-                                        </span>
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-teal-950 text-teal-300 border border-teal-700/60">
-                                            +{{ $badge['points'] }} pts
-                                        </span>
-                                    </div>
-                                </div>
-
-                                @if(!empty($badge['image_url']))
-                                    <img src="{{ $badge['image_url'] }}" alt="" class="w-7 h-7 rounded-full border border-slate-700 shrink-0 object-cover" />
-                                @endif
-                            </div>
-
-                            <!-- Description -->
-                            <p class="text-[11px] text-slate-300 mt-2 leading-relaxed">
-                                {{ $badge['description'] }}
-                            </p>
-
-                            <!-- Award Context & Record Link -->
-                            <div class="mt-2.5 pt-2 border-t border-slate-800/80 space-y-1 text-[10.5px]">
-                                @if(!empty($badge['awarded_at']))
-                                    <div class="flex items-center gap-1 text-slate-400">
-                                        <x-lucide-calendar class="w-3 h-3 text-slate-500 shrink-0" />
-                                        <span>Awarded {{ $badge['awarded_at'] }}</span>
-                                    </div>
-                                @endif
-
-                                @if(!empty($badge['angler_name']))
-                                    <div class="flex items-center gap-1 text-slate-400">
-                                        <x-lucide-user class="w-3 h-3 text-teal-400 shrink-0" />
-                                        <span>Angler: <strong class="text-slate-200">{{ $badge['angler_name'] }}</strong></span>
-                                    </div>
-                                @endif
-
-                                @if(!empty($badge['trigger_summary']))
-                                    <div class="text-slate-300 bg-slate-900/90 rounded-md p-1.5 border border-slate-800 text-[10px]">
-                                        <span class="text-teal-400 font-semibold block text-[9.5px] uppercase tracking-wide">Trigger:</span>
-                                        <span>{{ $badge['trigger_summary'] }}</span>
-                                    </div>
-                                @endif
-
-                                @if(!empty($badge['record_id']))
-                                    <div class="pt-1">
-                                        <a href="{{ url('/record/' . $badge['record_id']) }}" class="inline-flex items-center gap-1 text-teal-400 hover:text-teal-300 font-semibold text-[10.5px] transition-colors">
-                                            <span>View Catch Record</span>
-                                            <x-lucide-arrow-right class="w-3 h-3" />
-                                        </a>
-                                    </div>
-                                @endif
-                            </div>
-
-                            <!-- Caret / Arrow Pointing Down -->
-                            <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-950 border-r border-b border-slate-700/80 transform rotate-45"></div>
-                        </div>
                     </div>
                 @endforeach
 
-                <!-- Overflow Capsule (When badges exceed maxVisible) -->
+                <!-- Optional Overflow Capsule (Only if maxVisible is actively limited) -->
                 @if($overflowCount > 0)
                     <div 
                         class="flex-shrink-0 {{ $dimClass }} {{ $marginClass }} flex items-center justify-center"
@@ -302,5 +322,76 @@
                 @endif
             </div>
         </div>
+
+        @if($showInspector && $totalBadges > 0)
+            <!-- Dynamic Merit Badge Telemetry Inspector Strip -->
+            <div class="mt-2.5 bg-slate-950/70 border border-slate-800/80 rounded-xl p-3.5 backdrop-blur-md transition-all duration-200">
+                <template x-if="activeBadge">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <!-- Left: Badge Identity, Tier & Criteria Description -->
+                        <div class="space-y-1 min-w-0 flex-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-xs font-black text-white tracking-tight truncate" x-text="activeBadge.name"></span>
+
+                                <!-- Tier Pill -->
+                                <span 
+                                    class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border"
+                                    :class="activeBadge.tier_badge"
+                                    x-text="activeBadge.tier"
+                                ></span>
+
+                                <!-- Points Pill -->
+                                <span 
+                                    class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border border-teal-700/50 bg-teal-950/80 text-teal-300"
+                                    x-text="'+' + activeBadge.points + ' pts'"
+                                >+{{ $badges[0]['points'] ?? 0 }} pts</span>
+
+                                <!-- Category -->
+                                <span 
+                                    class="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-800 text-slate-400"
+                                    x-text="activeBadge.category"
+                                ></span>
+
+                                <!-- Idle State Indicator -->
+                                <span 
+                                    x-show="activeIndex === null"
+                                    class="text-[9px] font-mono font-medium text-amber-400/80 bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-800/30"
+                                >
+                                    Latest Milestone
+                                </span>
+                            </div>
+
+                            <!-- Short Description -->
+                            <p class="text-[11.5px] text-slate-300 leading-snug line-clamp-2" x-text="activeBadge.description"></p>
+                        </div>
+
+                        <!-- Right: Telemetry (Awarded Date, Trigger Context & Catch Record Link) -->
+                        <div class="flex sm:flex-col items-start sm:items-end justify-between sm:justify-center gap-1 shrink-0 text-[10.5px] text-slate-400 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-slate-800/60">
+                            <template x-if="activeBadge.awarded_at">
+                                <div class="flex items-center gap-1 font-mono text-slate-400">
+                                    <x-lucide-calendar class="w-3 h-3 text-slate-500" />
+                                    <span x-text="'Awarded ' + activeBadge.awarded_at"></span>
+                                </div>
+                            </template>
+                            <template x-if="activeBadge.trigger_summary">
+                                <div class="text-[10px] text-teal-300/90 max-w-xs text-left sm:text-right truncate" :title="activeBadge.trigger_summary">
+                                    <span class="text-slate-500">Trigger:</span>
+                                    <span x-text="activeBadge.trigger_summary"></span>
+                                </div>
+                            </template>
+                            <template x-if="activeBadge.record_id">
+                                <a 
+                                    :href="'/record/' + activeBadge.record_id" 
+                                    class="inline-flex items-center gap-1 text-teal-400 hover:text-teal-300 font-semibold text-[10.5px] transition-colors"
+                                >
+                                    <span>View Catch Record</span>
+                                    <x-lucide-arrow-right class="w-3 h-3" />
+                                </a>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        @endif
     @endif
 </div>

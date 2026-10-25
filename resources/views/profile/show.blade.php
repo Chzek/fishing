@@ -42,9 +42,9 @@
                 </div>
             </div>
 
-            <!-- Overlapping Merit Badge Carousel in Hero Center -->
-            <div class="flex-1 min-w-0 w-full overflow-hidden flex items-center justify-center">
-                <livewire:components.merit-badge-carousel :angler="$angler" size="lg" :boxed="false" :showHeader="false" :maxVisible="12" />
+            <!-- Overlapping Merit Badge Carousel in Hero Center with Continuous Scroll & Inspector -->
+            <div class="flex-1 min-w-0 w-full overflow-hidden flex flex-col justify-center">
+                <livewire:components.merit-badge-carousel :angler="$angler" size="lg" :boxed="false" :showHeader="false" />
             </div>
 
             <!-- Action Buttons -->
