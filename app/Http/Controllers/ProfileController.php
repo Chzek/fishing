@@ -3,13 +3,10 @@
 namespace Fishinglog\Http\Controllers;
 
 use Fishinglog\Models\Angler;
-use Fishinglog\Models\Crew;
-use Fishinglog\Models\Record;
 use Fishinglog\Models\User;
+use Fishinglog\Services\AnglerTelemetryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-
 use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
@@ -27,157 +24,26 @@ class ProfileController extends Controller
     /**
      * Show the application dashboard.
      *
+     * @param AnglerTelemetryService $telemetryService
      * @return \Illuminate\View\View
      */
-    public function show()
+    public function show(AnglerTelemetryService $telemetryService)
     {
         $angler = Angler::where('user_id', Auth::id())
             ->with(['earnedBadges.badge'])
             ->first();
 
-        if (isset($angler->id)) {
-            $records = Record::where('anglers_id', $angler->id)
-                ->orderBy('caught', 'desc')
-                ->get()
-                ->groupBy('caught');
-
-            $crews = Crew::where('anglers_id', $angler->id)->count();
-
-            $longest = Record::where('anglers_id', $angler->id)
-                ->whereNotNull('length')
-                ->orderBy('length', 'desc')
-                ->with(['fishBreed', 'lake', 'lure'])
-                ->first();
-
-            $fattest = Record::where('anglers_id', $angler->id)
-                ->whereNotNull('weight')
-                ->orderBy('weight', 'desc')
-                ->with(['fishBreed', 'lake', 'lure'])
-                ->first();
-
-            $personalBest = [
-                'byLength' => $longest,
-                'byWeight' => $fattest,
-                'lakeWithMostCatches' => $angler->lakeWithMostCatches(),
-            ];
-
-            $record_count = Record::where('anglers_id', $angler->id)->count();
-
-            $lake_count = Record::where('anglers_id', $angler->id)
-                ->distinct('lakes_id')
-                ->count('lakes_id');
-
-            // Overall career stats
-            $totalInches = round(Record::where('anglers_id', $angler->id)->sum('length') ?: 0, 1);
-            $totalFeet = round($totalInches / 12, 1);
-            $avgLength = round(Record::where('anglers_id', $angler->id)->avg('length') ?: 0, 1);
-            $releasedCount = Record::where('anglers_id', $angler->id)->where('released', 1)->count();
-            $releaseRate = $record_count > 0 ? round(($releasedCount / $record_count) * 100) : 0;
-
-            // Advanced telemetry
-            $mvpLure = Record::select('lures_id', DB::raw('count(*) as catches'))
-                ->where('anglers_id', $angler->id)
-                ->whereNotNull('lures_id')
-                ->groupBy('lures_id')
-                ->orderBy('catches', 'desc')
-                ->with('lure')
-                ->first();
-
-            $peakMonth = Record::select(DB::raw('month(caught) as month_num'), DB::raw('count(*) as count'))
-                ->where('anglers_id', $angler->id)
-                ->whereNotNull('caught')
-                ->groupBy(DB::raw('month(caught)'))
-                ->orderBy('count', 'desc')
-                ->first();
-
-            $peakMonthName = ($peakMonth && $peakMonth->month_num) ? (\DateTime::createFromFormat('!m', (string) $peakMonth->month_num) ?: null)?->format('F') : null;
-
-            $topWaters = Record::select('lakes_id', DB::raw('count(*) as catches'), DB::raw('max(length) as longest'))
-                ->where('anglers_id', $angler->id)
-                ->whereNotNull('lakes_id')
-                ->groupBy('lakes_id')
-                ->orderBy('catches', 'desc')
-                ->take(3)
-                ->with('lake')
-                ->get();
-
-            $speciesDistribution = Record::select('fish_breeds_id', DB::raw('count(*) as count'))
-                ->where('anglers_id', $angler->id)
-                ->whereNotNull('fish_breeds_id')
-                ->groupBy('fish_breeds_id')
-                ->orderBy('count', 'desc')
-                ->with('fishBreed')
-                ->get();
-
-            // Calculate species personal bests for trophy board
-            $speciesPbs = Record::where('anglers_id', $angler->id)
-                ->whereNotNull('length')
-                ->select('fish_breeds_id', DB::raw('MAX(length) as max_length'))
-                ->groupBy('fish_breeds_id')
-                ->get()
-                ->map(function ($item) use ($angler) {
-                    return Record::where('anglers_id', $angler->id)
-                        ->where('fish_breeds_id', $item->fish_breeds_id)
-                        ->where('length', $item->max_length)
-                        ->with(['lake', 'fishBreed'])
-                        ->latest('caught')
-                        ->first();
-                })
-                ->filter()
-                ->sortByDesc('length')
-                ->values();
-
-            $topTrophies = app(\Fishinglog\Services\TrophyScoringService::class)->getTopNormalizedCatches(
-                Record::where('anglers_id', $angler->id),
-                5
-            );
-        } else {
-            $records = [];
-            $crews = 0;
-            $personalBest = [];
-            $record_count = 0;
-            $lake_count = 0;
-            $totalInches = 0;
-            $totalFeet = 0;
-            $avgLength = 0;
-            $releasedCount = 0;
-            $releaseRate = 0;
-            $mvpLure = null;
-            $peakMonthName = null;
-            $topWaters = collect();
-            $speciesDistribution = collect();
-            $speciesPbs = collect();
-            $topTrophies = collect();
-        }
-
+        $telemetry = $telemetryService->getAnglerTelemetry($angler);
         $unreadNotifications = Auth::user() ? Auth::user()->unreadNotifications : collect();
 
-        return view('profile.show', [
-            'angler' => $angler,
-            'records' => $records,
-            'crews' => $crews,
-            'personalBest' => $personalBest,
-            'record_count' => $record_count,
-            'lake_count' => $lake_count,
-            'totalInches' => $totalInches,
-            'totalFeet' => $totalFeet,
-            'avgLength' => $avgLength,
-            'releasedCount' => $releasedCount,
-            'releaseRate' => $releaseRate,
-            'mvpLure' => $mvpLure,
-            'peakMonthName' => $peakMonthName,
-            'topWaters' => $topWaters,
-            'speciesDistribution' => $speciesDistribution,
-            'speciesPbs' => $speciesPbs,
-            'topTrophies' => $topTrophies,
+        return view('profile.show', array_merge($telemetry, [
             'unreadNotifications' => $unreadNotifications,
-        ]);
-
+        ]));
     }
 
     /**
-     * Edit the authenticated users profile
-     * 
+     * Edit the authenticated user's profile.
+     *
      * @return \Illuminate\View\View
      */
     public function edit(User $user)
@@ -189,6 +55,9 @@ class ProfileController extends Controller
 
     /**
      * Update the authenticated user's profile and password.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request)
     {
@@ -219,4 +88,3 @@ class ProfileController extends Controller
         return redirect('/profile/edit')->with('status', 'Account preferences and password updated successfully.');
     }
 }
-

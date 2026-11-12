@@ -148,7 +148,7 @@ class GenericDataTable extends Component
                 $opKey = $flt['operatorKey'] ?? ($fKey . 'Operator');
                 $defaultOp = $flt['defaultOperator'] ?? '>';
                 if (!isset($this->filterState[$opKey])) {
-                    $this->filterState[$opKey] = (string) request($opKey, $defaultOp);
+                    $this->filterState[$opKey] = (string) request($opKey, request($fKey . '_operator', $defaultOp));
                 }
                 if (!isset($this->filterState[$fKey])) {
                     $this->filterState[$fKey] = (string) request($fKey, '');
@@ -393,7 +393,13 @@ class GenericDataTable extends Component
             : forward_static_call([$this->modelClass, 'query']);
 
         if (!empty($this->with)) {
-            $query->with($this->with);
+            $eagerRelations = $this->modelClass === Record::class
+                ? array_values(array_filter($this->with, fn (string $rel): bool => $rel !== 'lake.dailyWeather'))
+                : $this->with;
+
+            if (!empty($eagerRelations)) {
+                $query->with($eagerRelations);
+            }
         }
 
         // Apply caller-provided model scopes
@@ -735,6 +741,11 @@ class GenericDataTable extends Component
         }
 
         $records = $query->paginate($this->perPage);
+        if ($this->modelClass === Record::class) {
+            /** @var \Illuminate\Support\Collection<int, Record> $recordCollection */
+            $recordCollection = $records->getCollection();
+            Record::hydrateDailyWeatherForCollection($recordCollection);
+        }
         $totalCount = $records->total();
 
         return view('livewire.components.generic-data-table', [

@@ -28,12 +28,19 @@
                     @if($angler->earnedBadges && $angler->earnedBadges->isNotEmpty())
                         @php
                             $totalPoints = $angler->earnedBadges->sum(fn ($b) => $b->badge->points ?? 0);
+                            $earnedCount = $angler->earnedBadges->count();
                         @endphp
-                        <div class="mt-2.5 flex items-center justify-center sm:justify-start">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-slate-950/80 border border-slate-800 text-slate-300 text-[11px]">
-                                <span class="text-slate-400 uppercase tracking-wider font-semibold text-[10px]">Points:</span>
+                        <div class="mt-2.5 flex items-center justify-center sm:justify-start gap-2">
+                            <button
+                                type="button"
+                                @click="$dispatch('toggle-merit-sash')"
+                                class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-slate-950/80 hover:bg-slate-800 border border-slate-800 hover:border-teal-500/40 text-slate-300 text-[11px] transition-colors cursor-pointer"
+                                title="Toggle Full Merit Badge Sash Grid"
+                            >
+                                <span class="text-slate-400 uppercase tracking-wider font-semibold text-[10px]">{{ $earnedCount }} Badges · Points:</span>
                                 <span class="font-mono font-bold text-amber-300">{{ number_format($totalPoints) }}</span>
-                            </span>
+                                <x-lucide-chevron-down class="w-3 h-3 text-teal-400 transition-transform duration-200" ::class="showSash ? 'rotate-180' : ''" />
+                            </button>
                         </div>
                     @endif
                     @if($angler->bio)

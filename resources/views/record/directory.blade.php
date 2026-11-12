@@ -34,7 +34,7 @@
     <!-- 2. Reactive Livewire Catches Directory Table with Pluggable Filters -->
     @livewire('components.generic-data-table', [
         'modelClass' => \Fishinglog\Models\Record::class,
-        'with' => ['angler', 'lake', 'lake.dailyWeather', 'fishBreed', 'lure'],
+        'with' => ['angler', 'lake', 'fishBreed', 'lure'],
         'columns' => [
             ['key' => 'caught', 'label' => 'Date', 'type' => 'date', 'sortable' => true],
             ['key' => 'angler.lastName', 'label' => 'Angler', 'type' => 'angler_name', 'sortable' => true],
