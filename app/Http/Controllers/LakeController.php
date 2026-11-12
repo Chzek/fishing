@@ -2,16 +2,14 @@
 
 namespace Fishinglog\Http\Controllers;
 
+use Fishinglog\Actions\Lakes\CreateLakeAction;
+use Fishinglog\Actions\Lakes\UpdateLakeAction;
 use Fishinglog\Http\Requests\StoreLakeRequest;
 use Fishinglog\Http\Requests\UpdateLakeRequest;
 use Fishinglog\Models\FishingZone;
 use Fishinglog\Models\Lake;
 use Fishinglog\Models\Record;
-use Fishinglog\Pipes\Filters\FilterByName;
-use Fishinglog\Pipes\Filters\FilterByRecordsCount;
-use Fishinglog\Pipes\Filters\SortBy;
-use Illuminate\Http\Request;
-use Illuminate\Pipeline\Pipeline;
+use Fishinglog\Services\TrophyScoringService;
 use Illuminate\Support\Facades\DB;
 
 class LakeController extends Controller
@@ -33,7 +31,7 @@ class LakeController extends Controller
      */
     public function create()
     {
-        $lake = new Lake;
+        $lake = new Lake();
         $fishingZones = FishingZone::orderBy('code', 'asc')->get();
 
         return view('lake.create', [
@@ -45,28 +43,13 @@ class LakeController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Fishinglog\Http\Requests\StoreLakeRequest  $request
+     * @param  StoreLakeRequest  $request
+     * @param  CreateLakeAction  $createLakeAction
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(StoreLakeRequest $request)
+    public function store(StoreLakeRequest $request, CreateLakeAction $createLakeAction)
     {
-        $lake = new Lake;
-        $lake->name = $request->name;
-        $lake->latitude = $request->latitude;
-        $lake->longitude = $request->longitude;
-        $lake->structure = $request->structure;
-        $lake->max_depth = $request->max_depth;
-
-        if ($request->filled('fishing_zone_id')) {
-            $lake->fishing_zone_id = $request->fishing_zone_id;
-        } elseif ($request->latitude && $request->longitude) {
-            $detectedZone = \Fishinglog\Services\GeoZoneDetector::detectZone($request->latitude, $request->longitude);
-            if ($detectedZone) {
-                $lake->fishing_zone_id = $detectedZone->id;
-            }
-        }
-
-        $lake->save();
+        $createLakeAction->execute($request->validated());
 
         return redirect('/lake');
     }
@@ -74,35 +57,43 @@ class LakeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \Fishinglog\Models\Lake  $lake
+     * @param  Lake  $lake
+     * @param  TrophyScoringService  $trophyScoringService
      * @return \Illuminate\View\View
      */
-    public function show(Lake $lake)
+    public function show(Lake $lake, TrophyScoringService $trophyScoringService)
     {
         $lake->load('fishingZone.rules');
 
-        $count = Record::where('lakes_id', $lake->id)->count();
+        // Consolidated single-pass aggregate query (total catches, unique visits, unique anglers)
+        $aggregates = Record::where('lakes_id', $lake->id)
+            ->selectRaw('
+                COUNT(*) as total_count,
+                COUNT(DISTINCT caught) as unique_visits,
+                COUNT(DISTINCT anglers_id) as unique_anglers
+            ')
+            ->first();
+
+        $count = (int) ($aggregates->total_count ?? 0);
+        $visits = (int) ($aggregates->unique_visits ?? 0);
+        $anglers = (int) ($aggregates->unique_anglers ?? 0);
+
         $longest = Record::where('lakes_id', $lake->id)
+            ->whereNotNull('length')
+            ->with(['fishBreed', 'angler'])
             ->orderBy('length', 'desc')
             ->first();
+
         $fattest = Record::where('lakes_id', $lake->id)
+            ->whereNotNull('weight')
+            ->with(['fishBreed', 'angler'])
             ->orderBy('weight', 'desc')
             ->first();
 
-        $visits = Record::where('lakes_id', $lake->id)
-            ->distinct('caught')
-            ->count('caught');
-
-        $anglers = Record::where('lakes_id', $lake->id)
-            ->distinct('anglers_id')
-            ->count('anglers_id');
-
-        $topCatches = app(\Fishinglog\Services\TrophyScoringService::class)->getTopNormalizedCatches(
+        $topCatches = $trophyScoringService->getTopNormalizedCatches(
             Record::where('lakes_id', $lake->id),
             5
         );
-
-        $nearbyLakes = Lake::nearby($lake->latitude, $lake->longitude, 2.0, $lake->id);
 
         return view('lake.show', [
             'lake' => $lake,
@@ -112,15 +103,13 @@ class LakeController extends Controller
             'visits' => $visits,
             'anglers' => $anglers,
             'topCatches' => $topCatches,
-            'stats' => $this->stats($lake),
-            'nearbyLakes' => $nearbyLakes,
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \Fishinglog\Models\Lake  $lake
+     * @param  Lake  $lake
      * @return \Illuminate\View\View
      */
     public function edit(Lake $lake)
@@ -139,35 +128,27 @@ class LakeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Fishinglog\Http\Requests\UpdateLakeRequest  $request
-     * @param  \Fishinglog\Models\Lake  $lake
+     * @param  UpdateLakeRequest  $request
+     * @param  Lake  $lake
+     * @param  UpdateLakeAction  $updateLakeAction
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(UpdateLakeRequest $request, Lake $lake)
+    public function update(UpdateLakeRequest $request, Lake $lake, UpdateLakeAction $updateLakeAction)
     {
         $targetLake = Lake::find($request->id) ?? $lake;
+        $updatedLake = $updateLakeAction->execute($targetLake, $request->validated());
 
-        $targetLake->name = $request->name;
-        $targetLake->latitude = $request->latitude;
-        $targetLake->longitude = $request->longitude;
-        $targetLake->structure = $request->structure;
-        $targetLake->max_depth = $request->max_depth;
-
-        if ($request->filled('fishing_zone_id')) {
-            $targetLake->fishing_zone_id = $request->fishing_zone_id;
-        } elseif ($request->latitude && $request->longitude) {
-            $detectedZone = \Fishinglog\Services\GeoZoneDetector::detectZone($request->latitude, $request->longitude);
-            if ($detectedZone) {
-                $targetLake->fishing_zone_id = $detectedZone->id;
-            }
-        }
-
-        $targetLake->save();
-
-        return redirect('/lake/' . $targetLake->id);
+        return redirect('/lake/' . $updatedLake->id);
     }
 
-    public function stats(Lake $lake, $quantity = null)
+    /**
+     * Compute per-species summary statistics for a lake.
+     *
+     * @param  Lake  $lake
+     * @param  int|null  $quantity
+     * @return \Illuminate\Database\Eloquent\Collection<int, Record>
+     */
+    public function stats(Lake $lake, ?int $quantity = null)
     {
         $query = Record::select(
             'fish_breeds_id',
@@ -195,7 +176,7 @@ class LakeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Fishinglog\Models\Lake  $lake
+     * @param  Lake  $lake
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Lake $lake)

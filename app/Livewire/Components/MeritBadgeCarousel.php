@@ -12,6 +12,13 @@ use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
+/**
+ * @property-read list<array<string, mixed>> $badgeList
+ * @property-read list<array<string, mixed>> $visibleBadges
+ * @property-read int $totalBadgesCount
+ * @property-read int $totalPoints
+ * @property-read int $overflowCount
+ */
 class MeritBadgeCarousel extends Component
 {
     public ?string $anglerId = null;
@@ -270,8 +277,9 @@ class MeritBadgeCarousel extends Component
         $catchLake = $record?->lake?->name;
         $catchDate = $record?->caught ? $record->caught->format('M j, Y') : null;
 
-        $anglerName = $pivot?->angler?->name
-            ?? ($pivot?->angler ? trim(($pivot->angler->firstName ?? '') . ' ' . ($pivot->angler->lastName ?? '')) : null)
+        $anglerModel = $pivot ? $pivot->angler : null;
+        $anglerName = ($anglerModel ? $anglerModel->name : null)
+            ?? ($anglerModel ? trim(($anglerModel->firstName ?? '') . ' ' . ($anglerModel->lastName ?? '')) : null)
             ?? $defaultAnglerName;
 
         return [
@@ -285,9 +293,9 @@ class MeritBadgeCarousel extends Component
             'icon' => (string) ($badge->icon ?: 'award'),
             'image_url' => $hasImage ? asset($imagePath) : null,
             'has_image' => $hasImage,
-            'awarded_at' => $pivot?->awarded_at ? $pivot->awarded_at->format('M j, Y') : null,
-            'trigger_summary' => $pivot?->trigger_summary ?? null,
-            'record_id' => $pivot?->record_id ?? null,
+            'awarded_at' => $pivot && $pivot->awarded_at ? $pivot->awarded_at->format('M j, Y') : null,
+            'trigger_summary' => $pivot ? $pivot->trigger_summary : null,
+            'record_id' => $pivot ? $pivot->record_id : null,
             'catch_photo_url' => $catchPhotoUrl,
             'catch_species' => $catchSpecies,
             'catch_length' => $catchLength,

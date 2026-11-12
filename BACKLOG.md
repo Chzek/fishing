@@ -14,7 +14,7 @@ _All Priority 1 initiatives completed. See Completed Modernization Initiatives #
 
 ### 🚀 Priority 2 (P2): Tactical Intelligence, UI/UX & Spatial Visualizations
 
-_Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations (Chart.js & Livewire/Alpine) — See Completed Milestone #65 below._
+_Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations (#65), Lake Show Query Consolidation, `AnglerTelemetryService`, Action Class Standardization (`UpdateCatchRecordAction`, `CreateLakeAction`, `UpdateLakeAction`), and Catch Directory Weather Hydration Optimization (#68)._
 
 #### 1. Map Explorer Context Menu: 1-Click "Create Lake" & "Quick Catch" Pinning
 - **Agents**: `ui-ux-auditor`, `livewire-architect`
@@ -32,14 +32,24 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
   - Build a global, responsive Alpine.js media lightbox component for viewing catch photos, expedition gallery snapshots, and journal scans in high resolution.
   - Support multi-photo sets with previous/next carousel controls, thumbnail navigation strip, keyboard shortcuts (`←`/`→`/`Esc`), touch swipe gestures, and photo metadata telemetry overlay (Angler, Species, Length/Weight, Lake, Date).
 
-#### 3. Lake & Expedition Dossier Spatial Map Rebalancing (2-Column Taller Aspect Layout)
+#### 3. Secondary Views, Catch Dossier & Entity Forms Dark Mode Completion (`dark:` Parity)
+- **Agents**: `ui-ux-auditor`, `tailwindcss-development`
+- **Impact**: **Medium-High** (Visual Consistency & Night/Dawn Boat Readability)
+- **Description**:
+  - Complete `dark:` utility token coverage across remaining secondary views that currently render hardcoded light surfaces (`bg-white`, `bg-slate-50`, `text-slate-900`):
+    * Catch Detail Dossier (`resources/views/record/show.blade.php`)
+    * Global Omnibox Search Results (`resources/views/search/index.blade.php`)
+    * Entity Create & Edit Forms (`record/edit.blade.php`, `lake/create.blade.php`, `lake/edit.blade.php`, `expedition/create.blade.php`, `expedition/edit.blade.php`)
+    * Offline Map Downloader & Sync Review (`map/offline.blade.php`, `record/offline-review.blade.php`)
+
+#### 4. Lake & Expedition Dossier Spatial Map Rebalancing (2-Column Taller Aspect Layout)
 - **Agents**: `ui-ux-auditor`, `seasoned-angler-advisor`
 - **Impact**: **Medium** (Dossier Layout & Cartographic Usability)
 - **Description**:
   - Restructure map presentation on `/lake/{id}` and `/expedition/{id}` from narrow, full-width strips (420px) to a responsive 2-column grid layout (e.g. 2/3 map canvas + 1/3 companion telemetry/trophy card stack).
   - Increase map height to 520px–600px for expanded bathymetric and track visibility without excessive page scrolling.
 
-#### 4. Lake Directory Species Biodiversity Columns, Filtering & Map Popovers
+#### 5. Lake Directory Species Biodiversity Columns, Filtering & Map Popovers
 - **Agents**: `laravel-architect`, `ui-ux-auditor`
 - **Impact**: **Medium** (Fishery Intelligence & Search)
 - **Description**:
@@ -47,7 +57,12 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
   - Integrate a "Filter by Species" dropdown in `GenericDataTable` for lakes.
   - Enhance Map Explorer push-pin popovers with species avatar badges to quickly identify target fisheries on the water.
 
-#### 5. Outdoor Boat Usability & Responsive Table-to-Card Stack
+#### 6. FMZ Fishing Regulations Warning & Slot Limit Compliance Alerts
+- **Agents**: `seasoned-angler-advisor`, `laravel-architect`
+- **Impact**: **High** (Legal & Conservation Compliance)
+- **Description**: Connect existing `FishingRule` and `FishingZone` relations to the Quick Catch Modal and Lake Dossier to provide real-time slot limit compliance warnings (e.g., Ontario FMZ 2 / FMZ 4 Walleye slot: *None between 16.1" and 22.0"*) and season open/close indicators during catch logging.
+
+#### 7. Outdoor Boat Usability & Responsive Table-to-Card Stack
 - **Agents**: `ui-ux-auditor`, `livewire-architect`, `seasoned-angler-advisor`
 - **Impact**: **Medium-High** (Mobile & Boat Cockpit Usability)
 - **Description**: Optimize user experience for open-water boat navigation under direct sunlight and high glare:
@@ -55,7 +70,7 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
   * **44px Tap Target Enforcement**: Audit and expand touch boundaries on all mobile filter pills, table sorting chevrons, and pagination buttons.
   * **WCAG AAA Sunlight Contrast**: Elevate secondary text contrast ratios to $\ge 7:1$ to prevent washout on polarized mobile screens.
 
-#### 6. Fish Species Illustration Asset Pipeline: Alpha Transparency & WebP/PNG Conversion
+#### 8. Fish Species Illustration Asset Pipeline: Alpha Transparency & WebP/PNG Conversion
 - **Agents**: `ui-ux-auditor`, `laravel-architect`
 - **Impact**: **Medium** (Visual Polish & Dark Mode Aesthetic)
 - **Description**: Upgrade the fish species and lure asset library with true alpha transparency:
@@ -63,7 +78,7 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
   * **Modern Alpha Format**: Convert assets to transparent `.webp` / `.png` with lossless compression, updated in `FishBreed` model fallback resolution.
   * **Subtle Dark Mode Glow / Drop Shadow**: Apply subtle ambient illumination filters so dark-scaled species (e.g., Largemouth Bass, Walleye) remain distinctly visible against dark slate backgrounds.
 
-#### 7. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
+#### 9. Humminbird Helix AutoChart Live & Custom Sonar Bathymetry Ingestion
 - **Agents**: `seasoned-angler-advisor`, `laravel-architect`, `ui-ux-auditor`
 - **Impact**: **High** (Custom Fishery Intelligence & Depth Mapping)
 - **Description**: Build an ingestion pipeline for personal Humminbird Helix AutoChart Live sonar data (`acdata` folder / AutoChart Zero Line SD card, AutoChart PC exports, CSV/XYZ soundings, and GeoJSON contour vectors):
@@ -71,31 +86,6 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
   * **Lake Association & Storage**: Link imported contour maps and depth points directly to specific `Lake` records in the database.
   * **Interactive Map Layer**: Render private, high-definition (1-foot / 3-foot) bathymetric contours on both the **Map Explorer** (`/map/explorer`) and **Lake Dossier** (`/lake/{id}`) with custom color ramping, depth labels in feet, and bottom hardness / weedline overlays.
   * **Offline Support**: Integrate custom lake contours into the Offline Region Downloader (`/map/offline`) for 100% offline navigation out on the water.
-
-#### 8. Consolidate Lake Show Telemetry Queries (`LakeController@show`)
-- **Agents**: `query-profiler-optimizer`, `laravel-architect`
-- **Impact**: **Medium** (Database Query Optimization)
-- **Description**: Consolidate the 5 separate count and aggregation queries in `LakeController@show` (total catches, longest catch, heaviest catch, unique visits, unique anglers) into a consolidated single-pass aggregation query.
-
-#### 9. Extract Angler Telemetry & Profile Service (`AnglerTelemetryService`)
-- **Agents**: `laravel-architect`, `query-profiler-optimizer`
-- **Impact**: **Medium-High** (Code Deduplication & Telemetry Consistency)
-- **Description**:
-  - Consolidate ~80 lines of duplicate personal best calculations (`$longest`, `$fattest`), species breakdowns (`COUNT(*)`, `AVG(length)`, `AVG(weight)`), and career accolades between `AnglerProfileController@show` and `ProfileController@show`.
-  - Unify into a dedicated `AnglerTelemetryService` mirroring the domain architecture of `ExpeditionAnalyticsService` and `CatchTelemetryService`.
-
-#### 10. Standardize Action Classes for Catch Updates & Lake Management (`UpdateCatchRecordAction`, `LakeActions`)
-- **Agents**: `laravel-architect`
-- **Impact**: **Medium** (Architecture Standardization & Single-Responsibility)
-- **Description**:
-  - Create `UpdateCatchRecordAction` to mirror `CreateCatchRecordAction`, eliminating manual 12-property assignments and duplicate photo handling in `RecordController@update`.
-  - Create `CreateLakeAction` and `UpdateLakeAction` to centralize coordinates sanitization, spatial validation, and automated GIS fishing zone detection (`GeoZoneDetector::detectZone()`), refactoring `LakeController@store` and `LakeController@update`.
-
-#### 11. Extract Dedicated Merit Badge Honor Roll Blade Component (`<x-meritBadgeHonorRoll />`)
-- **Agents**: `ui-ux-auditor`, `livewire-architect`
-- **Impact**: **Medium** (UI Component Reuse & Consistency)
-- **Description**:
-  - Extract the duplicated top-5 highest-tier badges preview, Alpine toggle logic (`showSash`), summary count chip (`X Badges · Y Pts`), and `+N more →` toggle button from `resources/views/angler/profile.blade.php` and `resources/views/profile/show.blade.php` into a unified `<x-meritBadgeHonorRoll :angler="$angler" />` Blade component.
 
 ---
 
@@ -107,13 +97,11 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
 - **Description**:
   - Evaluate upgrading the Docker runtime container from PHP 8.2 (security-fix phase) to PHP 8.3 or 8.4 across Laravel Sail and Synology NAS Alpine images, unlocking improved JIT compilation and opcache performance for Laravel 12.
 
-#### 2. Handwritten Expedition Journal AI OCR & Structured Transcription Pipeline
+#### 2. In-Browser Cabin Journal Page Upload & Live AI Transcription UI (`/journal/create`)
 - **Agents**: `laravel-architect`, `ui-ux-auditor`
-- **Impact**: **Medium-High** (Historical Logbook Digitization & Trip Archive)
+- **Impact**: **Medium** (Post-2026 Trip Archive Workflow)
 - **Description**:
-  - Create a structured digitization pipeline for physical Canadian trip logbook journals.
-  - Support photographing journal pages and transcribing them via AI vision/OCR into structured `JournalEntry` records (or templated `Post` records) attached to `Expedition` models.
-  - Store original photo references (`photo_id`), transcription text, transcription dates, and structured metadata (weather observations, boat pairings, camp quotes, daily prompt questions).
+  - Extend the completed 264-page historical Cabin Journal pipeline (`JournalTranscriptionService`) with an authenticated browser upload workflow for photographing and transcribing new physical cabin journal pages at the end of future trips.
 
 #### 3. Low-Bandwidth Chunked NAS Outbox Push & Scheduled Sync Health Webhook
 - **Agents**: `nas-sync-architect`
@@ -129,12 +117,7 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
 
 ### ⏳ Deferred / Postponed (Future Consideration)
 
-#### 1. FMZ Fishing Regulations Warning & Slot Limit Compliance Alerts *(Deferred from P2.1)*
-- **Agents**: `seasoned-angler-advisor`, `laravel-architect`
-- **Impact**: **High** (Legal & Conservation Compliance)
-- **Description**: Connect existing `FishingRule` and `FishingZone` relations to the Quick Catch Modal and Lake Dossier to provide real-time slot limit compliance warnings (e.g., Ontario FMZ 2 / FMZ 4 Walleye slot: *None between 16.1" and 22.0"*) and season open/close indicators during catch logging.
-
-#### 2. Trophy Catch Brag Card Generator & Chartplotter GPX/CSV Export *(Deferred from P2.2)*
+#### 1. Trophy Catch Brag Card Generator & Chartplotter GPX/CSV Export *(Deferred from P2.2)*
 - **Agents**: `ui-ux-auditor`, `laravel-architect`
 - **Impact**: **Medium-High** (Social Sharing & Marine Navigation Integration)
 - **Description**: Generate a downloadable high-resolution branded brag card (catch length/weight, lake, lure, solunar rating, photo) for social sharing, and implement 1-click GPX/CSV waypoint export formatted specifically for Garmin, Humminbird, and Lowrance chartplotters.
@@ -147,9 +130,9 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
 | :--- | :--- | :--- | :--- |
 | [`spatie/laravel-backup`](https://github.com/spatie/laravel-backup) | DB Safety / DevOps | Automated, scheduled timestamped database and media directory backups to `storage/app/backups/` & NAS. | **Completed** |
 | [`blade-ui-kit/blade-lucide-icons`](https://github.com/blade-ui-kit/blade-lucide-icons) | Blade / UI | Server-rendered Lucide icons (`<x-lucide-fish />`) eliminating JS DOM injection delays & SVG duplication. | **Completed** |
-| [`larastan/larastan`](https://github.com/larastan/larastan) *(dev)* | Static Analysis | Strict level typing, Eloquent relationship validation, and null safety checks across all 13 models & services. | **Completed** |
+| [`larastan/larastan`](https://github.com/larastan/larastan) *(dev)* | Static Analysis | Strict level typing, Eloquent relationship validation, and null safety checks across all 17 models & services. | **Completed** |
 | [`matanyadaev/laravel-eloquent-spatial`](https://github.com/matanyadaev/laravel-eloquent-spatial) | GIS / Mapping | Native MySQL 8 spatial geometry (`Point`, `Polygon`) with spherical distance scopes (`whereDistanceSphere`) for sub-millisecond waypoint & nearby radius lookups. | **Completed** |
-| [`livewire/volt`](https://github.com/livewire/volt) | Livewire DX | Single-file reactive components for lightweight boat widgets (Theme Switcher, Solunar date controls). | **P2 (Active)** |
+| [`livewire/livewire`](https://livewire.laravel.com/) | Livewire 4 | Reactive full-stack components, URL history state synchronization, and computed DTO caching. | **Completed** |
 | [`chart.js`](https://www.chartjs.org/) | Frontend / Charts | Hardware-accelerated, lightweight HTML5 canvas telemetry charts (Barometer vs Strike, Species Donuts, Radar). | **Completed** |
 | [`laravel/boost`](https://github.com/laravel/boost) *(dev)* | AI Tooling / MCP | Embedded MCP server and AI guidelines/skills for Antigravity-assisted development. | **Completed** |
 
@@ -710,6 +693,24 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
       * Added `admin_can_push_and_pull_badges_and_angler_badges` in [`tests/Feature/NasSyncApiTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/NasSyncApiTest.php).
       * Updated `nas-sync-architect` skill and `.ai/rules/nas-sync.md` to reflect 17 synchronized database models.
       * Verified entire test suite passing: **383 passed (1,743 assertions)** with 0 failures and 0 errors.
+
+68. **Wave 1 Architecture Standardization, `AnglerTelemetryService` Extraction & Query Consolidation (P2.8, P2.9, P2.10)**:
+    - **`AnglerTelemetryService` Extraction & N+1 Elimination**:
+      * Created [`app/Services/AnglerTelemetryService.php`](file:///home/gmroczek/git/fishing/app/Services/AnglerTelemetryService.php) unifying ~180 lines of duplicated career statistics, personal best calculations, MVP lure/peak month/top waters telemetry, species breakdowns, and normalized trophy rankings across [`ProfileController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/ProfileController.php) and [`AnglerProfileController.php`](file:///home/gmroczek/git/fishing/app/Http/Controllers/Angler/AnglerProfileController.php).
+      * Replaced the N+1 per-species personal best loop (`$speciesPbs`) with a single `joinSub` aggregation query and removed unused full-table `$records` / `$anglerRecords` queries from both profile controllers.
+      * Wired interactive `@click="$dispatch('toggle-merit-sash')"` toggle onto the hero header Points pill in [`angler/profile.blade.php`](file:///home/gmroczek/git/fishing/resources/views/angler/profile.blade.php) and [`profile/show.blade.php`](file:///home/gmroczek/git/fishing/resources/views/profile/show.blade.php) so `<x-meritBadgeSash>` can be expanded on demand.
+    - **Action Class Standardization (`UpdateCatchRecordAction`, `CreateLakeAction`, `UpdateLakeAction`)**:
+      * Created [`app/Actions/Records/UpdateCatchRecordAction.php`](file:///home/gmroczek/git/fishing/app/Actions/Records/UpdateCatchRecordAction.php) wrapping catch updates and [`ProcessPhotoUploadAction`](file:///home/gmroczek/git/fishing/app/Actions/Media/ProcessPhotoUploadAction.php) attachments inside a database transaction, and dispatching [`CatchLoggedEvent`](file:///home/gmroczek/git/fishing/app/Events/CatchLoggedEvent.php) when catch metrics change.
+      * Created [`app/Actions/Lakes/CreateLakeAction.php`](file:///home/gmroczek/git/fishing/app/Actions/Lakes/CreateLakeAction.php) and [`app/Actions/Lakes/UpdateLakeAction.php`](file:///home/gmroczek/git/fishing/app/Actions/Lakes/UpdateLakeAction.php) centralizing coordinate persistence and automated GIS fishing zone detection (`GeoZoneDetector::detectZone()`).
+      * Refactored [`RecordController@update`](file:///home/gmroczek/git/fishing/app/Http/Controllers/RecordController.php), [`LakeController@store`](file:///home/gmroczek/git/fishing/app/Http/Controllers/LakeController.php), and [`LakeController@update`](file:///home/gmroczek/git/fishing/app/Http/Controllers/LakeController.php) into thin HTTP coordinators.
+    - **Lake Show, Catch Directory & Weather Hydration Query Optimization**:
+      * Consolidated separate count, distinct visit, and distinct angler queries in [`LakeController@show`](file:///home/gmroczek/git/fishing/app/Http/Controllers/LakeController.php) into a single aggregate query, eager-loaded `['fishBreed', 'angler']` on `$longest` and `$fattest`, and removed unused `$stats` / `$nearbyLakes` queries from `show()`.
+      * Added [`Record::hydrateDailyWeatherForCollection()`](file:///home/gmroczek/git/fishing/app/Models/Record.php) and wired it into [`GenericDataTable.php`](file:///home/gmroczek/git/fishing/app/Livewire/Components/GenericDataTable.php) and [`RecordController@show`](file:///home/gmroczek/git/fishing/app/Http/Controllers/RecordController.php), replacing unbounded `lake.dailyWeather` eager-loading with targeted `(lakes_id, DATE(caught))` batch hydration and eliminating duplicate pre-Livewire queries in `RecordController@directory`.
+    - **Static Analysis & Automated Verification**:
+      * Resolved 15 PHPStan Level 5 warnings across `MeritBadgeCarousel`, `AnglerStatsController`, and `GenericDataTable` down to **0 errors across 159 files**.
+      * Added unit and feature tests in [`tests/Feature/P0ArchitectureRefactoringTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/P0ArchitectureRefactoringTest.php).
+      * Verified full test suite passing: **387 passed (1,765 assertions)** with 0 failures and 0 PHPStan errors.
+
 
 
 

@@ -165,9 +165,9 @@ class AnglerStatsController extends Controller
             foreach ($topAnglersForRadar as $idx => $a) {
                 $divData = $anglerDiversityAndMax->get($a->id);
                 $volScore = min(100, round(($a->records_count / $maxVolume) * 100));
-                $lunkerScore = min(100, round((($divData?->max_length ?? 0) / $maxLunkerOverall) * 100));
+                $lunkerScore = min(100, round((($divData ? $divData->max_length : 0) / $maxLunkerOverall) * 100));
                 $releaseScore = min(100, round($a->release_rate));
-                $diversityScore = min(100, round((($divData?->diversity_count ?? 0) / $maxDiversityOverall) * 100));
+                $diversityScore = min(100, round((($divData ? $divData->diversity_count : 0) / $maxDiversityOverall) * 100));
                 $watersScore = min(100, round((($a->unique_lakes_count ?? 0) / $maxWatersOverall) * 100));
 
                 $color = $radarColors[$idx % count($radarColors)];

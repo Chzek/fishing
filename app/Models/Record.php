@@ -188,6 +188,59 @@ class Record extends Model
     }
 
     /**
+     * Batch-hydrate exact LakeDailyWeather relations for a collection of Record models
+     * without loading all historical weather rows per lake.
+     *
+     * @param \Illuminate\Support\Collection<int, self> $records
+     * @return void
+     */
+    public static function hydrateDailyWeatherForCollection(\Illuminate\Support\Collection $records): void
+    {
+        if ($records->isEmpty()) {
+            return;
+        }
+
+        $lakesAndDates = $records->map(function (self $record): array {
+            $caughtDate = $record->caught instanceof \DateTimeInterface
+                ? $record->caught->format('Y-m-d')
+                : substr((string) $record->caught, 0, 10);
+
+            return [
+                'lake_id' => $record->lakes_id,
+                'date' => $caughtDate,
+            ];
+        })->filter(fn (array $item): bool => !empty($item['lake_id']) && !empty($item['date']))
+          ->unique(fn (array $item): string => $item['lake_id'] . '_' . $item['date'])
+          ->values();
+
+        if ($lakesAndDates->isEmpty()) {
+            return;
+        }
+
+        $weatherModels = LakeDailyWeather::where(function ($query) use ($lakesAndDates) {
+            foreach ($lakesAndDates as $item) {
+                $query->orWhere(function ($q) use ($item) {
+                    $q->where('lakes_id', $item['lake_id'])->where('date', $item['date']);
+                });
+            }
+        })->get()->keyBy(function (LakeDailyWeather $w): string {
+            $wDate = $w->date instanceof \DateTimeInterface
+                ? $w->date->format('Y-m-d')
+                : substr((string) $w->date, 0, 10);
+
+            return $w->lakes_id . '_' . $wDate;
+        });
+
+        $records->each(function (self $record) use ($weatherModels): void {
+            $caughtDate = $record->caught instanceof \DateTimeInterface
+                ? $record->caught->format('Y-m-d')
+                : substr((string) $record->caught, 0, 10);
+
+            $record->setRelation('dailyWeather', $weatherModels->get($record->lakes_id . '_' . $caughtDate));
+        });
+    }
+
+    /**
      * Get daily weather matching record's lake and caught date.
      */
     public function getDailyWeatherAttribute()
@@ -205,15 +258,22 @@ class Record extends Model
             : substr((string) $this->caught, 0, 10);
 
         if ($this->relationLoaded('lake') && $this->lake && $this->lake->relationLoaded('dailyWeather')) {
-            return $this->lake->dailyWeather->first(function ($w) use ($caughtDate) {
+            $matched = $this->lake->dailyWeather->first(function ($w) use ($caughtDate) {
                 $wDate = $w->date instanceof \DateTimeInterface ? $w->date->format('Y-m-d') : substr((string) $w->date, 0, 10);
                 return $wDate === $caughtDate;
             });
+            $this->setRelation('dailyWeather', $matched);
+
+            return $matched;
         }
 
-        return LakeDailyWeather::where('lakes_id', $this->lakes_id)
+        $weather = LakeDailyWeather::where('lakes_id', $this->lakes_id)
             ->where('date', $caughtDate)
             ->first();
+
+        $this->setRelation('dailyWeather', $weather);
+
+        return $weather;
     }
 
     /**
