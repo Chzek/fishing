@@ -711,6 +711,19 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
       * Added unit and feature tests in [`tests/Feature/P0ArchitectureRefactoringTest.php`](file:///home/gmroczek/git/fishing/tests/Feature/P0ArchitectureRefactoringTest.php).
       * Verified full test suite passing: **387 passed (1,765 assertions)** with 0 failures and 0 PHPStan errors.
 
+69. **Runtime & Infrastructure Security Upgrades (PHP 8.2.36 & NGINX 1.30.7 — Nov 2026 RCE Mitigations)**:
+    - **Local Sail Environment**:
+      * Rebuilt `sail-8.2/app` cleanly (`./vendor/bin/sail build --no-cache`) with **PHP 8.2.36** (`8.2.36-2+debsuryorg24.04.1+php+1`), remediating the November 2026 PHP RCE wave (`CVE-2026-126714`, `CVE-2026-115560`, `CVE-2026-129289`, `CVE-2026-129496`, `CVE-2026-129481`, `CVE-2026-129474`).
+      * Verified CLI runtime: `PHP 8.2.36 (cli) (built: Nov 18 2026 15:43:40) (NTS)` with Zend OPcache `v8.2.36` and Xdebug `v3.5.3`.
+    - **Synology NAS Production Environment**:
+      * Upgraded base image to `php:8.2.36-fpm-alpine` in both [`synology-nas-deploy/Dockerfile.nas`](file:///home/gmroczek/git/fishing/synology-nas-deploy/Dockerfile.nas) and [`synology-nas-deploy/Dockerfile`](file:///home/gmroczek/git/fishing/synology-nas-deploy/Dockerfile), and added defense-in-depth `/usr/local/etc/php/conf.d/security.ini` (`session.upload_progress.enabled = Off`, `zend.exception_ignore_args = On`, `expose_php = Off`).
+      * Pinned `webserver` in [`synology-nas-deploy/docker-compose.yml`](file:///home/gmroczek/git/fishing/synology-nas-deploy/docker-compose.yml) from floating `nginx:alpine` to **`nginx:1.30.7-alpine`** to remediate the November 2026 NGINX2Root RCE advisories (`CVE-2026-123007`, `CVE-2026-123633`).
+      * Updated deployment documentation in [`README_NAS.md`](file:///home/gmroczek/git/fishing/synology-nas-deploy/README_NAS.md) and [`SYNOLOGY_NAS_DEPLOYMENT.md`](file:///home/gmroczek/git/fishing/synology-nas-deploy/SYNOLOGY_NAS_DEPLOYMENT.md).
+      * Verified `Dockerfile.nas` container build locally (`PHP 8.2.36 (built: Nov 19 2026 14:44:51)` and hardened ini directives active).
+    - **Automated Test Coverage & Static Analysis**:
+      * Passed Larastan static analysis level 5 with zero errors (`[OK] No errors` across 159 files).
+      * Passed full PHPUnit test suite on PHP 8.2.36 (**387 passed, 1,765 assertions**) with **0 failures**.
+
 
 
 

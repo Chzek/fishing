@@ -1,4 +1,4 @@
-FROM php:8.2.35-fpm-alpine
+FROM php:8.2.36-fpm-alpine
 
 # Install Composer binary inside container
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -14,7 +14,10 @@ RUN apk add --no-cache \
     && docker-php-ext-install pdo pdo_mysql bcmath gd zip opcache \
     && echo "upload_max_filesize = 64M" > /usr/local/etc/php/conf.d/uploads.ini \
     && echo "post_max_size = 64M" >> /usr/local/etc/php/conf.d/uploads.ini \
-    && echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/uploads.ini
+    && echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "session.upload_progress.enabled = Off" > /usr/local/etc/php/conf.d/security.ini \
+    && echo "zend.exception_ignore_args = On" >> /usr/local/etc/php/conf.d/security.ini \
+    && echo "expose_php = Off" >> /usr/local/etc/php/conf.d/security.ini
 
 WORKDIR /var/www/html
 
