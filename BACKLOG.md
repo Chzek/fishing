@@ -724,6 +724,20 @@ _Completed P2 initiatives: P2.5 Interactive JavaScript Telemetry Visualizations 
       * Passed Larastan static analysis level 5 with zero errors (`[OK] No errors` across 159 files).
       * Passed full PHPUnit test suite on PHP 8.2.36 (**387 passed, 1,765 assertions**) with **0 failures**.
 
+70. **Dependabot & Composer/npm Security Patches + NAS Deploy Sync Fix**:
+    - **npm Lockfile (`package-lock.json`)**:
+      * Resolved High-severity Dependabot alert (`GHSA-mrwp-f3q8-3g9p`) by upgrading `follow-redirects` from `1.16.1` to `1.16.3` via `npm audit fix` (**0 vulnerabilities**).
+      * Rebuilt production Vite bundle cleanly (`public/build/`).
+    - **Composer Lockfile (`composer.lock`)**:
+      * Upgraded `laravel/framework` (`v12.70.1` → `v12.73.0`) addressing `CVE-2026-128083` (`GHSA-63hm-g96r-2m2q`).
+      * Upgraded `symfony/*` components (`v7.4.17–21` → `v7.4.22–23`) addressing 8 Symfony security advisories (`GHSA-5mx8-mwrp-5693`, `CVE-2026-121619`, `CVE-2026-118514`, `GHSA-3h27-hjv7-fqjx`, `CVE-2026-123339`, `CVE-2026-45070`, `CVE-2026-118516`, `CVE-2026-123792`), bringing `composer audit` to **0 advisories**.
+    - **Synology NAS Deploy Script Fix**:
+      * Updated [`synology-nas-deploy/update_nas.sh`](file:///home/gmroczek/git/fishing/synology-nas-deploy/update_nas.sh) and [`update_nas.sh`](file:///home/gmroczek/git/fishing/update_nas.sh) to sync both `Dockerfile.nas` and `Dockerfile` into the NAS project root on deploy so `docker-compose.yml` never builds against a stale `Dockerfile.nas`.
+    - **Automated Verification**:
+      * Passed `composer audit` (0 advisories) and `npm audit` (0 vulnerabilities).
+      * Passed Larastan static analysis level 5 with zero errors (`[OK] No errors` across 159 files).
+      * Passed full PHPUnit test suite (**387 passed, 1,765 assertions**) with **0 failures**.
+
 
 
 
