@@ -56,6 +56,7 @@ echo "--> Syncing Synology NAS configurations..."
 if [ -d "synology-nas-deploy" ]; then
     cp synology-nas-deploy/docker-compose.yml docker-compose.yml 2>/dev/null || true
     cp synology-nas-deploy/nginx.conf nginx.conf 2>/dev/null || true
+    cp synology-nas-deploy/Dockerfile.nas Dockerfile.nas 2>/dev/null || true
     cp synology-nas-deploy/Dockerfile.nas Dockerfile 2>/dev/null || true
 fi
 
